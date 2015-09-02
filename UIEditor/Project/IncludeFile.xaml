@@ -1,0 +1,22 @@
+﻿<TreeViewItem x:Class="UIEditor.Project.IncludeFile"
+			  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+			  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+			  xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+			  mc:Ignorable="d"
+			  Name="mx_root">
+	<TreeViewItem.Header>
+		<RadioButton Name="mx_radio"
+					 GroupName="fileTree"
+					 Padding="0,2,0,2"
+					 Style="{StaticResource RadioTeml_Mt}"
+					 MouseDoubleClick="mx_radio_MouseDoubleClick"/>
+	</TreeViewItem.Header>
+	<TreeViewItem.ContextMenu>
+		<ContextMenu Name="mx_menu" Visibility="Collapsed" Loaded="mx_menu_Loaded">
+			<MenuItem Name="mx_moveTo" Header="移动到" Visibility="Collapsed"/>
+			<MenuItem Name="mx_copyTo" Header="复制到" Visibility="Collapsed"/>
+			<MenuItem Name="mx_newFile" Header="新建..." Click="mx_newFile_Click"/>
+		</ContextMenu>
+	</TreeViewItem.ContextMenu>
+</TreeViewItem>

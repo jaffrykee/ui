@@ -1,0 +1,16 @@
+﻿<Application x:Class="UIEditor.App"
+			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 x:Name="mx_app"
+			 DispatcherUnhandledException="mx_app_DispatcherUnhandledException"
+			 StartupUri="MainWindow.xaml">
+	<Application.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="Themes/Generic.xaml"/>
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Application.Resources>
+</Application>
+<!--<ResourceDictionary Source="Themes/Generic.Light.xaml"/>-->
+<!--<ResourceDictionary Source="Themes/Generic.Dark.xaml"/>-->

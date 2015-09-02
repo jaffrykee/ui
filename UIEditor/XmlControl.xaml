@@ -1,0 +1,9 @@
+﻿<UserControl x:Class="UIEditor.XmlControl"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+		mc:Ignorable="d"
+		Name="mx_root"
+		Unloaded="mx_root_Unloaded">
+</UserControl>

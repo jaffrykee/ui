@@ -1,0 +1,17 @@
+﻿<TreeView x:Class="UIEditor.BasicFrame"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+            mc:Ignorable="d"
+			Name="tvRequire"
+			BorderThickness="1">
+		  <!--
+			MouseDown="tvRequire_MouseDown"
+			MouseMove="tvRequire_MouseMove"
+			DragEnter="TheTreeView_CheckDropTarget"
+			DragLeave="TheTreeView_CheckDropTarget"
+			DragOver="TheTreeView_CheckDropTarget"
+			Drop="tvRequire_Drop"
+			-->
+</TreeView>

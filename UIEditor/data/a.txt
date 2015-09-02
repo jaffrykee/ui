@@ -1,0 +1,15 @@
+﻿
+	//右侧属性工具栏的UI
+	public AttrRow m_attrRowUI;
+	//数据类型
+	public string m_type;
+	//子类型
+	public string m_subType;
+	//默认值(废弃)
+	public string m_defValue;
+	//枚举
+	public bool m_isEnum;
+	//常用项
+	public bool m_isCommon;
+	//枚举列表
+	public Dictionary<string, ComboBoxItem=""> m_mapEnum;

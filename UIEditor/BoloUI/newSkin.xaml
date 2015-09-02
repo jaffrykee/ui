@@ -1,0 +1,32 @@
+﻿<Window x:Class="UIEditor.BoloUI.newSkin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		Name="mx_root"
+        Title="新建皮肤"
+		WindowStyle="ToolWindow"
+		ShowInTaskbar="False"
+		ResizeMode="NoResize"
+		Width="300"
+		Height="180"
+		Loaded="mx_root_Loaded"
+		Unloaded="mx_root_Unloaded">
+	<StackPanel Background="#11222222">
+		<StackPanel Background="#ffffffff">
+			<WrapPanel Margin="25,10,5,5">
+				<Label>皮肤组</Label>
+				<ComboBox Name="mx_groupCbBox" Width="125" Margin="2">
+					<ComboBoxItem Name="mx_localCbi" Selected="mx_localCbi_Selected">本文件</ComboBoxItem>
+				</ComboBox>
+			</WrapPanel>
+			<WrapPanel Margin="25,5,5,5">
+				<Label>皮肤名</Label>
+				<TextBox Name="mx_skinName" Width="125" Margin="2" TextChanged="mx_skinName_TextChanged"/>
+			</WrapPanel>
+			<Label Name="mx_errorInfo" Margin="15,0,0,5">请选择皮肤组，并填写皮肤名</Label>
+		</StackPanel>
+		<WrapPanel HorizontalAlignment="Right">
+			<Button Name="mx_ok" Margin="5" Padding="15,2,15,2" Click="mx_ok_Click">确定</Button>
+			<Button Name="mx_cancel" Margin="5" Padding="15,2,15,2" Click="mx_cancel_Click">取消</Button>
+		</WrapPanel>
+	</StackPanel>
+</Window>

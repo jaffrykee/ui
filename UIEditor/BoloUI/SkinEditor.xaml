@@ -1,0 +1,13 @@
+﻿<Window x:Class="UIEditor.BoloUI.SkinEditor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		Name="mx_root"
+        Title="皮肤编辑器"
+		WindowStyle="ToolWindow"
+		ShowInTaskbar="False"
+		Height="auto"
+		Width="auto"
+		Loaded="mx_root_Loaded">
+	<Grid>
+	</Grid>
+</Window>

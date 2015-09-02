@@ -1,0 +1,34 @@
+﻿<TreeViewItem x:Class="UIEditor.BoloUI.XmlItem"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+		mc:Ignorable="d"
+			  Name="mx_root"
+			  IsExpanded="True"
+			  Padding="0"
+			  PreviewMouseDoubleClick="mx_root_PreviewMouseDoubleClick">
+	<TreeViewItem.Header>
+		<RadioButton Name="mx_radio"
+					 GroupName="fileTree"
+					 Padding="0,2,0,2"
+					 Style="{StaticResource RadioTeml_Mt}"
+					 Checked="mx_radio_Checked"/>
+	</TreeViewItem.Header>
+	<TreeViewItem.ContextMenu>
+		<ContextMenu Name="mx_menu" Loaded="mx_menu_Loaded" Unloaded="mx_menu_Unloaded">
+			<MenuItem Name="mx_addNode" Header="添加节点" Loaded="mx_addNode_Loaded"/>
+			<MenuItem Name="mx_addTmpl" Header="将该控件作为模板..." Click="mx_addTmpl_Click"/>
+			<Separator/>
+			<MenuItem Name="mx_cut" Header="剪切" InputGestureText="Ctrl+X" Click="mx_cut_Click"/>
+			<MenuItem Name="mx_copy" Header="复制" InputGestureText="Ctrl+C" Click="mx_copy_Click"/>
+			<MenuItem Name="mx_paste" Header="粘贴" InputGestureText="Ctrl+V" Click="mx_paste_Click"/>
+			<MenuItem Name="mx_delete" Header="删除" InputGestureText="Delete" Click="mx_delete_Click"/>
+			<Separator/>
+			<MenuItem Name="mx_moveUp" Header="上移" InputGestureText="Ctrl+↑" Click="mx_moveUp_Click"/>
+			<MenuItem Name="mx_moveDown" Header="下移" InputGestureText="Ctrl+↓" Click="mx_moveDown_Click"/>
+			<Separator/>
+			<MenuItem Name="mx_attr" Header="属性"/>
+		</ContextMenu>
+	</TreeViewItem.ContextMenu>
+</TreeViewItem>

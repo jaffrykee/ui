@@ -1,0 +1,21 @@
+﻿<Grid x:Class="UIEditor.PackImage"
+	  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+	  xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+	  mc:Ignorable="d"
+	  Name="mx_root"
+	  Loaded="mx_root_Loaded">
+	<Canvas Name="mx_canvas" Background="#00000000" MouseDown="mx_canvas_MouseDown" MouseMove="mx_canvas_MouseMove">
+		<Path Name="mx_selPath" Stroke="#ff3399ff" StrokeThickness="1">
+			<Path.Fill>
+				<SolidColorBrush Color="#663399ff"/>
+			</Path.Fill>
+		</Path>
+		<Path Name="mx_overPath" Stroke="#663399ff" StrokeThickness="1">
+			<Path.Fill>
+				<SolidColorBrush Color="#333399ff"/>
+			</Path.Fill>
+		</Path>
+	</Canvas>
+</Grid>
