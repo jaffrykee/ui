@@ -6,8 +6,6 @@
 *.user
 *.sln.docstates
 
-DsUiEditor/
-
 # Build results
 
 [Dd]ebug/
@@ -16,6 +14,11 @@ x64/
 build/
 [Bb]in/
 [Oo]bj/
+
+DsUiEditor/
+dsuieditor/
+DsUiEditor
+dsuieditor
 
 # Enable "build/" folder in the NuGet Packages folder since NuGet packages use it for MSBuild targets
 !packages/*/build/
