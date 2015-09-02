@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml;
+using System.IO;
 using UIEditor.BoloUI;
 using UIEditor.BoloUI.DefConfig;
 
@@ -431,9 +432,39 @@ namespace UIEditor.BoloUI
 					{
 						XmlElement xeRow = (XmlElement)xn;
 						BoloUI.CtrlTemplate rowTmpl = new BoloUI.CtrlTemplate();
+						XmlDocument docXml = new XmlDocument();
 
+						try
+						{
+							docXml.LoadXml(xeRow.InnerXml);
+						}
+						catch
+						{
+							rowTmpl.ToolTip = xeRow.InnerXml;
+							rowTmpl.Header = xeRow.GetAttribute("name");
+							ctrlMenuItem.Items.Add(rowTmpl);
+							rowTmpl.Click += insertCtrlItem_Click;
+
+							continue;
+						}
+
+						StringBuilder strb = new StringBuilder();
+						using (StringWriter sw = new StringWriter(strb))
+						{
+							XmlWriterSettings settings = new XmlWriterSettings();
+
+							settings.Indent = true;
+							settings.IndentChars = "    ";
+							settings.NewLineOnAttributes = false;
+							XmlWriter xmlWriter = XmlWriter.Create(sw, settings);
+							docXml.Save(xmlWriter);
+							xmlWriter.Close();
+						}
+						string outStr = strb.ToString();
+
+						outStr = outStr.Substring(outStr.IndexOf("\n") + 1, outStr.Length - (outStr.IndexOf("\n") + 1));
+						rowTmpl.ToolTip = outStr;
 						rowTmpl.Header = xeRow.GetAttribute("name");
-						rowTmpl.ToolTip = xeRow.InnerXml;
 						ctrlMenuItem.Items.Add(rowTmpl);
 						rowTmpl.Click += insertCtrlItem_Click;
 					}
@@ -529,7 +560,7 @@ namespace UIEditor.BoloUI
 					{
 						showTmplGroup("event");
 						/*
-							正则替换："E:\clientlib\DsBoloUIEditor\src\boloUI\BoloEvent.java" 到 "E:\clienttools\UI编辑器2\conf.xml" -->
+							正则替换："E:\clientlib\DsBoloUIEditor\src\boloUI\BoloEvent.java" 到 "E:\clienttools\UIEditor2\conf.xml" -->
 							[\t a-z_=]*("[a-zA-Z]*")[; \t\/\/]*([\/\u4e00-\u9fa5 a-zA-Z（）]*)
 							\t<row name=$1 tip="$2">\r\n\t\t<event type=$1/>\r\n\t</row>
 						*/

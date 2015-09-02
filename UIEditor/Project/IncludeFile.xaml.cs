@@ -26,11 +26,48 @@ namespace UIEditor.Project
 		public IncludeFile(string path)
 		{
 			m_path = path;
+
+			IncludeFile fileDef;
+			if (!MainWindow.s_pW.m_mapIncludeFiles.TryGetValue(m_path, out fileDef))
+			{
+				MainWindow.s_pW.m_mapIncludeFiles.Add(m_path, this);
+			}
+			else
+			{
+				MainWindow.s_pW.m_mapIncludeFiles[m_path] = this;
+			}
 			InitializeComponent();
 			mx_root.ToolTip = m_path;
 			mx_radio.Content = System.IO.Path.GetFileName(m_path);
 		}
 
+		public void deleteSelf()
+		{
+			IncludeFile fileDef;
+
+			if (System.IO.File.Exists(m_path))
+			{
+				try
+				{
+					System.IO.File.Delete(m_path);
+				}
+				catch
+				{
+				}
+			}
+			if(MainWindow.s_pW.m_mapIncludeFiles.TryGetValue(m_path, out fileDef))
+			{
+				MainWindow.s_pW.m_mapIncludeFiles.Remove(m_path);
+			}
+			if (this.Parent != null &&
+				(this.Parent.GetType().ToString() == "System.Windows.Controls.TreeViewItem" ||
+				this.Parent.GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem"))
+			{
+				IncludeFile pItem = (IncludeFile)this.Parent;
+
+				pItem.Items.Remove(this);
+			}
+		}
 		private void mx_radio_MouseDoubleClick(object sender, MouseButtonEventArgs e)
 		{
 			mx_root.IsExpanded = !(mx_root.IsExpanded);
@@ -39,16 +76,95 @@ namespace UIEditor.Project
 				MainWindow.s_pW.openFileByPath(m_path);
 			}
 		}
+		private void pngFileDeal(object pngItem, string type)
+		{
+			if(type != "delete")
+			{
+				if (pngItem.GetType().ToString() == "System.Windows.Controls.MenuItem")
+				{
+					MenuItem clickItem = (MenuItem)pngItem;
+					string newFolder = clickItem.ToolTip.ToString();
+
+					if (System.IO.Directory.Exists(newFolder))
+					{
+						string newPath = newFolder + "\\" + System.IO.Path.GetFileName(m_path);
+
+						if (!System.IO.File.Exists(newPath))
+						{
+							switch(type)
+							{
+								case "moveTo":
+									{
+										if (System.IO.File.Exists(m_path))
+										{
+											try
+											{
+												System.IO.File.Move(m_path, newPath);
+											}
+											catch
+											{
+												break;
+											}
+											deleteSelf();
+
+											IncludeFile newFolderDef;
+
+											if (MainWindow.s_pW.m_mapIncludeFiles.TryGetValue(System.IO.Path.GetDirectoryName(newPath), out newFolderDef))
+											{
+												newFolderDef.AddChild(new IncludeFile(newPath));
+											}
+										}
+									}
+									break;
+								case "copyTo":
+									{
+										if (System.IO.File.Exists(m_path))
+										{
+											try
+											{
+												System.IO.File.Copy(m_path, newPath);
+											}
+											catch
+											{
+												break;
+											}
+
+											IncludeFile newFolderDef;
+
+											if (MainWindow.s_pW.m_mapIncludeFiles.TryGetValue(System.IO.Path.GetDirectoryName(newPath), out newFolderDef))
+											{
+												newFolderDef.AddChild(new IncludeFile(newPath));
+											}
+										}
+									}
+									break;
+								default:
+									break;
+							}
+						}
+						else
+						{
+							MessageBox.Show("新路径已有同名文件。", "文件名冲突", MessageBoxButton.OK, MessageBoxImage.Error);
+						}
+					}
+				}
+			}
+			else
+			{
+				deleteSelf();
+			}
+		}
 		private void mx_moveToChild_Click(object sender, RoutedEventArgs e)
 		{
-			//todo
+			pngFileDeal(sender, "moveTo");
 		}
 		private void mx_copyToChild_Click(object sender, RoutedEventArgs e)
 		{
-			//todo
+			pngFileDeal(sender, "copyTo");
 		}
 		private static void addResFolderToMenu(DirectoryInfo imgDri, MenuItem menuItem, RoutedEventHandler clickEvent)
 		{
+			menuItem.Items.Clear();
 			foreach(DirectoryInfo dri in imgDri.GetDirectories())
 			{
 				MenuItem childItem = new MenuItem();

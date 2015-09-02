@@ -63,7 +63,7 @@ namespace UIEditor.ImageTools
 			s_pW = null;
 		}
 
-		public static int getMaxHeight(List<RectNode> lstRectNode)
+		private static int getMaxHeight(List<RectNode> lstRectNode)
 		{
 			int maxHeight = 0;
 
@@ -77,7 +77,7 @@ namespace UIEditor.ImageTools
 
 			return maxHeight;
 		}
-		public static int getMaxWidth(List<RectNode> lstRectNode)
+		private static int getMaxWidth(List<RectNode> lstRectNode)
 		{
 			int maxWidth = 0;
 
@@ -91,7 +91,7 @@ namespace UIEditor.ImageTools
 
 			return maxWidth;
 		}
-		public static int getAreaSum(List<RectNode> lstRectNode)
+		private static int getAreaSum(List<RectNode> lstRectNode)
 		{
 			int area = 0;
 
@@ -102,7 +102,7 @@ namespace UIEditor.ImageTools
 
 			return area;
 		}
-		public static int getMaxPow(List<RectNode> lstRectNode)
+		private static int getMaxPow(List<RectNode> lstRectNode)
 		{
 			double maxPow = 0;
 			double hPow = Math.Log(getMaxHeight(lstRectNode), 2);
@@ -125,15 +125,25 @@ namespace UIEditor.ImageTools
 			return (int)Math.Ceiling(maxPow);
 		}
 
-		public void printString(string str, bool delLast = false)
+		private static void printString(string str, bool delLast = false)
 		{
+			TextBox tbDebug;
+
+			if (ImageNesting.s_pW != null)
+			{
+				tbDebug = ImageNesting.s_pW.mx_imgDebug;
+			}
+			else
+			{
+				tbDebug = MainWindow.s_pW.mx_debug;
+			}
 			if (delLast)
 			{
-				mx_imgDebug.Text = mx_imgDebug.Text.Remove(mx_imgDebug.Text.LastIndexOf("\r\n"));
+				tbDebug.Text = tbDebug.Text.Remove(tbDebug.Text.LastIndexOf("\r\n"));
 			}
-			mx_imgDebug.Text += str;
+			tbDebug.Text += str;
 		}
-		public static int addFileToArr(string basicPath, string filter, Dictionary<string, RectNode> mapRectNode)
+		private static int addFileToArr(string basicPath, string filter, Dictionary<string, RectNode> mapRectNode)
 		{
 			DirectoryInfo di = new DirectoryInfo(basicPath);
 			FileInfo[] arrFileInfo = di.GetFiles(filter);
@@ -150,30 +160,30 @@ namespace UIEditor.ImageTools
 
 			return retCount;
 		}
-		public static void addFileToDirMap(string rootPath, Dictionary<string, string> mapNameDir)
+		private static void addFileToDirMap(string rootPath, Dictionary<string, string> mapNameDir)
 		{
 			DirectoryInfo di = new DirectoryInfo(rootPath);
 			DirectoryInfo[] arrDirInfo = di.GetDirectories();
 
-			foreach(DirectoryInfo dri in arrDirInfo)
+			foreach (DirectoryInfo dri in arrDirInfo)
 			{
 				FileInfo[] arrPngInfo = dri.GetFiles("*.png");
 
-				foreach(FileInfo fi in arrPngInfo)
+				foreach (FileInfo fi in arrPngInfo)
 				{
 					mapNameDir.Add(System.IO.Path.GetFileNameWithoutExtension(fi.Name), dri.Name);
 				}
 			}
 		}
-		public static void crossInsertToGrid(ArrayList mapGrid, int i0, int j0, int di, int dj, int dw, int dh)
+		private static void crossInsertToGrid(ArrayList mapGrid, int i0, int j0, int di, int dj, int dw, int dh)
 		{
 			//十字插入
 			//左上描黑，di和dj最低可以为0，也就是只占了一个、一列或一行格子的情况，这种情况不需要描黑。
-			if(dw == 0)
+			if (dw == 0)
 			{
 				di++;
 			}
-			if(dh == 0)
+			if (dh == 0)
 			{
 				dj++;
 			}
@@ -216,7 +226,7 @@ namespace UIEditor.ImageTools
 				}
 			}
 
-			if(dh > 0)
+			if (dh > 0)
 			{
 				//横向插入
 				for (int i = 0; i < mapGrid.Count; i++)
@@ -244,15 +254,15 @@ namespace UIEditor.ImageTools
 				}
 			}
 		}
-		public static int getXFromGrid(ArrayList mapGrid, int di)
+		private static int getXFromGrid(ArrayList mapGrid, int di)
 		{
 			return getWidthFromGrid(mapGrid, 0, di);
 		}
-		public static int getYFromGrid(ArrayList mapGrid, int dj)
+		private static int getYFromGrid(ArrayList mapGrid, int dj)
 		{
 			return getHeightFromGrid(mapGrid, 0, dj);
 		}
-		public static int getWidthFromGrid(ArrayList mapGrid, int i0, int di)
+		private static int getWidthFromGrid(ArrayList mapGrid, int i0, int di)
 		{
 			int sw = 0;
 
@@ -263,7 +273,7 @@ namespace UIEditor.ImageTools
 
 			return sw;
 		}
-		public static int getHeightFromGrid(ArrayList mapGrid, int j0, int dj)
+		private static int getHeightFromGrid(ArrayList mapGrid, int j0, int dj)
 		{
 			int sh = 0;
 
@@ -275,7 +285,7 @@ namespace UIEditor.ImageTools
 			return sh;
 		}
 
-		public bool enableToPutIn(ArrayList mapGrid, RectNode rNode)
+		private static bool enableToPutIn(ArrayList mapGrid, RectNode rNode)
 		{
 			//按照高度，从高到低寻找空格子
 			for (int i = 0; i < mapGrid.Count; i++)
@@ -347,7 +357,7 @@ namespace UIEditor.ImageTools
 			}
 			return false;
 		}
-		public int getRectNestingByPreset(Dictionary<string, RectNode> mapRectNode, int width = conf_maxSizeOfPreset, int height = conf_maxSizeOfPreset)
+		private static int getRectNestingByPreset(Dictionary<string, RectNode> mapRectNode, int width = conf_maxSizeOfPreset, int height = conf_maxSizeOfPreset)
 		{
 			var resultByWidth = from pair in mapRectNode orderby pair.Value.m_rect.Width descending select pair;
 
@@ -361,7 +371,10 @@ namespace UIEditor.ImageTools
 			tmpArr.Add(tmpNode);
 			tmpMapGrid.Add(tmpArr);
 			arrMapGrid.Add(tmpMapGrid);
-			mx_canvas.Children.Clear();
+			if (ImageNesting.s_pW != null && ImageNesting.s_pW.mx_canvas != null)
+			{
+				ImageNesting.s_pW.mx_canvas.Children.Clear();
+			}
 
 			foreach (KeyValuePair<string, RectNode> pair in resultByWidth)
 			{
@@ -370,7 +383,7 @@ namespace UIEditor.ImageTools
 				{
 					if (!enableToPutIn((ArrayList)arrMapGrid[i], pair.Value))
 					{
-						if(i == arrMapGrid.Count - 1)
+						if (i == arrMapGrid.Count - 1)
 						{
 							tmpMapGrid = new ArrayList();
 							tmpArr = new ArrayList();
@@ -387,7 +400,10 @@ namespace UIEditor.ImageTools
 					}
 				}
 				printString("\r\n进度：" + count.ToString() + "/" + mapRectNode.Count.ToString() + "\n" + "包数：" + arrMapGrid.Count, true);
-				drawRectNode(pair.Value, mx_canvas.ActualWidth / width / 4);
+				if (ImageNesting.s_pW != null && ImageNesting.s_pW.mx_canvas != null)
+				{
+					ImageNesting.s_pW.drawRectNode(pair.Value, ImageNesting.s_pW.mx_canvas.ActualWidth / width / 4);
+				}
 				refreshCount++;
 				if (refreshCount % 17 == 0)
 				{
@@ -400,7 +416,7 @@ namespace UIEditor.ImageTools
 			foreach (KeyValuePair<string, RectNode> pair in mapRectNode)
 			{
 
-				if(pair.Value.m_packCount == arrMapGrid.Count - 1)
+				if (pair.Value.m_packCount == arrMapGrid.Count - 1)
 				{
 					lstMap.Add(pair.Key, pair.Value);
 				}
@@ -416,7 +432,10 @@ namespace UIEditor.ImageTools
 				do
 				{
 					maxPow++;
-					clearChildGrid(arrMapGrid.Count - 1);
+					if (ImageNesting.s_pW != null)
+					{
+						ImageNesting.s_pW.clearChildGrid(arrMapGrid.Count - 1);
+					}
 					printString("\r\n即将完成，开始尾包尺寸重定" + Math.Pow(2, maxPow), true);
 				} while (!getRectNesting(lstMap, (int)Math.Pow(2, maxPow), (int)Math.Pow(2, maxPow), true));
 			}
@@ -424,7 +443,7 @@ namespace UIEditor.ImageTools
 
 			return arrMapGrid.Count;
 		}
-		public bool getRectNesting(Dictionary<string, RectNode> mapRectNode, int width, int height, bool isPreset = false)
+		private static bool getRectNesting(Dictionary<string, RectNode> mapRectNode, int width, int height, bool isPreset = false)
 		{
 			var resultByWidth = from pair in mapRectNode orderby pair.Value.m_rect.Width descending select pair;
 
@@ -435,9 +454,12 @@ namespace UIEditor.ImageTools
 
 			firstArr.Add(firstNode);
 			mapGrid.Add(firstArr);
-			if (!isPreset)
+			if (ImageNesting.s_pW != null)
 			{
-				mx_canvas.Children.Clear();
+				if (!isPreset)
+				{
+					ImageNesting.s_pW.mx_canvas.Children.Clear();
+				}
 			}
 
 			foreach (KeyValuePair<string, RectNode> pair in resultByWidth)
@@ -449,11 +471,17 @@ namespace UIEditor.ImageTools
 				if (!isPreset)
 				{
 					printString("\r\n进度：" + mapGrid.Count.ToString() + "/" + (mapRectNode.Count + 1).ToString(), true);
-					drawRectNode(pair.Value, mx_canvas.ActualWidth / width);
+					if (ImageNesting.s_pW != null)
+					{
+						ImageNesting.s_pW.drawRectNode(pair.Value, ImageNesting.s_pW.mx_canvas.ActualWidth / width);
+					}
 				}
 				else
 				{
-					drawRectNode(pair.Value, mx_canvas.ActualWidth / conf_maxSizeOfPreset / 4);
+					if (ImageNesting.s_pW != null)
+					{
+						ImageNesting.s_pW.drawRectNode(pair.Value, ImageNesting.s_pW.mx_canvas.ActualWidth / conf_maxSizeOfPreset / 4);
+					}
 				}
 				refreshCount++;
 				if (refreshCount % 17 == 0)
@@ -468,7 +496,7 @@ namespace UIEditor.ImageTools
 
 			return true;
 		}
-		public void pngToTgaRectNesting(string path, string filter = "*.png", int deep = 0, bool isPreset = false)
+		private static void pngToTgaRectNesting(string path, string filter = "*.png", int deep = 0, bool isPreset = false)
 		{
 			Dictionary<string, RectNode> mapRectNode = new Dictionary<string, RectNode>();
 			string projPath = MainWindow.s_pW.m_projPath;
@@ -610,7 +638,7 @@ namespace UIEditor.ImageTools
 				MainWindow.s_pW.openFileByPath(xmlPath);
 			}
 		}
-		public void clearChildGrid(int num)
+		private void clearChildGrid(int num)
 		{
 			System.Windows.Shapes.Rectangle dRect = new Rectangle()
 			{
@@ -626,7 +654,7 @@ namespace UIEditor.ImageTools
 			dRect.Fill = new SolidColorBrush(System.Windows.Media.Colors.White);
 			mx_canvas.Children.Add(dRect);
 		}
-		public void drawRectNode(RectNode node, double per = 1)
+		private void drawRectNode(RectNode node, double per = 1)
 		{
 			System.Windows.Shapes.Rectangle dRect = new Rectangle()
 			{
@@ -649,7 +677,7 @@ namespace UIEditor.ImageTools
 			}
 			mx_canvas.Children.Add(dRect);
 		}
-		public void refreshDrawGrid(ArrayList mapGrid, double per = 1)
+		private void refreshDrawGrid(ArrayList mapGrid, double per = 1)
 		{
 			mx_canvas.Children.Clear();
 			for(int i = 0; i < mapGrid.Count; i++)
@@ -677,25 +705,28 @@ namespace UIEditor.ImageTools
 				}
 			}
 		}
-		public static void DoEvents()
+		private static void DoEvents()
 		{
-			DispatcherFrame frame = new DispatcherFrame();
+			if (ImageNesting.s_pW != null)
+			{
+				DispatcherFrame frame = new DispatcherFrame();
 
-			Dispatcher.CurrentDispatcher.BeginInvoke(
-				DispatcherPriority.Background,
-				new DispatcherOperationCallback(
-					delegate(object f)
-					{
-						((DispatcherFrame)f).Continue = false;
+				Dispatcher.CurrentDispatcher.BeginInvoke(
+					DispatcherPriority.Background,
+					new DispatcherOperationCallback(
+						delegate(object f)
+						{
+							((DispatcherFrame)f).Continue = false;
 
-						return null;
-					}
-				),
-				frame);
-			Dispatcher.PushFrame(frame);
+							return null;
+						}
+					),
+					frame);
+				Dispatcher.PushFrame(frame);
+			}
 		}
 
-		public static bool refreshRes(XmlElement xeRoot, Dictionary<string, string> mapNameDir, Dictionary<string, int> mapResDir,string dirHead = "")
+		private static bool refreshRes(XmlElement xeRoot, Dictionary<string, string> mapNameDir, Dictionary<string, int> mapResDir,string dirHead = "")
 		{
 			string imgName = "";
 			bool isChanged = false;
@@ -768,7 +799,7 @@ namespace UIEditor.ImageTools
 
 			return isChanged;
 		}
-		public void refreshAllSkinRes(string path, Dictionary<string, string> mapNameDir)
+		private static void refreshAllSkinRes(string path, Dictionary<string, string> mapNameDir)
 		{
 			if(!Directory.Exists(path))
 			{
@@ -808,11 +839,11 @@ namespace UIEditor.ImageTools
 			}
 			printString("\r\n[完成]\r\n", false);
 		}
-		public void reLinkSkin()
+		private static void reLinkSkin()
 		{
 			Dictionary<string, string> mapNameDir = new Dictionary<string, string>();
 
-			mx_imgDebug.Text += "========开始重定向皮肤资源========\r\n";
+			printString("========开始重定向皮肤资源========\r\n");
 			addFileToDirMap(MainWindow.s_pW.m_projPath + "\\images", mapNameDir);
 			refreshAllSkinRes(MainWindow.s_pW.m_projPath + "\\skin", mapNameDir);
 			refreshAllSkinRes(MainWindow.s_pW.m_projPath, mapNameDir);

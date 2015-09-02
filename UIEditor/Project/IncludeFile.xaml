@@ -13,7 +13,7 @@
 					 MouseDoubleClick="mx_radio_MouseDoubleClick"/>
 	</TreeViewItem.Header>
 	<TreeViewItem.ContextMenu>
-		<ContextMenu Name="mx_menu" Visibility="Collapsed" Loaded="mx_menu_Loaded">
+		<ContextMenu Name="mx_menu" Loaded="mx_menu_Loaded">
 			<MenuItem Name="mx_moveTo" Header="移动到" Visibility="Collapsed"/>
 			<MenuItem Name="mx_copyTo" Header="复制到" Visibility="Collapsed"/>
 			<MenuItem Name="mx_newFile" Header="新建..." Click="mx_newFile_Click"/>

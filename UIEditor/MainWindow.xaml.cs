@@ -59,6 +59,7 @@ namespace UIEditor
 		public string m_projName;
 		public XmlDocument m_docProj;
 		public Dictionary<string, OpenedFile> m_mapOpenedFiles;
+		public Dictionary<string, IncludeFile> m_mapIncludeFiles;
 		//public Dictionary<string, SkinIndex> m_mapSkinIndex;
 		public Dictionary<string, ImageIndex> m_mapImageIndex;
 
@@ -142,6 +143,7 @@ namespace UIEditor
 			m_skinPath = "";
 			m_projPath = "";
 			m_msgMng = new MsgManager(true);
+			m_mapIncludeFiles = new Dictionary<string, IncludeFile>();
 			m_mapOpenedFiles = new Dictionary<string, OpenedFile>();
 			m_strDic = new StringDic("zh-CN", conf_pathStringDic);
 			InitializeComponent();
@@ -678,6 +680,8 @@ namespace UIEditor
 		private static extern int CallNextHookEx(int hHook, int nCode, int wParam, ref KBDLLHOOKSTRUCT lParam);
 		[DllImport("kernel32.dll")]
 		private static extern IntPtr GetModuleHandle(IntPtr path);
+		[DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+		public static extern IntPtr GetForegroundWindow();
 
 		private IntPtr hHook;
 		LowLevelKeyboardProcDelegate hookProc; // prevent gc
@@ -984,68 +988,78 @@ namespace UIEditor
 		}
 		private static int LowLevelKeyboardProc(int nCode, int wParam, ref KBDLLHOOKSTRUCT lParam)//底层相应，用于屏蔽系统和WPF控件默认事件
 		{
-			if (nCode >= 0)
-				switch (wParam)
+			if (nCode >= 0 && MainWindow.s_pW != null)
+			{
+				IntPtr fdHwnd = GetForegroundWindow();
+				IntPtr curHwnd = new WindowInteropHelper(MainWindow.s_pW).Handle;
+
+				if (curHwnd == fdHwnd)
 				{
-					case WM_KEYDOWN:
-						if (s_pW != null)
-						{
-							if ((System.Windows.Forms.Control.ModifierKeys & System.Windows.Forms.Keys.Control) == System.Windows.Forms.Keys.Control &&
-								(System.Windows.Forms.Control.ModifierKeys & System.Windows.Forms.Keys.Alt) == System.Windows.Forms.Keys.None &&
-								(System.Windows.Forms.Control.ModifierKeys & System.Windows.Forms.Keys.Shift) == System.Windows.Forms.Keys.None
-								)
+					switch (wParam)
+					{
+						case WM_KEYDOWN:
+							if (s_pW != null)
 							{
-								switch (lParam.vkCode)
+								if ((System.Windows.Forms.Control.ModifierKeys & System.Windows.Forms.Keys.Control) == System.Windows.Forms.Keys.Control &&
+									(System.Windows.Forms.Control.ModifierKeys & System.Windows.Forms.Keys.Alt) == System.Windows.Forms.Keys.None &&
+									(System.Windows.Forms.Control.ModifierKeys & System.Windows.Forms.Keys.Shift) == System.Windows.Forms.Keys.None)
 								{
-									case VK_PRIOR:
-										viewPrevFile(s_pW);
-										return 1;
-									case VK_NEXT:
-										viewNextFile(s_pW);
-										return 1;
-									case VK_UP:
-										if (s_pW.m_curItem != null)
-										{
-											if (s_pW.m_curItem.canMoveUp())
+									switch (lParam.vkCode)
+									{
+										case VK_PRIOR:
+											viewPrevFile(s_pW);
+											return 1;
+										case VK_NEXT:
+											viewNextFile(s_pW);
+											return 1;
+										case VK_UP:
+											if (s_pW.m_curItem != null)
 											{
-												s_pW.m_curItem.moveUpItem();
+												if (s_pW.m_curItem.canMoveUp())
+												{
+													s_pW.m_curItem.moveUpItem();
+												}
 											}
-										}
-										return 1;
-									case VK_DOWN:
-										if (s_pW.m_curItem != null)
-										{
-											if (s_pW.m_curItem.canMoveDown())
+											return 1;
+										case VK_DOWN:
+											if (s_pW.m_curItem != null)
 											{
-												s_pW.m_curItem.moveDownItem();
+												if (s_pW.m_curItem.canMoveDown())
+												{
+													s_pW.m_curItem.moveDownItem();
+												}
 											}
-										}
-										return 1;
-									case VK_Y:
-										s_pW.curFileRedo();
-										if (Keyboard.FocusedElement.GetType().ToString() == "System.Windows.Controls.TextBox")
-										{
-											TextBox tb = (TextBox)Keyboard.FocusedElement;
+											return 1;
+										case VK_Y:
+											s_pW.curFileRedo();
+											if (Keyboard.FocusedElement.GetType().ToString() == "System.Windows.Controls.TextBox")
+											{
+												TextBox tb = (TextBox)Keyboard.FocusedElement;
 
-											tb.SelectionStart = tb.Text.Length;
-										}
-										return 1;
-									case VK_Z:
-										s_pW.curFileUndo();
-										if (Keyboard.FocusedElement.GetType().ToString() == "System.Windows.Controls.TextBox")
-										{
-											TextBox tb = (TextBox)Keyboard.FocusedElement;
+												tb.SelectionStart = tb.Text.Length;
+											}
+											return 1;
+										case VK_Z:
+											s_pW.curFileUndo();
+											if (Keyboard.FocusedElement.GetType().ToString() == "System.Windows.Controls.TextBox")
+											{
+												TextBox tb = (TextBox)Keyboard.FocusedElement;
 
-											tb.SelectionStart = tb.Text.Length;
-										}
-										return 1;
-									default:
-										break;
+												tb.SelectionStart = tb.Text.Length;
+											}
+											return 1;
+										default:
+											break;
+									}
 								}
 							}
-						}
-						break;
+							break;
+						default:
+							break;
+					}
 				}
+			}
+
 			return CallNextHookEx(0, nCode, wParam, ref lParam);
 		}
 		private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)//根窗体消息响应
