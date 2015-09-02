@@ -6,6 +6,8 @@
 *.user
 *.sln.docstates
 
+DsUiEditor/
+
 # Build results
 
 [Dd]ebug/
