@@ -247,9 +247,11 @@ namespace UIEditor
 
 			refreshSkinDicByPath(path, skinGroupName);
 		}
-		public void refreshXmlText()
+		static public string getOutXml(XmlDocument docXml)
 		{
+			string retStr;
 			StringBuilder strb = new StringBuilder();
+
 			using (StringWriter sw = new StringWriter(strb))
 			{
 				XmlWriterSettings settings = new XmlWriterSettings();
@@ -257,10 +259,18 @@ namespace UIEditor
 				settings.IndentChars = "    ";
 				settings.NewLineOnAttributes = false;
 				XmlWriter xmlWriter = XmlWriter.Create(sw, settings);
-				m_xmlDoc.Save(xmlWriter);
+				docXml.Save(xmlWriter);
 				xmlWriter.Close();
 			}
-			MainWindow.s_pW.mx_xmlText.Text = strb.ToString();
+			retStr = strb.ToString();
+
+			return retStr;
+		}
+		public void refreshXmlText()
+		{
+			MainWindow.s_pW.m_isCanEdit = false;
+			MainWindow.s_pW.mx_xmlText.Text = getOutXml(m_xmlDoc);
+			MainWindow.s_pW.m_isCanEdit = true;
 		}
 		public void refreshControl()
 		{

@@ -20,6 +20,8 @@ using System.Text.RegularExpressions;
 using UIEditor.BoloUI;
 using UIEditor.BoloUI.DefConfig;
 using UIEditor.Project;
+using System.Threading;
+using System.Windows.Threading;
 
 namespace UIEditor
 {
@@ -146,6 +148,15 @@ namespace UIEditor
 			m_mapIncludeFiles = new Dictionary<string, IncludeFile>();
 			m_mapOpenedFiles = new Dictionary<string, OpenedFile>();
 			m_strDic = new StringDic("zh-CN", conf_pathStringDic);
+			m_isCanEdit = true;
+			m_tLast = 0;
+			m_hitCount = 0;
+
+			DispatcherTimer m_textTimer = new DispatcherTimer();
+			m_textTimer.Interval = new TimeSpan(0, 0, 1);
+			m_textTimer.Tick += new EventHandler(m_textTimer_Tick);
+			m_textTimer.Start();
+
 			InitializeComponent();
 			m_screenWidth = 960;
 			m_screenHeight = 640;
@@ -1808,6 +1819,63 @@ namespace UIEditor
 					if(xmlDef.m_xmlDoc != null && xmlDef.m_xmlDoc.DocumentElement.Name == "BoloUI" && xmlDef.m_isOnlySkin == false)
 					{
 						updateXmlToGL(xmlDef);
+					}
+				}
+			}
+		}
+
+		public bool m_isCanEdit;
+		public bool m_isTextChanged;
+		public long m_tLast;
+		public int m_hitCount;
+		public DispatcherTimer m_textTimer;
+		private void mx_xmlText_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			if(m_isCanEdit)
+			{
+				m_isCanEdit = false;
+
+				m_hitCount = 0;
+				m_isTextChanged = true;
+
+				m_isCanEdit = true;
+			}
+		}
+		private void m_textTimer_Tick(object send, EventArgs e)
+		{
+			if(m_hitCount < 2)
+			{
+				m_hitCount++;
+			}
+			else
+			{
+				m_hitCount = 0;
+				if(m_isTextChanged)
+				{
+					m_isTextChanged = false;
+
+					OpenedFile fileDef;
+					if(m_mapOpenedFiles.TryGetValue(m_curFile, out fileDef))
+					{
+						if(fileDef.m_frame != null && fileDef.m_frame.GetType().ToString() == "UIEditor.XmlControl")
+						{
+							XmlControl xmlCtrl = (XmlControl)fileDef.m_frame;
+
+							if(XmlControl.getOutXml(xmlCtrl.m_xmlDoc) != mx_xmlText.Text)
+							{
+								XmlDocument newDoc = new XmlDocument();
+
+								try
+								{
+									newDoc.LoadXml(mx_xmlText.Text);
+									new XmlOperation.HistoryNode(xmlCtrl.m_xmlDoc, newDoc);
+								}
+								catch
+								{
+
+								}
+							}
+						}
 					}
 				}
 			}

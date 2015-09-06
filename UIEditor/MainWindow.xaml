@@ -440,15 +440,13 @@
 							BorderThickness="0,0,0,3">
 					<TabItem Header="文本内容">
 						<Grid Background="#ffffffff">
-							<Label HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="#11000000" FontSize="100" Padding="0,0,20,0">只能看不能写</Label>
 							<TextBox Name="mx_xmlText"
-									 Background="#00000000"
 									 AcceptsReturn="True"
 									 VerticalScrollBarVisibility="Visible"
 									 HorizontalScrollBarVisibility="Visible"
 									 HorizontalAlignment="Stretch"
-									 IsReadOnly="True"
-									 FontFamily="Consolas"/>
+									 FontFamily="Consolas"
+									 TextChanged="mx_xmlText_TextChanged"/>
 						</Grid>
 					</TabItem>
 					<TabItem Header="输出">

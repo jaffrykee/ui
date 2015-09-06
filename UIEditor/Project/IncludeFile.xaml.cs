@@ -103,7 +103,7 @@ namespace UIEditor.Project
 											}
 											catch
 											{
-												break;
+												return;
 											}
 											deleteSelf();
 
@@ -113,6 +113,19 @@ namespace UIEditor.Project
 											{
 												newFolderDef.AddChild(new IncludeFile(newPath));
 											}
+											string newResPath = MainWindow.s_pW.m_projPath + "\\images\\" + System.IO.Path.GetFileName(newFolder) + ".xml";
+											FileInfo fi = new FileInfo(m_path);
+											string oldResPath = MainWindow.s_pW.m_projPath + "\\images\\" + System.IO.Path.GetFileName(fi.DirectoryName) + ".xml";
+
+											//重新打包
+											ImageTools.ImageNesting.pngToTgaRectNesting(fi.DirectoryName);
+											ImageTools.ImageNesting.pngToTgaRectNesting(newFolder);
+											//刷新皮肤的引用
+											ImageTools.ImageNesting.moveImageLink(
+												System.IO.Path.GetFileNameWithoutExtension(m_path),
+												System.IO.Path.GetFileNameWithoutExtension(m_path),
+												System.IO.Path.GetFileName(fi.DirectoryName),
+												System.IO.Path.GetFileName(newFolder));
 										}
 									}
 									break;
@@ -126,7 +139,7 @@ namespace UIEditor.Project
 											}
 											catch
 											{
-												break;
+												return;
 											}
 
 											IncludeFile newFolderDef;
@@ -135,16 +148,23 @@ namespace UIEditor.Project
 											{
 												newFolderDef.AddChild(new IncludeFile(newPath));
 											}
+											string newResPath = MainWindow.s_pW.m_projPath + "\\images\\" + System.IO.Path.GetFileName(newFolder) + ".xml";
+
+											//重新打包
+											ImageTools.ImageNesting.pngToTgaRectNesting(newFolder);
+											//刷新打包后的tga文件
+											PackImage.refreshImagePack(newResPath);
 										}
 									}
 									break;
 								default:
-									break;
+									return;
 							}
 						}
 						else
 						{
 							MessageBox.Show("新路径已有同名文件。", "文件名冲突", MessageBoxButton.OK, MessageBoxImage.Error);
+							return;
 						}
 					}
 				}
@@ -152,6 +172,13 @@ namespace UIEditor.Project
 			else
 			{
 				deleteSelf();
+				FileInfo fi = new FileInfo(m_path);
+				string oldResPath = MainWindow.s_pW.m_projPath + "\\images\\" + System.IO.Path.GetFileName(fi.DirectoryName) + ".xml";
+
+				//重新打包
+				ImageTools.ImageNesting.pngToTgaRectNesting(fi.DirectoryName);
+				//刷新打包后的tga文件
+				PackImage.refreshImagePack(oldResPath);
 			}
 		}
 		private void mx_moveToChild_Click(object sender, RoutedEventArgs e)

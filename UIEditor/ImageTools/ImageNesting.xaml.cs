@@ -496,7 +496,7 @@ namespace UIEditor.ImageTools
 
 			return true;
 		}
-		private static void pngToTgaRectNesting(string path, string filter = "*.png", int deep = 0, bool isPreset = false)
+		public static void pngToTgaRectNesting(string path, string filter = "*.png", int deep = 0, bool isPreset = false)
 		{
 			Dictionary<string, RectNode> mapRectNode = new Dictionary<string, RectNode>();
 			string projPath = MainWindow.s_pW.m_projPath;
@@ -606,7 +606,8 @@ namespace UIEditor.ImageTools
 					string xmlPath = projPath + "\\images\\_preset" + (i + 1).ToString("00") + ".xml";
 
 					arrDocGrid[i].Save(xmlPath);
-					MainWindow.s_pW.openFileByPath(xmlPath);
+					//MainWindow.s_pW.openFileByPath(xmlPath);
+					PackImage.refreshImagePack(xmlPath);
 				}
 
 				docRes.AppendChild(xeResRoot);
@@ -635,7 +636,8 @@ namespace UIEditor.ImageTools
 				string xmlPath = projPath + "\\images\\" + fileName + ".xml";
 
 				docGrid.Save(xmlPath);
-				MainWindow.s_pW.openFileByPath(xmlPath);
+				//MainWindow.s_pW.openFileByPath(xmlPath);
+				PackImage.refreshImagePack(xmlPath);
 			}
 		}
 		private void clearChildGrid(int num)
@@ -726,7 +728,108 @@ namespace UIEditor.ImageTools
 			}
 		}
 
-		private static bool refreshRes(XmlElement xeRoot, Dictionary<string, string> mapNameDir, Dictionary<string, int> mapResDir,string dirHead = "")
+		private static bool refreshRes(XmlElement xeRoot, string oldName, string newName)
+		{
+			string imgName = "";
+			string attrName = "";
+			bool isChanged = false;
+
+			if (oldName != "" && oldName != null && newName != null && (xeRoot.Name == "imageShape" || xeRoot.Name == "frame"))
+			{
+				if (xeRoot.GetAttribute("image") != "")
+				{
+					imgName = xeRoot.GetAttribute("image");
+					attrName = "image";
+				}
+				if (xeRoot.GetAttribute("ImageName") != "")
+				{
+					imgName = xeRoot.GetAttribute("ImageName");
+					attrName = "ImageName";
+				}
+
+				if (imgName == oldName)
+				{
+					xeRoot.SetAttribute(attrName, newName);
+					isChanged = true;
+				}
+			}
+
+			foreach (XmlNode xn in xeRoot.ChildNodes)
+			{
+				if (xn.NodeType == XmlNodeType.Element)
+				{
+					XmlElement xe = (XmlElement)xn;
+					bool retChild = false;
+
+					retChild = refreshRes(xe, oldName, newName);
+					if (retChild == true)
+					{
+						isChanged = true;
+					}
+				}
+			}
+
+			return isChanged;
+		}
+		private static void updateResLink(string path, string oldName, string newName, string oldFolder, string newFolder)
+		{
+			if(!Directory.Exists(path))
+			{
+				return;
+			}
+			DirectoryInfo di = new DirectoryInfo(path);
+			FileInfo[] arrBoloUI = di.GetFiles("*.xml");
+
+			foreach (FileInfo fi in arrBoloUI)
+			{
+				XmlDocument docXml = new XmlDocument();
+
+				docXml.Load(fi.FullName);
+				if(docXml.DocumentElement.Name == "BoloUI")
+				{
+					string newFullName;
+					if (newFolder == "" || newName == "")
+					{
+						newFullName = "";
+					}
+					else
+					{
+						newFullName = newFolder + "." + newName;
+					}
+					if(refreshRes(docXml.DocumentElement, oldFolder + "." + oldName, newFullName))
+					{
+						bool isHaveRes = false;
+
+						foreach (XmlNode xn in docXml.DocumentElement.SelectNodes("resource"))
+						{
+							if(xn.NodeType == XmlNodeType.Element)
+							{
+								XmlElement xeRes = (XmlElement)xn;
+
+								if(xeRes.Name == newFolder)
+								{
+									isHaveRes = true;
+								}
+							}
+						}
+						if(!isHaveRes)
+						{
+							XmlElement xeRes = docXml.CreateElement("resource");
+
+							xeRes.SetAttribute("name", newFolder);
+							docXml.DocumentElement.AppendChild(xeRes);
+						}
+						docXml.Save(fi.FullName);
+					}
+				}
+			}
+		}
+		public static void moveImageLink(string oldName, string newName, string oldFolder, string newFolder)
+		{
+			updateResLink(MainWindow.s_pW.m_projPath + "\\skin", oldName, newName, oldFolder, oldName);
+			updateResLink(MainWindow.s_pW.m_projPath, oldName, newName, oldFolder, oldName);
+		}
+		private static bool refreshRes(XmlElement xeRoot, Dictionary<string, string> mapNameDir, Dictionary<string, int> mapResDir, string dirHead = "")
 		{
 			string imgName = "";
 			bool isChanged = false;

@@ -16,39 +16,28 @@ using System.Xml;
 
 namespace UIEditor
 {
-	/// <summary>
-	/// PackImage.xaml 的交互逻辑
-	/// </summary>
 	public partial class PackImage : Grid
 	{
-		public XmlControl m_parent;
-		public System.Drawing.Bitmap m_Bitmap;
-		public System.Drawing.Bitmap m_tgaImg;
-		public BitmapSource m_imgSource;
-		public int m_imgHeight;
-		public int m_imgWidth;
-		public bool m_loaded;
 		public Dictionary<string, System.Drawing.Rectangle> m_mapImgRect;
-		public int m_maxX;
-		public int m_maxY;
 
-		public PackImage(XmlControl parent, bool isRePack = true)
+		static private void getMapImgRect(
+			XmlDocument docXml,
+			out Dictionary<string, System.Drawing.Rectangle> mapImgRect,
+			out int imgWidth,
+			out int imgHeight)
 		{
-			InitializeComponent();
-			m_parent = parent;
-			m_loaded = false;
-			m_mapImgRect = new Dictionary<string, System.Drawing.Rectangle>();
-			m_maxX = 0;
-			m_maxY = 0;
+			mapImgRect = new Dictionary<string, System.Drawing.Rectangle>();
+			int maxX = 0;
+			int maxY = 0;
 
-			foreach (XmlNode xn in m_parent.m_xeRoot.SelectNodes("Image"))
+			foreach (XmlNode xn in docXml.DocumentElement.SelectNodes("Image"))
 			{
 				if (xn.NodeType == XmlNodeType.Element)
 				{
 					XmlElement xe = (XmlElement)xn;
 					System.Drawing.Rectangle rt;
 
-					if (xe.GetAttribute("Name") != "" && !m_mapImgRect.TryGetValue(xe.GetAttribute("Name"), out rt))
+					if (xe.GetAttribute("Name") != "" && !mapImgRect.TryGetValue(xe.GetAttribute("Name"), out rt))
 					{
 						int x = int.Parse(xe.GetAttribute("X"));
 						int y = int.Parse(xe.GetAttribute("Y"));
@@ -59,74 +48,128 @@ namespace UIEditor
 						int mx = x + w + 1;
 						int my = y + h + 1;
 
-						m_maxX = m_maxX > mx ? m_maxX : mx;
-						m_maxY = m_maxY > my ? m_maxY : my;
+						maxX = maxX > mx ? maxX : mx;
+						maxY = maxY > my ? maxY : my;
 
-						m_mapImgRect.Add(xe.GetAttribute("Name"), new System.Drawing.Rectangle(x, y, w, h));
+						mapImgRect.Add(xe.GetAttribute("Name"), new System.Drawing.Rectangle(x, y, w, h));
 					}
 				}
 			}
+			int wPow = (int)Math.Ceiling(Math.Log(maxX, 2));
+			int hPow = (int)Math.Ceiling(Math.Log(maxY, 2));
 
-			int wPow = (int)Math.Ceiling(Math.Log(m_maxX, 2));
-			int hPow = (int)Math.Ceiling(Math.Log(m_maxY, 2));
-
-			m_imgWidth = (int)Math.Pow(2, wPow > hPow ? wPow : hPow);
-			m_imgHeight = (int)Math.Pow(2, wPow > hPow ? wPow : hPow);
-
-			IntPtr ip;
-
-			m_parent.m_parent.itemFrame.Width = m_imgWidth;
-			m_parent.m_parent.itemFrame.Height = m_imgHeight;
-			mx_canvas.Width = m_imgWidth;
-			mx_canvas.Height = m_imgHeight;
-
-			string pngPath = m_parent.m_openedFile.m_path.Remove(m_parent.m_openedFile.m_path.LastIndexOf("."));
+			imgWidth = (int)Math.Pow(2, wPow > hPow ? wPow : hPow);
+			imgHeight = (int)Math.Pow(2, wPow > hPow ? wPow : hPow);
+		}
+		static private void refreshImagePack(
+			string xmlPath,
+			bool isRePack,
+			out Dictionary<string, System.Drawing.Rectangle> mapImgRect,
+			out System.Drawing.Bitmap tgaImg,
+			out int imgWidth,
+			out int imgHeight)
+		{
+			string pngPath = xmlPath.Remove(xmlPath.LastIndexOf("."));
 			string tgaPath = pngPath + ".tga";
 
-			m_tgaImg = new System.Drawing.Bitmap(m_imgWidth, m_imgHeight);
-			System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(m_tgaImg);
-			g.Clear(System.Drawing.Color.FromArgb(0x00, 0x00, 0x00, 0x00));
-
-			if(isRePack)
+			if (System.IO.File.Exists(xmlPath))
 			{
-				foreach (KeyValuePair<string, System.Drawing.Rectangle> pairImgRect in m_mapImgRect)
+				XmlDocument docXml = new XmlDocument();
+
+				try
 				{
-					addPicToGraphics(
-						pngPath + "\\" + pairImgRect.Key + ".png",
-						pairImgRect.Value,
-						g);
+					docXml.Load(xmlPath);
 				}
-				g.Dispose();
-				if (System.IO.File.Exists(tgaPath))
+				catch
 				{
-					System.IO.File.Delete(tgaPath);
-				}
-				DevIL.DevIL.SaveBitmap(tgaPath, m_tgaImg);
-				if (m_imgHeight > 4096)
-				{
-					MainWindow.s_pW.mx_debug.Text += "<警告>图片尺寸过大，不提供预览功能\r\n";
+					mapImgRect = null;
+					tgaImg = null;
+					imgWidth = 0;
+					imgHeight = 0;
+
 					return;
+				}
+				getMapImgRect(docXml, out mapImgRect, out imgWidth, out imgHeight);
+
+				tgaImg = new System.Drawing.Bitmap(imgWidth, imgHeight);
+				System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(tgaImg);
+				g.Clear(System.Drawing.Color.FromArgb(0x00, 0x00, 0x00, 0x00));
+
+				if (isRePack == true)
+				{
+					foreach (KeyValuePair<string, System.Drawing.Rectangle> pairImgRect in mapImgRect)
+					{
+						addPicToGraphics(
+							pngPath + "\\" + pairImgRect.Key + ".png",
+							pairImgRect.Value,
+							g);
+					}
+					g.Dispose();
+					if (System.IO.File.Exists(tgaPath))
+					{
+						System.IO.File.Delete(tgaPath);
+					}
+					DevIL.DevIL.SaveBitmap(tgaPath, tgaImg);
+				}
+				else
+				{
+					System.Drawing.Bitmap bmp = DevIL.DevIL.LoadBitmap(tgaPath);
+					g.DrawImage(bmp,
+						0,
+						0,
+						bmp.Width,
+						bmp.Height);
+					g.Dispose();
 				}
 			}
 			else
 			{
-				System.Drawing.Bitmap bmp = DevIL.DevIL.LoadBitmap(tgaPath);
-				g.DrawImage(bmp,
-					0,
-					0,
-					bmp.Width,
-					bmp.Height);
-				g.Dispose();
+				mapImgRect = null;
+				tgaImg = null;
+				imgWidth = 0;
+				imgHeight = 0;
+			}
+		}
+		static public void refreshImagePack(string xmlPath)
+		{
+			Dictionary<string, System.Drawing.Rectangle> mapImgRect;
+			System.Drawing.Bitmap tgaImg;
+			int imgWidth;
+			int imgHeight;
+
+			refreshImagePack(xmlPath, true, out mapImgRect, out tgaImg, out imgWidth, out imgHeight);
+		}
+
+		public PackImage(XmlControl parent, bool isRePack = true)
+		{
+			InitializeComponent();
+
+			System.Drawing.Bitmap tgaImg;
+			BitmapSource imgSource;
+			int imgWidth;
+			int imgHeight;
+
+			refreshImagePack(parent.m_openedFile.m_path, isRePack, out m_mapImgRect, out tgaImg, out imgWidth, out imgHeight);
+
+			parent.m_parent.itemFrame.Width = imgWidth;
+			parent.m_parent.itemFrame.Height = imgHeight;
+			mx_canvas.Width = imgWidth;
+			mx_canvas.Height = imgHeight;
+
+			if (imgHeight > 4096)
+			{
+				MainWindow.s_pW.mx_debug.Text += "<警告>图片尺寸过大，不提供预览功能\r\n";
+				return;
 			}
 
-			ip = m_tgaImg.GetHbitmap();
-			m_imgSource = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+			IntPtr ip = tgaImg.GetHbitmap();
+			imgSource = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
 				ip, IntPtr.Zero, Int32Rect.Empty,
 				System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
 			MainWindow.DeleteObject(ip);
 
 			System.Windows.Controls.Image cImg = new System.Windows.Controls.Image();
-			cImg.Source = m_imgSource;
+			cImg.Source = imgSource;
 			cImg.Stretch = Stretch.Uniform;
 			mx_canvas.Children.Insert(0, cImg);
 		}

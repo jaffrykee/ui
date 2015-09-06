@@ -94,10 +94,10 @@ namespace UIEditor.XmlOperation
 			m_newValue = newValue;
 			m_dstXe = dstXe;
 		}
-		public HistoryNode(XmlOptType optType, XmlDocument oldDoc, XmlDocument newDoc)
+		public HistoryNode(XmlDocument oldDoc, XmlDocument newDoc)
 		{
 			//todo TEXT
-			m_optType = optType;
+			m_optType = XmlOptType.TEXT;
 			m_oldDoc = oldDoc;
 			m_newDoc = newDoc;
 		}
