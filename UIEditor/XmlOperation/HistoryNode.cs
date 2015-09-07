@@ -279,5 +279,12 @@ namespace UIEditor.XmlOperation
 
 			return false;
 		}
+		static public bool updateXmlText(XmlControl xmlCtrl, XmlDocument newDoc)
+		{
+			xmlCtrl.m_xmlDoc = newDoc;
+			xmlCtrl.refreshControl();
+
+			return false;
+		}
 	}
 }

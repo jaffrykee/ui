@@ -42,17 +42,24 @@ namespace UIEditor
 		{
 			InitializeComponent();
 			m_parent = parent;
-			m_mapCtrlUI = new Dictionary<string, BoloUI.Basic>();
-			m_mapSkinLink = new Dictionary<string, string>();
-			m_mapSkin = new Dictionary<string, BoloUI.ResBasic>();
-			m_mapXeItem = new Dictionary<XmlElement, XmlItem>();
-			m_isOnlySkin = true;
-			m_skinViewCtrlUI = null;
 			m_showGL = false;
 
 			m_openedFile = fileDef;
 			m_openedFile.m_frame = this;
-			
+
+			MainWindow.s_pW.mx_debug.Text += "=====" + m_openedFile.m_path + "=====\r\n";
+			try
+			{
+				m_xmlDoc = new XmlDocument();
+				m_xmlDoc.Load(m_openedFile.m_path);
+			}
+			catch
+			{
+				return;
+			}
+
+			m_openedFile.m_lstOpt = new XmlOperation.HistoryList(MainWindow.s_pW, this, 65535);
+			refreshXmlText();
 			refreshControl();
 		}
 		private void mx_root_Unloaded(object sender, RoutedEventArgs e)
@@ -269,25 +276,24 @@ namespace UIEditor
 		public void refreshXmlText()
 		{
 			MainWindow.s_pW.m_isCanEdit = false;
-			MainWindow.s_pW.mx_xmlText.Text = getOutXml(m_xmlDoc);
+			TextRange rag = new TextRange(MainWindow.s_pW.mx_xmlText.Document.ContentStart, MainWindow.s_pW.mx_xmlText.Document.ContentEnd);
+
+			rag.Text = getOutXml(m_xmlDoc);
+			MainWindow.s_pW.refreshXmlTextTip();
+			//rag.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.Red));
 			MainWindow.s_pW.m_isCanEdit = true;
 		}
 		public void refreshControl()
 		{
-			MainWindow.s_pW.mx_debug.Text += "=====" + m_openedFile.m_path + "=====\r\n";
-
-			try
-			{
-				m_xmlDoc = new XmlDocument();
-				m_xmlDoc.Load(m_openedFile.m_path);
-				m_xeRoot = m_xmlDoc.DocumentElement;
-			}
-			catch
-			{
-				return;
-			}
-
-			refreshXmlText();
+			m_mapCtrlUI = new Dictionary<string, BoloUI.Basic>();
+			m_mapSkinLink = new Dictionary<string, string>();
+			m_mapSkin = new Dictionary<string, BoloUI.ResBasic>();
+			m_mapXeItem = new Dictionary<XmlElement, XmlItem>();
+			m_isOnlySkin = true;
+			m_skinViewCtrlUI = null;
+			MainWindow.s_pW.mx_treeCtrlFrame.Items.Clear();
+			MainWindow.s_pW.mx_treeSkinFrame.Items.Clear();
+			m_xeRoot = m_xmlDoc.DocumentElement;
 
 			if (m_xeRoot != null)
 			{
@@ -296,7 +302,6 @@ namespace UIEditor
 					case "BoloUI":
 						{
 							m_showGL = true;
-							m_openedFile.m_lstOpt = new XmlOperation.HistoryList(MainWindow.s_pW, this, 65535);
 							m_treeUI = new BoloUI.Basic(m_xeRoot, this, true);
 							m_treeSkin = new BoloUI.ResBasic(m_xeRoot, this, null);
 
@@ -325,14 +330,13 @@ namespace UIEditor
 
 									if (MainWindow.s_pW.m_mapCtrlDef.TryGetValue(xe.Name, out ctrlPtr))
 									{
-										var treeChild = Activator.CreateInstance(Type.GetType("UIEditor.BoloUI.Basic"), xe, this, false) as TreeViewItem;
-										m_treeUI.Items.Add(treeChild);
+										m_treeUI.Items.Add(new Basic(xe, this, false));
 										m_isOnlySkin = false;
 										m_xeRootCtrl = xe;
 									}
 									else if (MainWindow.s_pW.m_mapSkinTreeDef.TryGetValue(xe.Name, out skinPtr))
 									{
-										var treeChild = Activator.CreateInstance(Type.GetType("UIEditor.BoloUI.ResBasic"), xe, this, skinPtr) as TreeViewItem;
+										ResBasic treeChild = new ResBasic(xe, this, skinPtr);
 										m_treeSkin.Items.Add(treeChild);
 										treeChild.IsExpanded = false;
 										if (xe.Name == "skingroup")

@@ -440,13 +440,16 @@
 							BorderThickness="0,0,0,3">
 					<TabItem Header="文本内容">
 						<Grid Background="#ffffffff">
-							<TextBox Name="mx_xmlText"
-									 AcceptsReturn="True"
-									 VerticalScrollBarVisibility="Visible"
-									 HorizontalScrollBarVisibility="Visible"
-									 HorizontalAlignment="Stretch"
-									 FontFamily="Consolas"
-									 TextChanged="mx_xmlText_TextChanged"/>
+							<RichTextBox Name="mx_xmlText"
+										 AcceptsReturn="True"
+										 VerticalScrollBarVisibility="Visible"
+										 HorizontalScrollBarVisibility="Visible"
+										 HorizontalAlignment="Stretch"
+										 FontFamily="Consolas"
+										 TextChanged="mx_xmlText_TextChanged">
+								<FlowDocument LineHeight="1">
+								</FlowDocument>
+							</RichTextBox>
 						</Grid>
 					</TabItem>
 					<TabItem Header="输出">

@@ -69,8 +69,7 @@ namespace UIEditor.BoloUI
 
 					if (MainWindow.s_pW.m_mapCtrlDef.TryGetValue(xe.Name, out ctrlPtr))
 					{
-						var treeChild = Activator.CreateInstance(Type.GetType("UIEditor.BoloUI.Basic"), xe, m_rootControl, false) as TreeViewItem;
-						this.Items.Add(treeChild);
+						this.Items.Add(new Basic(xe, m_rootControl, false));
 					}
 					else
 					{

@@ -152,12 +152,8 @@ namespace UIEditor
 			m_tLast = 0;
 			m_hitCount = 0;
 
-			DispatcherTimer m_textTimer = new DispatcherTimer();
-			m_textTimer.Interval = new TimeSpan(0, 0, 1);
-			m_textTimer.Tick += new EventHandler(m_textTimer_Tick);
-			m_textTimer.Start();
-
 			InitializeComponent();
+
 			m_screenWidth = 960;
 			m_screenHeight = 640;
 			m_mapSkinAllDef = new Dictionary<string, SkinDef_T>();
@@ -240,6 +236,12 @@ namespace UIEditor
 				mx_debugTools.Visibility = System.Windows.Visibility.Collapsed;
 			}
 			mx_drawFrame.Visibility = System.Windows.Visibility.Collapsed;
+
+			DefConf.initXmlValueDef();
+			DispatcherTimer m_textTimer = new DispatcherTimer();
+			m_textTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
+			m_textTimer.Tick += new EventHandler(m_textTimer_Tick);
+			m_textTimer.Start();
 		}
 
 		public void openProjByPath(string projPath, string projName)
@@ -277,7 +279,6 @@ namespace UIEditor
 			m_docConf.SelectSingleNode("Config").SelectSingleNode("ProjHistory").InnerXml = m_projPath;
 			m_docConf.Save(conf_pathConf);
 			sendPathToGL(m_projPath);
-			DefConf.initXmlValueDef();
 			//refreshImage(path + "\\images");
 			m_skinPath = m_projPath + "\\skin";
 			m_imagePath = m_projPath + "\\images";
@@ -820,17 +821,21 @@ namespace UIEditor
 								{
 									if (pairCtrlDef.Value.checkPointInFence(pX, pY))
 									{
-										lstSelCtrl.Add(pairCtrlDef.Value);
-										if (m_curItem == pairCtrlDef.Value)
+										BoloUI.SelButton selCtrlButton;
+										if (!m_mapXeSel.TryGetValue(pairCtrlDef.Value.m_xe, out selCtrlButton))
 										{
-											selCtrl = lastCtrl;
-										}
-										lastCtrl = pairCtrlDef.Value;
+											lstSelCtrl.Add(pairCtrlDef.Value);
+											if (m_curItem == pairCtrlDef.Value)
+											{
+												selCtrl = lastCtrl;
+											}
+											lastCtrl = pairCtrlDef.Value;
 
-										BoloUI.SelButton selCtrlButton = new BoloUI.SelButton(this, pairCtrlDef.Value);
-										selCtrlButton.mx_radio.Content = pairCtrlDef.Value.mx_radio.Content;
-										mx_selCtrlLstFrame.Children.Add(selCtrlButton);
-										m_mapXeSel.Add(pairCtrlDef.Value.m_xe, selCtrlButton);
+											selCtrlButton = new BoloUI.SelButton(this, pairCtrlDef.Value);
+											selCtrlButton.mx_radio.Content = pairCtrlDef.Value.mx_radio.Content;
+											mx_selCtrlLstFrame.Children.Add(selCtrlButton);
+											m_mapXeSel.Add(pairCtrlDef.Value.m_xe, selCtrlButton);
+										}
 									}
 								}
 								if (lstSelCtrl.Count > 0)
@@ -1824,6 +1829,76 @@ namespace UIEditor
 			}
 		}
 
+		static public List<TextRange> FindAllMatchedTextRanges(RichTextBox richBox, string keyWord)
+		{
+			List<TextRange> trList = new List<TextRange>();
+			//设置文字指针为Document初始位置
+			TextPointer position = richBox.Document.ContentStart;
+			while (position != null)
+			{
+				//向前搜索,需要内容为Text
+				if (position.GetPointerContext(LogicalDirection.Forward) == TextPointerContext.Text)
+				{
+					//拿出Run的Text
+					string text = position.GetTextInRun(LogicalDirection.Forward);
+					//可能包含多个keyword,做遍历查找
+					int index = 0;
+					while (index < text.Length)
+					{
+						index = text.IndexOf(keyWord, index);
+						if (index == -1)
+						{
+							break;
+						}
+						else
+						{
+							//添加为新的Range
+							TextPointer start = position.GetPositionAtOffset(index);
+							TextPointer end = start.GetPositionAtOffset(keyWord.Length);
+
+							trList.Add(new TextRange(start, end));
+							index += keyWord.Length;
+						}
+					}
+				}
+				//文字指针向前偏移
+				position = position.GetNextContextPosition(LogicalDirection.Forward);
+			}
+			return trList;
+		}
+		public void findKeyWord(string keyWord, SolidColorBrush brush)  //给关键字上色
+		{
+			List<TextRange> lstRag = FindAllMatchedTextRanges(mx_xmlText, keyWord);
+
+			foreach(TextRange rag in lstRag)
+			{
+				rag.ApplyPropertyValue(TextElement.ForegroundProperty, brush);
+			}
+		}
+		public void refreshXmlTextTip()
+		{
+			//太浪费时间
+			return;
+			TextRange textRange = new TextRange(mx_xmlText.Document.ContentStart, mx_xmlText.Document.ContentEnd);
+			textRange.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.Black));
+
+			foreach(KeyValuePair<string, CtrlDef_T> pairCtrlDef in m_mapCtrlDef)
+			{
+				findKeyWord(pairCtrlDef.Key, new SolidColorBrush(Colors.Red));
+				foreach(KeyValuePair<string, AttrDef_T> pairAttrDef in pairCtrlDef.Value.m_mapAttrDef)
+				{
+					findKeyWord(pairAttrDef.Key, new SolidColorBrush(Colors.Red));
+				}
+			}
+			foreach (KeyValuePair<string, SkinDef_T> pairSkinDef in m_mapSkinAllDef)
+			{
+				findKeyWord(pairSkinDef.Key, new SolidColorBrush(Colors.Red));
+				foreach (KeyValuePair<string, AttrDef_T> pairAttrDef in pairSkinDef.Value.m_mapAttrDef)
+				{
+					findKeyWord(pairAttrDef.Key, new SolidColorBrush(Colors.Red));
+				}
+			}
+		}
 		public bool m_isCanEdit;
 		public bool m_isTextChanged;
 		public long m_tLast;
@@ -1843,7 +1918,7 @@ namespace UIEditor
 		}
 		private void m_textTimer_Tick(object send, EventArgs e)
 		{
-			if(m_hitCount < 2)
+			if(m_hitCount < 1)
 			{
 				m_hitCount++;
 			}
@@ -1852,7 +1927,10 @@ namespace UIEditor
 				m_hitCount = 0;
 				if(m_isTextChanged)
 				{
+					m_isCanEdit = false;
 					m_isTextChanged = false;
+					TextRange textRange = new TextRange(mx_xmlText.Document.ContentStart, mx_xmlText.Document.ContentEnd);
+					refreshXmlTextTip();
 
 					OpenedFile fileDef;
 					if(m_mapOpenedFiles.TryGetValue(m_curFile, out fileDef))
@@ -1861,24 +1939,26 @@ namespace UIEditor
 						{
 							XmlControl xmlCtrl = (XmlControl)fileDef.m_frame;
 
-							if(XmlControl.getOutXml(xmlCtrl.m_xmlDoc) != mx_xmlText.Text)
+							if (XmlControl.getOutXml(xmlCtrl.m_xmlDoc) != textRange.Text)
 							{
 								XmlDocument newDoc = new XmlDocument();
 
 								try
 								{
-									newDoc.LoadXml(mx_xmlText.Text);
-									new XmlOperation.HistoryNode(xmlCtrl.m_xmlDoc, newDoc);
+									newDoc.LoadXml(textRange.Text);
 								}
 								catch
 								{
-
+									return;
 								}
+								fileDef.m_lstOpt.addOperation(new XmlOperation.HistoryNode(xmlCtrl.m_xmlDoc, newDoc));
 							}
 						}
 					}
+					m_isCanEdit = true;
 				}
 			}
 		}
+
 	}
 }

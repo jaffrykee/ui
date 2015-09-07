@@ -89,13 +89,13 @@ namespace UIEditor
 			mx_wsBckBrush.ImageSource = new BitmapImage(new Uri(@".\data\image\hyaline.png", UriKind.Relative));
 		}
 
-		public void closeFile()
+		public void closeFile(bool isForce = false)
 		{
 			TabItem tabItem = (TabItem)this.Parent;
 			string tabPath = ((ToolTip)tabItem.ToolTip).Content.ToString();
 			MainWindow pW = MainWindow.s_pW;
 
-			if (pW.m_mapOpenedFiles[pW.m_curFile].haveDiffToFile())
+			if (isForce == false && pW.m_mapOpenedFiles[pW.m_curFile].haveDiffToFile())
 			{
 				MessageBoxResult ret = MessageBox.Show("是否将更改保存到 " + tabPath, "保存确认", MessageBoxButton.YesNoCancel, MessageBoxImage.Asterisk);
 				switch (ret)

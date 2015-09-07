@@ -104,7 +104,12 @@ namespace UIEditor.XmlOperation
 					break;
 				case XmlOptType.TEXT:
 					{
-						//todo
+						HistoryNode.updateXmlText(m_xmlCtrl, m_curNode.Value.m_newDoc);
+						if (!isAddOpt)
+						{
+							m_xmlCtrl.refreshXmlText();
+						}
+						return;
 					}
 					break;
 				default:
@@ -215,7 +220,9 @@ namespace UIEditor.XmlOperation
 					break;
 				case XmlOptType.TEXT:
 					{
-						//todo
+						HistoryNode.updateXmlText(m_xmlCtrl, m_curNode.Value.m_oldDoc);
+						m_xmlCtrl.refreshXmlText();
+						return;
 					}
 					break;
 				default:
