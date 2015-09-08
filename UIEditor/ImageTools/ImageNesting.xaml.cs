@@ -826,8 +826,8 @@ namespace UIEditor.ImageTools
 		}
 		public static void moveImageLink(string oldName, string newName, string oldFolder, string newFolder)
 		{
-			updateResLink(MainWindow.s_pW.m_projPath + "\\skin", oldName, newName, oldFolder, oldName);
-			updateResLink(MainWindow.s_pW.m_projPath, oldName, newName, oldFolder, oldName);
+			updateResLink(MainWindow.s_pW.m_projPath + "\\skin", oldName, newName, oldFolder, newFolder);
+			updateResLink(MainWindow.s_pW.m_projPath, oldName, newName, oldFolder, newFolder);
 		}
 		private static bool refreshRes(XmlElement xeRoot, Dictionary<string, string> mapNameDir, Dictionary<string, int> mapResDir, string dirHead = "")
 		{

@@ -393,15 +393,6 @@ namespace UIEditor.BoloUI
 			moveUpItem();
 		}
 
-		private void mx_root_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
-		{
-			if (m_xe.Name == "skingroup")
-			{
-				string path = MainWindow.s_pW.m_skinPath + "\\" + m_xe.GetAttribute("Name") + ".xml";
-
-				MainWindow.s_pW.openFileByPath(path);
-			}
-		}
 		private void showTmpl(MenuItem ctrlMenuItem, XmlElement xeTmpls, string addStr)
 		{
 			if(ctrlMenuItem.Items.Count == 0)
@@ -608,6 +599,17 @@ namespace UIEditor.BoloUI
 		{
 			TemplateCreate winAddtmpl = new TemplateCreate(m_xe);
 			winAddtmpl.ShowDialog();
+		}
+
+		private void mx_radio_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+		{
+			mx_root.IsExpanded = !(mx_root.IsExpanded);
+			if (m_xe.Name == "skingroup")
+			{
+				string path = MainWindow.s_pW.m_skinPath + "\\" + m_xe.GetAttribute("Name") + ".xml";
+
+				MainWindow.s_pW.openFileByPath(path);
+			}
 		}
 	}
 }

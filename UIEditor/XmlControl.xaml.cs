@@ -233,8 +233,12 @@ namespace UIEditor
 									}
 									else
 									{
-										MainWindow.s_pW.mx_debug.Text += "<错误>文件:\"" + path + "\"中，存在重复Name的皮肤(" +
-											xeSkin.GetAttribute("Name") + ")，后一个同名的皮肤将不能正确显示。\r\n";
+										m_mapSkinLink[xeSkin.GetAttribute("Name")] = skinGroupName;
+										string errorInfo = "<错误>文件:\"" + path + "\"中，存在重复Name的皮肤(" +
+											xeSkin.GetAttribute("Name") + ")，前一个同名的皮肤将不能正确显示。\r\n";
+
+										MainWindow.s_pW.mx_debug.Text += errorInfo;
+										//Public.ErrorInfo.addToErrorInfo(errorInfo);
 									}
 								}
 							}
@@ -306,11 +310,11 @@ namespace UIEditor
 							m_treeSkin = new BoloUI.ResBasic(m_xeRoot, this, null);
 
 							MainWindow.s_pW.mx_treeCtrlFrame.Items.Add(m_treeUI);
-							m_treeUI.mx_radio.Content = StringDic.getFileNameWithoutPath(m_openedFile.m_path).Replace("_", "__");
+							m_treeUI.mx_radio.Content = "_" + StringDic.getFileNameWithoutPath(m_openedFile.m_path);
 							m_treeUI.mx_radio.ToolTip = m_openedFile.m_path;
 							m_treeUI.IsExpanded = true;
 							MainWindow.s_pW.mx_treeSkinFrame.Items.Add(m_treeSkin);
-							m_treeSkin.mx_radio.Content = StringDic.getFileNameWithoutPath(m_openedFile.m_path).Replace("_", "__");
+							m_treeSkin.mx_radio.Content = "_" + StringDic.getFileNameWithoutPath(m_openedFile.m_path);
 							m_treeSkin.mx_radio.ToolTip = m_openedFile.m_path;
 							m_treeSkin.IsExpanded = true;
 
@@ -348,7 +352,7 @@ namespace UIEditor
 							}
 							refreshSkinDicByGroupName("publicskin");
 							refreshBoloUIView(true);
-							MainWindow.s_pW.updateXmlToGL(this);
+							MainWindow.s_pW.updateXmlToGLAtOnce(this);
 							if (m_openedFile.m_preViewSkinName != null && m_openedFile.m_preViewSkinName != "")
 							{
 								BoloUI.ResBasic skinBasic;

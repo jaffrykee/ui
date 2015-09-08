@@ -267,22 +267,31 @@
 						<TextBox MinWidth="100" Name="mx_hwndDebug"></TextBox>
 					</ToolBar>
 					<ToolBar Name="mx_viewModeTools" HorizontalAlignment="Left">
-						<Label VerticalAlignment="Center">宽：</Label>
-						<TextBox Name="mx_screenWidth" TextChanged="mx_screenSize_TextChanged" Width="50"></TextBox>
-						<Label VerticalAlignment="Center">高：</Label>
-						<TextBox Name="mx_screenHeight" TextChanged="mx_screenSize_TextChanged" Width="50"></TextBox>
+						<Button Name="mx_refresh"
+								ToolTip="刷新"
+								Width="32"
+								Click="mx_isShowAll_CheckChanged">
+							<Image Source="pack://application:,,,/data/image/refresh.png"/>
+						</Button>
 						<CheckBox Name="mx_isShowAll"
 								  VerticalAlignment="Center"
 								  IsChecked="False"
+								  ToolTip="显示隐藏"
 								  Checked="mx_isShowAll_CheckChanged"
-								  Unchecked="mx_isShowAll_CheckChanged"
-								  Content="显示隐藏"/>
+								  Unchecked="mx_isShowAll_CheckChanged">
+							<Image Source="pack://application:,,,/data/image/showAll.png"/>
+						</CheckBox>
 						<CheckBox Name="mx_isViewMode"
 								  ToolTip="预览模式"
+								  Width="32"
 								  Checked="mx_isViewMode_Checked"
 								  Unchecked="mx_isViewMode_Unchecked">
 							<Image Source="pack://application:,,,/data/image/viewMode.png"/>
 						</CheckBox>
+						<Label VerticalAlignment="Center">宽：</Label>
+						<TextBox Name="mx_screenWidth" TextChanged="mx_screenSize_TextChanged" Width="50"></TextBox>
+						<Label VerticalAlignment="Center">高：</Label>
+						<TextBox Name="mx_screenHeight" TextChanged="mx_screenSize_TextChanged" Width="50"></TextBox>
 						<Button Name="mx_btnNesting"
 								ToolTip="图片打包"
 								Click="mx_btnNesting_Click">

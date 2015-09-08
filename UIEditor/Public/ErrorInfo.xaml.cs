@@ -15,10 +15,36 @@ namespace UIEditor.Public
 {
 	public partial class ErrorInfo : Window
 	{
+		public static string s_errorInfo = "";
+
 		public ErrorInfo(string errorInfo)
 		{
 			InitializeComponent();
 			mx_errorInfo.Text = errorInfo;
+		}
+
+		public static void clearErrorInfo()
+		{
+			s_errorInfo = "";
+		}
+		public static void addToErrorInfo(string str)
+		{
+			if (s_errorInfo == null)
+			{
+				s_errorInfo = str;
+			}
+			else
+			{
+				s_errorInfo += str;
+			}
+		}
+		public static void showErrorInfo()
+		{
+			if(s_errorInfo != null && s_errorInfo != "")
+			{
+				MessageBox.Show(s_errorInfo, "错误信息", MessageBoxButton.OK, MessageBoxImage.Error);
+				clearErrorInfo();
+			}
 		}
 	}
 }

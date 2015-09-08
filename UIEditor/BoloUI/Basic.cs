@@ -145,7 +145,7 @@ namespace UIEditor.BoloUI
 					tmpCon += "(" + id + ")";
 				}
 
-				mx_radio.Content = tmpCon.Replace("_", "__");
+				mx_radio.Content = "_" + tmpCon;
 			}
 		}
 		public override void changeSelectItem(object obj = null)

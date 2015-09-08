@@ -38,7 +38,7 @@ namespace UIEditor.Project
 			}
 			InitializeComponent();
 			mx_root.ToolTip = m_path;
-			mx_radio.Content = System.IO.Path.GetFileName(m_path);
+			mx_radio.Content = "_" + System.IO.Path.GetFileName(m_path);
 		}
 
 		public void deleteSelf()
@@ -215,6 +215,7 @@ namespace UIEditor.Project
 					{
 						mx_moveTo.Visibility = System.Windows.Visibility.Visible;
 						mx_copyTo.Visibility = System.Windows.Visibility.Visible;
+						mx_delete.Visibility = System.Windows.Visibility.Visible;
 
 						addResFolderToMenu(fi.Directory.Parent, mx_moveTo, mx_moveToChild_Click);
 						addResFolderToMenu(fi.Directory.Parent, mx_copyTo, mx_copyToChild_Click);
@@ -229,11 +230,16 @@ namespace UIEditor.Project
 			}
 			mx_moveTo.Visibility = System.Windows.Visibility.Collapsed;
 			mx_copyTo.Visibility = System.Windows.Visibility.Collapsed;
+			mx_delete.Visibility = System.Windows.Visibility.Collapsed;
 		}
 		private void mx_newFile_Click(object sender, RoutedEventArgs e)
 		{
 			NewFileWin winNewFile = new NewFileWin(".\\data\\Template\\");
 			winNewFile.ShowDialog();
+		}
+		private void mx_delete_Click(object sender, RoutedEventArgs e)
+		{
+			pngFileDeal(sender, "delete");
 		}
 	}
 }

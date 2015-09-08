@@ -403,10 +403,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="data\image\nesting.png" />
-    <Resource Include="data\image\viewMode.png" />
+    <Resource Include="data\image\showAll.png" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="data\a.txt" />
+    <Resource Include="data\image\viewMode.png" />
+    <Resource Include="data\image\refresh.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

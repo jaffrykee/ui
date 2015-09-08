@@ -16,6 +16,7 @@
 		<ContextMenu Name="mx_menu" Loaded="mx_menu_Loaded">
 			<MenuItem Name="mx_moveTo" Header="移动到" Visibility="Collapsed"/>
 			<MenuItem Name="mx_copyTo" Header="复制到" Visibility="Collapsed"/>
+			<MenuItem Name="mx_delete" Header="删除" Visibility="Collapsed" Click="mx_delete_Click"/>
 			<MenuItem Name="mx_newFile" Header="新建..." Click="mx_newFile_Click"/>
 		</ContextMenu>
 	</TreeViewItem.ContextMenu>

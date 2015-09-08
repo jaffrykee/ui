@@ -22,7 +22,7 @@ namespace UIEditor.Project
 	{
 		NewFileWin m_frame;
 
-		public FileTypeRadio(NewFileWin frame, string text,string groupName)
+		public FileTypeRadio(NewFileWin frame, string text, string groupName)
 		{
 			m_frame = frame;
 			InitializeComponent();

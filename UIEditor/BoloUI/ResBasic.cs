@@ -37,10 +37,16 @@ namespace UIEditor.BoloUI
 				if (m_xe.Name == "skin" || m_xe.Name == "publicskin")
 				{
 					ResBasic nullPtr;
-					if (!m_rootControl.m_mapSkin.TryGetValue(m_xe.GetAttribute("Name"), out nullPtr))
+
+					if (m_rootControl.m_mapSkin.TryGetValue(m_xe.GetAttribute("Name"), out nullPtr))
 					{
-						m_rootControl.m_mapSkin[m_xe.GetAttribute("Name")] = this;
+						string errorInfo = "<错误>文件:\"" + rootControl.m_openedFile.m_path + "\"中，存在重复Name的皮肤(" +
+							m_xe.GetAttribute("Name") + ")，前一个同名的皮肤将不能正确显示。\r\n";
+
+						MainWindow.s_pW.mx_debug.Text += errorInfo;
+						Public.ErrorInfo.addToErrorInfo(errorInfo);
 					}
+					m_rootControl.m_mapSkin[m_xe.GetAttribute("Name")] = this;
 				}
 				addChild();
 			}
@@ -114,8 +120,7 @@ namespace UIEditor.BoloUI
 						{
 							if (skinPtr != null)
 							{
-								var treeChild = Activator.CreateInstance(Type.GetType("UIEditor.BoloUI.ResBasic"), xe, m_rootControl, skinPtr) as TreeViewItem;
-								this.Items.Add(treeChild);
+								this.Items.Add(new ResBasic(xe, m_rootControl, skinPtr));
 							}
 						}
 					}
@@ -222,7 +227,7 @@ namespace UIEditor.BoloUI
 					name = parseApprIdFromDic(name);
 				}
 				tmpCon += name;
-				mx_radio.Content = tmpCon.Replace("_", "__");
+				mx_radio.Content = "_" + tmpCon;
 			}
 		}
 		public static void resetXeView(XmlElement srcXe, out XmlElement xeView)

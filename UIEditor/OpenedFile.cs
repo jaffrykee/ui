@@ -36,6 +36,7 @@ namespace UIEditor
 
 		public OpenedFile(string path)
 		{
+			Public.ErrorInfo.clearErrorInfo();
 			MainWindow pW = MainWindow.s_pW;
 
 			m_path = path;
@@ -49,14 +50,14 @@ namespace UIEditor
 			m_tab.Unloaded += new RoutedEventHandler(pW.eventCloseFile);
 			ToolTip tabTip = new ToolTip();
 			tabTip.Content = m_path;
-			m_tab.Header = StringDic.getFileNameWithoutPath(path);
-			m_tab.Header = m_tab.Header.ToString().Replace("_", "__");
+			m_tab.Header = "_" + StringDic.getFileNameWithoutPath(path);
 			m_tab.ToolTip = tabTip;
 
 			UserControl tabContent = new UIEditor.FileTabItem(this);
 
 			m_tab.Content = tabContent;
 			m_tabItem = (FileTabItem)tabContent;
+			Public.ErrorInfo.showErrorInfo();
 		}
 
 		public bool frameIsXmlCtrl()

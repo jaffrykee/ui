@@ -6,14 +6,14 @@
 		mc:Ignorable="d"
 			  Name="mx_root"
 			  IsExpanded="True"
-			  Padding="0"
-			  PreviewMouseDoubleClick="mx_root_PreviewMouseDoubleClick">
+			  Padding="0">
 	<TreeViewItem.Header>
 		<RadioButton Name="mx_radio"
 					 GroupName="fileTree"
 					 Padding="0,2,0,2"
 					 Style="{StaticResource RadioTeml_Mt}"
-					 Checked="mx_radio_Checked"/>
+					 Checked="mx_radio_Checked"
+					 MouseDoubleClick="mx_radio_MouseDoubleClick"/>
 	</TreeViewItem.Header>
 	<TreeViewItem.ContextMenu>
 		<ContextMenu Name="mx_menu" Loaded="mx_menu_Loaded" Unloaded="mx_menu_Unloaded">

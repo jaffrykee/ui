@@ -151,6 +151,7 @@ namespace UIEditor
 			m_isCanEdit = true;
 			m_tLast = 0;
 			m_hitCount = 0;
+			m_msgHitCount = 0;
 
 			InitializeComponent();
 
@@ -239,7 +240,7 @@ namespace UIEditor
 
 			DefConf.initXmlValueDef();
 			DispatcherTimer m_textTimer = new DispatcherTimer();
-			m_textTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
+			m_textTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
 			m_textTimer.Tick += new EventHandler(m_textTimer_Tick);
 			m_textTimer.Start();
 		}
@@ -440,6 +441,7 @@ namespace UIEditor
 			m_curItem = null;
 			mx_treeCtrlFrame.Items.Clear();
 			mx_treeSkinFrame.Items.Clear();
+			hiddenAllAttr();
 			if (((TabItem)mx_workTabs.SelectedItem) != null)
 			{
 				if (((ToolTip)((TabItem)mx_workTabs.SelectedItem).ToolTip) != null)
@@ -455,24 +457,21 @@ namespace UIEditor
 						OpenedFile openFile;
 						if (m_mapOpenedFiles.TryGetValue(tabPath, out openFile))
 						{
-							updateGL(fileName, W2GTag.W2G_NORMAL_TURN);
-							mx_treeCtrlFrame.Items.Add(((XmlControl)m_mapOpenedFiles[tabPath].m_frame).m_treeUI);
-							mx_treeSkinFrame.Items.Add(((XmlControl)m_mapOpenedFiles[tabPath].m_frame).m_treeSkin);
-							((XmlControl)openFile.m_frame).refreshBoloUIView(true);
-							if (((XmlControl)openFile.m_frame).m_showGL)
+							if(openFile.m_frame is XmlControl)
 							{
-								mx_drawFrame.Visibility = System.Windows.Visibility.Visible;
+								updateGL(fileName, W2GTag.W2G_NORMAL_TURN);
+								XmlControl xmlCtrl = (XmlControl)openFile.m_frame;
+
+								mx_treeCtrlFrame.Items.Add(xmlCtrl.m_treeUI);
+								mx_treeSkinFrame.Items.Add(xmlCtrl.m_treeSkin);
+								xmlCtrl.refreshBoloUIView(true);
+								if (xmlCtrl.m_showGL)
+								{
+									mx_drawFrame.Visibility = System.Windows.Visibility.Visible;
+								}
+								xmlCtrl.refreshXmlText();
 							}
-							else
-							{
-								hiddenGLAttr();
-							}
-							((XmlControl)openFile.m_frame).refreshXmlText();
 						}
-					}
-					else
-					{
-						hiddenGLAttr();
 					}
 				}
 			}
@@ -1270,7 +1269,9 @@ namespace UIEditor
 				}
 			}
 		}
-		public void updateXmlToGL(XmlControl xmlCtrl, XmlElement xePlus = null, bool isCtrlUI = false)
+
+		//立即更新GL端
+		public void updateXmlToGLAtOnce(XmlControl xmlCtrl, XmlElement xePlus = null, bool isCtrlUI = false)
 		{
 			string path = xmlCtrl.m_openedFile.m_path;
 			XmlDocument doc = xmlCtrl.m_xmlDoc;
@@ -1285,7 +1286,7 @@ namespace UIEditor
 
 			if (xePlus != null)
 			{
-				if(isCtrlUI == false)
+				if (isCtrlUI == false)
 				{
 					string strTmp = "<panel dock=\"4\" w=\"960\" h=\"640\" name=\"background\" skin=\"BackPure\"></panel>";
 
@@ -1302,9 +1303,9 @@ namespace UIEditor
 
 					for (xn = xePlus; xn.ParentNode != null && xn.ParentNode.NodeType == XmlNodeType.Element && xn.ParentNode.Name != "BoloUI"; xn = xn.ParentNode)
 					{
-						
+
 					}
-					if(xn.ParentNode != null && xn.ParentNode.NodeType == XmlNodeType.Element && xn.ParentNode.Name == "BoloUI")
+					if (xn.ParentNode != null && xn.ParentNode.NodeType == XmlNodeType.Element && xn.ParentNode.Name == "BoloUI")
 					{
 						xe = (XmlElement)xn;
 
@@ -1319,7 +1320,7 @@ namespace UIEditor
 			//去掉所有事件(<event>)
 			nodeList = newRootXe.SelectNodes("descendant::event");
 
-			foreach(XmlNode xnEvent in nodeList)
+			foreach (XmlNode xnEvent in nodeList)
 			{
 				xnEvent.ParentNode.RemoveChild(xnEvent);
 			}
@@ -1328,6 +1329,20 @@ namespace UIEditor
 			updateGL(fileName, W2GTag.W2G_NORMAL_NAME);
 			updateGL(buffer, W2GTag.W2G_NORMAL_DATA);
 			xmlCtrl.refreshVRect();
+		}
+		private int m_msgHitCount;
+		private bool m_msgHavNew;
+		private XmlControl m_msgXmlCtrl;
+		private XmlElement m_msgXePlus;
+		private bool m_msgIsCtrlUI;
+		//延时一定时间更新GL端
+		public void updateXmlToGL(XmlControl xmlCtrl, XmlElement xePlus = null, bool isCtrlUI = false, int msgHitCount = 0)
+		{
+			m_msgHitCount = msgHitCount;
+			m_msgHavNew = true;
+			m_msgXmlCtrl = xmlCtrl;
+			m_msgXePlus = xePlus;
+			m_msgIsCtrlUI = isCtrlUI;
 		}
 
 		#region 资源读取
@@ -1811,22 +1826,26 @@ namespace UIEditor
 				}
 			}
 		}
-		private void mx_isShowAll_CheckChanged(object sender, RoutedEventArgs e)
+		public void refreshCurFile()
 		{
 			OpenedFile fileDef;
 
-			if(m_curFile != null && m_curFile != "" && m_mapOpenedFiles.TryGetValue(m_curFile, out fileDef))
+			if (m_curFile != null && m_curFile != "" && m_mapOpenedFiles.TryGetValue(m_curFile, out fileDef))
 			{
-				if(fileDef != null && fileDef.m_frame != null && fileDef.m_frame.GetType().ToString() == "UIEditor.XmlControl")
+				if (fileDef != null && fileDef.m_frame != null && fileDef.m_frame.GetType().ToString() == "UIEditor.XmlControl")
 				{
 					XmlControl xmlDef = (XmlControl)fileDef.m_frame;
 
-					if(xmlDef.m_xmlDoc != null && xmlDef.m_xmlDoc.DocumentElement.Name == "BoloUI" && xmlDef.m_isOnlySkin == false)
+					if (xmlDef.m_xmlDoc != null && xmlDef.m_xmlDoc.DocumentElement.Name == "BoloUI" && xmlDef.m_isOnlySkin == false)
 					{
 						updateXmlToGL(xmlDef);
 					}
 				}
 			}
+		}
+		private void mx_isShowAll_CheckChanged(object sender, RoutedEventArgs e)
+		{
+			refreshCurFile();
 		}
 
 		static public List<TextRange> FindAllMatchedTextRanges(RichTextBox richBox, string keyWord)
@@ -1912,13 +1931,26 @@ namespace UIEditor
 
 				m_hitCount = 0;
 				m_isTextChanged = true;
+				hiddenAllAttr();
 
 				m_isCanEdit = true;
 			}
 		}
 		private void m_textTimer_Tick(object send, EventArgs e)
 		{
-			if(m_hitCount < 1)
+			if (m_msgHitCount < 5)
+			{
+				m_msgHitCount++;
+			}
+			else
+			{
+				if (m_msgHavNew == true)
+				{
+					m_msgHavNew = false;
+					updateXmlToGLAtOnce(m_msgXmlCtrl, m_msgXePlus, m_msgIsCtrlUI);
+				}
+			}
+			if(m_hitCount < 5)
 			{
 				m_hitCount++;
 			}
@@ -1949,6 +1981,7 @@ namespace UIEditor
 								}
 								catch
 								{
+									m_isCanEdit = true;
 									return;
 								}
 								fileDef.m_lstOpt.addOperation(new XmlOperation.HistoryNode(xmlCtrl.m_xmlDoc, newDoc));
