@@ -139,6 +139,9 @@
       <DependentUpon>ErrorInfo.xaml</DependentUpon>
     </Compile>
     <Compile Include="Public\LocalConst.cs" />
+    <Compile Include="Public\XMLViewer.xaml.cs">
+      <DependentUpon>XMLViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TemplateCreate.xaml.cs">
       <DependentUpon>TemplateCreate.xaml</DependentUpon>
     </Compile>
@@ -236,6 +239,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Public\ErrorInfo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Public\XMLViewer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

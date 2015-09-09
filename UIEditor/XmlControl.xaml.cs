@@ -284,6 +284,7 @@ namespace UIEditor
 
 			rag.Text = getOutXml(m_xmlDoc);
 			MainWindow.s_pW.refreshXmlTextTip();
+			MainWindow.s_pW.mx_xmlViewer.xmlDocument = m_xmlDoc;
 			//rag.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.Red));
 			MainWindow.s_pW.m_isCanEdit = true;
 		}

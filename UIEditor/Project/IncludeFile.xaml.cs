@@ -152,8 +152,6 @@ namespace UIEditor.Project
 
 											//重新打包
 											ImageTools.ImageNesting.pngToTgaRectNesting(newFolder);
-											//刷新打包后的tga文件
-											PackImage.refreshImagePack(newResPath);
 										}
 									}
 									break;
@@ -177,8 +175,6 @@ namespace UIEditor.Project
 
 				//重新打包
 				ImageTools.ImageNesting.pngToTgaRectNesting(fi.DirectoryName);
-				//刷新打包后的tga文件
-				PackImage.refreshImagePack(oldResPath);
 			}
 		}
 		private void mx_moveToChild_Click(object sender, RoutedEventArgs e)

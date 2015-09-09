@@ -639,6 +639,7 @@ namespace UIEditor.ImageTools
 				//MainWindow.s_pW.openFileByPath(xmlPath);
 				PackImage.refreshImagePack(xmlPath);
 			}
+			MainWindow.s_pW.updateGL("", W2GTag.W2G_IMAGE_RELOAD);
 		}
 		private void clearChildGrid(int num)
 		{

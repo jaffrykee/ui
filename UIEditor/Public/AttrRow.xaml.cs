@@ -137,31 +137,34 @@ namespace UIEditor
 						{
 							case "Apperance":
 								{
-									m_parent.m_basic.initHeader();
-									if (m_parent.m_basic.m_apprPre != null && m_parent.m_basic.m_apprPre != "")
+									if (m_parent != null && m_parent.m_basic != null)
 									{
-										ComboBoxItem cbiPre;
-
-										if(m_mapCbiApprPre.TryGetValue(m_parent.m_basic.m_apprPre, out cbiPre))
+										m_parent.m_basic.initHeader();
+										if (m_parent.m_basic.m_apprPre != null && m_parent.m_basic.m_apprPre != "")
 										{
-											mx_valueApprPre.SelectedItem = cbiPre;
+											ComboBoxItem cbiPre;
+
+											if (m_mapCbiApprPre.TryGetValue(m_parent.m_basic.m_apprPre, out cbiPre))
+											{
+												mx_valueApprPre.SelectedItem = cbiPre;
+											}
 										}
-									}
-									if (m_parent.m_basic.m_apprTagStr != null && m_parent.m_basic.m_apprTagStr != "")
-									{
-										mx_valueApprTag.Text = m_parent.m_basic.m_apprTagStr;
-									}
-									else
-									{
-										mx_valueApprTag.Text = "";
-									}
-									if (m_parent.m_basic.m_apprSuf != null && m_parent.m_basic.m_apprSuf != "")
-									{
-										ComboBoxItem cbiSuf;
-
-										if(m_mapCbiApprSuf.TryGetValue(m_parent.m_basic.m_apprSuf, out cbiSuf))
+										if (m_parent.m_basic.m_apprTagStr != null && m_parent.m_basic.m_apprTagStr != "")
 										{
-											mx_valueApprSuf.SelectedItem = cbiSuf;
+											mx_valueApprTag.Text = m_parent.m_basic.m_apprTagStr;
+										}
+										else
+										{
+											mx_valueApprTag.Text = "";
+										}
+										if (m_parent.m_basic.m_apprSuf != null && m_parent.m_basic.m_apprSuf != "")
+										{
+											ComboBoxItem cbiSuf;
+
+											if (m_mapCbiApprSuf.TryGetValue(m_parent.m_basic.m_apprSuf, out cbiSuf))
+											{
+												mx_valueApprSuf.SelectedItem = cbiSuf;
+											}
 										}
 									}
 								}

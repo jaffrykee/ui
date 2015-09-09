@@ -6,6 +6,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d"
 	xmlns:userView="clr-namespace:UIEditor"
+	xmlns:UIEditor.Public="clr-namespace:UIEditor.Public"
 	Name="mx_root"
 	Title="&lt;未加载项目&gt; - UI编辑器"
 	WindowState="Maximized"
@@ -450,6 +451,7 @@
 					<TabItem Header="文本内容">
 						<Grid Background="#ffffffff">
 							<RichTextBox Name="mx_xmlText"
+										 Visibility="Collapsed"
 										 AcceptsReturn="True"
 										 VerticalScrollBarVisibility="Visible"
 										 HorizontalScrollBarVisibility="Visible"
@@ -459,6 +461,7 @@
 								<FlowDocument LineHeight="1">
 								</FlowDocument>
 							</RichTextBox>
+							<UIEditor.Public:XMLViewer x:Name="mx_xmlViewer"/>
 						</Grid>
 					</TabItem>
 					<TabItem Header="输出">

@@ -19,7 +19,8 @@ namespace UIEditor
 		W2G_UI_VRECT = 0x0004,
 		W2G_DRAWRECT = 0x0014,
 		W2G_VIEWMODE = 0x0005,
-		W2G_VIEWSIZE = 0x0015
+		W2G_VIEWSIZE = 0x0015,
+		W2G_IMAGE_RELOAD = 0x0006
 	};
 	public enum G2WTag
 	{

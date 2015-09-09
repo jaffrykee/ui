@@ -1970,20 +1970,19 @@ namespace UIEditor
 						if(fileDef.m_frame != null && fileDef.m_frame.GetType().ToString() == "UIEditor.XmlControl")
 						{
 							XmlControl xmlCtrl = (XmlControl)fileDef.m_frame;
+							XmlDocument newDoc = new XmlDocument();
 
-							if (XmlControl.getOutXml(xmlCtrl.m_xmlDoc) != textRange.Text)
+							try
 							{
-								XmlDocument newDoc = new XmlDocument();
-
-								try
-								{
-									newDoc.LoadXml(textRange.Text);
-								}
-								catch
-								{
-									m_isCanEdit = true;
-									return;
-								}
+								newDoc.LoadXml(textRange.Text);
+							}
+							catch
+							{
+								m_isCanEdit = true;
+								return;
+							}
+							if (XmlControl.getOutXml(xmlCtrl.m_xmlDoc) != XmlControl.getOutXml(newDoc))
+							{
 								fileDef.m_lstOpt.addOperation(new XmlOperation.HistoryNode(xmlCtrl.m_xmlDoc, newDoc));
 							}
 						}
