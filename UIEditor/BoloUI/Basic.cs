@@ -150,7 +150,6 @@ namespace UIEditor.BoloUI
 		}
 		public override void changeSelectItem(object obj = null)
 		{
-			MainWindow.s_pW.mx_leftToolFrame.SelectedItem = MainWindow.s_pW.mx_ctrlFrame;
 			MainWindow.s_pW.m_curFile = m_rootControl.m_openedFile.m_path;
 			MainWindow.s_pW.mx_workTabs.SelectedItem = m_rootControl.m_openedFile.m_tab;
 			if (m_vId != "")
@@ -244,7 +243,7 @@ namespace UIEditor.BoloUI
 			}
 
 			mx_radio.IsChecked = true;
-			BringIntoView(new Rect(0, 0, 50, 20));
+			BringIntoView();
 
 			SelButton selBn;
 
@@ -252,6 +251,7 @@ namespace UIEditor.BoloUI
 			{
 				selBn.mx_radio.IsChecked = true;
 			}
+			gotoSelectXe();
 		}
 		public bool checkPointInFence(int x, int y)
 		{

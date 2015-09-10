@@ -51,31 +51,7 @@ namespace UIEditor.BoloUI
 				addChild();
 			}
 
-			Dictionary<string, SkinDef_T> mapSkinDef;
-
 			initHeader();
-
-			mx_addNode.Items.Clear();
-			if (m_xe.Name == "BoloUI")
-			{
-				mapSkinDef = MainWindow.s_pW.m_mapSkinTreeDef;
-			}
-			else
-			{
-				mapSkinDef = m_curDeepDef.m_mapEnChild;
-			}
-			if (mapSkinDef != null)
-			{
-				foreach (KeyValuePair<string, SkinDef_T> pairSkinDef in mapSkinDef.ToList())
-				{
-					showTmplGroup(pairSkinDef.Key);
-				}
-				mx_addNode.IsEnabled = true;
-			}
-			else
-			{
-				mx_addNode.IsEnabled = false;
-			}
 		}
 
 		public void addResItem(XmlElement newXe)
@@ -252,7 +228,6 @@ namespace UIEditor.BoloUI
 			if(m_xe.Name != "BoloUI")
 			{
 				BoloUI.Basic ctrlUI;
-				MainWindow.s_pW.mx_leftToolFrame.SelectedItem = MainWindow.s_pW.mx_skinFrame;
 				MainWindow.s_pW.hiddenAllAttr();
 
 				if (obj != null && obj.GetType().ToString() == "UIEditor.BoloUI.Basic")
@@ -333,13 +308,14 @@ namespace UIEditor.BoloUI
 							resetXeView(m_rootControl.m_skinViewCtrlUI.m_xe, out xeView);
 						}
 						((XmlElement)xeView).SetAttribute("skin", xeSkin.GetAttribute("Name"));
-						MainWindow.s_pW.updateXmlToGL(m_rootControl, xeView, false);
+						MainWindow.s_pW.updateXmlToGLAtOnce(m_rootControl, xeView, false);
 					}
 					//todo 更改皮肤预览
 				}
 			}
 			mx_radio.IsChecked = true;
-			BringIntoView(new Rect(0, 0, 50, 20));
+			BringIntoView();
+			gotoSelectXe();
 		}
 	}
 }

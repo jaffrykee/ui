@@ -59,8 +59,8 @@ namespace UIEditor
 			}
 
 			m_openedFile.m_lstOpt = new XmlOperation.HistoryList(MainWindow.s_pW, this, 65535);
-			refreshXmlText();
 			refreshControl();
+			refreshXmlText();
 		}
 		private void mx_root_Unloaded(object sender, RoutedEventArgs e)
 		{
@@ -168,27 +168,6 @@ namespace UIEditor
 				return "";
 			}
 		}
-		public void refreshBoloUIView(bool changeItem = false)
-		{
-			if(m_showGL)
-			{
-				if (m_isOnlySkin)
-				{
-					MainWindow.s_pW.mx_leftToolFrame.SelectedItem = MainWindow.s_pW.mx_skinFrame;
-					MainWindow.s_pW.mx_ctrlFrame.IsEnabled = false;
-					MainWindow.s_pW.mx_skinFrame.IsEnabled = true;
-				}
-				else
-				{
-					if (changeItem)
-					{
-						MainWindow.s_pW.mx_leftToolFrame.SelectedItem = MainWindow.s_pW.mx_ctrlFrame;
-					}
-					MainWindow.s_pW.mx_ctrlFrame.IsEnabled = true;
-					MainWindow.s_pW.mx_skinFrame.IsEnabled = true;
-				}
-			}
-		}
 		public void refreshVRect()
 		{
 			string msgData = "";
@@ -258,6 +237,110 @@ namespace UIEditor
 
 			refreshSkinDicByPath(path, skinGroupName);
 		}
+		public void refreshXmlSign(XmlNode xnRoot, Paragraph para, int deep = 0)
+		{
+			string strTabs = "";
+			bool isFirst = true;
+
+			for(int i = 0; i < deep; i++)
+			{
+				strTabs += "    ";
+			}
+			foreach(XmlNode xn in xnRoot.ChildNodes)
+			{
+				if(deep == 0 && isFirst == true)
+				{
+					isFirst = false;
+				}
+				else
+				{
+					Run runTabs = new Run("\n" + strTabs);
+					runTabs.Foreground = new SolidColorBrush(Colors.Blue);
+					para.Inlines.Add(runTabs);
+				}
+				switch(xn.NodeType)
+				{
+					case XmlNodeType.Element:
+						{
+							XmlElement xe = (XmlElement)xn;
+
+							Run runStartTip = new Run("<");
+							runStartTip.Foreground = new SolidColorBrush(Colors.Blue);
+							para.Inlines.Add(runStartTip);
+
+							Run runNameTip = new Run(xe.Name);
+							runNameTip.Foreground = new SolidColorBrush(Colors.DarkMagenta);
+							para.Inlines.Add(runNameTip);
+
+							XmlItem xeItem;
+							if (m_mapXeItem != null &&
+								m_mapXeItem.TryGetValue(xe, out xeItem) &&
+								xeItem != null)
+							{
+								xeItem.m_runXeName = runNameTip;
+							}
+
+							foreach(XmlAttribute attr in xe.Attributes)
+							{
+								Run runAttrName = new Run(" " + attr.Name);
+								runAttrName.Foreground = new SolidColorBrush(Colors.Red);
+								para.Inlines.Add(runAttrName);
+
+								Run runAttrValue = new Run("=\"" + attr.Value + "\"");
+								runAttrValue.Foreground = new SolidColorBrush(Colors.Blue);
+								para.Inlines.Add(runAttrValue);
+							}
+
+							Run runEndTip = new Run(">");
+							runEndTip.Foreground = new SolidColorBrush(Colors.Blue);
+							para.Inlines.Add(runEndTip);
+						}
+						break;
+					case XmlNodeType.EndElement:
+						{
+						}
+						break;
+					case XmlNodeType.XmlDeclaration:
+						{
+							Run runDeclaration = new Run(xn.OuterXml);
+							runDeclaration.Foreground = new SolidColorBrush(Colors.Red);
+							para.Inlines.Add(runDeclaration);
+						}
+						break;
+					case XmlNodeType.Comment:
+						{
+							Run runComment = new Run(xn.OuterXml);
+							runComment.Foreground = new SolidColorBrush(Colors.DarkSeaGreen);
+							para.Inlines.Add(runComment);
+						}
+						break;
+					default:
+						{
+							para.Inlines.Add(new Run(xn.OuterXml));
+						}
+						break;
+				}
+				refreshXmlSign(xn, para, deep + 1);
+				if(xn.NodeType == XmlNodeType.Element)
+				{
+					Run runEndTabs = new Run("\n" + strTabs);
+					runEndTabs.Foreground = new SolidColorBrush(Colors.Blue);
+					para.Inlines.Add(runEndTabs);
+
+					Run runStartTip = new Run("</");
+					runStartTip.Foreground = new SolidColorBrush(Colors.Blue);
+					para.Inlines.Add(runStartTip);
+
+					Run runNameTip = new Run(xn.Name);
+					runNameTip.Foreground = new SolidColorBrush(Colors.DarkMagenta);
+					para.Inlines.Add(runNameTip);
+
+					Run runEndTip = new Run(">");
+					runEndTip.Foreground = new SolidColorBrush(Colors.Blue);
+					para.Inlines.Add(runEndTip);
+				}
+			}
+		}
 		static public string getOutXml(XmlDocument docXml)
 		{
 			string retStr;
@@ -280,12 +363,32 @@ namespace UIEditor
 		public void refreshXmlText()
 		{
 			MainWindow.s_pW.m_isCanEdit = false;
-			TextRange rag = new TextRange(MainWindow.s_pW.mx_xmlText.Document.ContentStart, MainWindow.s_pW.mx_xmlText.Document.ContentEnd);
+			if(MainWindow.s_pW.mx_xmlText.Document == null)
+			{
+				MainWindow.s_pW.mx_xmlText.Document = new FlowDocument();
+			}
+			string outXml = getOutXml(m_xmlDoc);
 
-			rag.Text = getOutXml(m_xmlDoc);
-			MainWindow.s_pW.refreshXmlTextTip();
-			MainWindow.s_pW.mx_xmlViewer.xmlDocument = m_xmlDoc;
-			//rag.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.Red));
+			if (outXml.Length > 3000000)
+			{
+				TextRange rag = new TextRange(MainWindow.s_pW.mx_xmlText.Document.ContentStart, MainWindow.s_pW.mx_xmlText.Document.ContentEnd);
+
+				MainWindow.s_pW.mx_xmlText.Document.LineHeight = 1;
+				rag.Text = "文件过大（格式化xml字符超过300万），不提供基于文本的修改";
+				MainWindow.s_pW.mx_xmlText.IsEnabled = false;
+			}
+			else
+			{
+				MainWindow.s_pW.mx_xmlText.Document = new FlowDocument();
+				MainWindow.s_pW.mx_xmlText.Document.LineHeight = 1;
+				MainWindow.s_pW.mx_xmlText.Document.PageWidth = 2000;
+				Paragraph para = new Paragraph();
+
+				refreshXmlSign(m_xmlDoc, para);
+				MainWindow.s_pW.mx_xmlText.Document.Blocks.Add(para);
+				MainWindow.s_pW.mx_xmlText.IsEnabled = true;
+			}
+
 			MainWindow.s_pW.m_isCanEdit = true;
 		}
 		public void refreshControl()
@@ -313,11 +416,9 @@ namespace UIEditor
 							MainWindow.s_pW.mx_treeCtrlFrame.Items.Add(m_treeUI);
 							m_treeUI.mx_radio.Content = "_" + StringDic.getFileNameWithoutPath(m_openedFile.m_path);
 							m_treeUI.mx_radio.ToolTip = m_openedFile.m_path;
-							m_treeUI.IsExpanded = true;
 							MainWindow.s_pW.mx_treeSkinFrame.Items.Add(m_treeSkin);
 							m_treeSkin.mx_radio.Content = "_" + StringDic.getFileNameWithoutPath(m_openedFile.m_path);
 							m_treeSkin.mx_radio.ToolTip = m_openedFile.m_path;
-							m_treeSkin.IsExpanded = true;
 
 							m_treeUI.Items.Clear();
 							m_treeSkin.Items.Clear();
@@ -343,7 +444,6 @@ namespace UIEditor
 									{
 										ResBasic treeChild = new ResBasic(xe, this, skinPtr);
 										m_treeSkin.Items.Add(treeChild);
-										treeChild.IsExpanded = false;
 										if (xe.Name == "skingroup")
 										{
 											refreshSkinDicByGroupName(xe.GetAttribute("Name"));
@@ -352,7 +452,6 @@ namespace UIEditor
 								}
 							}
 							refreshSkinDicByGroupName("publicskin");
-							refreshBoloUIView(true);
 							MainWindow.s_pW.updateXmlToGLAtOnce(this);
 							if (m_openedFile.m_preViewSkinName != null && m_openedFile.m_preViewSkinName != "")
 							{

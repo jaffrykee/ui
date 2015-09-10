@@ -6,12 +6,12 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d"
 	xmlns:userView="clr-namespace:UIEditor"
-	xmlns:UIEditor.Public="clr-namespace:UIEditor.Public"
 	Name="mx_root"
 	Title="&lt;未加载项目&gt; - UI编辑器"
 	WindowState="Maximized"
 	Width="1280"
 	Height="800"
+	Background="#FFEEEEEE"
 	Loaded="mx_root_Loaded"
 	Closing="mx_root_Closing">
 	<Window.Resources>
@@ -67,8 +67,7 @@
 						<Image Width="16" Source="pack://application:,,,/data/image/open.png"/>
 					</MenuItem.Icon>
 				</MenuItem>
-				<MenuItem Header="最近使用的工程">
-					<MenuItem Header="功能未开发" IsEnabled="False"/>
+				<MenuItem Name="mx_bupHistory" Header="最近使用的工程" Loaded="mx_bupHistory_Loaded">
 				</MenuItem>
 				<Separator/>
 				<MenuItem Header="保存"
@@ -304,112 +303,133 @@
 		</DockPanel>
 		<DockPanel Grid.Row="2" Grid.RowSpan="3" Grid.Column="0" Margin="0,0,5,0">
 			<Grid>
-				<TabControl Name="mx_leftToolFrame" BorderThickness="0" Padding="0">
-					<TabItem Name="mx_proFrame" Header="工程目录">
-						<Grid>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="auto"/>
-								<RowDefinition Height="*"/>
-							</Grid.RowDefinitions>
-							<TextBlock Name="mx_searchTip"
-									   Grid.Row="0"
-									   Foreground="#88888888"
-									   Margin="12,8,0,0">
-									搜索
-							</TextBlock>
-							<TextBox Name="mx_search"
-									 Grid.Row="0"
-									 Background="#00000000"
-									 CaretBrush="Black"
-									 Margin="5"
-									 TextChanged="mx_search_TextChanged"/>
-							<TreeView Grid.Row="1">
-								<TreeViewItem Name="mx_treePro">
-								</TreeViewItem>
-							</TreeView>
-						</Grid>
-					</TabItem>
-					<TabItem Name="mx_ctrlFrame" Header="控件" IsEnabled="False">
-						<Grid>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="auto"/>
-								<RowDefinition Height="*"/>
-							</Grid.RowDefinitions>
-							<Grid>
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="100"/>
-									<ColumnDefinition Width="*"/>
-								</Grid.ColumnDefinitions>
-								<Grid.RowDefinitions>
-									<RowDefinition Height="auto"/>
-									<RowDefinition Height="auto"/>
-								</Grid.RowDefinitions>
-								<CheckBox Name="mx_checkVName"
-									Grid.Row="0"
-									Grid.Column="0"
-									IsChecked="True"
-									VerticalAlignment="Center"
-									Margin="10,5,0,5"
-									Content="显示name"
-									Checked="mx_checkVName_Checked"
-									Unchecked="mx_checkVName_Unchecked"/>
-								<CheckBox Name="mx_checkVId"
-									Grid.Row="0"
-									Grid.Column="1"
-									IsChecked="True"
-									VerticalAlignment="Center"
-									Margin="10,5,0,5"
-									Content="显示id"
-									Checked="mx_checkVId_Checked"
-									Unchecked="mx_checkVId_Unchecked"/>
-								<TextBlock Name="mx_uiSearchTip"
-										   Grid.Row="1"
-										   Grid.Column="0"
-										   Grid.ColumnSpan="2"
-										   Foreground="#88888888"
-										   Margin="12,8,0,0">
-									搜索
-								</TextBlock>
-								<TextBox Name="mx_uiSearch"
-										 Grid.Row="1"
-										 Grid.Column="0"
-										 Grid.ColumnSpan="2"
-										 Background="#00000000"
-										 CaretBrush="Black"
-										 Margin="5"
-										 TextChanged="mx_uiSearch_TextChanged"/>
-							</Grid>
-							<TreeView Grid.Row="1" Name="mx_treeCtrlFrame">
-							</TreeView>
-						</Grid>
-					</TabItem>
-					<TabItem Name="mx_skinFrame" Header="资源" IsEnabled="False">
-						<Grid>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="auto"/>
-								<RowDefinition Height="*"/>
-							</Grid.RowDefinitions>
-							<TextBlock Name="mx_skinSearchTip"
-									   Grid.Row="0"
-									   Foreground="#88888888"
-									   Margin="12,8,0,0">
-									搜索
-							</TextBlock>
-							<TextBox Name="mx_skinSearch"
-									 Grid.Row="0"
-									 Background="#00000000"
-									 CaretBrush="Black"
-									 Margin="5"
-									 TextChanged="mx_skinSearch_TextChanged"/>
-							<TreeView Name="mx_treeSkinFrame" Grid.Row="1">
-							</TreeView>
-						</Grid>
-					</TabItem>
-				</TabControl>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="3*"/>
+					<RowDefinition Height="5*"/>
+					<RowDefinition Height="2*"/>
+				</Grid.RowDefinitions>
+				<Grid Grid.Row="0" Margin="0,0,0,5">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="auto"/>
+						<RowDefinition Height="auto"/>
+						<RowDefinition Height="*"/>
+					</Grid.RowDefinitions>
+					<Border Grid.Row="0" BorderThickness="1" BorderBrush="#ffffffff" Background="#ff444444" CornerRadius="2">
+						<Label Foreground="White" Margin="0,0,0,0" Padding="5,1,0,1">
+							工程目录
+						</Label>
+					</Border>
+					<TextBlock Name="mx_searchTip"
+							   Grid.Row="1"
+							   Foreground="#88888888"
+							   Margin="12,8,0,0">
+						搜索
+					</TextBlock>
+					<TextBox Name="mx_search"
+							 Grid.Row="1"
+							 Background="#00000000"
+							 CaretBrush="Black"
+							 Margin="5"
+							 TextChanged="mx_search_TextChanged"/>
+					<TreeView Grid.Row="2">
+						<TreeViewItem Name="mx_treePro">
+						</TreeViewItem>
+					</TreeView>
+				</Grid>
+				<GridSplitter Grid.Row="0" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
+				<Grid Grid.Row="1" Margin="0,0,0,5">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="auto"/>
+						<RowDefinition Height="auto"/>
+						<RowDefinition Height="*"/>
+					</Grid.RowDefinitions>
+					<Border Grid.Row="0" BorderThickness="1" BorderBrush="#ffffffff" Background="#ff444444" CornerRadius="2">
+						<Label Foreground="White" Margin="0,0,0,0" Padding="5,1,0,1">
+							控件节点
+						</Label>
+					</Border>
+					<Grid Grid.Row="1">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="100"/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="auto"/>
+							<RowDefinition Height="auto"/>
+						</Grid.RowDefinitions>
+						<CheckBox Name="mx_checkVName"
+								  Grid.Row="0"
+								  Grid.Column="0"
+								  IsChecked="True"
+								  VerticalAlignment="Center"
+								  Margin="10,5,0,5"
+								  Content="显示name"
+								  Checked="mx_checkVName_Checked"
+								  Unchecked="mx_checkVName_Unchecked"/>
+						<CheckBox Name="mx_checkVId"
+								  Grid.Row="0"
+								  Grid.Column="1"
+								  IsChecked="True"
+								  VerticalAlignment="Center"
+								  Margin="10,5,0,5"
+								  Content="显示id"
+								  Checked="mx_checkVId_Checked"
+								  Unchecked="mx_checkVId_Unchecked"/>
+						<TextBlock Name="mx_uiSearchTip"
+								   Grid.Row="1"
+								   Grid.Column="0"
+								   Grid.ColumnSpan="2"
+								   Foreground="#88888888"
+								   Margin="12,8,0,0">
+								搜索
+						</TextBlock>
+						<TextBox Name="mx_uiSearch"
+								 Grid.Row="1"
+								 Grid.Column="0"
+								 Grid.ColumnSpan="2"
+								 Background="#00000000"
+								 CaretBrush="Black"
+								 Margin="5"
+								 TextChanged="mx_uiSearch_TextChanged"/>
+					</Grid>
+					<TreeView Grid.Row="2" Name="mx_treeCtrlFrame">
+					</TreeView>
+				</Grid>
+				<GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
+				<Grid Grid.Row="2" Margin="0,0,0,5">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="auto"/>
+						<RowDefinition Height="auto"/>
+						<RowDefinition Height="*"/>
+					</Grid.RowDefinitions>
+					<Border Grid.Row="0" BorderThickness="1" BorderBrush="#ffffffff" Background="#ff444444" CornerRadius="2">
+						<Label Foreground="White" Margin="0,0,0,0" Padding="5,1,0,1">
+							非控件节点
+						</Label>
+					</Border>
+					<TextBlock Name="mx_skinSearchTip"
+							   Grid.Row="1"
+							   Foreground="#88888888"
+							   Margin="12,8,0,0">
+						搜索
+					</TextBlock>
+					<TextBox Name="mx_skinSearch"
+							 Grid.Row="1"
+							 Background="#00000000"
+							 CaretBrush="Black"
+							 Margin="5"
+							 TextChanged="mx_skinSearch_TextChanged"/>
+					<TreeView Name="mx_treeSkinFrame" Grid.Row="2">
+					</TreeView>
+				</Grid>
 			</Grid>
 		</DockPanel>
 		<GridSplitter Grid.Row="2" Grid.RowSpan="4" Grid.Column="0" Width="5"></GridSplitter>
-		<Grid Grid.Row="2" Grid.RowSpan="3" Grid.Column="2" Margin="5,0,0,0" Background="#ffdddddd">
+		<Grid Grid.Row="2" Grid.RowSpan="3" Grid.Column="2" Margin="5,0,0,0" Background="#FFEEEEEE">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="0"/>
+			</Grid.RowDefinitions>
 			<ScrollViewer Name="mx_toolScroll"
 						  HorizontalScrollBarVisibility="Auto"
 						  VerticalScrollBarVisibility="Auto"
@@ -417,6 +437,19 @@
 				<StackPanel Name="mx_toolArea" Width="auto">
 				</StackPanel>
 			</ScrollViewer>
+			<Grid Grid.Row="1">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
+				<Border BorderThickness="1" BorderBrush="#ffffffff" Background="#ff444444" CornerRadius="2">
+					<Label Foreground="White" Margin="0,0,0,0" Padding="5,1,0,1">
+						皮肤
+					</Label>
+				</Border>
+				<TreeView Name="mx_treeSingleSkin" Grid.Row="1">
+				</TreeView>
+			</Grid>
 		</Grid>
 		<GridSplitter Grid.Row="2" Grid.RowSpan="3" Grid.Column="2" Width="5" HorizontalAlignment="Left"/>
 		<DockPanel Name="mx_normalFrame"
@@ -434,66 +467,59 @@
 		<GridSplitter Name="mx_debugSplitter" Grid.Row="4" Grid.Column="1" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
 		<DockPanel Grid.Row="4" Grid.Column="1" Margin="0,5,0,0">
 			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="2*"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
 				<Grid.RowDefinitions>
-					<RowDefinition Height="auto"/>
+					<RowDefinition Height="2*"/>
 					<RowDefinition Height="*"/>
 				</Grid.RowDefinitions>
 				<!-- Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" -->
-				<WrapPanel Name="mx_selCtrlLstFrame"
-						   Grid.Row="0"
-						   Background="#ffcccccc"
-						   Orientation="Horizontal"/>
-				<TabControl Grid.Row="1"
-							Style="{StaticResource TabControlStyle1}"
-							TabStripPlacement="Bottom"
-							Margin="0,0,0,10"
-							BorderThickness="0,0,0,3">
-					<TabItem Header="文本内容">
-						<Grid Background="#ffffffff">
-							<RichTextBox Name="mx_xmlText"
-										 Visibility="Collapsed"
-										 AcceptsReturn="True"
-										 VerticalScrollBarVisibility="Visible"
-										 HorizontalScrollBarVisibility="Visible"
-										 HorizontalAlignment="Stretch"
-										 FontFamily="Consolas"
-										 TextChanged="mx_xmlText_TextChanged">
-								<FlowDocument LineHeight="1">
-								</FlowDocument>
-							</RichTextBox>
-							<UIEditor.Public:XMLViewer x:Name="mx_xmlViewer"/>
-						</Grid>
-					</TabItem>
-					<TabItem Header="输出">
-						<Grid>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="auto"/>
-								<RowDefinition Height="*"/>
-							</Grid.RowDefinitions>
-							<WrapPanel>
-								<Button Grid.Row="0" Margin="10,2,2,2" Padding="10,0,10,0" Click="mx_bClearDebug_Click">
-									清空
-								</Button>
-							</WrapPanel>
-							<TextBox Name="mx_debug"
-									 Grid.Row="1"
-									 AcceptsReturn="True"
-									 VerticalScrollBarVisibility="Visible"
-									 HorizontalScrollBarVisibility="Visible"
-									 HorizontalAlignment="Stretch"
-									 IsReadOnly="True"
-									 TextChanged="mx_debug_TextChanged"
-									 SizeChanged="mx_debug_SizeChanged"/>
-						</Grid>
-					</TabItem>
-				</TabControl>
+				<Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Background="#ffffffff" Margin="0,0,5,0">
+					<RichTextBox Name="mx_xmlText"
+								 AcceptsReturn="True"
+								 VerticalScrollBarVisibility="Visible"
+								 HorizontalScrollBarVisibility="Visible"
+								 HorizontalAlignment="Stretch"
+								 FontFamily="Consolas"
+								 TextChanged="mx_xmlText_TextChanged">
+					</RichTextBox>
+				</Grid>
+				<GridSplitter Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Width="5" HorizontalAlignment="Right"/>
+				<ScrollViewer Grid.Column="1" Grid.Row="0" Margin="0,0,0,5">
+					<WrapPanel Name="mx_selCtrlLstFrame"
+							   Background="#FFEEEEEE"
+							   Orientation="Horizontal"/>
+				</ScrollViewer>
+				<GridSplitter Grid.Column="1" Grid.Row="0" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
+				<Grid Grid.Column="1" Grid.Row="1">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="auto"/>
+						<RowDefinition Height="*"/>
+					</Grid.RowDefinitions>
+					<WrapPanel>
+						<Button Grid.Row="0" Margin="10,2,2,2" Padding="10,0,10,0" Click="mx_bClearDebug_Click">
+							清空
+						</Button>
+					</WrapPanel>
+					<TextBox Name="mx_debug"
+							 Grid.Row="1"
+							 AcceptsReturn="True"
+							 VerticalScrollBarVisibility="Visible"
+							 HorizontalScrollBarVisibility="Visible"
+							 HorizontalAlignment="Stretch"
+							 IsReadOnly="True"
+							 TextChanged="mx_debug_TextChanged"
+							 SizeChanged="mx_debug_SizeChanged"/>
+				</Grid>
 			</Grid>
 		</DockPanel>
 		<ScrollViewer Name="mx_scrollFrame"
 					  Grid.Row="3" Grid.Column="1"
 					  Visibility="{Binding ElementName=mx_drawFrame, Path=Visibility}"
-					  HorizontalScrollBarVisibility="Auto"
-					  VerticalScrollBarVisibility="Auto"
+					  HorizontalScrollBarVisibility="Visible"
+					  VerticalScrollBarVisibility="Visible"
 					  ScrollChanged="mx_scrollFrame_ScrollChanged">
 			<Grid Name="mx_scrollGrid" HorizontalAlignment="Left" VerticalAlignment="Top" ClipToBounds="True">
 			</Grid>
@@ -501,11 +527,11 @@
 		<Grid Name="mx_drawFrame"
 			  Grid.Row="3" Grid.Column="1">
 			<Border Name="mx_GLCtrl"
-				Width="{Binding ElementName=mx_drawFrame, Path=ActualWidth}"
-				Height="{Binding ElementName=mx_drawFrame, Path=ActualHeight}"
-				HorizontalAlignment="Left"
-				VerticalAlignment="Top"
-				Padding="0,0,25,25">
+					Width="{Binding ElementName=mx_drawFrame, Path=ActualWidth}"
+					Height="{Binding ElementName=mx_drawFrame, Path=ActualHeight}"
+					HorizontalAlignment="Left"
+					VerticalAlignment="Top"
+					Padding="0,0,18,18">
 			</Border>
 		</Grid>
 	</Grid>

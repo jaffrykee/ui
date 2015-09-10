@@ -6,6 +6,9 @@
 	<Style TargetType="{x:Type TreeViewItem}">
 		<Setter Property="Padding" Value="4,2,4,2"/>
 	</Style>
+	<Style TargetType="{x:Type GridSplitter}">
+		<Setter Property="Background" Value="#FFDDDDDD"/>
+	</Style>
 	<Style x:Key="TabControlStyle1" TargetType="{x:Type TabControl}">
 		<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
 		<Setter Property="Padding" Value="4,4,4,4"/>

@@ -30,18 +30,43 @@ namespace UIEditor.BoloUI
 		public string m_apprTagStr;
 		public string m_apprSuf;
 
+		public Run m_runXeName;
+
 		public XmlItem()
 		{
 
 		}
 		public XmlItem(XmlElement xe, XmlControl rootControl)
 		{
+			m_runXeName = null;
 			InitializeComponent();
 			m_rootControl = rootControl;
 			m_xe = xe;
 			m_rootControl.m_mapXeItem[xe] = this;
 		}
 
+		public void gotoSelectXe()
+		{
+			if (m_runXeName != null &&
+				m_runXeName.Parent != null &&
+				m_runXeName.Parent is Paragraph)
+			{
+				Paragraph para = (Paragraph)m_runXeName.Parent;
+
+				if(para.Parent != null &&
+					para.Parent is FlowDocument)
+				{
+					FlowDocument fDoc = (FlowDocument)para.Parent;
+
+					if(fDoc.Parent != null &&
+						fDoc.Parent == MainWindow.s_pW.mx_xmlText)
+					{
+						MainWindow.s_pW.mx_xmlText.Focus();
+						MainWindow.s_pW.mx_xmlText.Selection.Select(m_runXeName.ContentStart, m_runXeName.ContentEnd);
+					}
+				}
+			}
+		}
 		public virtual void changeSelectItem(object obj = null)
 		{
 
@@ -560,6 +585,31 @@ namespace UIEditor.BoloUI
 					{
 						mx_addNode.IsEnabled = false;
 					}
+				}
+			}
+			else
+			{
+				Dictionary<string, SkinDef_T> mapSkinDef;
+				mx_addNode.Items.Clear();
+				if (m_xe.Name == "BoloUI")
+				{
+					mapSkinDef = MainWindow.s_pW.m_mapSkinTreeDef;
+				}
+				else
+				{
+					mapSkinDef = ((ResBasic)this).m_curDeepDef.m_mapEnChild;
+				}
+				if (mapSkinDef != null)
+				{
+					foreach (KeyValuePair<string, SkinDef_T> pairSkinDef in mapSkinDef.ToList())
+					{
+						showTmplGroup(pairSkinDef.Key);
+					}
+					mx_addNode.IsEnabled = true;
+				}
+				else
+				{
+					mx_addNode.IsEnabled = false;
 				}
 			}
 		}

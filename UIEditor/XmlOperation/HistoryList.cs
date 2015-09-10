@@ -128,22 +128,10 @@ namespace UIEditor.XmlOperation
 					xeView = MainWindow.s_pW.m_xeTest;
 				}
 				m_pW.updateXmlToGL(m_xmlCtrl, xeView, false);
-				XmlItem dstItem;
-
-				if (m_xmlCtrl.m_mapXeItem.TryGetValue(m_curNode.Value.m_dstXe, out dstItem))
-				{
-					dstItem.initHeader();
-				}
 			}
 			else
 			{
 				m_pW.updateXmlToGL(m_xmlCtrl);
-				XmlItem dstItem;
-
-				if (m_xmlCtrl.m_mapXeItem.TryGetValue(m_curNode.Value.m_dstXe, out dstItem))
-				{
-					dstItem.initHeader();
-				}
 			}
 
 			if (!isAddOpt)
@@ -152,25 +140,34 @@ namespace UIEditor.XmlOperation
 
 				if (m_xmlCtrl.m_mapXeItem.TryGetValue(m_curNode.Value.m_dstXe, out dstItem))
 				{
-					if (dstItem != null)
-					{
-						switch (dstItem.m_type)
-						{
-							case "CtrlUI":
-								((BoloUI.Basic)dstItem).changeSelectItem();
-								m_pW.refreshAllCtrlUIHeader();
-								break;
-							case "Skin":
-								((BoloUI.ResBasic)dstItem).changeSelectItem();
-								m_pW.refreshAllSkinHeader();
-								break;
-							default:
-								break;
-						}
-					}
+					MainWindow.s_pW.m_dstItem = dstItem;
+				}
+				else
+				{
+					MainWindow.s_pW.m_dstItem = null;
 				}
 			}
-			m_xmlCtrl.refreshXmlText();
+		}
+		static public void refreshItemHeader(XmlItem dstItem)
+		{
+			if (dstItem != null)
+			{
+				switch (dstItem.m_type)
+				{
+					case "CtrlUI":
+						((BoloUI.Basic)dstItem).changeSelectItem();
+						MainWindow.s_pW.refreshAllCtrlUIHeader();
+						dstItem.initHeader();
+						break;
+					case "Skin":
+						((BoloUI.ResBasic)dstItem).changeSelectItem();
+						MainWindow.s_pW.refreshAllSkinHeader();
+						dstItem.initHeader();
+						break;
+					default:
+						break;
+				}
+			}
 		}
 		public void undoOperation()
 		{
@@ -234,26 +231,8 @@ namespace UIEditor.XmlOperation
 
 			if (m_xmlCtrl.m_mapXeItem.TryGetValue(m_curNode.Value.m_dstXe, out dstItem))
 			{
-				if (dstItem != null)
-				{
-					switch (dstItem.m_type)
-					{
-						case "CtrlUI":
-							((BoloUI.Basic)dstItem).changeSelectItem();
-							m_pW.refreshAllCtrlUIHeader();
-							dstItem.initHeader();
-							break;
-						case "Skin":
-							((BoloUI.ResBasic)dstItem).changeSelectItem();
-							m_pW.refreshAllSkinHeader();
-							dstItem.initHeader();
-							break;
-						default:
-							break;
-					}
-				}
+				MainWindow.s_pW.m_dstItem = dstItem;
 			}
-			m_xmlCtrl.refreshXmlText();
 		}
 		public void undo()
 		{

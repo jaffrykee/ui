@@ -278,7 +278,58 @@ namespace UIEditor
 			}
 
 			m_docConf.SelectSingleNode("Config").SelectSingleNode("ProjHistory").InnerXml = m_projPath;
+			XmlElement xeBup = null;
+			if (m_docConf.SelectSingleNode("Config").SelectSingleNode("bupHistory") == null)
+			{
+				xeBup = m_docConf.CreateElement("bupHistory");
+				m_docConf.SelectSingleNode("Config").InsertAfter(
+					xeBup,
+					m_docConf.SelectSingleNode("Config").SelectSingleNode("ProjHistory"));
+			}
+			else
+			{
+				if(m_docConf.SelectSingleNode("Config").SelectSingleNode("bupHistory").NodeType == XmlNodeType.Element)
+				{
+					xeBup = (XmlElement)m_docConf.SelectSingleNode("Config").SelectSingleNode("bupHistory");
+				}
+			}
+			if (xeBup != null)
+			{
+				string newPath = m_projPath + "\\" + m_projName;
+				int delCount = xeBup.SelectNodes("row").Count - 9;
+				XmlElement xeTop = null;
+
+				foreach(XmlNode xnRow in xeBup.SelectNodes("row"))
+				{
+					if(xnRow.NodeType == XmlNodeType.Element)
+					{
+						XmlElement xeRow = (XmlElement)xnRow;
+						string rowPath = xeRow.GetAttribute("key");
+
+						if (rowPath != "" && rowPath == newPath)
+						{
+							xeTop = xeRow;
+						}
+					}
+				}
+				if(xeTop == null)
+				{
+					XmlElement xeNewRow = m_docConf.CreateElement("row");
+
+					for (int i = 0; i < delCount; i++)
+					{
+						xeBup.RemoveChild(xeBup.SelectSingleNode("row"));
+					}
+					xeNewRow.SetAttribute("key", newPath);
+					xeBup.InsertBefore(xeNewRow, xeBup.SelectSingleNode("row"));
+				}
+				else
+				{
+					xeBup.InsertBefore(xeTop, xeBup.SelectSingleNode("row"));
+				}
+			}
 			m_docConf.Save(conf_pathConf);
+
 			sendPathToGL(m_projPath);
 			//refreshImage(path + "\\images");
 			m_skinPath = m_projPath + "\\skin";
@@ -432,9 +483,6 @@ namespace UIEditor
 				}
 			}
 			mx_drawFrame.Visibility = System.Windows.Visibility.Collapsed;
-			mx_ctrlFrame.IsEnabled = false;
-			mx_skinFrame.IsEnabled = false;
-			mx_leftToolFrame.SelectedItem = mx_proFrame;
 		}
 		private void mx_workTabs_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
@@ -464,7 +512,6 @@ namespace UIEditor
 
 								mx_treeCtrlFrame.Items.Add(xmlCtrl.m_treeUI);
 								mx_treeSkinFrame.Items.Add(xmlCtrl.m_treeSkin);
-								xmlCtrl.refreshBoloUIView(true);
 								if (xmlCtrl.m_showGL)
 								{
 									mx_drawFrame.Visibility = System.Windows.Visibility.Visible;
@@ -744,6 +791,10 @@ namespace UIEditor
 				case WM_MOUSEMOVE:
 					#region WM_MOUSEMOVE
 					{
+						if(mx_isViewMode.IsChecked == true)
+						{
+							break;
+						}
 						if ((System.Windows.Forms.Control.ModifierKeys & System.Windows.Forms.Keys.Control) == System.Windows.Forms.Keys.Control)
 						{
 							if (m_isMouseDown)
@@ -778,6 +829,10 @@ namespace UIEditor
 				case WM_LBUTTONDOWN:
 					#region WM_LBUTTONDOWN
 					{
+						if (mx_isViewMode.IsChecked == true)
+						{
+							break;
+						}
 						if (m_curFile != null && m_curFile != "")
 						{
 							OpenedFile fileDef;
@@ -803,6 +858,10 @@ namespace UIEditor
 				case WM_LBUTTONUP:
 					#region WM_LBUTTONUP
 					{
+						if (mx_isViewMode.IsChecked == true)
+						{
+							break;
+						}
 						if(m_isMouseDown == true)
 						{
 							int pX = (int)lParam & 0xFFFF;
@@ -1335,6 +1394,7 @@ namespace UIEditor
 		private XmlControl m_msgXmlCtrl;
 		private XmlElement m_msgXePlus;
 		private bool m_msgIsCtrlUI;
+		public XmlItem m_dstItem;
 		//延时一定时间更新GL端
 		public void updateXmlToGL(XmlControl xmlCtrl, XmlElement xePlus = null, bool isCtrlUI = false, int msgHitCount = 0)
 		{
@@ -1838,7 +1898,7 @@ namespace UIEditor
 
 					if (xmlDef.m_xmlDoc != null && xmlDef.m_xmlDoc.DocumentElement.Name == "BoloUI" && xmlDef.m_isOnlySkin == false)
 					{
-						updateXmlToGL(xmlDef);
+						updateXmlToGLAtOnce(xmlDef);
 					}
 				}
 			}
@@ -1948,6 +2008,11 @@ namespace UIEditor
 				{
 					m_msgHavNew = false;
 					updateXmlToGLAtOnce(m_msgXmlCtrl, m_msgXePlus, m_msgIsCtrlUI);
+					XmlOperation.HistoryList.refreshItemHeader(MainWindow.s_pW.m_dstItem);
+					if (m_msgXmlCtrl != null)
+					{
+						m_msgXmlCtrl.refreshXmlText();
+					}
 				}
 			}
 			if(m_hitCount < 5)
@@ -1962,7 +2027,6 @@ namespace UIEditor
 					m_isCanEdit = false;
 					m_isTextChanged = false;
 					TextRange textRange = new TextRange(mx_xmlText.Document.ContentStart, mx_xmlText.Document.ContentEnd);
-					refreshXmlTextTip();
 
 					OpenedFile fileDef;
 					if(m_mapOpenedFiles.TryGetValue(m_curFile, out fileDef))
@@ -1984,6 +2048,7 @@ namespace UIEditor
 							if (XmlControl.getOutXml(xmlCtrl.m_xmlDoc) != XmlControl.getOutXml(newDoc))
 							{
 								fileDef.m_lstOpt.addOperation(new XmlOperation.HistoryNode(xmlCtrl.m_xmlDoc, newDoc));
+								//xmlCtrl.refreshXmlText();
 							}
 						}
 					}
@@ -1991,6 +2056,55 @@ namespace UIEditor
 				}
 			}
 		}
+		private void mx_bupHistory_Loaded(object sender, RoutedEventArgs e)
+		{
+			XmlNode xnConf = m_docConf.SelectSingleNode("Config");
+			
+			if (xnConf != null)
+			{
+				XmlNode xnBup = xnConf.SelectSingleNode("bupHistory");
 
+				if(xnBup != null)
+				{
+					XmlNodeList lstXnRow = xnBup.SelectNodes("row");
+
+					if(lstXnRow.Count > 0)
+					{
+						int countItem = 0;
+
+						mx_bupHistory.Items.Clear();
+						foreach(XmlNode xnRow in lstXnRow)
+						{
+							countItem++;
+							if(xnRow.NodeType == XmlNodeType.Element)
+							{
+								XmlElement xeRow = (XmlElement)xnRow;
+								string bupPath = xeRow.GetAttribute("key");
+
+								if(bupPath != "")
+								{
+									MenuItem bupItem = new MenuItem();
+
+									bupItem.Header = "_" + countItem.ToString() + " " + bupPath;
+									bupItem.ToolTip = bupPath;
+									bupItem.Click += mx_bupItem_Click;
+									mx_bupHistory.Items.Add(bupItem);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		void mx_bupItem_Click(object sender, RoutedEventArgs e)
+		{
+			if(sender is System.Windows.Controls.MenuItem)
+			{
+				openProjByPath(
+					System.IO.Path.GetDirectoryName((sender as MenuItem).ToolTip.ToString()),
+					System.IO.Path.GetFileName((sender as MenuItem).ToolTip.ToString()));
+			}
+		}
 	}
 }
