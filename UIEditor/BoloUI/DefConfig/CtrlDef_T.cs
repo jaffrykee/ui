@@ -15,6 +15,7 @@ namespace UIEditor.BoloUI.DefConfig
 		public bool m_isFrame;
 		public bool m_isBasic;
 		public bool m_hasBasic;
+		public bool m_hasPointerEvent;
 		public bool m_enInsert;
 		public bool m_enInsertAll;
 

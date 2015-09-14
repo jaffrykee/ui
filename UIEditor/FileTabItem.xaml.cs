@@ -121,6 +121,7 @@ namespace UIEditor
 			{
 				pW.mx_treeCtrlFrame.Items.Clear();
 				pW.mx_treeSkinFrame.Items.Clear();
+				pW.mx_xmlText.Document = new FlowDocument();
 			}
 			pW.hiddenAllAttr();
 		}

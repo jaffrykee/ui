@@ -53,12 +53,12 @@ namespace UIEditor.BoloUI
 			{
 				Paragraph para = (Paragraph)m_runXeName.Parent;
 
-				if(para.Parent != null &&
+				if (para.Parent != null &&
 					para.Parent is FlowDocument)
 				{
 					FlowDocument fDoc = (FlowDocument)para.Parent;
 
-					if(fDoc.Parent != null &&
+					if (fDoc.Parent != null &&
 						fDoc.Parent == MainWindow.s_pW.mx_xmlText)
 					{
 						MainWindow.s_pW.mx_xmlText.Focus();
@@ -87,7 +87,7 @@ namespace UIEditor.BoloUI
 
 		public void refreshItemMenu()
 		{
-			switch(m_type)
+			switch (m_type)
 			{
 				case "CtrlUI":
 					{
@@ -181,7 +181,7 @@ namespace UIEditor.BoloUI
 		public bool canCut()
 		{
 			refreshItemMenu();
-			if(mx_cut.IsEnabled == true && mx_cut.Visibility == System.Windows.Visibility.Visible)
+			if (mx_cut.IsEnabled == true && mx_cut.Visibility == System.Windows.Visibility.Visible)
 			{
 				return true;
 			}
@@ -294,7 +294,7 @@ namespace UIEditor.BoloUI
 					}
 					else
 					{
-						if(m_type == "CtrlUI")
+						if (m_type == "CtrlUI")
 						{
 							CtrlDef_T panelCtrlDef;
 
@@ -317,13 +317,13 @@ namespace UIEditor.BoloUI
 									);
 							}
 						}
-						else if(m_type == "Skin")
+						else if (m_type == "Skin")
 						{
 							SkinDef_T skinDef;
-							if(MainWindow.s_pW.m_mapSkinAllDef.TryGetValue(m_xe.Name, out skinDef))
+							if (MainWindow.s_pW.m_mapSkinAllDef.TryGetValue(m_xe.Name, out skinDef))
 							{
 								SkinDef_T skinChildDef;
-								if(skinDef.m_mapEnChild != null && skinDef.m_mapEnChild.Count > 0
+								if (skinDef.m_mapEnChild != null && skinDef.m_mapEnChild.Count > 0
 									&& skinDef.m_mapEnChild.TryGetValue(treeChild.m_xe.Name, out skinChildDef))
 								{
 									m_rootControl.m_openedFile.m_lstOpt.addOperation(
@@ -332,7 +332,7 @@ namespace UIEditor.BoloUI
 								}
 								else
 								{
-									if(m_xe.ParentNode.NodeType == XmlNodeType.Element)
+									if (m_xe.ParentNode.NodeType == XmlNodeType.Element)
 									{
 										if (((XmlElement)m_xe.ParentNode).Name == "BoloUI" &&
 											MainWindow.s_pW.m_mapSkinTreeDef.TryGetValue(treeChild.m_xe.Name, out skinChildDef))
@@ -420,7 +420,7 @@ namespace UIEditor.BoloUI
 
 		private void showTmpl(MenuItem ctrlMenuItem, XmlElement xeTmpls, string addStr)
 		{
-			if(ctrlMenuItem.Items.Count == 0)
+			if (ctrlMenuItem.Items.Count == 0)
 			{
 				MenuItem emptyCtrl = new MenuItem();
 
@@ -502,6 +502,51 @@ namespace UIEditor.BoloUI
 				showTmpl(ctrlMenuItem, xeTmpls, addStr);
 			}
 
+			if (addStr == "event")
+			{
+				CtrlDef_T ctrlDef;
+				XmlNode xnTmpls = MainWindow.s_pW.m_docConf.SelectSingleNode("Config").SelectSingleNode("template");
+
+				if (xnTmpls != null)
+				{
+					if (MainWindow.s_pW.m_mapCtrlDef.TryGetValue(m_xe.Name, out ctrlDef) && ctrlDef != null)
+					{
+						//控件节点的事件模板
+						if(ctrlDef.m_hasPointerEvent)
+						{
+							XmlNode xnPoi = xnTmpls.SelectSingleNode("eventTmpls_pointer");
+
+							if (xnPoi != null && xnPoi.NodeType == XmlNodeType.Element)
+							{
+								isNull = false;
+								XmlElement xePoi = (XmlElement)xnPoi;
+
+								showTmpl(ctrlMenuItem, xePoi, addStr);
+							}
+						}
+						XmlNode xnBasic = xnTmpls.SelectSingleNode("eventTmpls_basic");
+
+						if (xnBasic != null && xnBasic.NodeType == XmlNodeType.Element)
+						{
+							isNull = false;
+							XmlElement xeBasic = (XmlElement)xnBasic;
+
+							showTmpl(ctrlMenuItem, xeBasic, addStr);
+						}
+					}
+					//所有节点的事件模板
+					XmlNode xnCtrl = xnTmpls.SelectSingleNode("eventTmpls_" + m_xe.Name);
+
+					if (xnCtrl != null && xnCtrl.NodeType == XmlNodeType.Element)
+					{
+						isNull = false;
+						XmlElement xeCtrl = (XmlElement)xnCtrl;
+
+						showTmpl(ctrlMenuItem, xeCtrl, addStr);
+					}
+				}
+			}
+
 			if (MainWindow.s_pW.m_docProj.SelectSingleNode("BoloUIProj").SelectSingleNode("template") != null &&
 				MainWindow.s_pW.m_docProj.SelectSingleNode("BoloUIProj").SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls") != null)
 			{
@@ -524,7 +569,7 @@ namespace UIEditor.BoloUI
 		}
 		private void mx_addNode_Loaded(object sender, RoutedEventArgs e)
 		{
-			if(m_type == "CtrlUI")
+			if (m_type == "CtrlUI")
 			{
 				CtrlDef_T panelCtrlDef;
 
@@ -615,34 +660,34 @@ namespace UIEditor.BoloUI
 		}
 		void insertCtrlItem_Click(object sender, RoutedEventArgs e)
 		{
-			switch(sender.GetType().ToString())
+			switch (sender.GetType().ToString())
 			{
 				case "System.Windows.Controls.MenuItem":
-				{
-					MenuItem ctrlItem = (MenuItem)sender;
-					XmlElement newXe = m_xe.OwnerDocument.CreateElement(ctrlItem.ToolTip.ToString());
-					BoloUI.Basic treeChild = new BoloUI.Basic(newXe, m_rootControl);
-
-					m_rootControl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe));
-				}
-				break;
-				case "UIEditor.BoloUI.CtrlTemplate":
-				{
-					BoloUI.CtrlTemplate ctrlItem = (BoloUI.CtrlTemplate)sender;
-					XmlDocument newDoc = new XmlDocument();
-					XmlElement newXe = m_xe.OwnerDocument.CreateElement("tmp");
-
-					if (ctrlItem.ToolTip.ToString() != "")
 					{
-						newXe.InnerXml = ctrlItem.ToolTip.ToString();
-						if(newXe.FirstChild.NodeType == XmlNodeType.Element)
+						MenuItem ctrlItem = (MenuItem)sender;
+						XmlElement newXe = m_xe.OwnerDocument.CreateElement(ctrlItem.ToolTip.ToString());
+						BoloUI.Basic treeChild = new BoloUI.Basic(newXe, m_rootControl);
+
+						m_rootControl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe));
+					}
+					break;
+				case "UIEditor.BoloUI.CtrlTemplate":
+					{
+						BoloUI.CtrlTemplate ctrlItem = (BoloUI.CtrlTemplate)sender;
+						XmlDocument newDoc = new XmlDocument();
+						XmlElement newXe = m_xe.OwnerDocument.CreateElement("tmp");
+
+						if (ctrlItem.ToolTip.ToString() != "")
 						{
-							BoloUI.Basic treeChild = new BoloUI.Basic((XmlElement)newXe.FirstChild, m_rootControl);
-							m_rootControl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe));
+							newXe.InnerXml = ctrlItem.ToolTip.ToString();
+							if (newXe.FirstChild.NodeType == XmlNodeType.Element)
+							{
+								BoloUI.Basic treeChild = new BoloUI.Basic((XmlElement)newXe.FirstChild, m_rootControl);
+								m_rootControl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe));
+							}
 						}
 					}
-				}
-				break;
+					break;
 			}
 		}
 		private void mx_addTmpl_Click(object sender, RoutedEventArgs e)

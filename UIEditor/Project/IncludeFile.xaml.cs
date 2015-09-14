@@ -76,114 +76,133 @@ namespace UIEditor.Project
 				MainWindow.s_pW.openFileByPath(m_path);
 			}
 		}
-		private void pngFileDeal(object pngItem, string type)
+		private void movePngFile(string oldPath, string newPath)
 		{
-			if(type != "delete")
+			string newFolder = System.IO.Path.GetDirectoryName(newPath);
+
+			if (System.IO.File.Exists(oldPath))
 			{
-				if (pngItem.GetType().ToString() == "System.Windows.Controls.MenuItem")
+				try
 				{
-					MenuItem clickItem = (MenuItem)pngItem;
-					string newFolder = clickItem.ToolTip.ToString();
-
-					if (System.IO.Directory.Exists(newFolder))
-					{
-						string newPath = newFolder + "\\" + System.IO.Path.GetFileName(m_path);
-
-						if (!System.IO.File.Exists(newPath))
-						{
-							switch(type)
-							{
-								case "moveTo":
-									{
-										if (System.IO.File.Exists(m_path))
-										{
-											try
-											{
-												System.IO.File.Move(m_path, newPath);
-											}
-											catch
-											{
-												return;
-											}
-											deleteSelf();
-
-											IncludeFile newFolderDef;
-
-											if (MainWindow.s_pW.m_mapIncludeFiles.TryGetValue(System.IO.Path.GetDirectoryName(newPath), out newFolderDef))
-											{
-												newFolderDef.AddChild(new IncludeFile(newPath));
-											}
-											string newResPath = MainWindow.s_pW.m_projPath + "\\images\\" + System.IO.Path.GetFileName(newFolder) + ".xml";
-											FileInfo fi = new FileInfo(m_path);
-											string oldResPath = MainWindow.s_pW.m_projPath + "\\images\\" + System.IO.Path.GetFileName(fi.DirectoryName) + ".xml";
-
-											//重新打包
-											ImageTools.ImageNesting.pngToTgaRectNesting(fi.DirectoryName);
-											ImageTools.ImageNesting.pngToTgaRectNesting(newFolder);
-											//刷新皮肤的引用
-											ImageTools.ImageNesting.moveImageLink(
-												System.IO.Path.GetFileNameWithoutExtension(m_path),
-												System.IO.Path.GetFileNameWithoutExtension(m_path),
-												System.IO.Path.GetFileName(fi.DirectoryName),
-												System.IO.Path.GetFileName(newFolder));
-										}
-									}
-									break;
-								case "copyTo":
-									{
-										if (System.IO.File.Exists(m_path))
-										{
-											try
-											{
-												System.IO.File.Copy(m_path, newPath);
-											}
-											catch
-											{
-												return;
-											}
-
-											IncludeFile newFolderDef;
-
-											if (MainWindow.s_pW.m_mapIncludeFiles.TryGetValue(System.IO.Path.GetDirectoryName(newPath), out newFolderDef))
-											{
-												newFolderDef.AddChild(new IncludeFile(newPath));
-											}
-											string newResPath = MainWindow.s_pW.m_projPath + "\\images\\" + System.IO.Path.GetFileName(newFolder) + ".xml";
-
-											//重新打包
-											ImageTools.ImageNesting.pngToTgaRectNesting(newFolder);
-										}
-									}
-									break;
-								default:
-									return;
-							}
-						}
-						else
-						{
-							MessageBox.Show("新路径已有同名文件。", "文件名冲突", MessageBoxButton.OK, MessageBoxImage.Error);
-							return;
-						}
-					}
+					System.IO.File.Move(oldPath, newPath);
 				}
-			}
-			else
-			{
+				catch
+				{
+					return;
+				}
 				deleteSelf();
-				FileInfo fi = new FileInfo(m_path);
+
+				IncludeFile newFolderDef;
+
+				if (MainWindow.s_pW.m_mapIncludeFiles.TryGetValue(System.IO.Path.GetDirectoryName(newPath), out newFolderDef))
+				{
+					newFolderDef.AddChild(new IncludeFile(newPath));
+				}
+				string newResPath = MainWindow.s_pW.m_projPath + "\\images\\" + System.IO.Path.GetFileName(newFolder) + ".xml";
+				FileInfo fi = new FileInfo(oldPath);
 				string oldResPath = MainWindow.s_pW.m_projPath + "\\images\\" + System.IO.Path.GetFileName(fi.DirectoryName) + ".xml";
 
 				//重新打包
 				ImageTools.ImageNesting.pngToTgaRectNesting(fi.DirectoryName);
+				ImageTools.ImageNesting.pngToTgaRectNesting(newFolder);
+				//刷新皮肤的引用
+				ImageTools.ImageNesting.moveImageLink(
+					System.IO.Path.GetFileNameWithoutExtension(oldPath),
+					System.IO.Path.GetFileNameWithoutExtension(newPath),
+					System.IO.Path.GetFileName(fi.DirectoryName),
+					System.IO.Path.GetFileName(newFolder));
 			}
 		}
-		private void mx_moveToChild_Click(object sender, RoutedEventArgs e)
+		private void pngFileDeal(object pngItem, string type)
 		{
-			pngFileDeal(sender, "moveTo");
-		}
-		private void mx_copyToChild_Click(object sender, RoutedEventArgs e)
-		{
-			pngFileDeal(sender, "copyTo");
+			switch(type)
+			{
+				case "delete":
+					{
+						deleteSelf();
+						FileInfo fi = new FileInfo(m_path);
+						string oldResPath = MainWindow.s_pW.m_projPath + "\\images\\" + System.IO.Path.GetFileName(fi.DirectoryName) + ".xml";
+
+						//重新打包
+						ImageTools.ImageNesting.pngToTgaRectNesting(fi.DirectoryName);
+					}
+					break;
+				case "rename":
+					{
+						string oldFileName = mx_radio.Content.ToString();
+						mx_tbRename.Visibility = System.Windows.Visibility.Visible;
+						mx_radio.Visibility = System.Windows.Visibility.Collapsed;
+						if (oldFileName.IndexOf('_') == 0)
+						{
+							mx_tbRename.Text = oldFileName.Substring(1, oldFileName.Length - 1);
+						}
+						else
+						{
+							mx_tbRename.Text = oldFileName;
+						}
+						mx_tbRename.Focus();
+					}
+					break;
+				default:
+					{
+						if (pngItem.GetType().ToString() == "System.Windows.Controls.MenuItem")
+						{
+							MenuItem clickItem = (MenuItem)pngItem;
+							string newFolder = clickItem.ToolTip.ToString();
+
+							if (System.IO.Directory.Exists(newFolder))
+							{
+								string newPath = newFolder + "\\" + System.IO.Path.GetFileName(m_path);
+
+								if (!System.IO.File.Exists(newPath))
+								{
+									switch (type)
+									{
+										case "moveTo":
+											{
+												movePngFile(m_path, newPath);
+											}
+											break;
+										case "copyTo":
+											{
+												if (System.IO.File.Exists(m_path))
+												{
+													try
+													{
+														System.IO.File.Copy(m_path, newPath);
+													}
+													catch
+													{
+														return;
+													}
+
+													IncludeFile newFolderDef;
+
+													if (MainWindow.s_pW.m_mapIncludeFiles.TryGetValue(System.IO.Path.GetDirectoryName(newPath), out newFolderDef))
+													{
+														newFolderDef.AddChild(new IncludeFile(newPath));
+													}
+													string newResPath = MainWindow.s_pW.m_projPath + "\\images\\" + System.IO.Path.GetFileName(newFolder) + ".xml";
+
+													//重新打包
+													ImageTools.ImageNesting.pngToTgaRectNesting(newFolder);
+												}
+											}
+											break;
+										default:
+											return;
+									}
+								}
+								else
+								{
+									MessageBox.Show("新路径已有同名文件。", "文件名冲突", MessageBoxButton.OK, MessageBoxImage.Error);
+									return;
+								}
+							}
+						}
+					}
+					break;
+			}
 		}
 		private static void addResFolderToMenu(DirectoryInfo imgDri, MenuItem menuItem, RoutedEventHandler clickEvent)
 		{
@@ -198,6 +217,25 @@ namespace UIEditor.Project
 				menuItem.Items.Add(childItem);
 			}
 		}
+		public void refreshMenuItem(bool isImage)
+		{
+			if(isImage)
+			{
+				mx_moveTo.Visibility = System.Windows.Visibility.Visible;
+				mx_copyTo.Visibility = System.Windows.Visibility.Visible;
+				mx_delete.Visibility = System.Windows.Visibility.Visible;
+				mx_rename.Visibility = System.Windows.Visibility.Visible;
+				mx_spImg.Visibility = System.Windows.Visibility.Visible;
+			}
+			else
+			{
+				mx_moveTo.Visibility = System.Windows.Visibility.Collapsed;
+				mx_copyTo.Visibility = System.Windows.Visibility.Collapsed;
+				mx_delete.Visibility = System.Windows.Visibility.Collapsed;
+				mx_rename.Visibility = System.Windows.Visibility.Collapsed;
+				mx_spImg.Visibility = System.Windows.Visibility.Collapsed;
+			}
+		}
 		private void mx_menu_Loaded(object sender, RoutedEventArgs e)
 		{
 			if(File.Exists(m_path))
@@ -209,10 +247,7 @@ namespace UIEditor.Project
 					if (fi.Directory.Parent.Name == "images" &&
 						fi.Directory.Parent.Parent.FullName == MainWindow.s_pW.m_projPath)
 					{
-						mx_moveTo.Visibility = System.Windows.Visibility.Visible;
-						mx_copyTo.Visibility = System.Windows.Visibility.Visible;
-						mx_delete.Visibility = System.Windows.Visibility.Visible;
-
+						refreshMenuItem(true);
 						addResFolderToMenu(fi.Directory.Parent, mx_moveTo, mx_moveToChild_Click);
 						addResFolderToMenu(fi.Directory.Parent, mx_copyTo, mx_copyToChild_Click);
 
@@ -224,18 +259,49 @@ namespace UIEditor.Project
 
 				}
 			}
-			mx_moveTo.Visibility = System.Windows.Visibility.Collapsed;
-			mx_copyTo.Visibility = System.Windows.Visibility.Collapsed;
-			mx_delete.Visibility = System.Windows.Visibility.Collapsed;
+			refreshMenuItem(false);
 		}
 		private void mx_newFile_Click(object sender, RoutedEventArgs e)
 		{
 			NewFileWin winNewFile = new NewFileWin(".\\data\\Template\\");
 			winNewFile.ShowDialog();
 		}
+		private void mx_moveToChild_Click(object sender, RoutedEventArgs e)
+		{
+			pngFileDeal(sender, "moveTo");
+		}
+		private void mx_copyToChild_Click(object sender, RoutedEventArgs e)
+		{
+			pngFileDeal(sender, "copyTo");
+		}
 		private void mx_delete_Click(object sender, RoutedEventArgs e)
 		{
 			pngFileDeal(sender, "delete");
+		}
+		private void mx_rename_Click(object sender, RoutedEventArgs e)
+		{
+			pngFileDeal(sender, "rename");
+		}
+
+		private void mx_tbRename_LostFocus(object sender, RoutedEventArgs e)
+		{
+			if(mx_tbRename.Text != mx_radio.Content.ToString())
+			{
+				string newPath = System.IO.Path.GetDirectoryName(m_path) + "\\" + mx_tbRename.Text;
+
+				movePngFile(m_path, newPath);
+			}
+			mx_radio.Visibility = System.Windows.Visibility.Visible;
+			mx_tbRename.Visibility = System.Windows.Visibility.Collapsed;
+		}
+		private void mx_tbRename_KeyDown(object sender, KeyEventArgs e)
+		{
+			if(e.Key == Key.Return)
+			{
+				mx_radio.Visibility = System.Windows.Visibility.Visible;
+				mx_tbRename.Visibility = System.Windows.Visibility.Collapsed;
+				mx_radio.Focus();
+			}
 		}
 	}
 }

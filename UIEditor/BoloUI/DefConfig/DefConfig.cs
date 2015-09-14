@@ -163,6 +163,7 @@ namespace UIEditor.BoloUI.DefConfig
 								string isFrame = xeCtrl.GetAttribute("isFrame");
 								string isBasic = xeCtrl.GetAttribute("isBasic");
 								string hasBasic = xeCtrl.GetAttribute("hasBasic");
+								string hasPointerEvent = xeCtrl.GetAttribute("hasPointerEvent");
 								string enInsert = xeCtrl.GetAttribute("enInsert");
 
 								ctrlDef = new CtrlDef_T(mapAttrDef, null);
@@ -192,6 +193,14 @@ namespace UIEditor.BoloUI.DefConfig
 								{
 									ctrlDef.m_hasBasic = true;
 									pW.m_mapHasBasicCtrlDef.Add(keyCtrl, ctrlDef);
+								}
+								if (hasPointerEvent == "false")
+								{
+									ctrlDef.m_hasPointerEvent = false;
+								}
+								else
+								{
+									ctrlDef.m_hasPointerEvent = true;
 								}
 								if (enInsert == "false")
 								{

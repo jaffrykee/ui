@@ -102,7 +102,7 @@ namespace UIEditor.BoloUI
 
 				if (ctrlTip != "")
 				{
-					mx_radio.ToolTip = ctrlTip;
+					mx_radio.ToolTip = m_xe.Name + "\r\n" + ctrlTip;
 				}
 				else
 				{
@@ -253,15 +253,41 @@ namespace UIEditor.BoloUI
 			}
 			gotoSelectXe();
 		}
+		private bool checkXeIsVisible(XmlElement xe)
+		{
+			for(XmlNode xn = xe; xn.NodeType == XmlNodeType.Element; xn = xn.ParentNode)
+			{
+				XmlElement xeRet = (XmlElement)xn;
+
+				if(xeRet.GetAttribute("visible") == "false")
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
 		public bool checkPointInFence(int x, int y)
 		{
-			if(x >= m_selX && y >= m_selY)
+			if (MainWindow.s_pW.mx_isShowAll.IsChecked == false && m_xe.GetAttribute("visible") == "false")
 			{
-				if(x <= m_selX + m_selW && y <= m_selY + m_selH)
+				return false;
+			}
+			if (MainWindow.s_pW.mx_isShowAll.IsChecked == false)
+			{
+				if (!checkXeIsVisible(m_xe))
+				{
+					return false;
+				}
+			}
+			if (x >= m_selX && y >= m_selY)
+			{
+				if (x <= m_selX + m_selW && y <= m_selY + m_selH)
 				{
 					return true;
 				}
 			}
+
 			return false;
 		}
 	}

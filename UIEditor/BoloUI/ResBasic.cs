@@ -186,7 +186,7 @@ namespace UIEditor.BoloUI
 
 				if (ctrlTip != "")
 				{
-					mx_radio.ToolTip = ctrlTip;
+					mx_radio.ToolTip = m_xe.Name + "\r\n" + ctrlTip;
 				}
 				else
 				{

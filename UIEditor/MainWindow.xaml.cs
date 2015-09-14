@@ -2096,7 +2096,6 @@ namespace UIEditor
 				}
 			}
 		}
-
 		void mx_bupItem_Click(object sender, RoutedEventArgs e)
 		{
 			if(sender is System.Windows.Controls.MenuItem)

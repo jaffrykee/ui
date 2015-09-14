@@ -6,18 +6,27 @@
 			  mc:Ignorable="d"
 			  Name="mx_root">
 	<TreeViewItem.Header>
-		<RadioButton Name="mx_radio"
+		<Grid>
+			<RadioButton Name="mx_radio"
 					 GroupName="fileTree"
 					 Padding="0,2,0,2"
 					 Style="{StaticResource RadioTeml_Mt}"
 					 MouseDoubleClick="mx_radio_MouseDoubleClick"/>
+			<TextBox Name="mx_tbRename"
+					 Visibility="Collapsed"
+					 KeyDown="mx_tbRename_KeyDown"
+					 LostFocus="mx_tbRename_LostFocus">
+			</TextBox>
+		</Grid>
 	</TreeViewItem.Header>
 	<TreeViewItem.ContextMenu>
 		<ContextMenu Name="mx_menu" Loaded="mx_menu_Loaded">
+			<MenuItem Name="mx_newFile" Header="新建..." Click="mx_newFile_Click"/>
+			<Separator Name="mx_spImg" Visibility="Collapsed"/>
 			<MenuItem Name="mx_moveTo" Header="移动到" Visibility="Collapsed"/>
 			<MenuItem Name="mx_copyTo" Header="复制到" Visibility="Collapsed"/>
 			<MenuItem Name="mx_delete" Header="删除" Visibility="Collapsed" Click="mx_delete_Click"/>
-			<MenuItem Name="mx_newFile" Header="新建..." Click="mx_newFile_Click"/>
+			<MenuItem Name="mx_rename" Header="重命名" Visibility="Collapsed" Click="mx_rename_Click"/>
 		</ContextMenu>
 	</TreeViewItem.ContextMenu>
 </TreeViewItem>
