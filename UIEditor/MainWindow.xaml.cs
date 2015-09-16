@@ -151,7 +151,6 @@ namespace UIEditor
 			m_isCanEdit = true;
 			m_tLast = 0;
 			m_hitCount = 0;
-			m_msgHitCount = 0;
 
 			InitializeComponent();
 
@@ -1330,7 +1329,7 @@ namespace UIEditor
 		}
 
 		//立即更新GL端
-		public void updateXmlToGLAtOnce(XmlControl xmlCtrl, XmlElement xePlus = null, bool isCtrlUI = false)
+		public void updateXmlToGL(XmlControl xmlCtrl, XmlElement xePlus = null, bool isCtrlUI = false)
 		{
 			string path = xmlCtrl.m_openedFile.m_path;
 			XmlDocument doc = xmlCtrl.m_xmlDoc;
@@ -1388,21 +1387,6 @@ namespace UIEditor
 			updateGL(fileName, W2GTag.W2G_NORMAL_NAME);
 			updateGL(buffer, W2GTag.W2G_NORMAL_DATA);
 			xmlCtrl.refreshVRect();
-		}
-		private int m_msgHitCount;
-		private bool m_msgHavNew;
-		private XmlControl m_msgXmlCtrl;
-		private XmlElement m_msgXePlus;
-		private bool m_msgIsCtrlUI;
-		public XmlItem m_dstItem;
-		//延时一定时间更新GL端
-		public void updateXmlToGL(XmlControl xmlCtrl, XmlElement xePlus = null, bool isCtrlUI = false, int msgHitCount = 0)
-		{
-			m_msgHitCount = msgHitCount;
-			m_msgHavNew = true;
-			m_msgXmlCtrl = xmlCtrl;
-			m_msgXePlus = xePlus;
-			m_msgIsCtrlUI = isCtrlUI;
 		}
 
 		#region 资源读取
@@ -1898,7 +1882,7 @@ namespace UIEditor
 
 					if (xmlDef.m_xmlDoc != null && xmlDef.m_xmlDoc.DocumentElement.Name == "BoloUI" && xmlDef.m_isOnlySkin == false)
 					{
-						updateXmlToGLAtOnce(xmlDef);
+						updateXmlToGL(xmlDef);
 					}
 				}
 			}
@@ -1998,23 +1982,6 @@ namespace UIEditor
 		}
 		private void m_textTimer_Tick(object send, EventArgs e)
 		{
-			if (m_msgHitCount < 5)
-			{
-				m_msgHitCount++;
-			}
-			else
-			{
-				if (m_msgHavNew == true)
-				{
-					m_msgHavNew = false;
-					updateXmlToGLAtOnce(m_msgXmlCtrl, m_msgXePlus, m_msgIsCtrlUI);
-					XmlOperation.HistoryList.refreshItemHeader(MainWindow.s_pW.m_dstItem);
-					if (m_msgXmlCtrl != null)
-					{
-						m_msgXmlCtrl.refreshXmlText();
-					}
-				}
-			}
 			if(m_hitCount < 5)
 			{
 				m_hitCount++;
@@ -2048,7 +2015,8 @@ namespace UIEditor
 							if (XmlControl.getOutXml(xmlCtrl.m_xmlDoc) != XmlControl.getOutXml(newDoc))
 							{
 								fileDef.m_lstOpt.addOperation(new XmlOperation.HistoryNode(xmlCtrl.m_xmlDoc, newDoc));
-								//xmlCtrl.refreshXmlText();
+								xmlCtrl.resetXmlItemLink();
+								//xmlCtrl.refreshXmlText(mx_xmlText.CaretPosition.GetOffsetToPosition(mx_xmlText.Document.Blocks.First().ElementStart));
 							}
 						}
 					}

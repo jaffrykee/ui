@@ -29,8 +29,6 @@ namespace UIEditor
 		public Dictionary<string, ComboBoxItem> m_mapCbiApprPre;
 		public Dictionary<string, ComboBoxItem> m_mapCbiApprSuf;
 
-		private bool m_eventLock;
-
 		public string m_name
 		{
 			get { return mt_name; }
@@ -118,7 +116,7 @@ namespace UIEditor
 		}
 		private void setValue(bool isPre, string value)
 		{
-			if (mt_value != value && m_eventLock == false)
+			if (mt_value != value)
 			{
 				if (!isPre && m_parent != null && m_parent.m_xmlCtrl != null &&
 					m_parent.m_xe != null && m_parent.m_xmlCtrl.m_openedFile != null &&
@@ -128,7 +126,6 @@ namespace UIEditor
 				}
 				mt_value = value;
 				mx_value.Text = value;
-				m_eventLock = true;
 				if (!m_isEnum)
 				{
 					if (m_subType != null && m_subType != "")
@@ -220,7 +217,6 @@ namespace UIEditor
 						mx_defaultEnum.IsSelected = true;
 					}
 				}
-				m_eventLock = false;
 			}
 		}
 		public string m_preValue
@@ -323,7 +319,6 @@ namespace UIEditor
 			m_mapEnum = null;
 			m_isCommon = false;
 			m_subType = "";
-			m_eventLock = false;
 
 			m_name = mt_name;
 			m_preValue = mt_value;
@@ -339,13 +334,23 @@ namespace UIEditor
 			m_mapEnum = attrDef.m_mapEnum;
 			m_isCommon = attrDef.m_isCommon;
 			m_subType = attrDef.m_subType;
-			m_eventLock = false;
 
 			m_name = name;
 			m_preValue = value;
 			m_type = attrDef.m_type;
 		}
 
+		private void mx_value_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.Return)
+			{
+				m_value = mx_value.Text;
+			}
+		}
+		private void mx_value_LostFocus(object sender, RoutedEventArgs e)
+		{
+			m_value = mx_value.Text;
+		}
 		private void mx_value_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			if (mx_value.Text == "")
@@ -358,7 +363,6 @@ namespace UIEditor
 				mx_valueDef.Visibility = Visibility.Hidden;
 				mx_link.Content = "跳转";
 			}
-			m_value = mx_value.Text;
 		}
 		private void mx_defaultBool_Unchecked(object sender, RoutedEventArgs e)
 		{

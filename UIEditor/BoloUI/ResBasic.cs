@@ -308,7 +308,7 @@ namespace UIEditor.BoloUI
 							resetXeView(m_rootControl.m_skinViewCtrlUI.m_xe, out xeView);
 						}
 						((XmlElement)xeView).SetAttribute("skin", xeSkin.GetAttribute("Name"));
-						MainWindow.s_pW.updateXmlToGLAtOnce(m_rootControl, xeView, false);
+						MainWindow.s_pW.updateXmlToGL(m_rootControl, xeView, false);
 					}
 					//todo 更改皮肤预览
 				}

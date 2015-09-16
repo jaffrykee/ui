@@ -26,16 +26,18 @@
 			<Grid>
 				<Grid Background="#ffffffff" Margin="2"></Grid>
 				<TextBlock Name="mx_valueDef"
-							   Foreground="#ffaaaaaa"
-							   Background="#ffffffff"
-							   Margin="5"
-							   Text="[默认值]"/>
+						   Foreground="#ffaaaaaa"
+						   Background="#ffffffff"
+						   Margin="5"
+						   Text="[默认值]"/>
 				<TextBox Name="mx_value"
-							 Width="{Binding ElementName=mx_c2, Path=Width}"
-							 CaretBrush="Black"
-							 Background="#00000000"
-							 Margin="2"
-							 TextChanged="mx_value_TextChanged"/>
+						 Width="{Binding ElementName=mx_c2, Path=Width}"
+						 CaretBrush="Black"
+						 Background="#00000000"
+						 Margin="2"
+						 KeyDown="mx_value_KeyDown"
+						 LostFocus="mx_value_LostFocus"
+						 TextChanged="mx_value_TextChanged"/>
 			</Grid>
 			<Grid Name="mx_skinFrame" Grid.Column="1">
 				<WrapPanel>

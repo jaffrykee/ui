@@ -57,6 +57,24 @@ namespace UIEditor.XmlOperation
 			redoOperation(true);
 			m_xmlCtrl.m_openedFile.updateSaveStatus();
 		}
+		static public void updateAttrToGL(XmlControl xmlCtrl, string baseID, string attrName, string newValue)
+		{
+			switch (attrName)
+			{
+				case "skin":
+					{
+						MainWindow.s_pW.updateGL(System.IO.Path.GetFileName(xmlCtrl.m_openedFile.m_path) +
+							":" + baseID + ":" + attrName + ":" +
+							newValue, W2GTag.W2G_NORMAL_UPDATE);
+					}
+					break;
+				default:
+					{
+						MainWindow.s_pW.updateXmlToGL(xmlCtrl);
+					}
+					break;
+			}
+		}
 		public void redoOperation(bool isAddOpt = false)
 		{
 			switch (m_curNode.Value.m_optType)
@@ -119,7 +137,7 @@ namespace UIEditor.XmlOperation
 			{
 				XmlElement xeView;
 
-				if(m_xmlCtrl.m_skinViewCtrlUI != null && m_xmlCtrl.m_skinViewCtrlUI.m_xe != null)
+				if (m_xmlCtrl.m_skinViewCtrlUI != null && m_xmlCtrl.m_skinViewCtrlUI.m_xe != null)
 				{
 					BoloUI.ResBasic.resetXeView(m_xmlCtrl.m_skinViewCtrlUI.m_xe, out xeView);
 				}
@@ -128,10 +146,32 @@ namespace UIEditor.XmlOperation
 					xeView = MainWindow.s_pW.m_xeTest;
 				}
 				m_pW.updateXmlToGL(m_xmlCtrl, xeView, false);
+				XmlItem dstItem;
+
+				if (m_xmlCtrl.m_mapXeItem.TryGetValue(m_curNode.Value.m_dstXe, out dstItem))
+				{
+					dstItem.initHeader();
+				}
 			}
 			else
 			{
-				m_pW.updateXmlToGL(m_xmlCtrl);
+				XmlItem dstItem;
+
+				if (m_xmlCtrl.m_mapXeItem.TryGetValue(m_curNode.Value.m_dstXe, out dstItem))
+				{
+					dstItem.initHeader();
+				}
+
+				if (m_curNode.Value.m_optType == XmlOptType.NODE_UPDATE && dstItem != null && dstItem.m_type == "CtrlUI")
+				{
+					Basic ctrlItem = (Basic)dstItem;
+
+					updateAttrToGL(m_xmlCtrl, ctrlItem.m_vId, m_curNode.Value.m_attrName, m_curNode.Value.m_newValue);
+				}
+				else
+				{
+					m_pW.updateXmlToGL(m_xmlCtrl);
+				}
 			}
 
 			if (!isAddOpt)
@@ -140,13 +180,26 @@ namespace UIEditor.XmlOperation
 
 				if (m_xmlCtrl.m_mapXeItem.TryGetValue(m_curNode.Value.m_dstXe, out dstItem))
 				{
-					MainWindow.s_pW.m_dstItem = dstItem;
-				}
-				else
-				{
-					MainWindow.s_pW.m_dstItem = null;
+					if (dstItem != null)
+					{
+						switch (dstItem.m_type)
+						{
+							case "CtrlUI":
+								((BoloUI.Basic)dstItem).changeSelectItem();
+								m_pW.refreshAllCtrlUIHeader();
+								break;
+							case "Skin":
+								((BoloUI.ResBasic)dstItem).changeSelectItem();
+								m_pW.refreshAllSkinHeader();
+								break;
+							default:
+								break;
+						}
+					}
 				}
 			}
+
+			m_xmlCtrl.refreshXmlText();
 		}
 		static public void refreshItemHeader(XmlItem dstItem)
 		{
@@ -225,14 +278,40 @@ namespace UIEditor.XmlOperation
 				default:
 					return;
 			}
-			m_pW.updateXmlToGL(m_xmlCtrl);
+			XmlItem dstItem = null;
 
-			XmlItem dstItem;
-
-			if (m_xmlCtrl.m_mapXeItem.TryGetValue(m_curNode.Value.m_dstXe, out dstItem))
+			m_xmlCtrl.m_mapXeItem.TryGetValue(m_curNode.Value.m_dstXe, out dstItem);
+			if (m_curNode.Value.m_optType == XmlOptType.NODE_UPDATE && dstItem != null && dstItem.m_type == "CtrlUI")
 			{
-				MainWindow.s_pW.m_dstItem = dstItem;
+				Basic ctrlItem = (Basic)dstItem;
+
+				updateAttrToGL(m_xmlCtrl, ctrlItem.m_vId, m_curNode.Value.m_attrName, m_curNode.Value.m_oldValue);
 			}
+			else
+			{
+				m_pW.updateXmlToGL(m_xmlCtrl);
+			}
+
+			if (dstItem != null)
+			{
+				switch (dstItem.m_type)
+				{
+					case "CtrlUI":
+						((BoloUI.Basic)dstItem).changeSelectItem();
+						m_pW.refreshAllCtrlUIHeader();
+						dstItem.initHeader();
+						break;
+					case "Skin":
+						((BoloUI.ResBasic)dstItem).changeSelectItem();
+						m_pW.refreshAllSkinHeader();
+						dstItem.initHeader();
+						break;
+					default:
+						break;
+				}
+			}
+
+			m_xmlCtrl.refreshXmlText();
 		}
 		public void undo()
 		{

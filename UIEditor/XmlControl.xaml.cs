@@ -360,7 +360,7 @@ namespace UIEditor
 
 			return retStr;
 		}
-		public void refreshXmlText()
+		public void refreshXmlText(int offset = 0)
 		{
 			MainWindow.s_pW.m_isCanEdit = false;
 			if(MainWindow.s_pW.mx_xmlText.Document == null)
@@ -388,8 +388,101 @@ namespace UIEditor
 				MainWindow.s_pW.mx_xmlText.Document.Blocks.Add(para);
 				MainWindow.s_pW.mx_xmlText.IsEnabled = true;
 			}
+			if (offset != 0)
+			{
+				TextPointer curPoi = MainWindow.s_pW.mx_xmlText.Document.Blocks.First().ElementStart.GetPositionAtOffset(-offset);
+
+				if (curPoi != null)
+				{
+					MainWindow.s_pW.mx_xmlText.CaretPosition = curPoi;
+				}
+			}
 
 			MainWindow.s_pW.m_isCanEdit = true;
+		}
+		static public XmlElement getNextXmlElement(XmlElement xe)
+		{
+			if(xe.FirstChild != null)
+			{
+				if(xe.FirstChild.NodeType == XmlNodeType.Element)
+				{
+					return (XmlElement)xe.FirstChild;
+				}
+				else
+				{
+					for (XmlNode xn = xe.FirstChild.NextSibling; xn != null; xn = xn.NextSibling)
+					{
+						if(xn.NodeType == XmlNodeType.Element)
+						{
+							return (XmlElement)xn;
+						}
+					}
+				}
+			}
+			for (XmlNode xnParent = xe; xnParent != null; xnParent = xnParent.ParentNode)
+			{
+				for (XmlNode xn = xnParent.NextSibling; xn != null; xn = xn.NextSibling)
+				{
+					if (xn.NodeType == XmlNodeType.Element)
+					{
+						return (XmlElement)xn;
+					}
+				}
+			}
+
+			return null;
+		}
+		public void resetXmlItemLink()
+		{
+			XmlElement xeCount = m_xmlDoc.DocumentElement;
+
+			if(MainWindow.s_pW.mx_xmlText.Document != null)
+			{
+				foreach(Block block in MainWindow.s_pW.mx_xmlText.Document.Blocks)
+				{
+					if(block is Paragraph)
+					{
+						Paragraph para = (Paragraph)block;
+
+						foreach(Inline line in para.Inlines)
+						{
+							if (line is Run)
+							{
+								Run run = (Run)line;
+
+								if(run.Text == "<")
+								{
+									if (run.NextInline != null && run.NextInline is Run)
+									{
+										Run runXe = (Run)run.NextInline;
+										string strName = runXe.Text;
+										XmlItem item;
+
+										if(xeCount.Name == strName && m_mapXeItem.TryGetValue(xeCount, out item))
+										{
+											item.m_runXeName = runXe;
+											XmlElement xeNext = getNextXmlElement(xeCount);
+
+											if(xeNext != null)
+											{
+												xeCount = xeNext;
+											}
+											else
+											{
+												return;
+											}
+										}
+										else
+										{
+
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 		public void refreshControl()
 		{
@@ -452,7 +545,7 @@ namespace UIEditor
 								}
 							}
 							refreshSkinDicByGroupName("publicskin");
-							MainWindow.s_pW.updateXmlToGLAtOnce(this);
+							MainWindow.s_pW.updateXmlToGL(this);
 							if (m_openedFile.m_preViewSkinName != null && m_openedFile.m_preViewSkinName != "")
 							{
 								BoloUI.ResBasic skinBasic;

@@ -178,6 +178,10 @@
 				<MenuItem Name="mx_help" Header="查看帮助" Click="mx_help_Click"/>
 				<MenuItem Name="mx_version" Header="关于UI编辑器" Click="mx_version_Click"/>
 			</MenuItem>
+			<WrapPanel Name="mx_debugTools">
+				<TextBlock VerticalAlignment="Center">调试句柄：</TextBlock>
+				<TextBox MinWidth="100" Name="mx_hwndDebug"></TextBox>
+			</WrapPanel>
 		</Menu>
 		<DockPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
 			<Grid>
@@ -261,10 +265,6 @@
 								ToolTip="下移 (Ctrl + ↓)">
 							<Image Source="pack://application:,,,/data/image/moveDown.png"/>
 						</Button>
-					</ToolBar>
-					<ToolBar Name="mx_debugTools" HorizontalAlignment="Left">
-						<Label VerticalAlignment="Center">调试模式：</Label>
-						<TextBox MinWidth="100" Name="mx_hwndDebug"></TextBox>
 					</ToolBar>
 					<ToolBar Name="mx_viewModeTools" HorizontalAlignment="Left">
 						<Button Name="mx_refresh"
