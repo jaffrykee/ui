@@ -37,13 +37,13 @@
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="55"/>
-			<RowDefinition Height="*" MinHeight="50"/>
-			<RowDefinition Height="250" MinHeight="100"/>
+			<RowDefinition Height="*" MinHeight="20"/>
+			<RowDefinition Height="250"/>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="250" MinWidth="100" MaxWidth="400"/>
-			<ColumnDefinition Width="*" MinWidth="50"/>
-			<ColumnDefinition Width="350" MinWidth="250"/>
+			<ColumnDefinition Width="250"/>
+			<ColumnDefinition Width="*" MinWidth="20"/>
+			<ColumnDefinition Width="250"/>
 		</Grid.ColumnDefinitions>
 		<Menu Grid.Row="0" Grid.Column="0" Background="#18181818" Grid.ColumnSpan="3" VerticalAlignment="Top">
 			<MenuItem Header="文件">

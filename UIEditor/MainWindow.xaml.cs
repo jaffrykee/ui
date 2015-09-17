@@ -1967,6 +1967,7 @@ namespace UIEditor
 		public long m_tLast;
 		public int m_hitCount;
 		public DispatcherTimer m_textTimer;
+		public Run m_lastSelRun;
 		private void mx_xmlText_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			if(m_isCanEdit)

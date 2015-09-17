@@ -61,8 +61,17 @@ namespace UIEditor.BoloUI
 					if (fDoc.Parent != null &&
 						fDoc.Parent == MainWindow.s_pW.mx_xmlText)
 					{
-						MainWindow.s_pW.mx_xmlText.Focus();
+						MainWindow.s_pW.m_isCanEdit = false;
+						if(MainWindow.s_pW.m_lastSelRun != null)
+						{
+							MainWindow.s_pW.m_lastSelRun.Background = new SolidColorBrush(System.Windows.Media.Colors.White);
+						}
+						MainWindow.s_pW.m_lastSelRun = m_runXeName;
+						m_runXeName.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0x88, 0x33, 0x99, 0xff));
+						MainWindow.s_pW.m_isCanEdit = true;
+						m_runXeName.BringIntoView();
 						MainWindow.s_pW.mx_xmlText.Selection.Select(m_runXeName.ContentStart, m_runXeName.ContentEnd);
+						//this.Focus();
 					}
 				}
 			}

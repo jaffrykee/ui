@@ -29,6 +29,7 @@ namespace UIEditor
 		public Dictionary<string, string> m_mapSkinLink;
 		public Dictionary<string, BoloUI.ResBasic> m_mapSkin;
 		public Dictionary<XmlElement, XmlItem> m_mapXeItem;
+		public Dictionary<Run, XmlItem> m_mapRunItem;
 		public XmlDocument m_xmlDoc;
 		public XmlElement m_xeRootCtrl;
 		public XmlElement m_xeRoot;
@@ -237,26 +238,72 @@ namespace UIEditor
 
 			refreshSkinDicByPath(path, skinGroupName);
 		}
+		void mx_newRun_MouseDown(object sender, MouseButtonEventArgs e)
+		{
+			if (sender != null && sender is Run)
+			{
+				Run newRun = (Run)sender;
+				XmlItem item;
+
+				if (m_mapRunItem.TryGetValue(newRun, out item) && item != null)
+				{
+					item.changeSelectItem();
+				}
+			}
+		}
+		private Run addRunAndLinkItem(Paragraph para, string text, XmlItem xeItem, Color color)
+		{
+			Run newRun = new Run(text);
+			XmlItem tmpItem;
+
+			newRun.Foreground = new SolidColorBrush(color);
+			para.Inlines.Add(newRun);
+
+			if (xeItem != null && !m_mapRunItem.TryGetValue(newRun, out tmpItem))
+			{
+				m_mapRunItem.Add(newRun, xeItem);
+				newRun.MouseDown += mx_newRun_MouseDown;
+			}
+
+			return newRun;
+		}
 		public void refreshXmlSign(XmlNode xnRoot, Paragraph para, int deep = 0)
 		{
 			string strTabs = "";
 			bool isFirst = true;
+			string endStr = ">";
 
+			if (deep == 0)
+			{
+				m_mapRunItem = new Dictionary<Run, XmlItem>();
+			}
 			for(int i = 0; i < deep; i++)
 			{
 				strTabs += "    ";
 			}
 			foreach(XmlNode xn in xnRoot.ChildNodes)
 			{
+				XmlItem xeItem = null;
+
+				if (xn.NodeType == XmlNodeType.Element)
+				{
+					XmlElement xe = (XmlElement)xn;
+
+					if (m_mapXeItem != null &&
+						m_mapXeItem.TryGetValue(xe, out xeItem) &&
+						xeItem != null)
+					{
+
+					}
+				}
+
 				if(deep == 0 && isFirst == true)
 				{
 					isFirst = false;
 				}
 				else
 				{
-					Run runTabs = new Run("\n" + strTabs);
-					runTabs.Foreground = new SolidColorBrush(Colors.Blue);
-					para.Inlines.Add(runTabs);
+					Run runTabs = addRunAndLinkItem(para, "\n", xeItem, Colors.Blue);
 				}
 				switch(xn.NodeType)
 				{
@@ -264,36 +311,25 @@ namespace UIEditor
 						{
 							XmlElement xe = (XmlElement)xn;
 
-							Run runStartTip = new Run("<");
-							runStartTip.Foreground = new SolidColorBrush(Colors.Blue);
-							para.Inlines.Add(runStartTip);
-
-							Run runNameTip = new Run(xe.Name);
-							runNameTip.Foreground = new SolidColorBrush(Colors.DarkMagenta);
-							para.Inlines.Add(runNameTip);
-
-							XmlItem xeItem;
-							if (m_mapXeItem != null &&
-								m_mapXeItem.TryGetValue(xe, out xeItem) &&
-								xeItem != null)
+							addRunAndLinkItem(para, strTabs + "<", xeItem, Colors.Blue);
+							if (xeItem != null)
 							{
-								xeItem.m_runXeName = runNameTip;
+								xeItem.m_runXeName = addRunAndLinkItem(para, xe.Name, xeItem, Colors.DarkMagenta);
 							}
-
 							foreach(XmlAttribute attr in xe.Attributes)
 							{
-								Run runAttrName = new Run(" " + attr.Name);
-								runAttrName.Foreground = new SolidColorBrush(Colors.Red);
-								para.Inlines.Add(runAttrName);
-
-								Run runAttrValue = new Run("=\"" + attr.Value + "\"");
-								runAttrValue.Foreground = new SolidColorBrush(Colors.Blue);
-								para.Inlines.Add(runAttrValue);
+								addRunAndLinkItem(para, " " + attr.Name, xeItem, Colors.Red);
+								addRunAndLinkItem(para, "=\"" + attr.Value + "\"", xeItem, Colors.Blue);
 							}
-
-							Run runEndTip = new Run(">");
-							runEndTip.Foreground = new SolidColorBrush(Colors.Blue);
-							para.Inlines.Add(runEndTip);
+							if(xe.OuterXml.IndexOf("/>") == xe.OuterXml.Length - "/>".Length)
+							{
+								endStr = "/>";
+							}
+							else
+							{
+								endStr = ">";
+							}
+							addRunAndLinkItem(para, endStr, xeItem, Colors.Blue);
 						}
 						break;
 					case XmlNodeType.EndElement:
@@ -302,42 +338,27 @@ namespace UIEditor
 						break;
 					case XmlNodeType.XmlDeclaration:
 						{
-							Run runDeclaration = new Run(xn.OuterXml);
-							runDeclaration.Foreground = new SolidColorBrush(Colors.Red);
-							para.Inlines.Add(runDeclaration);
+							addRunAndLinkItem(para, xn.OuterXml, xeItem, Colors.Red);
 						}
 						break;
 					case XmlNodeType.Comment:
 						{
-							Run runComment = new Run(xn.OuterXml);
-							runComment.Foreground = new SolidColorBrush(Colors.DarkSeaGreen);
-							para.Inlines.Add(runComment);
+							addRunAndLinkItem(para, xn.OuterXml, xeItem, Colors.DarkSeaGreen);
 						}
 						break;
 					default:
 						{
-							para.Inlines.Add(new Run(xn.OuterXml));
+							addRunAndLinkItem(para, xn.OuterXml, xeItem, Colors.Black);
 						}
 						break;
 				}
 				refreshXmlSign(xn, para, deep + 1);
-				if(xn.NodeType == XmlNodeType.Element)
+				if (xn.NodeType == XmlNodeType.Element && endStr == ">")
 				{
-					Run runEndTabs = new Run("\n" + strTabs);
-					runEndTabs.Foreground = new SolidColorBrush(Colors.Blue);
-					para.Inlines.Add(runEndTabs);
-
-					Run runStartTip = new Run("</");
-					runStartTip.Foreground = new SolidColorBrush(Colors.Blue);
-					para.Inlines.Add(runStartTip);
-
-					Run runNameTip = new Run(xn.Name);
-					runNameTip.Foreground = new SolidColorBrush(Colors.DarkMagenta);
-					para.Inlines.Add(runNameTip);
-
-					Run runEndTip = new Run(">");
-					runEndTip.Foreground = new SolidColorBrush(Colors.Blue);
-					para.Inlines.Add(runEndTip);
+					addRunAndLinkItem(para, "\n" + strTabs, xeItem, Colors.Blue);
+					addRunAndLinkItem(para, "</", xeItem, Colors.Blue);
+					addRunAndLinkItem(para, xn.Name, xeItem, Colors.DarkMagenta);
+					addRunAndLinkItem(para, ">", xeItem, Colors.Blue);
 				}
 			}
 		}
@@ -436,6 +457,7 @@ namespace UIEditor
 		{
 			XmlElement xeCount = m_xmlDoc.DocumentElement;
 
+			m_mapRunItem = new Dictionary<Run, XmlItem>();
 			if(MainWindow.s_pW.mx_xmlText.Document != null)
 			{
 				foreach(Block block in MainWindow.s_pW.mx_xmlText.Document.Blocks)
