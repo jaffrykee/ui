@@ -1679,7 +1679,32 @@ namespace UIEditor
 			}
 		}
 
-		static public void refreshSearch(TreeViewItem viewItem, string key)
+		static private string getStrFromItemHeader(object header)
+		{
+			if(header is RadioButton || header.GetType().BaseType.ToString() == "System.Windows.Controls.RadioButton")
+			{
+				RadioButton rb = (RadioButton)header;
+
+				return rb.Content.ToString();
+			}
+			else if(header is Grid)
+			{
+				Grid frame = (Grid)header;
+
+				foreach(UIElement ue in frame.Children)
+				{
+					if(ue is RadioButton)
+					{
+						RadioButton rb = (RadioButton)ue;
+
+						return rb.Content.ToString();
+					}
+				}
+			}
+
+			return header.ToString();
+		}
+		static public void refreshSearch(TreeViewItem viewItem, string key, bool isExpanded = false)
 		{
 			if(viewItem.Items.Count > 0)
 			{
@@ -1687,7 +1712,7 @@ namespace UIEditor
 				{
 					if(key != "" && key != null)
 					{
-						if (item.Header.ToString().IndexOf(key, StringComparison.OrdinalIgnoreCase) < 0)
+						if (getStrFromItemHeader(item.Header).IndexOf(key, StringComparison.OrdinalIgnoreCase) < 0)
 						{
 							item.Visibility = System.Windows.Visibility.Collapsed;
 						}
@@ -1701,33 +1726,44 @@ namespace UIEditor
 								pItem = ((TreeViewItem)pItem).Parent)
 							{
 								((TreeViewItem)pItem).Visibility = System.Windows.Visibility.Visible;
+								((TreeViewItem)pItem).IsExpanded = true;
 							}
+							refreshSearch(item, null, true);
+							continue;
 						}
 					}
 					else
 					{
 						item.Visibility = System.Windows.Visibility.Visible;
+						if (!isExpanded)
+						{
+							item.IsExpanded = false;
+						}
 					}
-					refreshSearch(item, key);
+					refreshSearch(item, key, isExpanded);
 				}
 			}
 		}
 		private void mx_search_TextChanged(object sender, TextChangedEventArgs e)
 		{
+			bool isDefEx = false;
+
 			if (mx_search.Text != "")
 			{
-				refreshSearch(mx_treePro, null);
+				refreshSearch(mx_treePro, null, isDefEx);
 				mx_searchTip.Visibility = System.Windows.Visibility.Collapsed;
 				refreshSearch(mx_treePro, mx_search.Text.ToString());
 			}
 			else
 			{
-				refreshSearch(mx_treePro, null);
+				refreshSearch(mx_treePro, null, isDefEx);
 				mx_searchTip.Visibility = System.Windows.Visibility.Visible;
 			}
 		}
 		private void mx_uiSearch_TextChanged(object sender, TextChangedEventArgs e)
 		{
+			bool isDefEx = true;
+
 			if (mx_uiSearch.Text != "")
 			{
 				if (mx_treeCtrlFrame.Items.Count > 0 &&
@@ -1738,8 +1774,8 @@ namespace UIEditor
 						)
 					)
 				{
-					refreshSearch((TreeViewItem)mx_treeCtrlFrame.Items.GetItemAt(0), null);
-					refreshSearch((TreeViewItem)mx_treeCtrlFrame.Items.GetItemAt(0), mx_uiSearch.Text.ToString());
+					refreshSearch((TreeViewItem)mx_treeCtrlFrame.Items.GetItemAt(0), null, isDefEx);
+					refreshSearch((TreeViewItem)mx_treeCtrlFrame.Items.GetItemAt(0), mx_uiSearch.Text.ToString(), isDefEx);
 				}
 				mx_uiSearchTip.Visibility = System.Windows.Visibility.Collapsed;
 			}
@@ -1753,13 +1789,15 @@ namespace UIEditor
 						)
 					)
 				{
-					refreshSearch((TreeViewItem)mx_treeCtrlFrame.Items.GetItemAt(0), null);
+					refreshSearch((TreeViewItem)mx_treeCtrlFrame.Items.GetItemAt(0), null, isDefEx);
 				}
 				mx_uiSearchTip.Visibility = System.Windows.Visibility.Visible;
 			}
 		}
 		private void mx_skinSearch_TextChanged(object sender, TextChangedEventArgs e)
 		{
+			bool isDefEx = true;
+
 			if (mx_skinSearch.Text != "")
 			{
 				if (mx_treeSkinFrame.Items.Count > 0 &&
@@ -1770,8 +1808,8 @@ namespace UIEditor
 						)
 					)
 				{
-					refreshSearch((TreeViewItem)mx_treeSkinFrame.Items.GetItemAt(0), null);
-					refreshSearch((TreeViewItem)mx_treeSkinFrame.Items.GetItemAt(0), mx_skinSearch.Text.ToString());
+					refreshSearch((TreeViewItem)mx_treeSkinFrame.Items.GetItemAt(0), null, isDefEx);
+					refreshSearch((TreeViewItem)mx_treeSkinFrame.Items.GetItemAt(0), mx_skinSearch.Text.ToString(), isDefEx);
 				}
 				mx_skinSearchTip.Visibility = System.Windows.Visibility.Collapsed;
 			}
@@ -1785,7 +1823,7 @@ namespace UIEditor
 						)
 					)
 				{
-					refreshSearch((TreeViewItem)mx_treeSkinFrame.Items.GetItemAt(0), null);
+					refreshSearch((TreeViewItem)mx_treeSkinFrame.Items.GetItemAt(0), null, isDefEx);
 				}
 				mx_skinSearchTip.Visibility = System.Windows.Visibility.Visible;
 			}
@@ -2035,35 +2073,45 @@ namespace UIEditor
 
 				if(xnBup != null)
 				{
-					XmlNodeList lstXnRow = xnBup.SelectNodes("row");
-
-					if(lstXnRow.Count > 0)
+					int countItem = 0;
+					mx_bupHistory.Items.Clear();
+					for (XmlNode xnRow = xnBup.FirstChild; xnRow != null; countItem++)
 					{
-						int countItem = 0;
-
-						mx_bupHistory.Items.Clear();
-						foreach(XmlNode xnRow in lstXnRow)
+						if (xnRow.NodeType == XmlNodeType.Element)
 						{
-							countItem++;
-							if(xnRow.NodeType == XmlNodeType.Element)
+							XmlElement xeRow = (XmlElement)xnRow;
+							
+							if(xeRow.Name == "row")
 							{
-								XmlElement xeRow = (XmlElement)xnRow;
 								string bupPath = xeRow.GetAttribute("key");
 
-								if(bupPath != "")
+								if (bupPath != "")
 								{
-									MenuItem bupItem = new MenuItem();
+									if (System.IO.File.Exists(bupPath))
+									{
+										MenuItem bupItem = new MenuItem();
 
-									bupItem.Header = "_" + countItem.ToString() + " " + bupPath;
-									bupItem.ToolTip = bupPath;
-									bupItem.Click += mx_bupItem_Click;
-									mx_bupHistory.Items.Add(bupItem);
+										bupItem.Header = "_" + countItem.ToString() + " " + bupPath;
+										bupItem.ToolTip = bupPath;
+										bupItem.Click += mx_bupItem_Click;
+										mx_bupHistory.Items.Add(bupItem);
+									}
+									else
+									{
+										XmlNode xnDel = xnRow;
+
+										xnBup.RemoveChild(xnDel);
+										xnRow = xnRow.NextSibling;
+										continue;
+									}
 								}
 							}
 						}
+						xnRow = xnRow.NextSibling;
 					}
 				}
 			}
+			m_docConf.Save(conf_pathConf);
 		}
 		void mx_bupItem_Click(object sender, RoutedEventArgs e)
 		{

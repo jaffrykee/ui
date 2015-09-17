@@ -245,7 +245,7 @@ namespace UIEditor
 				Run newRun = (Run)sender;
 				XmlItem item;
 
-				if (m_mapRunItem.TryGetValue(newRun, out item) && item != null)
+				if (m_mapRunItem.TryGetValue(newRun, out item) && item != null && item != MainWindow.s_pW.m_curItem)
 				{
 					item.changeSelectItem();
 				}
@@ -319,7 +319,7 @@ namespace UIEditor
 							foreach(XmlAttribute attr in xe.Attributes)
 							{
 								addRunAndLinkItem(para, " " + attr.Name, xeItem, Colors.Red);
-								addRunAndLinkItem(para, "=\"" + attr.Value + "\"", xeItem, Colors.Blue);
+								addRunAndLinkItem(para, "=\"" + attr.InnerXml + "\"", xeItem, Colors.Blue);
 							}
 							if(xe.OuterXml.IndexOf("/>") == xe.OuterXml.Length - "/>".Length)
 							{
@@ -465,6 +465,7 @@ namespace UIEditor
 					if(block is Paragraph)
 					{
 						Paragraph para = (Paragraph)block;
+						XmlItem item = null;
 
 						foreach(Inline line in para.Inlines)
 						{
@@ -472,15 +473,14 @@ namespace UIEditor
 							{
 								Run run = (Run)line;
 
-								if(run.Text == "<")
+								if(run.Text.Last() == '<')
 								{
 									if (run.NextInline != null && run.NextInline is Run)
 									{
 										Run runXe = (Run)run.NextInline;
 										string strName = runXe.Text;
-										XmlItem item;
 
-										if(xeCount.Name == strName && m_mapXeItem.TryGetValue(xeCount, out item))
+										if (xeCount.Name == strName && m_mapXeItem.TryGetValue(xeCount, out item) && item != null)
 										{
 											item.m_runXeName = runXe;
 											XmlElement xeNext = getNextXmlElement(xeCount);
@@ -499,6 +499,10 @@ namespace UIEditor
 
 										}
 									}
+								}
+								if (run != null && item != null)
+								{
+									m_mapRunItem.Add(run, item);
 								}
 							}
 						}
