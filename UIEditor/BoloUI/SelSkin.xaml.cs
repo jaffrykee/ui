@@ -74,7 +74,7 @@ namespace UIEditor.BoloUI
 			OpenedFile fileDef;
 			if(MainWindow.s_pW.m_mapOpenedFiles.TryGetValue(m_path, out fileDef))
 			{
-				if(fileDef != null && fileDef.m_frame != null && fileDef.m_frame.GetType().ToString() == "UIEditor.XmlControl")
+				if(fileDef != null && fileDef.m_frame != null && fileDef.m_frame is XmlControl)
 				{
 					XmlControl xmlCtrl = (XmlControl)fileDef.m_frame;
 					Dictionary<string, string> mapLocalGroup = new Dictionary<string,string>();
@@ -191,7 +191,7 @@ namespace UIEditor.BoloUI
 				updateGL("selSkinTest.xml", W2GTag.W2G_NORMAL_NAME);
 				updateGL(buffer, W2GTag.W2G_NORMAL_DATA);
 			}
-			if(sender.GetType().ToString() == "System.Windows.Controls.TreeViewItem")
+			if(sender is TreeViewItem)
 			{
 				m_curSkin = (TreeViewItem)sender;
 
@@ -334,7 +334,7 @@ namespace UIEditor.BoloUI
 		{
 			if (m_curSkin != null)
 			{
-				if (m_curSkin.Parent.GetType().ToString() == "System.Windows.Controls.TreeViewItem" &&
+				if (m_curSkin.Parent is TreeViewItem &&
 					((TreeViewItem)m_curSkin.Parent).Parent == mx_otherGroup)
 				{
 					if (((TreeViewItem)m_curSkin.Parent).Header.ToString() != "publicskin")

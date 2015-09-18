@@ -51,7 +51,7 @@ namespace UIEditor
 		{
 			foreach (object row in mx_frame.Children)
 			{
-				if (row.GetType() == Type.GetType("UIEditor.AttrRow"))
+				if (row is AttrRow)
 				{
 					((AttrRow)row).m_preValue = "";
 				}
@@ -81,7 +81,7 @@ namespace UIEditor
 			}
 			foreach (object row in mx_frame.Children)
 			{
-				if (row.GetType() == Type.GetType("UIEditor.AttrRow"))
+				if (row is AttrRow)
 				{
 					((AttrRow)row).mx_root.Visibility = Visibility.Visible;
 				}
@@ -90,7 +90,7 @@ namespace UIEditor
 			{
 				foreach (object row in mx_frame.Children)
 				{
-					if (row.GetType() == Type.GetType("UIEditor.AttrRow"))
+					if (row is AttrRow)
 					{
 						if (((AttrRow)row).m_preValue == "")
 						{
@@ -103,7 +103,7 @@ namespace UIEditor
 			{
 				foreach (object row in mx_frame.Children)
 				{
-					if (row.GetType() == Type.GetType("UIEditor.AttrRow"))
+					if (row is AttrRow)
 					{
 						if (((AttrRow)row).m_isCommon == false)
 						{

@@ -476,7 +476,7 @@ namespace UIEditor
 		{
 			foreach (object attrList in mx_toolArea.Children)
 			{
-				if (attrList.GetType().ToString() == "UIEditor.AttrList")
+				if (attrList is AttrList)
 				{
 					((UIEditor.AttrList)attrList).Visibility = System.Windows.Visibility.Collapsed;
 				}
@@ -838,7 +838,7 @@ namespace UIEditor
 
 							if(m_mapOpenedFiles.TryGetValue(m_curFile, out fileDef))
 							{
-								if(fileDef.m_frame.GetType().ToString() == "UIEditor.XmlControl")
+								if(fileDef.m_frame is XmlControl)
 								{
 									((XmlControl)fileDef.m_frame).refreshVRect();
 								}
@@ -1015,7 +1015,7 @@ namespace UIEditor
 
 										if(fileDef.m_frame != null)
 										{
-											if(fileDef.m_frame.GetType().ToString() == "UIEditor.XmlControl")
+											if(fileDef.m_frame is XmlControl)
 											{
 												XmlControl xmlCtrl = (XmlControl)fileDef.m_frame;
 
@@ -1105,7 +1105,7 @@ namespace UIEditor
 											return 1;
 										case VK_Y:
 											s_pW.curFileRedo();
-											if (Keyboard.FocusedElement.GetType().ToString() == "System.Windows.Controls.TextBox")
+											if (Keyboard.FocusedElement is TextBox)
 											{
 												TextBox tb = (TextBox)Keyboard.FocusedElement;
 
@@ -1114,7 +1114,7 @@ namespace UIEditor
 											return 1;
 										case VK_Z:
 											s_pW.curFileUndo();
-											if (Keyboard.FocusedElement.GetType().ToString() == "System.Windows.Controls.TextBox")
+											if (Keyboard.FocusedElement is TextBox)
 											{
 												TextBox tb = (TextBox)Keyboard.FocusedElement;
 
@@ -1178,7 +1178,7 @@ namespace UIEditor
 									(
 										(
 											(
-												Keyboard.FocusedElement.GetType().ToString() == "System.Windows.Controls.TreeViewItem" ||
+												Keyboard.FocusedElement is TreeViewItem ||
 												Keyboard.FocusedElement.GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem"
 											)
 										) &&
@@ -1187,7 +1187,7 @@ namespace UIEditor
 											((TreeViewItem)Keyboard.FocusedElement).Parent == mx_treePro ||
 											(
 												(
-													((TreeViewItem)Keyboard.FocusedElement).Parent.GetType().ToString() == "System.Windows.Controls.TreeViewItem" ||
+													((TreeViewItem)Keyboard.FocusedElement).Parent is TreeViewItem ||
 													((TreeViewItem)Keyboard.FocusedElement).Parent.GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem"
 												) &&
 												((TreeViewItem)((TreeViewItem)Keyboard.FocusedElement).Parent).Parent != null &&
@@ -1212,7 +1212,7 @@ namespace UIEditor
 									(
 										(
 											(
-												Keyboard.FocusedElement.GetType().ToString() == "System.Windows.Controls.TreeViewItem" ||
+												Keyboard.FocusedElement is TreeViewItem ||
 												Keyboard.FocusedElement.GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem"
 											)
 										) &&
@@ -1221,7 +1221,7 @@ namespace UIEditor
 											((TreeViewItem)Keyboard.FocusedElement).Parent == mx_treePro ||
 											(
 												(
-													((TreeViewItem)Keyboard.FocusedElement).Parent.GetType().ToString() == "System.Windows.Controls.TreeViewItem" ||
+													((TreeViewItem)Keyboard.FocusedElement).Parent is TreeViewItem ||
 													((TreeViewItem)Keyboard.FocusedElement).Parent.GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem"
 												) &&
 												((TreeViewItem)((TreeViewItem)Keyboard.FocusedElement).Parent).Parent != null &&
@@ -1309,7 +1309,7 @@ namespace UIEditor
 
 					if(xmlCtrl.m_mapXeItem.TryGetValue(xe, out item))
 					{
-						if(item.GetType().ToString() == "UIEditor.BoloUI.Basic")
+						if(item is Basic)
 						{
 							BoloUI.Basic uiCtrl = (BoloUI.Basic)item;
 
@@ -1326,6 +1326,23 @@ namespace UIEditor
 					dstXe.AppendChild(newXe);
 				}
 			}
+		}
+		public static void DoEvents()//WPF强制渲染
+		{
+			DispatcherFrame frame = new DispatcherFrame();
+
+			Dispatcher.CurrentDispatcher.BeginInvoke(
+				DispatcherPriority.Background,
+				new DispatcherOperationCallback(
+					delegate(object f)
+					{
+						((DispatcherFrame)f).Continue = false;
+
+						return null;
+					}
+				),
+				frame);
+			Dispatcher.PushFrame(frame);
 		}
 
 		//立即更新GL端
@@ -1408,7 +1425,7 @@ namespace UIEditor
 		{
 			foreach (KeyValuePair<string, OpenedFile> pairOpenedFile in m_mapOpenedFiles.ToList())
 			{
-				if (pairOpenedFile.Value != null && pairOpenedFile.Value.m_frame != null && pairOpenedFile.Value.m_frame.GetType() == Type.GetType("UIEditor.XmlControl"))
+				if (pairOpenedFile.Value != null && pairOpenedFile.Value.m_frame != null && pairOpenedFile.Value.m_frame is XmlControl)
 				{
 					foreach (KeyValuePair<string, BoloUI.Basic> pairCtrlUI in ((XmlControl)pairOpenedFile.Value.m_frame).m_mapCtrlUI.ToList())
 					{
@@ -1424,7 +1441,7 @@ namespace UIEditor
 		{
 			foreach (KeyValuePair<string, OpenedFile> pairOpenedFile in m_mapOpenedFiles.ToList())
 			{
-				if (pairOpenedFile.Value.m_frame.GetType() == Type.GetType("UIEditor.XmlControl"))
+				if (pairOpenedFile.Value.m_frame is XmlControl)
 				{
 					foreach (KeyValuePair<string, BoloUI.ResBasic> pairSkin in ((XmlControl)pairOpenedFile.Value.m_frame).m_mapSkin.ToList())
 					{
@@ -1450,7 +1467,7 @@ namespace UIEditor
 		}
 		private void mx_debug_TextChanged(object sender, TextChangedEventArgs e)
 		{
-			if (sender.GetType().ToString() == "System.Windows.Controls.TextBox")
+			if (sender is TextBox)
 			{
 				TextBox tb = (TextBox)sender;
 
@@ -1459,7 +1476,7 @@ namespace UIEditor
 		}
 		private void mx_debug_SizeChanged(object sender, SizeChangedEventArgs e)
 		{
-			if (sender.GetType().ToString() == "System.Windows.Controls.TextBox")
+			if (sender is TextBox)
 			{
 				TextBox tb = (TextBox)sender;
 
@@ -1520,7 +1537,7 @@ namespace UIEditor
 				m_mapOpenedFiles.TryGetValue(m_curFile, out openFileDef) &&
 				openFileDef != null &&
 				openFileDef.m_frame != null &&
-				openFileDef.m_frame.GetType() == Type.GetType("UIEditor.XmlControl") &&
+				openFileDef.m_frame is XmlControl &&
 				openFileDef.m_lstOpt != null)
 			{
 				openFileDef.m_lstOpt.undo();
@@ -1544,7 +1561,7 @@ namespace UIEditor
 				m_mapOpenedFiles.TryGetValue(m_curFile, out openFileDef) &&
 				openFileDef != null &&
 				openFileDef.m_frame != null &&
-				openFileDef.m_frame.GetType() == Type.GetType("UIEditor.XmlControl") &&
+				openFileDef.m_frame is XmlControl &&
 				openFileDef.m_lstOpt != null)
 			{
 				openFileDef.m_lstOpt.redo();
@@ -1584,8 +1601,8 @@ namespace UIEditor
 		private void mx_toolPaste_Click(object sender, RoutedEventArgs e)
 		{
 			if (m_curItem != null && Keyboard.FocusedElement != null &&
-				Keyboard.FocusedElement.GetType().ToString() == "System.Windows.Controls.RadioButton" &&
-				(((RadioButton)Keyboard.FocusedElement).Parent.GetType().ToString() == "UIEditor.BoloUI.XmlItem" ||
+				Keyboard.FocusedElement is RadioButton &&
+				(((RadioButton)Keyboard.FocusedElement).Parent is XmlItem ||
 				((RadioButton)Keyboard.FocusedElement).Parent.GetType().BaseType.ToString() == "UIEditor.BoloUI.XmlItem") &&
 				m_curItem == (UIEditor.BoloUI.XmlItem)(((RadioButton)Keyboard.FocusedElement).Parent))
 			{
@@ -1719,7 +1736,7 @@ namespace UIEditor
 						else
 						{
 							for (object pItem = item.Parent;
-								pItem.GetType().ToString() == "System.Windows.Controls.TreeViewItem" ||
+								pItem is TreeViewItem ||
 									pItem.GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem" ||
 									pItem.GetType().BaseType.BaseType.ToString() == "System.Windows.Controls.TreeViewItem" ||
 									pItem.GetType().BaseType.BaseType.BaseType.ToString() == "System.Windows.Controls.TreeViewItem";
@@ -1767,7 +1784,7 @@ namespace UIEditor
 			if (mx_uiSearch.Text != "")
 			{
 				if (mx_treeCtrlFrame.Items.Count > 0 &&
-						(mx_treeCtrlFrame.Items.GetItemAt(0).GetType().ToString() == "System.Windows.Controls.TreeViewItem" ||
+						(mx_treeCtrlFrame.Items.GetItemAt(0) is TreeViewItem ||
 							mx_treeCtrlFrame.Items.GetItemAt(0).GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem" ||
 							mx_treeCtrlFrame.Items.GetItemAt(0).GetType().BaseType.BaseType.ToString() == "System.Windows.Controls.TreeViewItem" ||
 							mx_treeCtrlFrame.Items.GetItemAt(0).GetType().BaseType.BaseType.BaseType.ToString() == "System.Windows.Controls.TreeViewItem"
@@ -1782,7 +1799,7 @@ namespace UIEditor
 			else
 			{
 				if (mx_treeCtrlFrame.Items.Count > 0 &&
-						(mx_treeCtrlFrame.Items.GetItemAt(0).GetType().ToString() == "System.Windows.Controls.TreeViewItem" ||
+						(mx_treeCtrlFrame.Items.GetItemAt(0) is TreeViewItem ||
 							mx_treeCtrlFrame.Items.GetItemAt(0).GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem" ||
 							mx_treeCtrlFrame.Items.GetItemAt(0).GetType().BaseType.BaseType.ToString() == "System.Windows.Controls.TreeViewItem" ||
 							mx_treeCtrlFrame.Items.GetItemAt(0).GetType().BaseType.BaseType.BaseType.ToString() == "System.Windows.Controls.TreeViewItem"
@@ -1801,7 +1818,7 @@ namespace UIEditor
 			if (mx_skinSearch.Text != "")
 			{
 				if (mx_treeSkinFrame.Items.Count > 0 &&
-						(mx_treeSkinFrame.Items.GetItemAt(0).GetType().ToString() == "System.Windows.Controls.TreeViewItem" ||
+						(mx_treeSkinFrame.Items.GetItemAt(0) is TreeViewItem ||
 							mx_treeSkinFrame.Items.GetItemAt(0).GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem" ||
 							mx_treeSkinFrame.Items.GetItemAt(0).GetType().BaseType.BaseType.ToString() == "System.Windows.Controls.TreeViewItem" ||
 							mx_treeSkinFrame.Items.GetItemAt(0).GetType().BaseType.BaseType.BaseType.ToString() == "System.Windows.Controls.TreeViewItem"
@@ -1816,7 +1833,7 @@ namespace UIEditor
 			else
 			{
 				if (mx_treeSkinFrame.Items.Count > 0 &&
-						(mx_treeSkinFrame.Items.GetItemAt(0).GetType().ToString() == "System.Windows.Controls.TreeViewItem" ||
+						(mx_treeSkinFrame.Items.GetItemAt(0) is TreeViewItem ||
 							mx_treeSkinFrame.Items.GetItemAt(0).GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem" ||
 							mx_treeSkinFrame.Items.GetItemAt(0).GetType().BaseType.BaseType.ToString() == "System.Windows.Controls.TreeViewItem" ||
 							mx_treeSkinFrame.Items.GetItemAt(0).GetType().BaseType.BaseType.BaseType.ToString() == "System.Windows.Controls.TreeViewItem"
@@ -1914,7 +1931,7 @@ namespace UIEditor
 
 			if (m_curFile != null && m_curFile != "" && m_mapOpenedFiles.TryGetValue(m_curFile, out fileDef))
 			{
-				if (fileDef != null && fileDef.m_frame != null && fileDef.m_frame.GetType().ToString() == "UIEditor.XmlControl")
+				if (fileDef != null && fileDef.m_frame != null && fileDef.m_frame is XmlControl)
 				{
 					XmlControl xmlDef = (XmlControl)fileDef.m_frame;
 
@@ -2006,6 +2023,7 @@ namespace UIEditor
 		public int m_hitCount;
 		public DispatcherTimer m_textTimer;
 		public Run m_lastSelRun;
+		public Run m_lastUpdateRun;
 		private void mx_xmlText_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			if(m_isCanEdit)
@@ -2021,7 +2039,12 @@ namespace UIEditor
 		}
 		private void m_textTimer_Tick(object send, EventArgs e)
 		{
-			if(m_hitCount < 5)
+			if (MainWindow.s_pW.m_lastUpdateRun != null)
+			{
+				XmlItem.changeLightRun(MainWindow.s_pW.m_lastUpdateRun);
+				MainWindow.s_pW.m_lastUpdateRun = null;
+			}
+			if (m_isTextChanged && m_hitCount < 5)
 			{
 				m_hitCount++;
 			}
@@ -2037,7 +2060,7 @@ namespace UIEditor
 					OpenedFile fileDef;
 					if(m_mapOpenedFiles.TryGetValue(m_curFile, out fileDef))
 					{
-						if(fileDef.m_frame != null && fileDef.m_frame.GetType().ToString() == "UIEditor.XmlControl")
+						if(fileDef.m_frame != null && fileDef.m_frame is XmlControl)
 						{
 							XmlControl xmlCtrl = (XmlControl)fileDef.m_frame;
 							XmlDocument newDoc = new XmlDocument();
@@ -2051,11 +2074,13 @@ namespace UIEditor
 								m_isCanEdit = true;
 								return;
 							}
-							if (XmlControl.getOutXml(xmlCtrl.m_xmlDoc) != XmlControl.getOutXml(newDoc))
+							string oldStr = XmlControl.getOutXml(xmlCtrl.m_xmlDoc);
+							string newStr = XmlControl.getOutXml(newDoc);
+
+							if (string.Compare(oldStr, newStr) != 0)
 							{
 								fileDef.m_lstOpt.addOperation(new XmlOperation.HistoryNode(xmlCtrl.m_xmlDoc, newDoc));
 								xmlCtrl.resetXmlItemLink();
-								//xmlCtrl.refreshXmlText(mx_xmlText.CaretPosition.GetOffsetToPosition(mx_xmlText.Document.Blocks.First().ElementStart));
 							}
 						}
 					}

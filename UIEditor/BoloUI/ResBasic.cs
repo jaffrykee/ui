@@ -70,7 +70,7 @@ namespace UIEditor.BoloUI
 		}
 		void insertSkinItem_Click(object sender, RoutedEventArgs e)
 		{
-			if (sender.GetType().ToString() == "System.Windows.Controls.MenuItem")
+			if (sender is MenuItem)
 			{
 				MenuItem ctrlItem = (MenuItem)sender;
 				XmlElement newXe = m_xe.OwnerDocument.CreateElement(ctrlItem.ToolTip.ToString());
@@ -230,7 +230,7 @@ namespace UIEditor.BoloUI
 				BoloUI.Basic ctrlUI;
 				MainWindow.s_pW.hiddenAllAttr();
 
-				if (obj != null && obj.GetType().ToString() == "UIEditor.BoloUI.Basic")
+				if (obj != null && obj is Basic)
 				{
 					ctrlUI = (BoloUI.Basic)obj;
 				}
@@ -279,7 +279,7 @@ namespace UIEditor.BoloUI
 					}
 					else
 					{
-						if (xeTmp.ParentNode.GetType().ToString() == "System.Xml.XmlElement")
+						if (xeTmp.ParentNode is XmlElement)
 						{
 							xeTmp = (XmlElement)xeTmp.ParentNode;
 						}

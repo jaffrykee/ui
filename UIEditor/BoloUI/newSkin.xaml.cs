@@ -58,7 +58,7 @@ namespace UIEditor.BoloUI
 		}
 		private void mx_groupCbi_Selected(object sender, RoutedEventArgs e)
 		{
-			if(sender != null && sender.GetType().ToString() == "System.Windows.Controls.ComboBoxItem")
+			if(sender != null && sender is ComboBoxItem)
 			{
 				ComboBoxItem cbiGroup = (ComboBoxItem)sender;
 
@@ -98,7 +98,7 @@ namespace UIEditor.BoloUI
 						}
 						if (MainWindow.s_pW.m_mapOpenedFiles.TryGetValue(m_skinGroup, out fileDef))
 						{
-							if (fileDef.m_frame.GetType().ToString() == "UIEditor.XmlControl")
+							if (fileDef.m_frame is XmlControl)
 							{
 								this.Close();
 								XmlControl xmlCtrl = (XmlControl)fileDef.m_frame;
@@ -108,7 +108,7 @@ namespace UIEditor.BoloUI
 								xmlCtrl.m_treeSkin.addResItem(newXe);
 
 								if (m_attrRow != null && m_attrRow.m_parent != null && m_attrRow.m_parent.m_basic != null &&
-									m_attrRow.m_parent.m_basic.GetType().ToString() == "UIEditor.BoloUI.Basic")
+									m_attrRow.m_parent.m_basic is Basic)
 								{
 									xmlCtrl.findSkinAndSelect(m_skinName, (BoloUI.Basic)m_attrRow.m_parent.m_basic);
 								}

@@ -402,7 +402,7 @@ namespace UIEditor
 		private void mx_valueEnum_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if((ComboBox)sender != null && ((ComboBox)sender).SelectedItem != null &&
-				((ComboBox)sender).SelectedItem.GetType().ToString() == "System.Windows.Controls.ComboBoxItem")
+				((ComboBox)sender).SelectedItem is ComboBoxItem)
 			{
 				ComboBoxItem selCb = (ComboBoxItem)(((ComboBox)sender).SelectedItem);
 
@@ -411,7 +411,7 @@ namespace UIEditor
 		}
 		private void mx_link_Click(object sender, RoutedEventArgs e)
 		{
-			if (m_parent.m_basic != null && m_parent.m_basic.GetType().ToString() == "UIEditor.BoloUI.Basic")
+			if (m_parent.m_basic != null && m_parent.m_basic is Basic)
 			{
 				switch (m_name)
 				{
@@ -440,7 +440,7 @@ namespace UIEditor
 		}
 		private void mx_sel_Click(object sender, RoutedEventArgs e)
 		{
-			if (m_parent.m_basic != null && m_parent.m_basic.GetType().ToString() == "UIEditor.BoloUI.Basic")
+			if (m_parent.m_basic != null && m_parent.m_basic is Basic)
 			{
 				switch(m_name)
 				{
@@ -461,7 +461,7 @@ namespace UIEditor
 						break;
 				}
 			}
-			if (m_parent.m_basic != null && m_parent.m_basic.GetType().ToString() == "UIEditor.BoloUI.ResBasic")
+			if (m_parent.m_basic != null && m_parent.m_basic is ResBasic)
 			{
 				switch (m_name)
 				{
@@ -480,13 +480,13 @@ namespace UIEditor
 
 		private void mx_frame_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
 		{
-			if (e.NewValue.GetType().ToString() == "System.Windows.Visibility")
+			if (e.NewValue is Visibility)
 			{
 				Visibility newValue = (Visibility)e.NewValue;
 
 				if(newValue == System.Windows.Visibility.Visible)
 				{
-					if (sender.GetType().ToString() == "System.Windows.Controls.Grid")
+					if (sender is Grid)
 					{
 						Grid frame = (Grid)sender;
 
@@ -514,7 +514,7 @@ namespace UIEditor
 		{
 			string newValue = "";
 
-			if (mx_valueApprPre.SelectedItem != null && mx_valueApprPre.SelectedItem.GetType().ToString() == "System.Windows.Controls.ComboBoxItem")
+			if (mx_valueApprPre.SelectedItem != null && mx_valueApprPre.SelectedItem is ComboBoxItem)
 			{
 				ComboBoxItem cbiPre = (ComboBoxItem)mx_valueApprPre.SelectedItem;
 
@@ -528,7 +528,7 @@ namespace UIEditor
 				newValue += "";
 			}
 			newValue += mx_valueApprTag.Text;
-			if (mx_valueApprSuf.SelectedItem != null && mx_valueApprSuf.SelectedItem.GetType().ToString() == "System.Windows.Controls.ComboBoxItem")
+			if (mx_valueApprSuf.SelectedItem != null && mx_valueApprSuf.SelectedItem is ComboBoxItem)
 			{
 				ComboBoxItem cbiSuf = (ComboBoxItem)mx_valueApprSuf.SelectedItem;
 

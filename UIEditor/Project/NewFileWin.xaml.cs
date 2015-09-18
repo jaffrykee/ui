@@ -66,11 +66,11 @@ namespace UIEditor.Project
 			TreeViewItem rootItem = null;
 			TreeView root = null;
 
-			if (item.GetType().ToString() == "System.Windows.Controls.TreeViewItem")
+			if (item is TreeViewItem)
 			{
 				rootItem = (TreeViewItem)item;
 			}
-			else if(item.GetType().ToString() == "System.Windows.Controls.TreeView")
+			else if(item is TreeView)
 			{
 				root = (TreeView)item;
 			}
@@ -146,7 +146,7 @@ namespace UIEditor.Project
 		private void addTmplToRadioGroup(object sender, RoutedEventArgs e)
 		{
 			mx_fileTypeFrame.Children.Clear();
-			if(sender.GetType().ToString() == "System.Windows.Controls.TreeViewItem")
+			if(sender is TreeViewItem)
 			{
 				string path = ((TreeViewItem)sender).ToolTip.ToString();
 				if(Directory.Exists(path))

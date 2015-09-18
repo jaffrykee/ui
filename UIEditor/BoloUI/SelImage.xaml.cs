@@ -153,11 +153,11 @@ namespace UIEditor.BoloUI
 
 		private void imageItem_Selected(object sender, RoutedEventArgs e)
 		{
-			if(sender.GetType().ToString() == "System.Windows.Controls.TreeViewItem")
+			if(sender is TreeViewItem)
 			{
 				TreeViewItem imgItem = (TreeViewItem)sender;
 
-				if(imgItem.Parent.GetType().ToString() == "System.Windows.Controls.TreeViewItem")
+				if(imgItem.Parent is TreeViewItem)
 				{
 					TreeViewItem resItem = (TreeViewItem)imgItem.Parent;
 					string pngPath = MainWindow.s_pW.m_imagePath + "\\" + resItem.Header.ToString() +
@@ -200,7 +200,7 @@ namespace UIEditor.BoloUI
 			{
 				string newImgValue;
 
-				if(m_curImg.Parent != null && m_curImg.Parent.GetType().ToString() == "System.Windows.Controls.TreeViewItem")
+				if(m_curImg.Parent != null && m_curImg.Parent is TreeViewItem)
 				{
 					newImgValue = ((TreeViewItem)m_curImg.Parent).Header.ToString() + "." + m_curImg.Header.ToString();
 

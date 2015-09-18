@@ -198,5 +198,20 @@ namespace UIEditor
 
 			return fileName.Substring(0, fileName.LastIndexOf("."));
 		}
+
+		public static int getFirstDiffOffset(string str1, string str2)
+		{
+			int minLen = (str1.Length < str2.Length) ? str1.Length : str2.Length;
+
+			for (int i = 0; i < minLen; i++)
+			{
+				if(str1[i] != str2[i])
+				{
+					return i;
+				}
+			}
+
+			return minLen;
+		}
 	}
 }

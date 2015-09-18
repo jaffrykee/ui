@@ -108,7 +108,7 @@ namespace UIEditor.XmlOperation
 
 			if (pW.m_mapOpenedFiles.TryGetValue(path, out fileT))
 			{
-				if (fileT.m_frame.GetType() == Type.GetType("UIEditor.XmlControl"))
+				if (fileT.m_frame is XmlControl)
 				{
 					XmlControl xmlCtrl = (XmlControl)fileT.m_frame;
 					CtrlDef_T nullCtrlDef;
@@ -154,7 +154,7 @@ namespace UIEditor.XmlOperation
 
 			if (pW.m_mapOpenedFiles.TryGetValue(path, out fileT))
 			{
-				if (fileT.m_frame.GetType() == Type.GetType("UIEditor.XmlControl"))
+				if (fileT.m_frame is XmlControl)
 				{
 					XmlControl xmlCtrl = (XmlControl)fileT.m_frame;
 					TreeViewItem treeChild;
@@ -162,11 +162,11 @@ namespace UIEditor.XmlOperation
 
 					if (pW.m_mapCtrlDef.TryGetValue(dstXe.Name, out nullCtrlDef))
 					{
-						treeChild = Activator.CreateInstance(Type.GetType("UIEditor.BoloUI.Basic"), dstXe, xmlCtrl, false) as System.Windows.Controls.TreeViewItem;
+						treeChild = new Basic(dstXe, xmlCtrl, false);
 					}
 					else if (pW.m_mapSkinAllDef.TryGetValue(dstXe.Name, out skinPtr))
 					{
-						treeChild = Activator.CreateInstance(Type.GetType("UIEditor.BoloUI.ResBasic"), dstXe, xmlCtrl, skinPtr) as System.Windows.Controls.TreeViewItem;
+						treeChild = new ResBasic(dstXe, xmlCtrl, skinPtr);
 					}
 					else
 					{

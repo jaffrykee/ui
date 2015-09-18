@@ -60,7 +60,7 @@ namespace UIEditor.Project
 				MainWindow.s_pW.m_mapIncludeFiles.Remove(m_path);
 			}
 			if (this.Parent != null &&
-				(this.Parent.GetType().ToString() == "System.Windows.Controls.TreeViewItem" ||
+				(this.Parent is TreeViewItem ||
 				this.Parent.GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem"))
 			{
 				IncludeFile pItem = (IncludeFile)this.Parent;
@@ -145,7 +145,7 @@ namespace UIEditor.Project
 					break;
 				default:
 					{
-						if (pngItem.GetType().ToString() == "System.Windows.Controls.MenuItem")
+						if (pngItem is MenuItem)
 						{
 							MenuItem clickItem = (MenuItem)pngItem;
 							string newFolder = clickItem.ToolTip.ToString();

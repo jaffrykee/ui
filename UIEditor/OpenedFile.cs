@@ -64,7 +64,8 @@ namespace UIEditor
 		{
 			if (m_frame != null)
 			{
-				if (m_frame.GetType() == Type.GetType("UIEditor.XmlControl") && ((XmlControl)m_frame).m_showGL == true)
+				//if (m_frame is XmlControl) && ((XmlControl)m_frame).m_showGL == true)
+				if (m_frame is XmlControl)
 				{
 					return true;
 				}
