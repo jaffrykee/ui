@@ -356,7 +356,7 @@ namespace UIEditor.BoloUI.DefConfig
 			XmlElement xeRoot = docConf.DocumentElement;
 			string nameDic = xeRoot.GetAttribute("nameDic");
 
-			if (nameDic != "")
+			//if (nameDic != "")
 			{
 				foreach (XmlNode xnCtrl in xeRoot.ChildNodes)
 				{

@@ -19,18 +19,12 @@ namespace UIEditor.BoloUI.DefConfig
 		public bool m_enInsert;
 		public bool m_enInsertAll;
 
-		public CtrlDef_T(Dictionary<string, AttrDef_T> mapAttrDef, AttrList attrListUI, Dictionary<string, string> mapApprSuffix = null)
+		public CtrlDef_T(Dictionary<string, AttrDef_T> mapAttrDef, AttrList attrListUI)
 		{
 			m_mapAttrDef = mapAttrDef;
 			m_ctrlAttrList = attrListUI;
-			if (mapApprSuffix != null)
-			{
-				m_mapApprSuffix = mapApprSuffix;
-			}
-			else
-			{
-				m_mapApprSuffix = new Dictionary<string, string>();
-			}
+			m_mapApprSuffix = new Dictionary<string, string>();
+			m_mapApprPrefix = new Dictionary<string, string>();
 		}
 	}
 }

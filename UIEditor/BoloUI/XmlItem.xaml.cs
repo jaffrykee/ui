@@ -16,6 +16,7 @@ using System.Xml;
 using System.IO;
 using UIEditor.BoloUI;
 using UIEditor.BoloUI.DefConfig;
+using UIEditor.Public;
 
 namespace UIEditor.BoloUI
 {
@@ -31,6 +32,7 @@ namespace UIEditor.BoloUI
 		public string m_apprSuf;
 
 		public Run m_runXeName;
+		public EventLock m_selLock;
 
 		public XmlItem()
 		{
@@ -39,6 +41,7 @@ namespace UIEditor.BoloUI
 		public XmlItem(XmlElement xe, XmlControl rootControl)
 		{
 			m_runXeName = null;
+			m_selLock = new EventLock();
 			InitializeComponent();
 			m_rootControl = rootControl;
 			m_xe = xe;

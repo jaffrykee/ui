@@ -150,6 +150,15 @@ namespace UIEditor.BoloUI
 		}
 		public override void changeSelectItem(object obj = null)
 		{
+			bool stackLock;
+			if (m_selLock.isLock())
+			{
+				return;
+			}
+			else
+			{
+				m_selLock.addLock(out stackLock);
+			}
 			MainWindow.s_pW.m_curFile = m_rootControl.m_openedFile.m_path;
 			MainWindow.s_pW.mx_workTabs.SelectedItem = m_rootControl.m_openedFile.m_tab;
 			if (m_vId != "")
@@ -252,10 +261,86 @@ namespace UIEditor.BoloUI
 				selBn.mx_radio.IsChecked = true;
 			}
 			gotoSelectXe();
+			//showSkinFrame();
+			m_selLock.delLock(ref stackLock);
+		}
+		public XmlElement getLinkSkinXe()
+		{
+			XmlElement xeRet = null;
+
+			m_rootControl.refreshSkinDicForAll();
+			if (m_xe != null && m_xe.GetAttribute("skin") != "")
+			{
+				string skinName = m_xe.GetAttribute("skin");
+				string groupName;
+
+				if (m_rootControl.m_mapSkinLink.TryGetValue(skinName, out groupName))
+				{
+					string path = MainWindow.s_pW.m_skinPath + "\\" + groupName + ".xml";
+
+					if (System.IO.File.Exists(path))
+					{
+						XmlDocument docSkin = new XmlDocument();
+
+						docSkin.Load(path);
+						foreach (XmlNode xn in docSkin.DocumentElement.ChildNodes)
+						{
+							if (xn.NodeType == XmlNodeType.Element)
+							{
+								XmlElement xeSkin = (XmlElement)xn;
+
+								if (xeSkin.Name == "skin" || xeSkin.Name == "publicskin")
+								{
+									if (xeSkin.GetAttribute("Name") == skinName)
+									{
+										xeRet = xeSkin;
+									}
+								}
+							}
+						}
+
+						return xeRet;
+					}
+				}
+			}
+
+			return null;
+		}
+		public void showSkinFrame()
+		{
+			XmlElement xeSkin = getLinkSkinXe();
+
+			if(xeSkin != null)
+			{
+				MainWindow.s_pW.mx_skinFrame.Visibility = System.Windows.Visibility.Visible;
+				MainWindow.s_pW.mx_skinApprPre.Items.Clear();
+				MainWindow.s_pW.mx_skinApprSuf.Items.Clear();
+				CtrlDef_T ctrlDef;
+
+				if(MainWindow.s_pW.m_mapCtrlDef.TryGetValue(m_xe.Name, out ctrlDef))
+				{
+					foreach (KeyValuePair<string, string> pairSuf in ctrlDef.m_mapApprSuffix.ToList())
+					{
+						ComboBoxItem cbSuf = new ComboBoxItem();
+
+						cbSuf.Content = pairSuf.Value;
+						MainWindow.s_pW.mx_skinApprSuf.Items.Add(cbSuf);
+					}
+					foreach (KeyValuePair<string, string> pairPre in ctrlDef.m_mapApprPrefix.ToList())
+					{
+						ComboBoxItem cbPre = new ComboBoxItem();
+
+						cbPre.Content = pairPre.Value;
+						MainWindow.s_pW.mx_skinApprPre.Items.Add(cbPre);
+					}
+				}
+				MainWindow.s_pW.mx_skinApprPre.SelectedIndex = 0;
+				MainWindow.s_pW.mx_skinApprSuf.SelectedIndex = 0;
+			}
 		}
 		private bool checkXeIsVisible(XmlElement xe)
 		{
-			for(XmlNode xn = xe; xn.NodeType == XmlNodeType.Element; xn = xn.ParentNode)
+			for(XmlNode xn = xe; xn != null && xn.NodeType == XmlNodeType.Element; xn = xn.ParentNode)
 			{
 				XmlElement xeRet = (XmlElement)xn;
 

@@ -224,6 +224,15 @@ namespace UIEditor.BoloUI
 		}
 		public override void changeSelectItem(object obj = null)
 		{
+			bool stackLock;
+			if (m_selLock.isLock())
+			{
+				return;
+			}
+			else
+			{
+				m_selLock.addLock(out stackLock);
+			}
 			MainWindow.s_pW.m_curItem = this;
 			if(m_xe.Name != "BoloUI")
 			{
@@ -316,6 +325,7 @@ namespace UIEditor.BoloUI
 			mx_radio.IsChecked = true;
 			BringIntoView();
 			gotoSelectXe();
+			m_selLock.delLock(ref stackLock);
 		}
 	}
 }

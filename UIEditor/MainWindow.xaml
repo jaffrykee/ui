@@ -43,7 +43,7 @@
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="250"/>
 			<ColumnDefinition Width="*" MinWidth="20"/>
-			<ColumnDefinition Width="250"/>
+			<ColumnDefinition Width="300"/>
 		</Grid.ColumnDefinitions>
 		<Menu Grid.Row="0" Grid.Column="0" Background="#18181818" Grid.ColumnSpan="3" VerticalAlignment="Top">
 			<MenuItem Header="文件">
@@ -428,7 +428,7 @@
 		<Grid Grid.Row="2" Grid.RowSpan="3" Grid.Column="2" Margin="5,0,0,0" Background="#FFEEEEEE">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="*"/>
-				<RowDefinition Height="0"/>
+				<RowDefinition Height="auto"/>
 			</Grid.RowDefinitions>
 			<ScrollViewer Name="mx_toolScroll"
 						  HorizontalScrollBarVisibility="Auto"
@@ -437,19 +437,36 @@
 				<StackPanel Name="mx_toolArea" Width="auto">
 				</StackPanel>
 			</ScrollViewer>
-			<Grid Grid.Row="1">
-				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto"/>
-					<RowDefinition Height="*"/>
-				</Grid.RowDefinitions>
-				<Border BorderThickness="1" BorderBrush="#ffffffff" Background="#ff444444" CornerRadius="2">
-					<Label Foreground="White" Margin="0,0,0,0" Padding="5,1,0,1">
-						皮肤
-					</Label>
-				</Border>
-				<TreeView Name="mx_treeSingleSkin" Grid.Row="1">
-				</TreeView>
-			</Grid>
+			<GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="5"/>
+			<ScrollViewer Name="mx_skinFrame"
+						  Grid.Row="1"
+						  Margin="0,5,0,0"
+						  Visibility="Collapsed"
+						  HorizontalScrollBarVisibility="Auto"
+						  VerticalScrollBarVisibility="Auto">
+				<StackPanel>
+					<Border BorderThickness="1" BorderBrush="#ffffffff" Background="#ff444444" CornerRadius="2">
+						<Label Foreground="White" Margin="0,0,0,0" Padding="5,1,0,1">
+							皮肤
+						</Label>
+					</Border>
+					<Grid Grid.Row="1" Margin="0,0,20,0">
+						<Grid.RowDefinitions>
+							<RowDefinition Height="auto"/>
+							<RowDefinition Height="auto"/>
+							<RowDefinition Height="*"/>
+						</Grid.RowDefinitions>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="125"/>
+						</Grid.ColumnDefinitions>
+						<Label Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Margin="0,0,10,0">状态(后缀):</Label>
+						<ComboBox Name="mx_skinApprSuf" Grid.Row="0" Grid.Column="1" Margin="2"/>
+						<Label Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Margin="0,0,10,0">组成(前缀):</Label>
+						<ComboBox Name="mx_skinApprPre" Grid.Row="1" Grid.Column="1" Margin="2"/>
+					</Grid>
+				</StackPanel>
+			</ScrollViewer>
 		</Grid>
 		<GridSplitter Grid.Row="2" Grid.RowSpan="3" Grid.Column="2" Width="5" HorizontalAlignment="Left"/>
 		<DockPanel Name="mx_normalFrame"

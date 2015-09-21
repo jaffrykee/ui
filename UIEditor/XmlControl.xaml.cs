@@ -148,6 +148,7 @@ namespace UIEditor
 			{
 				MainWindow.s_pW.mx_debug.Text += "<警告>然而，并没有这个皮肤。(" + skinName + ")\r\n";
 			}
+
 			return false;
 		}
 		public string tryFindSkin(string skinName)
@@ -238,6 +239,26 @@ namespace UIEditor
 			string path = MainWindow.s_pW.m_skinPath + "\\" + skinGroupName + ".xml";
 
 			refreshSkinDicByPath(path, skinGroupName);
+		}
+		public void refreshSkinDicForAll()
+		{
+			m_mapSkinLink.Clear();
+			if (m_xeRoot != null && m_xeRoot.Name == "BoloUI")
+			{
+				foreach (XmlNode xnf in m_xeRoot.ChildNodes)
+				{
+					if (xnf.NodeType == XmlNodeType.Element)
+					{
+						XmlElement xe = (XmlElement)xnf;
+
+						if (xe.Name == "skingroup" && xe.GetAttribute("Name") != "")
+						{
+							refreshSkinDicByGroupName(xe.GetAttribute("Name"));
+						}
+					}
+				}
+				refreshSkinDicByGroupName("publicskin");
+			}
 		}
 		void mx_newRun_MouseDown(object sender, MouseButtonEventArgs e)
 		{
@@ -589,7 +610,6 @@ namespace UIEditor
 
 							XmlNodeList xnl = m_xeRoot.ChildNodes;
 
-							//MainWindow.s_pW.mx_debug.Text += ("未被解析的项目：\r\n");
 							foreach (XmlNode xnf in xnl)
 							{
 								if (xnf.NodeType == XmlNodeType.Element)

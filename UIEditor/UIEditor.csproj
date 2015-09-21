@@ -144,6 +144,7 @@
     <Compile Include="Public\ErrorInfo.xaml.cs">
       <DependentUpon>ErrorInfo.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Public\EventLock.cs" />
     <Compile Include="Public\LocalConst.cs" />
     <Compile Include="TemplateCreate.xaml.cs">
       <DependentUpon>TemplateCreate.xaml</DependentUpon>
