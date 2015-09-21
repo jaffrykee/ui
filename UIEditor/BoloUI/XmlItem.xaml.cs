@@ -48,6 +48,24 @@ namespace UIEditor.BoloUI
 			m_rootControl.m_mapXeItem[xe] = this;
 		}
 
+		static public XmlItem getCurItem()
+		{
+			OpenedFile fileDef;
+
+			if(MainWindow.s_pW != null && MainWindow.s_pW.m_curFile != null && MainWindow.s_pW.m_curFile != "" &&
+				MainWindow.s_pW.m_mapOpenedFiles.TryGetValue(MainWindow.s_pW.m_curFile, out fileDef) &&
+				fileDef != null && fileDef.m_frame != null && fileDef.m_frame is XmlControl)
+			{
+				XmlControl xmlCtrl = (XmlControl)fileDef.m_frame;
+
+				if(xmlCtrl.m_curItem != null)
+				{
+					return xmlCtrl.m_curItem;
+				}
+			}
+
+			return null;
+		}
 		static public void changeLightRun(Run runLight)
 		{
 			bool isLocked = false;

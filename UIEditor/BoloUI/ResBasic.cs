@@ -233,7 +233,7 @@ namespace UIEditor.BoloUI
 			{
 				m_selLock.addLock(out stackLock);
 			}
-			MainWindow.s_pW.m_curItem = this;
+			m_rootControl.m_curItem = this;
 			if(m_xe.Name != "BoloUI")
 			{
 				BoloUI.Basic ctrlUI;

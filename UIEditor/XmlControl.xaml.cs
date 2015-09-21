@@ -36,6 +36,7 @@ namespace UIEditor
 		public XmlElement m_xeRoot;
 		public bool m_isOnlySkin;
 		public BoloUI.Basic m_skinViewCtrlUI;
+		public XmlItem m_curItem;
 
 		public BoloUI.Basic m_treeUI;
 		public BoloUI.ResBasic m_treeSkin;
@@ -267,7 +268,7 @@ namespace UIEditor
 				Run newRun = (Run)sender;
 				XmlItem item;
 
-				if (m_mapRunItem.TryGetValue(newRun, out item) && item != null && item != MainWindow.s_pW.m_curItem)
+				if (m_mapRunItem.TryGetValue(newRun, out item) && item != null && item != XmlItem.getCurItem())
 				{
 					item.changeSelectItem();
 				}

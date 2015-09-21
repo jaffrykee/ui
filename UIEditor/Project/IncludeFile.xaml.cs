@@ -12,16 +12,27 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
+using System.Xml;
+using Microsoft.VisualBasic.FileIO;
 
 namespace UIEditor.Project
 {
 	/// <summary>
 	/// ProjFile.xaml 的交互逻辑
 	/// </summary>
+	
+	public enum FileType
+	{
+		Normal,
+		BoloUI_Ctrl,
+		BoloUI_Skin,
+		Image
+	}
 	public partial class IncludeFile : TreeViewItem
 	{
 		public Project m_parent;
 		public string m_path;
+		public FileType m_fileType;
 
 		public IncludeFile(string path)
 		{
@@ -49,7 +60,7 @@ namespace UIEditor.Project
 			{
 				try
 				{
-					System.IO.File.Delete(m_path);
+					FileSystem.DeleteFile(m_path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 				}
 				catch
 				{
@@ -59,11 +70,18 @@ namespace UIEditor.Project
 			{
 				MainWindow.s_pW.m_mapIncludeFiles.Remove(m_path);
 			}
+
+			OpenedFile openFileDef;
+
+			if(MainWindow.s_pW.m_mapOpenedFiles.TryGetValue(m_path, out openFileDef))
+			{
+				openFileDef.m_tabItem.closeFile();
+			}
 			if (this.Parent != null &&
 				(this.Parent is TreeViewItem ||
 				this.Parent.GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem"))
 			{
-				IncludeFile pItem = (IncludeFile)this.Parent;
+				TreeViewItem pItem = (TreeViewItem)this.Parent;
 
 				pItem.Items.Remove(this);
 			}
@@ -76,7 +94,7 @@ namespace UIEditor.Project
 				MainWindow.s_pW.openFileByPath(m_path);
 			}
 		}
-		private void movePngFile(string oldPath, string newPath)
+		private void moveFile(string oldPath, string newPath)
 		{
 			string newFolder = System.IO.Path.GetDirectoryName(newPath);
 
@@ -90,27 +108,40 @@ namespace UIEditor.Project
 				{
 					return;
 				}
-				deleteSelf();
-
-				IncludeFile newFolderDef;
-
-				if (MainWindow.s_pW.m_mapIncludeFiles.TryGetValue(System.IO.Path.GetDirectoryName(newPath), out newFolderDef))
+				if(m_fileType == FileType.Image)
 				{
-					newFolderDef.AddChild(new IncludeFile(newPath));
-				}
-				string newResPath = MainWindow.s_pW.m_projPath + "\\images\\" + System.IO.Path.GetFileName(newFolder) + ".xml";
-				FileInfo fi = new FileInfo(oldPath);
-				string oldResPath = MainWindow.s_pW.m_projPath + "\\images\\" + System.IO.Path.GetFileName(fi.DirectoryName) + ".xml";
+					deleteSelf();
+					IncludeFile newFolderDef;
 
-				//重新打包
-				ImageTools.ImageNesting.pngToTgaRectNesting(fi.DirectoryName);
-				ImageTools.ImageNesting.pngToTgaRectNesting(newFolder);
-				//刷新皮肤的引用
-				ImageTools.ImageNesting.moveImageLink(
-					System.IO.Path.GetFileNameWithoutExtension(oldPath),
-					System.IO.Path.GetFileNameWithoutExtension(newPath),
-					System.IO.Path.GetFileName(fi.DirectoryName),
-					System.IO.Path.GetFileName(newFolder));
+					if (MainWindow.s_pW.m_mapIncludeFiles.TryGetValue(System.IO.Path.GetDirectoryName(newPath), out newFolderDef))
+					{
+						newFolderDef.AddChild(new IncludeFile(newPath));
+					}
+
+					FileInfo fi = new FileInfo(oldPath);
+
+					//重新打包
+					ImageTools.ImageNesting.pngToTgaRectNesting(fi.DirectoryName);
+					ImageTools.ImageNesting.pngToTgaRectNesting(newFolder);
+					//刷新皮肤的引用
+					ImageTools.ImageNesting.moveImageLink(
+						System.IO.Path.GetFileNameWithoutExtension(oldPath),
+						System.IO.Path.GetFileNameWithoutExtension(newPath),
+						System.IO.Path.GetFileName(fi.DirectoryName),
+						System.IO.Path.GetFileName(newFolder));
+				}
+				else
+				{
+					if (this.Parent != null &&
+						(this.Parent is TreeViewItem ||
+						this.Parent.GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem"))
+					{
+						TreeViewItem pItem = (TreeViewItem)this.Parent;
+
+						pItem.Items.Add(new IncludeFile(newPath));
+					}
+					deleteSelf();
+				}
 			}
 		}
 		private void pngFileDeal(object pngItem, string type)
@@ -120,16 +151,20 @@ namespace UIEditor.Project
 				case "delete":
 					{
 						deleteSelf();
-						FileInfo fi = new FileInfo(m_path);
-						string oldResPath = MainWindow.s_pW.m_projPath + "\\images\\" + System.IO.Path.GetFileName(fi.DirectoryName) + ".xml";
+						if(m_fileType == FileType.Image)
+						{
+							FileInfo fi = new FileInfo(m_path);
+							string oldResPath = MainWindow.s_pW.m_projPath + "\\images\\" + System.IO.Path.GetFileName(fi.DirectoryName) + ".xml";
 
-						//重新打包
-						ImageTools.ImageNesting.pngToTgaRectNesting(fi.DirectoryName);
+							//重新打包
+							ImageTools.ImageNesting.pngToTgaRectNesting(fi.DirectoryName);
+						}
 					}
 					break;
 				case "rename":
 					{
 						string oldFileName = mx_radio.Content.ToString();
+
 						mx_tbRename.Visibility = System.Windows.Visibility.Visible;
 						mx_radio.Visibility = System.Windows.Visibility.Collapsed;
 						if (oldFileName.IndexOf('_') == 0)
@@ -160,7 +195,7 @@ namespace UIEditor.Project
 									{
 										case "moveTo":
 											{
-												movePngFile(m_path, newPath);
+												moveFile(m_path, newPath);
 											}
 											break;
 										case "copyTo":
@@ -217,23 +252,38 @@ namespace UIEditor.Project
 				menuItem.Items.Add(childItem);
 			}
 		}
-		public void refreshMenuItem(bool isImage)
+		public void refreshMenuItem(FileType fileType)
 		{
-			if(isImage)
+			m_fileType = fileType;
+			switch(fileType)
 			{
-				mx_moveTo.Visibility = System.Windows.Visibility.Visible;
-				mx_copyTo.Visibility = System.Windows.Visibility.Visible;
-				mx_delete.Visibility = System.Windows.Visibility.Visible;
-				mx_rename.Visibility = System.Windows.Visibility.Visible;
-				mx_spImg.Visibility = System.Windows.Visibility.Visible;
-			}
-			else
-			{
-				mx_moveTo.Visibility = System.Windows.Visibility.Collapsed;
-				mx_copyTo.Visibility = System.Windows.Visibility.Collapsed;
-				mx_delete.Visibility = System.Windows.Visibility.Collapsed;
-				mx_rename.Visibility = System.Windows.Visibility.Collapsed;
-				mx_spImg.Visibility = System.Windows.Visibility.Collapsed;
+				case FileType.Image:
+					{
+						mx_moveTo.Visibility = System.Windows.Visibility.Visible;
+						mx_copyTo.Visibility = System.Windows.Visibility.Visible;
+						mx_delete.Visibility = System.Windows.Visibility.Visible;
+						mx_rename.Visibility = System.Windows.Visibility.Visible;
+						mx_spImg.Visibility = System.Windows.Visibility.Visible;
+					}
+					break;
+				case FileType.BoloUI_Ctrl:
+					{
+						mx_moveTo.Visibility = System.Windows.Visibility.Collapsed;
+						mx_copyTo.Visibility = System.Windows.Visibility.Collapsed;
+						mx_delete.Visibility = System.Windows.Visibility.Visible;
+						mx_rename.Visibility = System.Windows.Visibility.Visible;
+						mx_spImg.Visibility = System.Windows.Visibility.Visible;
+					}
+					break;
+				default:
+					{
+						mx_moveTo.Visibility = System.Windows.Visibility.Collapsed;
+						mx_copyTo.Visibility = System.Windows.Visibility.Collapsed;
+						mx_delete.Visibility = System.Windows.Visibility.Collapsed;
+						mx_rename.Visibility = System.Windows.Visibility.Collapsed;
+						mx_spImg.Visibility = System.Windows.Visibility.Collapsed;
+					}
+					break;
 			}
 		}
 		private void mx_menu_Loaded(object sender, RoutedEventArgs e)
@@ -247,11 +297,40 @@ namespace UIEditor.Project
 					if (fi.Directory.Parent.Name == "images" &&
 						fi.Directory.Parent.Parent.FullName == MainWindow.s_pW.m_projPath)
 					{
-						refreshMenuItem(true);
+						refreshMenuItem(FileType.Image);
 						addResFolderToMenu(fi.Directory.Parent, mx_moveTo, mx_moveToChild_Click);
 						addResFolderToMenu(fi.Directory.Parent, mx_copyTo, mx_copyToChild_Click);
 
 						return;
+					}
+					else if (fi.Directory.FullName == MainWindow.s_pW.m_projPath)
+					{
+						if(fi.Extension == ".xml")
+						{
+							XmlDocument docXml = new XmlDocument();
+
+							docXml.Load(m_path);
+							if(docXml.DocumentElement.Name == "BoloUI")
+							{
+								refreshMenuItem(FileType.BoloUI_Ctrl);
+								return;
+							}
+						}
+					}
+					else if (fi.Directory.Name == "skin" &&
+						fi.Directory.Parent.FullName == MainWindow.s_pW.m_projPath)
+					{
+						if (fi.Extension == ".xml")
+						{
+							XmlDocument docXml = new XmlDocument();
+
+							docXml.Load(m_path);
+							if (docXml.DocumentElement.Name == "BoloUI")
+							{
+								refreshMenuItem(FileType.BoloUI_Skin);
+								return;
+							}
+						}
 					}
 				}
 				catch
@@ -259,7 +338,7 @@ namespace UIEditor.Project
 
 				}
 			}
-			refreshMenuItem(false);
+			refreshMenuItem(FileType.Normal);
 		}
 		private void mx_newFile_Click(object sender, RoutedEventArgs e)
 		{
@@ -289,7 +368,7 @@ namespace UIEditor.Project
 			{
 				string newPath = System.IO.Path.GetDirectoryName(m_path) + "\\" + mx_tbRename.Text;
 
-				movePngFile(m_path, newPath);
+				moveFile(m_path, newPath);
 			}
 			mx_radio.Visibility = System.Windows.Visibility.Visible;
 			mx_tbRename.Visibility = System.Windows.Visibility.Collapsed;

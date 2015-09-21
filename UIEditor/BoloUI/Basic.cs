@@ -169,7 +169,7 @@ namespace UIEditor.BoloUI
 				);
 			}
 
-			MainWindow.s_pW.m_curItem = this;
+			m_rootControl.m_curItem = this;
 			MainWindow.s_pW.hiddenAllAttr();
 			CtrlDef_T ctrlDef;
 
