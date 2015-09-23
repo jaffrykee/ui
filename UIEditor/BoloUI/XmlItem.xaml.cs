@@ -462,7 +462,7 @@ namespace UIEditor.BoloUI
 			moveUpItem();
 		}
 
-		private void showTmpl(MenuItem ctrlMenuItem, XmlElement xeTmpls, string addStr)
+		static private void showTmpl(MenuItem ctrlMenuItem, XmlElement xeTmpls, string addStr, RoutedEventHandler rehClick)
 		{
 			if (ctrlMenuItem.Items.Count == 0)
 			{
@@ -470,7 +470,7 @@ namespace UIEditor.BoloUI
 
 				emptyCtrl.Header = "空节点";
 				emptyCtrl.ToolTip = addStr;
-				emptyCtrl.Click += insertCtrlItem_Click;
+				emptyCtrl.Click += rehClick;
 				ctrlMenuItem.Items.Add(emptyCtrl);
 				ctrlMenuItem.Items.Add(new Separator());
 			}
@@ -503,7 +503,7 @@ namespace UIEditor.BoloUI
 							rowTmpl.ToolTip = xeRow.InnerXml;
 							rowTmpl.Header = xeRow.GetAttribute("name");
 							ctrlMenuItem.Items.Add(rowTmpl);
-							rowTmpl.Click += insertCtrlItem_Click;
+							rowTmpl.Click += rehClick;
 
 							continue;
 						}
@@ -526,10 +526,113 @@ namespace UIEditor.BoloUI
 						rowTmpl.ToolTip = outStr;
 						rowTmpl.Header = xeRow.GetAttribute("name");
 						ctrlMenuItem.Items.Add(rowTmpl);
-						rowTmpl.Click += insertCtrlItem_Click;
+						rowTmpl.Click += rehClick;
 					}
 				}
 			}
+		}
+		static private ItemsControl showTmpl(ComboBox cbItem, XmlElement xeTmpls, string addStr, RoutedEventHandler rehClick, string rowId = "")
+		{
+			if (cbItem.Items.Count == 0)
+			{
+				ComboBoxItem emptyCtrl = new ComboBoxItem();
+
+				emptyCtrl.Content = "空节点";
+				emptyCtrl.ToolTip = addStr;
+				emptyCtrl.Selected += rehClick;
+				cbItem.Items.Add(emptyCtrl);
+				cbItem.Items.Add(new Separator());
+			}
+
+			XmlNodeList xlstTmpl = xeTmpls.SelectNodes("row");
+			if (xlstTmpl.Count != 0)
+			{
+				foreach (XmlNode xn in xlstTmpl)
+				{
+					if (xn.NodeType == XmlNodeType.Element)
+					{
+						XmlElement xeRow = (XmlElement)xn;
+						ComboBoxItem rowTmpl = new ComboBoxItem();
+						XmlDocument docXml = new XmlDocument();
+
+						try
+						{
+							docXml.LoadXml(xeRow.InnerXml);
+						}
+						catch
+						{
+							rowTmpl.ToolTip = xeRow.InnerXml;
+							rowTmpl.Content = xeRow.GetAttribute("name");
+							cbItem.Items.Add(rowTmpl);
+							rowTmpl.Selected += rehClick;
+
+							continue;
+						}
+
+						StringBuilder strb = new StringBuilder();
+						using (StringWriter sw = new StringWriter(strb))
+						{
+							XmlWriterSettings settings = new XmlWriterSettings();
+
+							settings.Indent = true;
+							settings.IndentChars = "    ";
+							settings.NewLineOnAttributes = false;
+							XmlWriter xmlWriter = XmlWriter.Create(sw, settings);
+							docXml.Save(xmlWriter);
+							xmlWriter.Close();
+						}
+						string outStr = strb.ToString();
+
+						outStr = outStr.Substring(outStr.IndexOf("\n") + 1, outStr.Length - (outStr.IndexOf("\n") + 1));
+						rowTmpl.ToolTip = outStr;
+						rowTmpl.Content = xeRow.GetAttribute("name");
+						cbItem.Items.Add(rowTmpl);
+						rowTmpl.Selected += rehClick;
+					}
+				}
+			}
+		}
+		static private ItemsControl showTmpl(ItemsControl itemFrame, XmlElement xeTmpls, string addStr, RoutedEventHandler rehClick, string rowId = "")
+		{
+			if(itemFrame is MenuItem)
+			{
+				showTmpl((MenuItem)itemFrame, xeTmpls, addStr, rehClick);
+
+				return null;
+			}
+			else if(itemFrame is ComboBox)
+			{
+				return showTmpl((ComboBox)itemFrame, xeTmpls, addStr, rehClick, rowId);
+			}
+
+			return null;
+		}
+		static public ItemsControl showTmplGroup(string addStr, ItemsControl itemFrame, RoutedEventHandler rehClick, string rowId = "")
+		{
+			ItemsControl retItemFrame = null;
+
+			if (MainWindow.s_pW.m_docConf.SelectSingleNode("Config").SelectSingleNode("template") != null &&
+				MainWindow.s_pW.m_docConf.SelectSingleNode("Config").SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls") != null)
+			{
+				XmlElement xeTmpls = (XmlElement)MainWindow.s_pW.m_docConf.SelectSingleNode("Config").
+					SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls");
+				retItemFrame = showTmpl(itemFrame, xeTmpls, addStr, rehClick, rowId);
+			}
+
+			if (MainWindow.s_pW.m_docProj.SelectSingleNode("BoloUIProj").SelectSingleNode("template") != null &&
+				MainWindow.s_pW.m_docProj.SelectSingleNode("BoloUIProj").SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls") != null)
+			{
+				XmlElement xeTmpls = (XmlElement)MainWindow.s_pW.m_docProj.SelectSingleNode("BoloUIProj").
+					SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls");
+				ItemsControl ret = showTmpl(itemFrame, xeTmpls, addStr, rehClick, rowId);
+
+				if(ret != null)
+				{
+					retItemFrame = ret;
+				}
+			}
+
+			return retItemFrame;
 		}
 		public void showTmplGroup(string addStr)
 		{
@@ -543,7 +646,7 @@ namespace UIEditor.BoloUI
 				isNull = false;
 				XmlElement xeTmpls = (XmlElement)MainWindow.s_pW.m_docConf.SelectSingleNode("Config").SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls");
 
-				showTmpl(ctrlMenuItem, xeTmpls, addStr);
+				showTmpl(ctrlMenuItem, xeTmpls, addStr, insertCtrlItem_Click);
 			}
 
 			if (addStr == "event")
@@ -565,7 +668,7 @@ namespace UIEditor.BoloUI
 								isNull = false;
 								XmlElement xePoi = (XmlElement)xnPoi;
 
-								showTmpl(ctrlMenuItem, xePoi, addStr);
+								showTmpl(ctrlMenuItem, xePoi, addStr, insertCtrlItem_Click);
 							}
 						}
 						XmlNode xnBasic = xnTmpls.SelectSingleNode("eventTmpls_basic");
@@ -575,7 +678,7 @@ namespace UIEditor.BoloUI
 							isNull = false;
 							XmlElement xeBasic = (XmlElement)xnBasic;
 
-							showTmpl(ctrlMenuItem, xeBasic, addStr);
+							showTmpl(ctrlMenuItem, xeBasic, addStr, insertCtrlItem_Click);
 						}
 					}
 					//所有节点的事件模板
@@ -586,7 +689,7 @@ namespace UIEditor.BoloUI
 						isNull = false;
 						XmlElement xeCtrl = (XmlElement)xnCtrl;
 
-						showTmpl(ctrlMenuItem, xeCtrl, addStr);
+						showTmpl(ctrlMenuItem, xeCtrl, addStr, insertCtrlItem_Click);
 					}
 				}
 			}
@@ -602,7 +705,7 @@ namespace UIEditor.BoloUI
 
 				XmlElement xeTmpls = (XmlElement)MainWindow.s_pW.m_docProj.SelectSingleNode("BoloUIProj").SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls");
 
-				showTmpl(ctrlMenuItem, xeTmpls, addStr);
+				showTmpl(ctrlMenuItem, xeTmpls, addStr, insertCtrlItem_Click);
 			}
 
 			if (isNull)

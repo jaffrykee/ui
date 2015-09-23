@@ -80,6 +80,25 @@ namespace UIEditor
 			}
 		}
 		
+		static public XmlControl getCurXmlControl()
+		{
+			OpenedFile fileDef;
+
+			if (MainWindow.s_pW != null &&
+				MainWindow.s_pW.m_curFile != null &&
+				MainWindow.s_pW.m_curFile != "" &&
+				MainWindow.s_pW.m_mapOpenedFiles.TryGetValue(MainWindow.s_pW.m_curFile, out fileDef) &&
+				fileDef != null &&
+				fileDef.m_frame != null &&
+				fileDef.m_frame is XmlControl)
+			{
+				XmlControl xmlCtrl = (XmlControl)fileDef.m_frame;
+
+				return xmlCtrl;
+			}
+
+			return null;
+		}
 		static public void changeSelectCtrlAndFile(MainWindow pW, string path, string baseId)
 		{
 			if (File.Exists(path))
@@ -128,6 +147,38 @@ namespace UIEditor
 			{
 				pW.mx_debug.Text += "<警告>文件：\"" + path + "\"不存在，请检查路径。\r\n";
 			}
+		}
+		public Dictionary<string, XmlElement> getSkinGroupMap()
+		{
+			Dictionary<string, XmlElement> mapXeGroup = new Dictionary<string, XmlElement>();
+
+			if(m_xmlDoc.DocumentElement.Name == "BoloUI")
+			{
+				foreach(XmlNode xn in m_xmlDoc.DocumentElement.ChildNodes)
+				{
+					if(xn.NodeType == XmlNodeType.Element)
+					{
+						XmlElement xe = (XmlElement)xn;
+
+						if(xe.Name == "skingroup")
+						{
+							string attrName = xe.GetAttribute("Name");
+
+							if(attrName != "")
+							{
+								XmlElement xeOut;
+
+								if(!mapXeGroup.TryGetValue(attrName, out xeOut))
+								{
+									mapXeGroup.Add(attrName, xe);
+								}
+							}
+						}
+					}
+				}
+			}
+
+			return mapXeGroup;
 		}
 		public bool findSkinAndSelect(string skinName, BoloUI.Basic ctrlUI = null)
 		{

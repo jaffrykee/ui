@@ -251,18 +251,32 @@ namespace UIEditor.BoloUI
 				MainWindow.s_pW.m_otherAttrList.m_xe = m_xe;
 			}
 
-			mx_radio.IsChecked = true;
-			BringIntoView();
-
 			SelButton selBn;
 
 			if (MainWindow.s_pW.m_mapXeSel != null && MainWindow.s_pW.m_mapXeSel.TryGetValue(m_xe, out selBn) && selBn != null)
 			{
-				selBn.mx_radio.IsChecked = true;
+				if (selBn.mx_radio.IsChecked != true)
+				{
+					selBn.mx_radio.IsChecked = true;
+				}
 			}
 			gotoSelectXe();
-			//showSkinFrame();
+			BringIntoView();
+			mx_radio.IsChecked = true;
+
 			m_selLock.delLock(ref stackLock);
+		}
+		static public void expandAllTreeItemParent(TreeViewItem childItem)
+		{
+			childItem.IsExpanded = true;
+			if (childItem.Parent is TreeViewItem ||
+				childItem.Parent.GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem" ||
+				childItem.Parent.GetType().BaseType.BaseType.ToString() == "System.Windows.Controls.TreeViewItem")
+			{
+				TreeViewItem newChild = (TreeViewItem)childItem.Parent;
+
+				expandAllTreeItemParent(newChild);
+			}
 		}
 		public XmlElement getLinkSkinXe()
 		{

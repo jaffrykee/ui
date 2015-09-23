@@ -759,13 +759,12 @@ namespace UIEditor
 			if (msgTag == W2GTag.W2G_PATH)
 			{
 				charArr = Encoding.Default.GetBytes(buffer);
-				len = charArr.Length;
 			}
 			else
 			{
 				charArr = Encoding.UTF8.GetBytes(buffer);
-				len = charArr.Length;
 			}
+			len = charArr.Length;
 			unsafe
 			{
 				fixed (byte* tmpBuff = charArr)

@@ -19,7 +19,9 @@ namespace UIEditor.BoloUI
 	{
 		public AttrRow m_attrRow;
 		public string m_skinGroup;
+		public string m_skinGroupShortName;
 		public string m_skinName;
+		public string m_skinContent;
 
 		static public newSkin s_pW;
 
@@ -27,7 +29,8 @@ namespace UIEditor.BoloUI
 		{
 			s_pW = this;
 			m_attrRow = attrRow;
-			m_skinGroup = null;
+			m_skinGroup = m_attrRow.m_parent.m_xmlCtrl.m_openedFile.m_path;
+			m_skinGroupShortName = "";
 			m_skinName = null;
 			InitializeComponent();
 			this.Owner = MainWindow.s_pW;
@@ -44,6 +47,16 @@ namespace UIEditor.BoloUI
 					cbiSkin.ToolTip = fi.FullName;
 					cbiSkin.Selected += mx_groupCbi_Selected;
 					mx_groupCbBox.Items.Add(cbiSkin);
+				}
+			}
+			XmlItem.showTmplGroup("skin", mx_tmplCbBox, mx_tmplCbi_Selected);
+			if (mx_tmplCbBox.Items.Count > 0)
+			{
+				if(mx_tmplCbBox.Items.GetItemAt(0) is ComboBoxItem)
+				{
+					ComboBoxItem cbiFirst = (ComboBoxItem)mx_tmplCbBox.Items.GetItemAt(0);
+
+					cbiFirst.IsSelected = true;
 				}
 			}
 		}
@@ -63,11 +76,13 @@ namespace UIEditor.BoloUI
 				ComboBoxItem cbiGroup = (ComboBoxItem)sender;
 
 				m_skinGroup = cbiGroup.ToolTip.ToString();
+				m_skinGroupShortName = cbiGroup.Content.ToString();
 			}
 		}
 		private void mx_localCbi_Selected(object sender, RoutedEventArgs e)
 		{
 			m_skinGroup = m_attrRow.m_parent.m_xmlCtrl.m_openedFile.m_path;
+			m_skinGroupShortName = "";
 		}
 		private void mx_skinName_TextChanged(object sender, TextChangedEventArgs e)
 		{
@@ -92,10 +107,28 @@ namespace UIEditor.BoloUI
 					m_attrRow.m_value = m_skinName;
 					if (System.IO.File.Exists(m_skinGroup))
 					{
-						if (!MainWindow.s_pW.m_mapOpenedFiles.TryGetValue(m_skinGroup, out fileDef))
+						XmlControl curCtrl = XmlControl.getCurXmlControl();
+						Dictionary<string, XmlElement> mapXeGroup = curCtrl.getSkinGroupMap();
+
+						if (m_skinGroupShortName != null && m_skinGroupShortName != "")
 						{
-							MainWindow.s_pW.openFileByPath(m_skinGroup);
+							XmlElement xeOut;
+
+							if(!mapXeGroup.TryGetValue(m_skinGroupShortName, out xeOut))
+							{
+								XmlElement newXe = curCtrl.m_xmlDoc.CreateElement("skingroup");
+								newXe.SetAttribute("Name", m_skinGroupShortName);
+								BoloUI.Basic treeChild = new BoloUI.Basic(newXe, curCtrl);
+
+								curCtrl.m_openedFile.m_lstOpt.addOperation(
+									new XmlOperation.HistoryNode(
+										XmlOperation.XmlOptType.NODE_INSERT,
+										treeChild.m_xe,
+										curCtrl.m_xmlDoc.DocumentElement)
+									);
+							}
 						}
+						MainWindow.s_pW.openFileByPath(m_skinGroup);
 						if (MainWindow.s_pW.m_mapOpenedFiles.TryGetValue(m_skinGroup, out fileDef))
 						{
 							if (fileDef.m_frame is XmlControl)
@@ -104,6 +137,25 @@ namespace UIEditor.BoloUI
 								XmlControl xmlCtrl = (XmlControl)fileDef.m_frame;
 								XmlElement newXe = xmlCtrl.m_xmlDoc.CreateElement("skin");
 
+								if (m_skinContent != null && m_skinContent != "")
+								{
+									XmlDocument docTmpl = new XmlDocument();
+
+									try
+									{
+										docTmpl.LoadXml(m_skinContent);
+										if (docTmpl.DocumentElement != null &&
+											docTmpl.DocumentElement.InnerXml != null &&
+											docTmpl.DocumentElement.InnerXml != "")
+										{
+											newXe.InnerXml = docTmpl.DocumentElement.InnerXml;
+										}
+									}
+									catch
+									{
+
+									}
+								}
 								newXe.SetAttribute("Name", m_skinName);
 								xmlCtrl.m_treeSkin.addResItem(newXe);
 
@@ -126,6 +178,18 @@ namespace UIEditor.BoloUI
 		private void mx_cancel_Click(object sender, RoutedEventArgs e)
 		{
 			this.Close();
+		}
+		private void mx_tmplCbi_Selected(object sender, RoutedEventArgs e)
+		{
+			if(sender is ComboBoxItem)
+			{
+				ComboBoxItem cbiSel = (ComboBoxItem)sender;
+
+				if(cbiSel.ToolTip != "")
+				{
+					m_skinContent = cbiSel.ToolTip.ToString();
+				}
+			}
 		}
 	}
 }
