@@ -59,24 +59,24 @@ namespace UIEditor.XmlOperation
 		}
 		static public void updateAttrToGL(XmlControl xmlCtrl, string baseID, string attrName, string newValue)
 		{
-			if (attrName != "scrollParentLayerWhenGetFocus" &&
-				attrName != "text" &&
-				(attrName != "visible" || MainWindow.s_pW.mx_isShowAll.IsChecked != true))
-			{
-				foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in MainWindow.s_pW.m_mapBasicCtrlDef.ToList())
-				{
-					AttrDef_T attrDef;
-
-					if (pairCtrlDef.Value.m_mapAttrDef.TryGetValue(attrName, out attrDef))
-					{
-						MainWindow.s_pW.updateGL(
-							System.IO.Path.GetFileName(xmlCtrl.m_openedFile.m_path) + ":" + baseID + ":" + attrName + ":" + newValue,
-							W2GTag.W2G_NORMAL_UPDATE);
-
-						return;
-					}
-				}
-			}
+// 			if (attrName != "scrollParentLayerWhenGetFocus" &&
+// 				attrName != "text" &&
+// 				(attrName != "visible" || MainWindow.s_pW.mx_isShowAll.IsChecked != true))
+// 			{
+// 				foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in MainWindow.s_pW.m_mapBasicCtrlDef.ToList())
+// 				{
+// 					AttrDef_T attrDef;
+// 
+// 					if (pairCtrlDef.Value.m_mapAttrDef.TryGetValue(attrName, out attrDef))
+// 					{
+// 						MainWindow.s_pW.updateGL(
+// 							System.IO.Path.GetFileName(xmlCtrl.m_openedFile.m_path) + ":" + baseID + ":" + attrName + ":" + newValue,
+// 							W2GTag.W2G_NORMAL_UPDATE);
+// 
+// 						return;
+// 					}
+// 				}
+// 			}
 			MainWindow.s_pW.updateXmlToGL(xmlCtrl);
 		}
 		public void redoOperation(bool isAddOpt = false)
@@ -143,7 +143,7 @@ namespace UIEditor.XmlOperation
 
 				if (m_xmlCtrl.m_skinViewCtrlUI != null && m_xmlCtrl.m_skinViewCtrlUI.m_xe != null)
 				{
-					BoloUI.ResBasic.resetXeView(m_xmlCtrl.m_skinViewCtrlUI.m_xe, out xeView);
+					BoloUI.ResBasic.resetXeView(m_xmlCtrl.m_skinViewCtrlUI, out xeView);
 				}
 				else
 				{

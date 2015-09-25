@@ -45,7 +45,7 @@
 							Content="选择"
 							Click="mx_sel_Click"/>
 					<Button Name="mx_link"
-							Content="跳转"
+							Content="新建"
 							Click="mx_link_Click"/>
 				</WrapPanel>
 			</Grid>

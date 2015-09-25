@@ -531,8 +531,10 @@ namespace UIEditor.BoloUI
 				}
 			}
 		}
-		static private ItemsControl showTmpl(ComboBox cbItem, XmlElement xeTmpls, string addStr, RoutedEventHandler rehClick, string rowId = "")
+		static private ComboBoxItem showTmpl(ComboBox cbItem, XmlElement xeTmpls, string addStr, RoutedEventHandler rehClick, string rowId = "")
 		{
+			ComboBoxItem retItemFrame = null;
+
 			if (cbItem.Items.Count == 0)
 			{
 				ComboBoxItem emptyCtrl = new ComboBoxItem();
@@ -565,6 +567,10 @@ namespace UIEditor.BoloUI
 							rowTmpl.Content = xeRow.GetAttribute("name");
 							cbItem.Items.Add(rowTmpl);
 							rowTmpl.Selected += rehClick;
+							if (rowTmpl.Content.ToString() == rowId)
+							{
+								retItemFrame = rowTmpl;
+							}
 
 							continue;
 						}
@@ -588,11 +594,17 @@ namespace UIEditor.BoloUI
 						rowTmpl.Content = xeRow.GetAttribute("name");
 						cbItem.Items.Add(rowTmpl);
 						rowTmpl.Selected += rehClick;
+						if(rowTmpl.Content.ToString() == rowId)
+						{
+							retItemFrame = rowTmpl;
+						}
 					}
 				}
 			}
+
+			return retItemFrame;
 		}
-		static private ItemsControl showTmpl(ItemsControl itemFrame, XmlElement xeTmpls, string addStr, RoutedEventHandler rehClick, string rowId = "")
+		static private object showTmpl(ItemsControl itemFrame, XmlElement xeTmpls, string addStr, RoutedEventHandler rehClick, string rowId = "")
 		{
 			if(itemFrame is MenuItem)
 			{
@@ -607,9 +619,9 @@ namespace UIEditor.BoloUI
 
 			return null;
 		}
-		static public ItemsControl showTmplGroup(string addStr, ItemsControl itemFrame, RoutedEventHandler rehClick, string rowId = "")
+		static public object showTmplGroup(string addStr, ItemsControl itemFrame, RoutedEventHandler rehClick, string rowId = "")
 		{
-			ItemsControl retItemFrame = null;
+			object retItemFrame = null;
 
 			if (MainWindow.s_pW.m_docConf.SelectSingleNode("Config").SelectSingleNode("template") != null &&
 				MainWindow.s_pW.m_docConf.SelectSingleNode("Config").SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls") != null)
@@ -624,7 +636,7 @@ namespace UIEditor.BoloUI
 			{
 				XmlElement xeTmpls = (XmlElement)MainWindow.s_pW.m_docProj.SelectSingleNode("BoloUIProj").
 					SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls");
-				ItemsControl ret = showTmpl(itemFrame, xeTmpls, addStr, rehClick, rowId);
+				object ret = showTmpl(itemFrame, xeTmpls, addStr, rehClick, rowId);
 
 				if(ret != null)
 				{

@@ -206,21 +206,26 @@ namespace UIEditor.BoloUI
 				mx_radio.Content = "_" + tmpCon;
 			}
 		}
-		public static void resetXeView(XmlElement srcXe, out XmlElement xeView)
+		public static void resetXeView(Basic uiView, out XmlElement xeView)
 		{
-			xeView = srcXe.OwnerDocument.CreateElement(srcXe.Name);
+			xeView = uiView.m_xe.OwnerDocument.CreateElement(uiView.m_xe.Name);
 
-			foreach (XmlAttribute attr in srcXe.Attributes)
+			foreach (XmlAttribute attr in uiView.m_xe.Attributes)
 			{
 				xeView.SetAttribute(attr.Name, attr.Value);
 			}
-			xeView.SetAttribute("baseID", "selSkinTestCtrl");
 			xeView.RemoveAttribute("x");
 			xeView.RemoveAttribute("y");
 			xeView.RemoveAttribute("visible");
 			xeView.RemoveAttribute("dock");
 			xeView.RemoveAttribute("anchor");
 			xeView.RemoveAttribute("anchorSelf");
+			xeView.SetAttribute("x", uiView.m_selX.ToString());
+			xeView.SetAttribute("y", uiView.m_selY.ToString());
+			xeView.SetAttribute("w", uiView.m_selW.ToString());
+			xeView.SetAttribute("h", uiView.m_selH.ToString());
+			xeView.SetAttribute("baseID", "selSkinTestCtrl");
+			xeView.SetAttribute("skin", uiView.m_xe.GetAttribute("skin"));
 		}
 		public override void changeSelectItem(object obj = null)
 		{
@@ -314,7 +319,7 @@ namespace UIEditor.BoloUI
 							{
 								m_rootControl.m_skinViewCtrlUI = ctrlUI;
 							}
-							resetXeView(m_rootControl.m_skinViewCtrlUI.m_xe, out xeView);
+							resetXeView(m_rootControl.m_skinViewCtrlUI, out xeView);
 						}
 						((XmlElement)xeView).SetAttribute("skin", xeSkin.GetAttribute("Name"));
 						MainWindow.s_pW.updateXmlToGL(m_rootControl, xeView, false);

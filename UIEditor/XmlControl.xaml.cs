@@ -80,6 +80,14 @@ namespace UIEditor
 			}
 		}
 		
+		static public void setAllChildExpand(TreeViewItem item)
+		{
+			item.IsExpanded = true;
+			foreach(TreeViewItem childItem in item.Items)
+			{
+				setAllChildExpand(childItem);
+			}
+		}
 		static public XmlControl getCurXmlControl()
 		{
 			OpenedFile fileDef;
@@ -129,6 +137,7 @@ namespace UIEditor
 							if(xmlCtrl.m_mapSkin.TryGetValue(skinName, out skinBasic))
 							{
 								skinBasic.changeSelectItem(ctrlUI);
+								setAllChildExpand(skinBasic);
 							}
 							else
 							{
@@ -188,7 +197,7 @@ namespace UIEditor
 			if (m_mapSkin.TryGetValue(skinName, out skinBasic))
 			{
 				skinBasic.changeSelectItem(ctrlUI);
-				//changeSelectSkinAndFile(MainWindow.s_pW, m_openedFile.m_path, skinName, ctrlUI);
+				setAllChildExpand(skinBasic);
 			}
 			else if (m_mapSkinLink.TryGetValue(skinName, out groupName))
 			{
@@ -283,7 +292,10 @@ namespace UIEditor
 			else
 			{
 				//不存在
-				MainWindow.s_pW.mx_debug.Text += "<警告>皮肤组：\"" + skinGroupName + "\"不存在，请检查路径：\"" + path + "\"。\r\n";
+				if (skinGroupName != "publicskin")
+				{
+					MainWindow.s_pW.mx_debug.Text += "<警告>皮肤组：\"" + skinGroupName + "\"不存在，请检查路径：\"" + path + "\"。\r\n";
+				}
 			}
 		}
 		public void refreshSkinDicByGroupName(string skinGroupName)

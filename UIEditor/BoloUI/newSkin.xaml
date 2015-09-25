@@ -28,7 +28,6 @@
 		</ComboBox>
 		<Label Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Margin="5">皮肤模板</Label>
 		<ComboBox Name="mx_tmplCbBox" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Width="125" Margin="7">
-			<ComboBoxItem Name="mx_defTmplCbi" IsSelected="True" Selected="mx_defTmplCbi_Selected">[控件默认模板]</ComboBoxItem>
 		</ComboBox>
 		<Label Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Margin="5">皮肤名</Label>
 		<TextBox Name="mx_skinName" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Width="125" Margin="7" TextChanged="mx_skinName_TextChanged"/>

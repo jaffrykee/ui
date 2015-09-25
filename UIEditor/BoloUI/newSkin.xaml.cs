@@ -49,14 +49,25 @@ namespace UIEditor.BoloUI
 					mx_groupCbBox.Items.Add(cbiSkin);
 				}
 			}
-			XmlItem.showTmplGroup("skin", mx_tmplCbBox, mx_tmplCbi_Selected);
+
+			object ret = XmlItem.showTmplGroup("skin", mx_tmplCbBox, mx_tmplCbi_Selected, m_attrRow.m_parent.m_xe.Name + "_skinTmpl");
+
 			if (mx_tmplCbBox.Items.Count > 0)
 			{
-				if(mx_tmplCbBox.Items.GetItemAt(0) is ComboBoxItem)
+				if (ret != null && ret is ComboBoxItem)
 				{
-					ComboBoxItem cbiFirst = (ComboBoxItem)mx_tmplCbBox.Items.GetItemAt(0);
+					ComboBoxItem cbiTmpl = (ComboBoxItem)ret;
 
-					cbiFirst.IsSelected = true;
+					cbiTmpl.IsSelected = true;
+				}
+				else
+				{
+					if (mx_tmplCbBox.Items.GetItemAt(0) is ComboBoxItem)
+					{
+						ComboBoxItem cbiFirst = (ComboBoxItem)mx_tmplCbBox.Items.GetItemAt(0);
+
+						cbiFirst.IsSelected = true;
+					}
 				}
 			}
 		}
@@ -185,7 +196,7 @@ namespace UIEditor.BoloUI
 			{
 				ComboBoxItem cbiSel = (ComboBoxItem)sender;
 
-				if(cbiSel.ToolTip != "")
+				if(cbiSel.ToolTip.ToString() != "")
 				{
 					m_skinContent = cbiSel.ToolTip.ToString();
 				}
