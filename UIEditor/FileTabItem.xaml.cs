@@ -67,7 +67,7 @@ namespace UIEditor
 					case "act":
 					case "pal":
 						tabContent = new PngControl(this, fileDef);
-						MainWindow.s_pW.mx_drawFrame.Visibility = System.Windows.Visibility.Collapsed;
+						MainWindow.s_pW.showGLCtrl(false);
 						break;
 					case "xml":
 						tabContent = new XmlControl(this, fileDef);
@@ -79,7 +79,7 @@ namespace UIEditor
 						break;
 					default:
 						tabContent = new UnknownControl(this, fileDef);
-						MainWindow.s_pW.mx_drawFrame.Visibility = System.Windows.Visibility.Collapsed;
+						MainWindow.s_pW.showGLCtrl(false);
 						break;
 				}
 				this.itemFrame.Children.Clear();

@@ -736,12 +736,11 @@ namespace UIEditor
 				}
 				if(m_showGL)
 				{
-					MainWindow.s_pW.mx_drawFrame.Visibility = System.Windows.Visibility.Visible;
+					MainWindow.s_pW.showGLCtrl(true);
 				}
 				else
 				{
-					MainWindow.s_pW.hiddenGLAttr();
-					MainWindow.s_pW.mx_drawFrame.Visibility = System.Windows.Visibility.Collapsed;
+					MainWindow.s_pW.showGLCtrl(false);
 				}
 			}
 			else

@@ -234,7 +234,7 @@ namespace UIEditor
 			{
 				mx_debugTools.Visibility = System.Windows.Visibility.Collapsed;
 			}
-			mx_drawFrame.Visibility = System.Windows.Visibility.Collapsed;
+			MainWindow.s_pW.showGLCtrl(false);
 
 			DefConf.initXmlValueDef();
 			DispatcherTimer m_textTimer = new DispatcherTimer();
@@ -440,6 +440,28 @@ namespace UIEditor
 			}
 		}
 
+		public void showGLCtrl(bool isShow = true)
+		{
+			if(isShow)
+			{
+				mx_drawFrame.Visibility = System.Windows.Visibility.Visible;
+				mx_GLCtrl.Visibility = System.Windows.Visibility.Visible;
+				mx_scrollFrame.Visibility = System.Windows.Visibility.Visible;
+			}
+			else
+			{
+				mx_drawFrame.Visibility = System.Windows.Visibility.Collapsed;
+				mx_GLCtrl.Visibility = System.Windows.Visibility.Collapsed;
+				mx_scrollFrame.Visibility = System.Windows.Visibility.Collapsed;
+				foreach (object attrList in mx_toolArea.Children)
+				{
+					if (attrList is AttrList)
+					{
+						((UIEditor.AttrList)attrList).Visibility = System.Windows.Visibility.Collapsed;
+					}
+				}
+			}
+		}
 		public void openFileByPath(string path)
 		{
 			OpenedFile openedFile;
@@ -467,19 +489,8 @@ namespace UIEditor
 		{
 			if(m_mapOpenedFiles.Count == 0)
 			{
-				hiddenGLAttr();
+				showGLCtrl(false);
 			}
-		}
-		public void hiddenGLAttr()
-		{
-			foreach (object attrList in mx_toolArea.Children)
-			{
-				if (attrList is AttrList)
-				{
-					((UIEditor.AttrList)attrList).Visibility = System.Windows.Visibility.Collapsed;
-				}
-			}
-			mx_drawFrame.Visibility = System.Windows.Visibility.Collapsed;
 		}
 		private void mx_workTabs_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
@@ -510,7 +521,7 @@ namespace UIEditor
 								mx_treeSkinFrame.Items.Add(xmlCtrl.m_treeSkin);
 								if (xmlCtrl.m_showGL)
 								{
-									mx_drawFrame.Visibility = System.Windows.Visibility.Visible;
+									MainWindow.s_pW.showGLCtrl(true);
 								}
 								xmlCtrl.refreshXmlText();
 								xmlCtrl.refreshSkinDicForAll();
