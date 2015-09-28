@@ -29,12 +29,13 @@ namespace UIEditor
 		public FileTabItem m_tabItem;
 		public string m_fileType;
 		public HistoryList m_lstOpt;
+		public string m_curViewSkin;
 
 		public string m_preViewBaseId;
 		public string m_preViewSkinName;
 		public BoloUI.Basic m_prePlusCtrlUI;
 
-		public OpenedFile(string path)
+		public OpenedFile(string path, string skinName = "", bool isShowTabItem = true)
 		{
 			Public.ErrorInfo.clearErrorInfo();
 			MainWindow pW = MainWindow.s_pW;
@@ -42,6 +43,7 @@ namespace UIEditor
 			m_path = path;
 			m_fileType = StringDic.getFileType(m_path);
 			m_tab = new TabItem();
+			m_curViewSkin = skinName;
 
 			pW.mx_workTabs.Items.Add(m_tab);
 			pW.mx_workTabs.SelectedItem = m_tab;
@@ -53,10 +55,17 @@ namespace UIEditor
 			m_tab.Header = "_" + StringDic.getFileNameWithoutPath(path);
 			m_tab.ToolTip = tabTip;
 
-			UserControl tabContent = new UIEditor.FileTabItem(this);
+			if(isShowTabItem)
+			{
+				UserControl tabContent = new UIEditor.FileTabItem(this, skinName);
 
-			m_tab.Content = tabContent;
-			m_tabItem = (FileTabItem)tabContent;
+				m_tab.Content = tabContent;
+				m_tabItem = (FileTabItem)tabContent;
+			}
+			else
+			{
+				m_tabItem = null;
+			}
 			Public.ErrorInfo.showErrorInfo();
 		}
 

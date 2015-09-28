@@ -73,7 +73,7 @@ namespace UIEditor.Project
 
 			OpenedFile openFileDef;
 
-			if(MainWindow.s_pW.m_mapOpenedFiles.TryGetValue(m_path, out openFileDef))
+			if (MainWindow.s_pW.m_mapOpenedFiles.TryGetValue(m_path, out openFileDef) && openFileDef.m_tabItem != null)
 			{
 				openFileDef.m_tabItem.closeFile();
 			}

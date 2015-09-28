@@ -151,8 +151,11 @@ namespace UIEditor
 
 			refreshImagePack(parent.m_openedFile.m_path, isRePack, out m_mapImgRect, out tgaImg, out imgWidth, out imgHeight);
 
-			parent.m_parent.itemFrame.Width = imgWidth;
-			parent.m_parent.itemFrame.Height = imgHeight;
+			if (parent.m_parent != null)
+			{
+				parent.m_parent.itemFrame.Width = imgWidth;
+				parent.m_parent.itemFrame.Height = imgHeight;
+			}
 			mx_canvas.Width = imgWidth;
 			mx_canvas.Height = imgHeight;
 

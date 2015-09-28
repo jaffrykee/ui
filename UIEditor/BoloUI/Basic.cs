@@ -320,38 +320,6 @@ namespace UIEditor.BoloUI
 
 			return null;
 		}
-		public void showSkinFrame()
-		{
-			XmlElement xeSkin = getLinkSkinXe();
-
-			if(xeSkin != null)
-			{
-				MainWindow.s_pW.mx_skinFrame.Visibility = System.Windows.Visibility.Visible;
-				MainWindow.s_pW.mx_skinApprPre.Items.Clear();
-				MainWindow.s_pW.mx_skinApprSuf.Items.Clear();
-				CtrlDef_T ctrlDef;
-
-				if(MainWindow.s_pW.m_mapCtrlDef.TryGetValue(m_xe.Name, out ctrlDef))
-				{
-					foreach (KeyValuePair<string, string> pairSuf in ctrlDef.m_mapApprSuffix.ToList())
-					{
-						ComboBoxItem cbSuf = new ComboBoxItem();
-
-						cbSuf.Content = pairSuf.Value;
-						MainWindow.s_pW.mx_skinApprSuf.Items.Add(cbSuf);
-					}
-					foreach (KeyValuePair<string, string> pairPre in ctrlDef.m_mapApprPrefix.ToList())
-					{
-						ComboBoxItem cbPre = new ComboBoxItem();
-
-						cbPre.Content = pairPre.Value;
-						MainWindow.s_pW.mx_skinApprPre.Items.Add(cbPre);
-					}
-				}
-				MainWindow.s_pW.mx_skinApprPre.SelectedIndex = 0;
-				MainWindow.s_pW.mx_skinApprSuf.SelectedIndex = 0;
-			}
-		}
 		private bool checkXeIsVisible(XmlElement xe)
 		{
 			for(XmlNode xn = xe; xn != null && xn.NodeType == XmlNodeType.Element; xn = xn.ParentNode)

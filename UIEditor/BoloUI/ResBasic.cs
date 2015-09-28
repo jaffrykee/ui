@@ -22,7 +22,8 @@ namespace UIEditor.BoloUI
 	{
 		public SkinDef_T m_curDeepDef;
 
-		public ResBasic(XmlElement xe, XmlControl rootControl, SkinDef_T deepDef) : base(xe, rootControl)
+		public ResBasic(XmlElement xe, XmlControl rootControl, SkinDef_T deepDef)
+			: base(xe, rootControl)
 		{
 			m_type = "Skin";
 			m_curDeepDef = deepDef;

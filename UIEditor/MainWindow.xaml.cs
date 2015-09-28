@@ -462,7 +462,7 @@ namespace UIEditor
 				}
 			}
 		}
-		public void openFileByPath(string path)
+		public void openFileByPath(string path, string skinName = "")
 		{
 			OpenedFile openedFile;
 			string fileType = StringDic.getFileType(path);
@@ -476,7 +476,7 @@ namespace UIEditor
 				if (File.Exists(path))
 				{
 					m_curFile = path;
-					m_mapOpenedFiles[path] = new OpenedFile(path);
+					m_mapOpenedFiles[path] = new OpenedFile(path, skinName);
 				}
 				else
 				{

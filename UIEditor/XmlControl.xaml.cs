@@ -41,7 +41,7 @@ namespace UIEditor
 		public BoloUI.Basic m_treeUI;
 		public BoloUI.ResBasic m_treeSkin;
 
-		public XmlControl(FileTabItem parent, OpenedFile fileDef)
+		public XmlControl(FileTabItem parent, OpenedFile fileDef, string skinName = "")
 		{
 			InitializeComponent();
 			m_parent = parent;
@@ -62,7 +62,7 @@ namespace UIEditor
 			}
 
 			m_openedFile.m_lstOpt = new XmlOperation.HistoryList(MainWindow.s_pW, this, 65535);
-			refreshControl();
+			refreshControl(skinName);
 			refreshXmlText();
 		}
 		private void mx_root_Unloaded(object sender, RoutedEventArgs e)
@@ -124,6 +124,7 @@ namespace UIEditor
 			{
 				OpenedFile skinFile;
 
+				//pW.openFileByPath(path, skinName);
 				pW.openFileByPath(path);
 				if(pW.m_mapOpenedFiles.TryGetValue(path, out skinFile))
 				{
@@ -494,6 +495,15 @@ namespace UIEditor
 		}
 		public void refreshXmlText(int offset = 0)
 		{
+			if(m_openedFile.m_curViewSkin != "")
+			{
+				MainWindow.s_pW.mx_xmlText.Visibility = System.Windows.Visibility.Collapsed;
+				return;
+			}
+			else
+			{
+				MainWindow.s_pW.mx_xmlText.Visibility = System.Windows.Visibility.Visible;
+			}
 			MainWindow.s_pW.m_isCanEdit = false;
 			if(MainWindow.s_pW.mx_xmlText.Document == null)
 			{
@@ -640,14 +650,13 @@ namespace UIEditor
 				}
 			}
 		}
-		public void refreshControl()
+		public void refreshControl(string skinName = "")
 		{
 			m_mapCtrlUI = new Dictionary<string, BoloUI.Basic>();
 			m_mapSkinLink = new Dictionary<string, string>();
 			m_mapSkin = new Dictionary<string, BoloUI.ResBasic>();
 			m_mapXeItem = new Dictionary<XmlElement, XmlItem>();
 			m_isOnlySkin = true;
-			m_skinViewCtrlUI = null;
 			MainWindow.s_pW.mx_treeCtrlFrame.Items.Clear();
 			MainWindow.s_pW.mx_treeSkinFrame.Items.Clear();
 			m_xeRoot = m_xmlDoc.DocumentElement;
@@ -690,11 +699,16 @@ namespace UIEditor
 									}
 									else if (MainWindow.s_pW.m_mapSkinTreeDef.TryGetValue(xe.Name, out skinPtr))
 									{
-										ResBasic treeChild = new ResBasic(xe, this, skinPtr);
-										m_treeSkin.Items.Add(treeChild);
-										if (xe.Name == "skingroup")
+										if (skinName == "" || 
+											((xe.Name == "skin" || xe.Name == "publicskin") && xe.GetAttribute("Name") == skinName))
 										{
-											refreshSkinDicByGroupName(xe.GetAttribute("Name"));
+											ResBasic treeChild = new ResBasic(xe, this, skinPtr);
+
+											m_treeSkin.Items.Add(treeChild);
+											if (xe.Name == "skingroup")
+											{
+												refreshSkinDicByGroupName(xe.GetAttribute("Name"));
+											}
 										}
 									}
 								}

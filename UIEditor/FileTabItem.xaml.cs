@@ -25,7 +25,7 @@ namespace UIEditor
 		public string m_fileType;
 		public object m_child;
 
-		public FileTabItem(OpenedFile fileDef)
+		public FileTabItem(OpenedFile fileDef, string skinName = "")
 		{
 			m_filePath = "";
 			InitializeComponent();
@@ -70,7 +70,7 @@ namespace UIEditor
 						MainWindow.s_pW.showGLCtrl(false);
 						break;
 					case "xml":
-						tabContent = new XmlControl(this, fileDef);
+						tabContent = new XmlControl(this, fileDef, skinName);
 						break;
 					case "htm":
 					case "html":
