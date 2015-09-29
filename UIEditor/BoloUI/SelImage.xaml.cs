@@ -202,6 +202,14 @@ namespace UIEditor.BoloUI
 
 				if(m_curImg.Parent != null && m_curImg.Parent is TreeViewItem)
 				{
+					if (((TreeViewItem)m_curImg.Parent).Parent == mx_otherRes)
+					{
+						XmlElement newXe = m_rowImage.m_parent.m_xe.OwnerDocument.CreateElement("resource");
+
+						newXe.SetAttribute("name", ((TreeViewItem)m_curImg.Parent).Header.ToString());
+						m_rowImage.m_parent.m_xmlCtrl.m_treeSkin.addResItem(newXe);
+					}
+
 					newImgValue = ((TreeViewItem)m_curImg.Parent).Header.ToString() + "." + m_curImg.Header.ToString();
 
 					m_rowImage.m_value = newImgValue;

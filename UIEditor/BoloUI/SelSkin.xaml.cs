@@ -334,16 +334,14 @@ namespace UIEditor.BoloUI
 		{
 			if (m_curSkin != null)
 			{
-				if (m_curSkin.Parent is TreeViewItem &&
-					((TreeViewItem)m_curSkin.Parent).Parent == mx_otherGroup)
+				if (m_curSkin.Parent != null && m_curSkin.Parent is TreeViewItem &&
+					((TreeViewItem)m_curSkin.Parent).Parent == mx_otherGroup &&
+					((TreeViewItem)m_curSkin.Parent).Header.ToString() != "publicskin")
 				{
-					if (((TreeViewItem)m_curSkin.Parent).Header.ToString() != "publicskin")
-					{
-						XmlElement newXe = m_rowSkin.m_parent.m_xe.OwnerDocument.CreateElement("skingroup");
+					XmlElement newXe = m_rowSkin.m_parent.m_xe.OwnerDocument.CreateElement("skingroup");
 
-						newXe.SetAttribute("Name", ((TreeViewItem)m_curSkin.Parent).Header.ToString());
-						m_rowSkin.m_parent.m_xmlCtrl.m_treeSkin.addResItem(newXe);
-					}
+					newXe.SetAttribute("Name", ((TreeViewItem)m_curSkin.Parent).Header.ToString());
+					m_rowSkin.m_parent.m_xmlCtrl.m_treeSkin.addResItem(newXe);
 				}
 				m_rowSkin.m_value = m_curSkin.Header.ToString();
 			}

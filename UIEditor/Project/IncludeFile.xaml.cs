@@ -26,7 +26,8 @@ namespace UIEditor.Project
 		Normal,
 		BoloUI_Ctrl,
 		BoloUI_Skin,
-		Image
+		Image_Png,
+		Image_Folder
 	}
 	public partial class IncludeFile : TreeViewItem
 	{
@@ -108,7 +109,7 @@ namespace UIEditor.Project
 				{
 					return;
 				}
-				if(m_fileType == FileType.Image)
+				if (m_fileType == FileType.Image_Png)
 				{
 					deleteSelf();
 					IncludeFile newFolderDef;
@@ -122,7 +123,10 @@ namespace UIEditor.Project
 
 					//重新打包
 					ImageTools.ImageNesting.pngToTgaRectNesting(fi.DirectoryName);
-					ImageTools.ImageNesting.pngToTgaRectNesting(newFolder);
+					if (fi.DirectoryName != newFolder)
+					{
+						ImageTools.ImageNesting.pngToTgaRectNesting(newFolder);
+					}
 					//刷新皮肤的引用
 					ImageTools.ImageNesting.moveImageLink(
 						System.IO.Path.GetFileNameWithoutExtension(oldPath),
@@ -151,7 +155,7 @@ namespace UIEditor.Project
 				case "delete":
 					{
 						deleteSelf();
-						if(m_fileType == FileType.Image)
+						if (m_fileType == FileType.Image_Png)
 						{
 							FileInfo fi = new FileInfo(m_path);
 							string oldResPath = MainWindow.s_pW.m_projPath + "\\images\\" + System.IO.Path.GetFileName(fi.DirectoryName) + ".xml";
@@ -257,13 +261,14 @@ namespace UIEditor.Project
 			m_fileType = fileType;
 			switch(fileType)
 			{
-				case FileType.Image:
+				case FileType.Image_Png:
 					{
 						mx_moveTo.Visibility = System.Windows.Visibility.Visible;
 						mx_copyTo.Visibility = System.Windows.Visibility.Visible;
 						mx_delete.Visibility = System.Windows.Visibility.Visible;
 						mx_rename.Visibility = System.Windows.Visibility.Visible;
 						mx_spImg.Visibility = System.Windows.Visibility.Visible;
+						mx_repackImage.Visibility = System.Windows.Visibility.Collapsed;
 					}
 					break;
 				case FileType.BoloUI_Ctrl:
@@ -273,6 +278,17 @@ namespace UIEditor.Project
 						mx_delete.Visibility = System.Windows.Visibility.Visible;
 						mx_rename.Visibility = System.Windows.Visibility.Visible;
 						mx_spImg.Visibility = System.Windows.Visibility.Visible;
+						mx_repackImage.Visibility = System.Windows.Visibility.Collapsed;
+					}
+					break;
+				case FileType.Image_Folder:
+					{
+						mx_moveTo.Visibility = System.Windows.Visibility.Collapsed;
+						mx_copyTo.Visibility = System.Windows.Visibility.Collapsed;
+						mx_delete.Visibility = System.Windows.Visibility.Collapsed;
+						mx_rename.Visibility = System.Windows.Visibility.Collapsed;
+						mx_spImg.Visibility = System.Windows.Visibility.Collapsed;
+						mx_repackImage.Visibility = System.Windows.Visibility.Visible;
 					}
 					break;
 				default:
@@ -282,6 +298,7 @@ namespace UIEditor.Project
 						mx_delete.Visibility = System.Windows.Visibility.Collapsed;
 						mx_rename.Visibility = System.Windows.Visibility.Collapsed;
 						mx_spImg.Visibility = System.Windows.Visibility.Collapsed;
+						mx_repackImage.Visibility = System.Windows.Visibility.Collapsed;
 					}
 					break;
 			}
@@ -297,7 +314,7 @@ namespace UIEditor.Project
 					if (fi.Directory.Parent.Name == "images" &&
 						fi.Directory.Parent.Parent.FullName == MainWindow.s_pW.m_projPath)
 					{
-						refreshMenuItem(FileType.Image);
+						refreshMenuItem(FileType.Image_Png);
 						addResFolderToMenu(fi.Directory.Parent, mx_moveTo, mx_moveToChild_Click);
 						addResFolderToMenu(fi.Directory.Parent, mx_copyTo, mx_copyToChild_Click);
 
@@ -331,6 +348,24 @@ namespace UIEditor.Project
 								return;
 							}
 						}
+					}
+				}
+				catch
+				{
+
+				}
+			}
+			else if (Directory.Exists(m_path))
+			{
+				DirectoryInfo dri = new DirectoryInfo(m_path);
+
+				try
+				{
+					if(dri.Parent.Name == "images" &&
+						dri.Parent.Parent.FullName == MainWindow.s_pW.m_projPath)
+					{
+						refreshMenuItem(FileType.Image_Folder);
+						return;
 					}
 				}
 				catch
@@ -381,6 +416,11 @@ namespace UIEditor.Project
 				mx_tbRename.Visibility = System.Windows.Visibility.Collapsed;
 				mx_radio.Focus();
 			}
+		}
+
+		private void mx_repackImage_Click(object sender, RoutedEventArgs e)
+		{
+			ImageTools.ImageNesting.pngToTgaRectNesting(m_path);
 		}
 	}
 }
