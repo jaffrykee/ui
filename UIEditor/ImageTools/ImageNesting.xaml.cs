@@ -807,7 +807,7 @@ namespace UIEditor.ImageTools
 							{
 								XmlElement xeRes = (XmlElement)xn;
 
-								if(xeRes.Name == newFolder)
+								if (xeRes.GetAttribute("name") == newFolder)
 								{
 									isHaveRes = true;
 								}

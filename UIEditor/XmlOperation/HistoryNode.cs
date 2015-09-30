@@ -223,10 +223,10 @@ namespace UIEditor.XmlOperation
 			if(index < (srcXe.ChildNodes.Count + 1) / 2)
 			{
 				srcXe.PrependChild(tmpXe1);
-				XmlElement iXe = tmpXe1;
+				XmlNode iXe = tmpXe1;
 				for (int i = 0; i < index; i++)
 				{
-					XmlElement nextXe = (XmlElement)iXe.NextSibling;
+					XmlNode nextXe = iXe.NextSibling;
 
 					srcXe.ReplaceChild(tmpXe2, nextXe);
 					srcXe.ReplaceChild(nextXe, tmpXe1);
@@ -238,10 +238,10 @@ namespace UIEditor.XmlOperation
 			else
 			{
 				srcXe.AppendChild(tmpXe1);
-				XmlElement iXe = tmpXe1;
+				XmlNode iXe = tmpXe1;
 				for (int i = srcXe.ChildNodes.Count - 1; i > index; i--)
 				{
-					XmlElement prevXe = (XmlElement)iXe.PreviousSibling;
+					XmlNode prevXe = iXe.PreviousSibling;
 
 					srcXe.ReplaceChild(tmpXe2, prevXe);
 					srcXe.ReplaceChild(prevXe, tmpXe1);

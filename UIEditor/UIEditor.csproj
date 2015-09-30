@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>UIEditor</RootNamespace>
     <AssemblyName>UIEditor</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -73,12 +73,20 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Public\DevILDotNet_1.3\DevIL.NET2.dll</HintPath>
     </Reference>
+    <Reference Include="MahApps.Metro">
+      <HintPath>..\lib\MahApps.Metro.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="PresentationFramework.Aero" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -415,8 +423,27 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="data\a.txt" />
+    <Resource Include="data\image\treeLine.png" />
     <Resource Include="data\image\viewMode.png" />
     <Resource Include="data\image\refresh.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Selen.Wpf.Core\Selen.Wpf.Core.csproj">
+      <Project>{c94c1bdd-11f9-4a3f-8929-86b1b67ae1d5}</Project>
+      <Name>Selen.Wpf.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Selen.Wpf.GenericAppTree.Contracts\Selen.Wpf.GenericAppTree.Contracts.csproj">
+      <Project>{fc32ab02-5705-48e0-bcfd-78eb6c137aeb}</Project>
+      <Name>Selen.Wpf.GenericAppTree.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Selen.Wpf.GenericAppTree\Selen.Wpf.GenericAppTree.csproj">
+      <Project>{8615a3c0-298c-4b9d-8ffc-d5aca466523d}</Project>
+      <Name>Selen.Wpf.GenericAppTree</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Selen.Wpf.SystemStyles\Selen.Wpf.SystemStyles.csproj">
+      <Project>{a468315f-fa11-4bc2-8e5f-ea3c48b24c74}</Project>
+      <Name>Selen.Wpf.SystemStyles</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

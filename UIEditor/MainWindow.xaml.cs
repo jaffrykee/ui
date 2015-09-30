@@ -523,17 +523,23 @@ namespace UIEditor
 								{
 									MainWindow.s_pW.showGLCtrl(true);
 								}
+								else
+								{
+									MainWindow.s_pW.showGLCtrl(false);
+								}
 								xmlCtrl.refreshXmlText();
 								xmlCtrl.refreshSkinDicForAll();
 								if(xmlCtrl.m_curItem != null)
 								{
 									xmlCtrl.m_curItem.changeSelectItem();
 								}
+								return;
 							}
 						}
 					}
 				}
 			}
+			MainWindow.s_pW.showGLCtrl(false);
 		}
 		private void mx_root_Closing(object sender, System.ComponentModel.CancelEventArgs e)
 		{

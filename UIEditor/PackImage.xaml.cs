@@ -13,12 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml;
+using UIEditor.Project;
 
 namespace UIEditor
 {
 	public partial class PackImage : Grid
 	{
 		public Dictionary<string, System.Drawing.Rectangle> m_mapImgRect;
+		public XmlControl m_xmlDef;
 
 		static private void getMapImgRect(
 			XmlDocument docXml,
@@ -95,6 +97,8 @@ namespace UIEditor
 				System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(tgaImg);
 				g.Clear(System.Drawing.Color.FromArgb(0x00, 0x00, 0x00, 0x00));
 
+				IncludeFile imageRootFolder = IncludeFile.getImageRootFolder();
+
 				if (isRePack == true)
 				{
 					foreach (KeyValuePair<string, System.Drawing.Rectangle> pairImgRect in mapImgRect)
@@ -110,6 +114,20 @@ namespace UIEditor
 						System.IO.File.Delete(tgaPath);
 					}
 					DevIL.DevIL.SaveBitmap(tgaPath, tgaImg);
+
+					IncludeFile tgaFileDef;
+
+					if (!MainWindow.s_pW.m_mapIncludeFiles.TryGetValue(tgaPath, out tgaFileDef))
+					{
+						imageRootFolder.Items.Add(new IncludeFile(tgaPath));
+					}
+
+					IncludeFile xmlFileDef;
+
+					if (!MainWindow.s_pW.m_mapIncludeFiles.TryGetValue(xmlPath, out xmlFileDef))
+					{
+						imageRootFolder.Items.Add(new IncludeFile(xmlPath));
+					}
 				}
 				else
 				{
@@ -138,10 +156,20 @@ namespace UIEditor
 			int imgHeight;
 
 			refreshImagePack(xmlPath, true, out mapImgRect, out tgaImg, out imgWidth, out imgHeight);
+
+			OpenedFile fileDef;
+
+			if(MainWindow.s_pW.m_mapOpenedFiles.TryGetValue(xmlPath, out fileDef))
+			{
+				fileDef.m_tabItem.closeFile();
+				MainWindow.s_pW.openFileByPath(xmlPath);
+			}
 		}
 
 		public PackImage(XmlControl parent, bool isRePack = true)
 		{
+			m_xmlDef = parent;
+
 			InitializeComponent();
 
 			System.Drawing.Bitmap tgaImg;
@@ -220,7 +248,8 @@ namespace UIEditor
 			int x = (int)Math.Round(e.GetPosition(mx_canvas).X);
 			int y = (int)Math.Round(e.GetPosition(mx_canvas).Y);
 
-			MainWindow.s_pW.mx_debug.Text += "<坐标>(" + e.GetPosition(mx_canvas).X.ToString() + "," + e.GetPosition(mx_canvas).Y.ToString() + ")\r\n";
+			MainWindow.s_pW.mx_debug.Text += "<坐标>(" + e.GetPosition(mx_canvas).X.ToString() + "," + 
+				e.GetPosition(mx_canvas).Y.ToString() + ")\r\n";
 			foreach (KeyValuePair<string, System.Drawing.Rectangle> pairImgRect in m_mapImgRect.ToList())
 			{
 				if(pairImgRect.Value.Contains(x, y))
@@ -233,6 +262,20 @@ namespace UIEditor
 						pairImgRect.Value.Height
 					));
 					MainWindow.s_pW.mx_debug.Text += "<图片>Name:" + pairImgRect.Key + "\r\n";
+					if (e.ChangedButton == MouseButton.Right)
+					{
+						string pngPath = m_xmlDef.m_openedFile.m_path.Remove(m_xmlDef.m_openedFile.m_path.IndexOf(".")) +
+							"\\" + pairImgRect.Key + ".png";
+						IncludeFile pngFileDef;
+
+						if (MainWindow.s_pW.m_mapIncludeFiles != null && 
+							MainWindow.s_pW.m_mapIncludeFiles.TryGetValue(pngPath, out pngFileDef))
+						{
+							pngFileDef.mx_menu.PlacementTarget = mx_canvas;
+							pngFileDef.mx_menu.Placement = System.Windows.Controls.Primitives.PlacementMode.MousePoint;
+							pngFileDef.mx_menu.IsOpen = true;
+						}
+					}
 
 					return;
 				}

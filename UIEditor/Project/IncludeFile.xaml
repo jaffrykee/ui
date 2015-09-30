@@ -21,7 +21,10 @@
 	</TreeViewItem.Header>
 	<TreeViewItem.ContextMenu>
 		<ContextMenu Name="mx_menu" Loaded="mx_menu_Loaded">
-			<MenuItem Name="mx_newFile" Header="新建..." Click="mx_newFile_Click"/>
+			<MenuItem Header="新建">
+				<MenuItem Name="mx_newFile" Header="文件..." Click="mx_newFile_Click"/>
+				<MenuItem Name="mx_newImageFolder" Header="图片包" Click="mx_newImageFolder_Click"/>
+			</MenuItem>
 			<Separator Name="mx_spImg" Visibility="Collapsed"/>
 			<MenuItem Name="mx_repackImage" Header="重新打包" Visibility="Collapsed" Click="mx_repackImage_Click"/>
 			<MenuItem Name="mx_moveTo" Header="移动到" Visibility="Collapsed"/>

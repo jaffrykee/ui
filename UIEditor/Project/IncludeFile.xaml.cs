@@ -61,7 +61,14 @@ namespace UIEditor.Project
 			{
 				try
 				{
-					FileSystem.DeleteFile(m_path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+					if (m_fileType == FileType.BoloUI_Ctrl || m_fileType == FileType.BoloUI_Skin)
+					{
+						FileSystem.DeleteFile(m_path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+					}
+					else
+					{
+						File.Delete(m_path);
+					}
 				}
 				catch
 				{
@@ -107,6 +114,8 @@ namespace UIEditor.Project
 				}
 				catch
 				{
+					MainWindow.s_pW.mx_debug.Text += "<错误>:移动(从" + oldPath + "，到" + newPath + ")失败。\r\n";
+
 					return;
 				}
 				if (m_fileType == FileType.Image_Png)
@@ -146,6 +155,28 @@ namespace UIEditor.Project
 					}
 					deleteSelf();
 				}
+			}
+			else if (System.IO.Directory.Exists(oldPath))
+			{
+				try
+				{
+					System.IO.Directory.Move(oldPath, newPath);
+				}
+				catch
+				{
+					MainWindow.s_pW.mx_debug.Text += "<错误>:移动(从" + oldPath + "，到" + newPath + ")失败。\r\n";
+
+					return;
+				}
+				if (this.Parent != null &&
+					(this.Parent is TreeViewItem ||
+					this.Parent.GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem"))
+				{
+					TreeViewItem pItem = (TreeViewItem)this.Parent;
+
+					pItem.Items.Add(new IncludeFile(newPath));
+				}
+				deleteSelf();
 			}
 		}
 		private void pngFileDeal(object pngItem, string type)
@@ -212,6 +243,9 @@ namespace UIEditor.Project
 													}
 													catch
 													{
+														MainWindow.s_pW.mx_debug.Text += "<错误>:拷贝(从" + m_path + "，到" + newPath +
+															")失败。\r\n";
+
 														return;
 													}
 
@@ -421,6 +455,43 @@ namespace UIEditor.Project
 		private void mx_repackImage_Click(object sender, RoutedEventArgs e)
 		{
 			ImageTools.ImageNesting.pngToTgaRectNesting(m_path);
+		}
+		private void mx_newImageFolder_Click(object sender, RoutedEventArgs e)
+		{
+			IncludeFile imageRootFolder = getImageRootFolder();
+
+			if (imageRootFolder != null)
+			{
+				string newPath = MainWindow.s_pW.m_projPath + "\\images\\newFolder";
+				try
+				{
+					Directory.CreateDirectory(newPath);
+				}
+				catch
+				{
+					MainWindow.s_pW.mx_debug.Text += "<错误>:图片包(" + newPath + ")创建失败，可能是由于文件名重复或没有写权限。\r\n";
+					return;
+				}
+				IncludeFile newImageFolder = new IncludeFile(newPath);
+
+				imageRootFolder.Items.Add(newImageFolder);
+				imageRootFolder.IsExpanded = true;
+				newImageFolder.BringIntoView();
+				newImageFolder.mx_radio.IsChecked = true;
+				newImageFolder.pngFileDeal(null, "rename");
+			}
+		}
+		static public IncludeFile getImageRootFolder()
+		{
+			IncludeFile imageRootFolder;
+
+			if (MainWindow.s_pW.m_mapIncludeFiles != null && MainWindow.s_pW.m_projPath != null && MainWindow.s_pW.m_projPath != "" &&
+				MainWindow.s_pW.m_mapIncludeFiles.TryGetValue(MainWindow.s_pW.m_projPath + "\\images", out imageRootFolder))
+			{
+				return imageRootFolder;
+			}
+
+			return null;
 		}
 	}
 }
