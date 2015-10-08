@@ -7,7 +7,6 @@
 	  Margin="4,4,4,0">
 	<RadioButton Name="mx_radio"
 				 Padding="20"
-				 Style="{StaticResource RadioTeml_Mt}"
 				 Checked="mx_radio_Checked">
 	</RadioButton>
 </Grid>

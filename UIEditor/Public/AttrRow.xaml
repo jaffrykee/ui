@@ -8,7 +8,7 @@
 	Name="mx_root"
 	Margin="2,2,2,2"
 	MinWidth="200">
-	<Grid Name="mx_normalFrame" Background="#00000000" Visibility="Collapsed" IsVisibleChanged="mx_frame_IsVisibleChanged">
+	<Grid Name="mx_normalFrame" Visibility="Collapsed" IsVisibleChanged="mx_frame_IsVisibleChanged">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Name="mx_c0" Width="*"/>
 			<ColumnDefinition Name="mx_c1" Width="10"/>
@@ -24,16 +24,12 @@
 				<ColumnDefinition Width="auto"/>
 			</Grid.ColumnDefinitions>
 			<Grid>
-				<Grid Background="#ffffffff" Margin="2"></Grid>
+				<Grid Margin="2"></Grid>
 				<TextBlock Name="mx_valueDef"
-						   Foreground="#ffaaaaaa"
-						   Background="#ffffffff"
 						   Margin="5"
 						   Text="[默认值]"/>
 				<TextBox Name="mx_value"
 						 Width="{Binding ElementName=mx_c2, Path=Width}"
-						 CaretBrush="Black"
-						 Background="#00000000"
 						 Margin="2"
 						 KeyDown="mx_value_KeyDown"
 						 LostFocus="mx_value_LostFocus"
@@ -84,11 +80,10 @@
 			Grid.Column="0"
 			HorizontalAlignment="Right"
 			Content="{Binding ElementName=mx_name, Path=Content}"/>
-		<Grid Grid.Column="2"  Background="#ffffffff" Margin="2"></Grid>
+		<Grid Grid.Column="2" Margin="2"></Grid>
 		<ComboBox Name="mx_valueEnum"
 			Width="{Binding ElementName=mx_c2, Path=Width}"
 			Grid.Column="2"
-			Background="#00000000"
 			Margin="2"
 			SelectionChanged="mx_valueEnum_SelectionChanged">
 			<ComboBoxItem Name="mx_defaultEnum" Content="[默认值]" ToolTip="" IsSelected="True"/>

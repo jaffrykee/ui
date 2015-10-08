@@ -48,7 +48,6 @@ namespace UIEditor
 			pW.mx_workTabs.Items.Add(m_tab);
 			pW.mx_workTabs.SelectedItem = m_tab;
 
-			m_tab.Template = (ControlTemplate)(App.Current.Resources["TmplFileItem"]);
 			m_tab.Unloaded += new RoutedEventHandler(pW.eventCloseFile);
 			ToolTip tabTip = new ToolTip();
 			tabTip.Content = m_path;

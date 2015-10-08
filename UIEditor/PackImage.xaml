@@ -6,7 +6,7 @@
 	  mc:Ignorable="d"
 	  Name="mx_root"
 	  Loaded="mx_root_Loaded">
-	<Canvas Name="mx_canvas" Background="#00000000" MouseDown="mx_canvas_MouseDown" MouseMove="mx_canvas_MouseMove">
+	<Canvas Name="mx_canvas" MouseDown="mx_canvas_MouseDown" MouseMove="mx_canvas_MouseMove">
 		<Path Name="mx_selPath" Stroke="#ff3399ff" StrokeThickness="1">
 			<Path.Fill>
 				<SolidColorBrush Color="#663399ff"/>

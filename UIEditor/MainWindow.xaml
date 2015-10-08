@@ -11,7 +11,8 @@
 	WindowState="Maximized"
 	Width="1280"
 	Height="800"
-	Background="#FFEEEEEE"
+	Foreground="{StaticResource Foreground}"
+	Background="{StaticResource Background}"
 	Loaded="mx_root_Loaded"
 	Closing="mx_root_Closing">
 	<Window.Resources>
@@ -38,14 +39,14 @@
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="55"/>
 			<RowDefinition Height="*" MinHeight="20"/>
-			<RowDefinition Height="250"/>
+			<RowDefinition Height="248"/>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="250"/>
+			<ColumnDefinition Width="280"/>
 			<ColumnDefinition Width="*" MinWidth="20"/>
-			<ColumnDefinition Width="300"/>
+			<ColumnDefinition Width="345"/>
 		</Grid.ColumnDefinitions>
-		<Menu Grid.Row="0" Grid.Column="0" Background="#18181818" Grid.ColumnSpan="3" VerticalAlignment="Top">
+		<Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Top">
 			<MenuItem Header="文件">
 				<MenuItem Header="新建">
 					<MenuItem Name="mx_menuNewProj" Header="项目..." Click="mx_newProj_Click"/>
@@ -189,116 +190,204 @@
 					<RowDefinition Height="Auto"/>
 					<RowDefinition Height="Auto"/>
 				</Grid.RowDefinitions>
-				<ToolBarTray Grid.Row="0">
-					<ToolBar HorizontalAlignment="Left">
+				<WrapPanel Name="mx_wpTools" Grid.Row="0" Height="30" Margin="3" Background="{StaticResource Background}">
+					<WrapPanel HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0" Background="{Binding ElementName=mx_wpTools, Path=Background}">
 						<Button Name="mx_toolNew"
 								IsEnabled="False"
 								Click="mx_newFile_Click"
+								Width="30"
+								Height="30"
+								Margin="0"
+								BorderThickness="0"
+								BorderBrush="{StaticResource BackgroundNormal}"
 								ToolTip="新建 (Ctrl + N)">
-							<Image Source="pack://application:,,,/data/image/new.png"/>
+							<Image Width="16" Source="pack://application:,,,/data/image/new.png"/>
 						</Button>
 						<Button Name="mx_toolOpen"
 								Click="openProj"
+								Width="{Binding ElementName=mx_toolNew, Path=Width}"
+								Height="{Binding ElementName=mx_toolNew, Path=Height}"
+								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
+								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
+								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
 								ToolTip="打开项目 (Ctrl + O)">
-							<Image Source="pack://application:,,,/data/image/open.png"/>
+							<Image Width="16" Source="pack://application:,,,/data/image/open.png"/>
 						</Button>
 						<Button Name="mx_toolSave"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolSave_Click"
+								Width="{Binding ElementName=mx_toolNew, Path=Width}"
+								Height="{Binding ElementName=mx_toolNew, Path=Height}"
+								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
+								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
+								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
 								ToolTip="保存 (Ctrl + S)">
-							<Image Source="pack://application:,,,/data/image/save.png"/>
+							<Image Width="16" Source="pack://application:,,,/data/image/save.png"/>
 						</Button>
 						<Button Name="mx_toolSaveAll"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolSaveAll_Click"
+								Width="{Binding ElementName=mx_toolNew, Path=Width}"
+								Height="{Binding ElementName=mx_toolNew, Path=Height}"
+								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
+								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
+								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
 								ToolTip="全部保存 (Ctrl + Shift + S)">
-							<Image Source="pack://application:,,,/data/image/saveAll.png"/>
+							<Image Width="16" Source="pack://application:,,,/data/image/saveAll.png"/>
 						</Button>
 						<Separator/>
 						<Button Name="mx_toolUndo"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolUndo_Click"
+								Width="{Binding ElementName=mx_toolNew, Path=Width}"
+								Height="{Binding ElementName=mx_toolNew, Path=Height}"
+								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
+								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
+								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
 								ToolTip="撤销 (Ctrl + Z)">
-							<Image Source="pack://application:,,,/data/image/undo.png"/>
+							<Image Width="16" Source="pack://application:,,,/data/image/undo.png"/>
 						</Button>
 						<Button Name="mx_toolRedo"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolRedo_Click"
+								Width="{Binding ElementName=mx_toolNew, Path=Width}"
+								Height="{Binding ElementName=mx_toolNew, Path=Height}"
+								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
+								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
+								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
 								ToolTip="重复 (Ctrl + Y)">
-							<Image Source="pack://application:,,,/data/image/redo.png"/>
+							<Image Width="16" Source="pack://application:,,,/data/image/redo.png"/>
 						</Button>
-						<Separator/>
+						<TextBlock Name="mx_sqTool" Margin="0" Padding="5,0,0,0" Background="{StaticResource Background}"/>
 						<Button Name="mx_toolCut"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolCut_Click"
+								Width="{Binding ElementName=mx_toolNew, Path=Width}"
+								Height="{Binding ElementName=mx_toolNew, Path=Height}"
+								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
+								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
+								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
 								ToolTip="剪切 (Ctrl + X)">
-							<Image Source="pack://application:,,,/data/image/cut.png"/>
+							<Image Width="16" Source="pack://application:,,,/data/image/cut.png"/>
 						</Button>
 						<Button Name="mx_toolCopy"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolCopy_Click"
+								Width="{Binding ElementName=mx_toolNew, Path=Width}"
+								Height="{Binding ElementName=mx_toolNew, Path=Height}"
+								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
+								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
+								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
 								ToolTip="复制 (Ctrl + C)">
-							<Image Source="pack://application:,,,/data/image/copy.png"/>
+							<Image Width="16" Source="pack://application:,,,/data/image/copy.png"/>
 						</Button>
 						<Button Name="mx_toolPaste"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolPaste_Click"
+								Width="{Binding ElementName=mx_toolNew, Path=Width}"
+								Height="{Binding ElementName=mx_toolNew, Path=Height}"
+								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
+								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
+								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
 								ToolTip="粘贴 (Ctrl + V)">
-							<Image Source="pack://application:,,,/data/image/paste.png"/>
+							<Image Width="16" Source="pack://application:,,,/data/image/paste.png"/>
 						</Button>
 						<Button Name="mx_toolDelete"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolDelete_Click"
+								Width="{Binding ElementName=mx_toolNew, Path=Width}"
+								Height="{Binding ElementName=mx_toolNew, Path=Height}"
+								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
+								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
+								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
 								ToolTip="删除 (Delete)">
-							<Image Source="pack://application:,,,/data/image/delete.png"/>
+							<Image Width="16" Source="pack://application:,,,/data/image/delete.png"/>
 						</Button>
-						<Separator/>
+						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
+								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
+								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
 						<Button Name="mx_toolMoveUp"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolMoveUp_Click"
+								Width="{Binding ElementName=mx_toolNew, Path=Width}"
+								Height="{Binding ElementName=mx_toolNew, Path=Height}"
+								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
+								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
+								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
 								ToolTip="上移 (Ctrl + ↑)">
 							<Image Source="pack://application:,,,/data/image/moveUp.png"/>
 						</Button>
 						<Button Name="mx_toolMoveDown"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolMoveDown_Click"
+								Width="{Binding ElementName=mx_toolNew, Path=Width}"
+								Height="{Binding ElementName=mx_toolNew, Path=Height}"
+								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
+								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
+								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
 								ToolTip="下移 (Ctrl + ↓)">
 							<Image Source="pack://application:,,,/data/image/moveDown.png"/>
 						</Button>
-					</ToolBar>
-					<ToolBar Name="mx_viewModeTools" HorizontalAlignment="Left">
-						<Button Name="mx_refresh"
-								ToolTip="刷新"
-								Width="32"
-								Click="mx_isShowAll_CheckChanged">
-							<Image Source="pack://application:,,,/data/image/refresh.png"/>
+						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
+								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
+								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
+						<TextBlock Padding="5,0,0,0" VerticalAlignment="Center">宽：</TextBlock>
+						<TextBox Name="mx_screenWidth" TextChanged="mx_screenSize_TextChanged" Width="50" Height="20"></TextBox>
+						<TextBlock Padding="5,0,0,0" VerticalAlignment="Center">高：</TextBlock>
+						<TextBox Name="mx_screenHeight" Margin="0,0,5,0" TextChanged="mx_screenSize_TextChanged" Width="50" Height="20"></TextBox>
+						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
+								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
+								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
+						<Button Name="mx_btnNesting"
+								Width="{Binding ElementName=mx_toolNew, Path=Width}"
+								Height="{Binding ElementName=mx_toolNew, Path=Height}"
+								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
+								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
+								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								ToolTip="图片打包"
+								Click="mx_btnNesting_Click">
+							<Image Width="16" Source="pack://application:,,,/data/image/nesting.png"/>
 						</Button>
+						<Button Name="mx_refresh"
+								Width="{Binding ElementName=mx_toolNew, Path=Width}"
+								Height="{Binding ElementName=mx_toolNew, Path=Height}"
+								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
+								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
+								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								ToolTip="刷新"
+								Click="mx_isShowAll_CheckChanged">
+							<Image Width="16" Source="pack://application:,,,/data/image/refresh.png"/>
+						</Button>
+						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
+								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
+								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
+					</WrapPanel>
+					<ToolBar Name="mx_viewModeTools"
+							 Height="{Binding ElementName=mx_toolNew, Path=Height}"
+							 Background="{Binding ElementName=mx_wpTools, Path=Background}"
+							 HorizontalAlignment="Left"
+							 VerticalAlignment="Center">
 						<CheckBox Name="mx_isShowAll"
+								  Width="{Binding ElementName=mx_toolNew, Path=Width}"
+								  Height="{Binding ElementName=mx_toolNew, Path=Height}"
 								  VerticalAlignment="Center"
 								  IsChecked="False"
 								  ToolTip="显示隐藏"
 								  Checked="mx_isShowAll_CheckChanged"
 								  Unchecked="mx_isShowAll_CheckChanged">
-							<Image Source="pack://application:,,,/data/image/showAll.png"/>
+							<Image Width="16" Source="pack://application:,,,/data/image/showAll.png"/>
 						</CheckBox>
 						<CheckBox Name="mx_isViewMode"
+								  Width="{Binding ElementName=mx_toolNew, Path=Width}"
+								  Height="{Binding ElementName=mx_toolNew, Path=Height}"
+								  VerticalAlignment="Center"
 								  ToolTip="预览模式"
-								  Width="32"
 								  Checked="mx_isViewMode_Checked"
 								  Unchecked="mx_isViewMode_Unchecked">
-							<Image Source="pack://application:,,,/data/image/viewMode.png"/>
+							<Image Width="16" Source="pack://application:,,,/data/image/viewMode.png"/>
 						</CheckBox>
-						<Label VerticalAlignment="Center">宽：</Label>
-						<TextBox Name="mx_screenWidth" TextChanged="mx_screenSize_TextChanged" Width="50"></TextBox>
-						<Label VerticalAlignment="Center">高：</Label>
-						<TextBox Name="mx_screenHeight" TextChanged="mx_screenSize_TextChanged" Width="50"></TextBox>
-						<Button Name="mx_btnNesting"
-								ToolTip="图片打包"
-								Click="mx_btnNesting_Click">
-							<Image Source="pack://application:,,,/data/image/nesting.png"/>
-						</Button>
 					</ToolBar>
-				</ToolBarTray>
+				</WrapPanel>
 			</Grid>
 		</DockPanel>
 		<DockPanel Grid.Row="2" Grid.RowSpan="3" Grid.Column="0" Margin="0,0,5,0">
@@ -314,21 +403,11 @@
 						<RowDefinition Height="auto"/>
 						<RowDefinition Height="*"/>
 					</Grid.RowDefinitions>
-					<Border Grid.Row="0" BorderThickness="1" BorderBrush="#ffffffff" Background="#ff444444" CornerRadius="2">
-						<Label Foreground="White" Margin="0,0,0,0" Padding="5,1,0,1">
-							工程目录
-						</Label>
-					</Border>
-					<TextBlock Name="mx_searchTip"
-							   Grid.Row="1"
-							   Foreground="#88888888"
-							   Margin="12,8,0,0">
-						搜索
-					</TextBlock>
+					<Label Name="mx_lbProj" Margin="0" Padding="10,2,2,2" Background="{StaticResource LightBackground}">
+						工程目录
+					</Label>
 					<TextBox Name="mx_search"
 							 Grid.Row="1"
-							 Background="#00000000"
-							 CaretBrush="Black"
 							 Margin="5"
 							 TextChanged="mx_search_TextChanged"/>
 					<TreeView Grid.Row="2">
@@ -343,11 +422,11 @@
 						<RowDefinition Height="auto"/>
 						<RowDefinition Height="*"/>
 					</Grid.RowDefinitions>
-					<Border Grid.Row="0" BorderThickness="1" BorderBrush="#ffffffff" Background="#ff444444" CornerRadius="2">
-						<Label Foreground="White" Margin="0,0,0,0" Padding="5,1,0,1">
-							控件节点
-						</Label>
-					</Border>
+					<Label Margin="{Binding ElementName=mx_lbProj, Path=Margin}"
+						   Padding="{Binding ElementName=mx_lbProj, Path=Padding}"
+						   Background="{Binding ElementName=mx_lbProj, Path=Background}">
+						控件节点
+					</Label>
 					<Grid Grid.Row="1">
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="100"/>
@@ -375,20 +454,10 @@
 								  Content="显示id"
 								  Checked="mx_checkVId_Checked"
 								  Unchecked="mx_checkVId_Unchecked"/>
-						<TextBlock Name="mx_uiSearchTip"
-								   Grid.Row="1"
-								   Grid.Column="0"
-								   Grid.ColumnSpan="2"
-								   Foreground="#88888888"
-								   Margin="12,8,0,0">
-								搜索
-						</TextBlock>
 						<TextBox Name="mx_uiSearch"
 								 Grid.Row="1"
 								 Grid.Column="0"
 								 Grid.ColumnSpan="2"
-								 Background="#00000000"
-								 CaretBrush="Black"
 								 Margin="5"
 								 TextChanged="mx_uiSearch_TextChanged"/>
 					</Grid>
@@ -402,21 +471,13 @@
 						<RowDefinition Height="auto"/>
 						<RowDefinition Height="*"/>
 					</Grid.RowDefinitions>
-					<Border Grid.Row="0" BorderThickness="1" BorderBrush="#ffffffff" Background="#ff444444" CornerRadius="2">
-						<Label Foreground="White" Margin="0,0,0,0" Padding="5,1,0,1">
-							非控件节点
-						</Label>
-					</Border>
-					<TextBlock Name="mx_skinSearchTip"
-							   Grid.Row="1"
-							   Foreground="#88888888"
-							   Margin="12,8,0,0">
-						搜索
-					</TextBlock>
+					<Label Margin="{Binding ElementName=mx_lbProj, Path=Margin}"
+						   Padding="{Binding ElementName=mx_lbProj, Path=Padding}"
+						   Background="{Binding ElementName=mx_lbProj, Path=Background}">
+						非控件节点
+					</Label>
 					<TextBox Name="mx_skinSearch"
 							 Grid.Row="1"
-							 Background="#00000000"
-							 CaretBrush="Black"
 							 Margin="5"
 							 TextChanged="mx_skinSearch_TextChanged"/>
 					<TreeView Name="mx_treeSkinFrame" Grid.Row="2">
@@ -425,14 +486,14 @@
 			</Grid>
 		</DockPanel>
 		<GridSplitter Grid.Row="2" Grid.RowSpan="4" Grid.Column="0" Width="5"></GridSplitter>
-		<Grid Grid.Row="2" Grid.RowSpan="3" Grid.Column="2" Margin="5,0,0,0" Background="#FFEEEEEE">
+		<Grid Grid.Row="2" Grid.RowSpan="3" Grid.Column="2" Margin="5,0,0,0">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="auto"/>
 				<RowDefinition Height="*"/>
 			</Grid.RowDefinitions>
-			<WrapPanel Grid.Row="0">
-				<RadioButton Padding="10,2,10,2" Style="{StaticResource RadioTeml_Mt}">控件</RadioButton>
-				<RadioButton Padding="10,2,10,2" Style="{StaticResource RadioTeml_Mt}">皮肤</RadioButton>
+			<WrapPanel Grid.Row="0" Visibility="Collapsed">
+				<RadioButton Padding="10,2,10,2">控件</RadioButton>
+				<RadioButton Padding="10,2,10,2">皮肤</RadioButton>
 			</WrapPanel>
 			<Grid Grid.Row="1">
 				<Grid.RowDefinitions>
@@ -461,8 +522,7 @@
 			<TabControl Name="mx_workTabs"
 						Margin="0,0,0,10"
 						BorderThickness="0,3,0,0"
-						SelectionChanged="mx_workTabs_SelectionChanged"
-						Style="{StaticResource TabControlStyle1}">
+						SelectionChanged="mx_workTabs_SelectionChanged">
 			</TabControl>
 		</DockPanel>
 		<GridSplitter Name="mx_debugSplitter" Grid.Row="4" Grid.Column="1" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
@@ -476,8 +536,7 @@
 					<RowDefinition Height="*"/>
 					<RowDefinition Height="*"/>
 				</Grid.RowDefinitions>
-				<!-- Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" -->
-				<Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Background="#ffffffff" Margin="0,0,5,0">
+				<Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Margin="0,0,5,0">
 					<RichTextBox Name="mx_xmlText"
 								 AcceptsReturn="True"
 								 VerticalScrollBarVisibility="Visible"
@@ -489,9 +548,7 @@
 				</Grid>
 				<GridSplitter Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Width="5" HorizontalAlignment="Right"/>
 				<ScrollViewer Grid.Column="1" Grid.Row="0" Margin="0,0,0,5">
-					<WrapPanel Name="mx_selCtrlLstFrame"
-							   Background="#FFEEEEEE"
-							   Orientation="Horizontal"/>
+					<WrapPanel Name="mx_selCtrlLstFrame" Orientation="Horizontal"/>
 				</ScrollViewer>
 				<GridSplitter Grid.Column="1" Grid.Row="0" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
 				<Grid Grid.Column="1" Grid.Row="1">
@@ -499,11 +556,9 @@
 						<RowDefinition Height="auto"/>
 						<RowDefinition Height="*"/>
 					</Grid.RowDefinitions>
-					<WrapPanel>
-						<Button Grid.Row="0" Margin="10,2,2,2" Padding="10,0,10,0" Click="mx_bClearDebug_Click">
-							清空
-						</Button>
-					</WrapPanel>
+					<Button Grid.Row="0" Margin="2" Height="20" Width="50" HorizontalAlignment="Left" Click="mx_bClearDebug_Click">
+						清空
+					</Button>
 					<TextBox Name="mx_debug"
 							 Grid.Row="1"
 							 AcceptsReturn="True"
@@ -517,16 +572,21 @@
 			</Grid>
 		</DockPanel>
 		<ScrollViewer Name="mx_scrollFrame"
-					  Grid.Row="3" Grid.Column="1"
+					  Grid.Row="3"
+					  Grid.Column="1"
 					  Visibility="{Binding ElementName=mx_drawFrame, Path=Visibility}"
 					  HorizontalScrollBarVisibility="Visible"
 					  VerticalScrollBarVisibility="Visible"
 					  ScrollChanged="mx_scrollFrame_ScrollChanged">
-			<Grid Name="mx_scrollGrid" HorizontalAlignment="Left" VerticalAlignment="Top" ClipToBounds="True">
+			<Grid Name="mx_scrollGrid"
+				  HorizontalAlignment="Left"
+				  VerticalAlignment="Top"
+				  ClipToBounds="True">
 			</Grid>
 		</ScrollViewer>
 		<Grid Name="mx_drawFrame"
-			  Grid.Row="3" Grid.Column="1">
+			  Grid.Row="3"
+			  Grid.Column="1">
 			<Border Name="mx_GLCtrl"
 					Width="{Binding ElementName=mx_drawFrame, Path=ActualWidth}"
 					Height="{Binding ElementName=mx_drawFrame, Path=ActualHeight}"

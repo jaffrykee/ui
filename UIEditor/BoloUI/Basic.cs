@@ -260,6 +260,7 @@ namespace UIEditor.BoloUI
 					selBn.mx_radio.IsChecked = true;
 				}
 			}
+			MainWindow.s_pW.hiddenOtherAttrList();
 			gotoSelectXe();
 			BringIntoView();
 			mx_radio.IsChecked = true;

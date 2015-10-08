@@ -10,7 +10,6 @@
 			<RadioButton Name="mx_radio"
 					 GroupName="fileTree"
 					 Padding="0,2,0,2"
-					 Style="{StaticResource RadioTeml_Mt}"
 					 MouseDoubleClick="mx_radio_MouseDoubleClick"/>
 			<TextBox Name="mx_tbRename"
 					 Visibility="Collapsed"

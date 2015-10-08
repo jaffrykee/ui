@@ -281,8 +281,6 @@ namespace UIEditor.Project
 		{
 			if(mx_fileName.Text != "")
 			{
-				mx_fileName.Background = new SolidColorBrush(Color.FromArgb(0xff, 0xff, 0xff, 0xff));
-
 				if (!mx_ok.IsEnabled && m_curFileType != null)
 				{
 					mx_ok.IsEnabled = true;
@@ -290,13 +288,11 @@ namespace UIEditor.Project
 			}
 			else
 			{
-				mx_fileName.Background = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
 				mx_ok.IsEnabled = false;
 			}
 		}
 		private void mx_fileName_GotFocus(object sender, RoutedEventArgs e)
 		{
-			mx_fileName.Background = new SolidColorBrush(Color.FromArgb(0xff, 0xff, 0xff, 0xff));
 		}
 
 		private void mx_projPath_TextChanged(object sender, TextChangedEventArgs e)

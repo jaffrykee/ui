@@ -80,9 +80,11 @@ namespace UIEditor.BoloUI
 			}
 			if (MainWindow.s_pW.m_lastSelRun != null)
 			{
+				//<text>
 				MainWindow.s_pW.m_lastSelRun.Background = new SolidColorBrush(System.Windows.Media.Colors.White);
 			}
 			MainWindow.s_pW.m_lastSelRun = runLight;
+			//<text>
 			runLight.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0x88, 0x33, 0x99, 0xff));
 			if (isLocked == false)
 			{

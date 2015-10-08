@@ -46,7 +46,7 @@
 				</Grid>
 			</ScrollViewer>
 		</Grid>
-		<Grid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Background="#ffeeeeee">
+		<Grid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
 			<WrapPanel HorizontalAlignment="Right">
 				<Button Name="mx_ok"
 						Padding="15,2,15,2"

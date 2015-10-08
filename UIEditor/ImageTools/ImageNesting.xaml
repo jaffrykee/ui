@@ -9,19 +9,18 @@
 		Unloaded="mx_root_Unloaded"
 		Width="1280"
 		Height="900">
-	<Grid Name="mx_rootGrid" Background="#22333333">
+	<Grid Name="mx_rootGrid">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*"/>
 			<ColumnDefinition Width="auto"/>
 		</Grid.ColumnDefinitions>
 		<Grid Margin="5">
-			<Grid Background="White">
+			<Grid>
 				<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
 					<Canvas Name="mx_canvas"
 						Width="800"
 						Height="800"
 						Margin="5"
-						Background="#ffffffff"
 						HorizontalAlignment="Left"
 						VerticalAlignment="Top"/>
 				</ScrollViewer>
@@ -42,18 +41,15 @@
 			<StackPanel Grid.Row="1" Margin="5">
 				<RadioButton Name="mx_rPreset"
 							 Padding="20"
-							 IsChecked="True"
-							 Style="{StaticResource RadioTeml_Mt}">
+							 IsChecked="True">
 					预设打包
 				</RadioButton>
 				<RadioButton Name="mx_rDev"
-							 Padding="20"
-							 Style="{StaticResource RadioTeml_Mt}">
+							 Padding="20">
 					开发打包
 				</RadioButton>
 				<RadioButton Name="mx_rRefreshRes"
-							 Padding="20"
-							 Style="{StaticResource RadioTeml_Mt}">
+							 Padding="20">
 					将皮肤的预设打包资源转换为开发打包资源
 				</RadioButton>
 				<Button Name="mx_start"

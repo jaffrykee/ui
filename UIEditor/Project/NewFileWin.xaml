@@ -7,7 +7,7 @@
 		Width="600"
 		Height="500"
 		Unloaded="mx_root_Unloaded">
-	<Grid Background="#ffeeeeee">
+	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="auto"/>
@@ -25,7 +25,7 @@
 			<GridSplitter Grid.Column="0" Width="10"/>
 			<Grid Grid.Column="1" Margin="0,5,5,5">
 				<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-					<StackPanel Name="mx_fileTypeFrame"  Background="#ffdddddd">
+					<StackPanel Name="mx_fileTypeFrame">
 					</StackPanel>
 				</ScrollViewer>
 			</Grid>
@@ -36,7 +36,7 @@
 				<ColumnDefinition Width="*"/>
 			</Grid.ColumnDefinitions>
 			<Label Grid.Column="0">文件名：</Label>
-			<Grid Grid.Column="1" Background="White"></Grid>
+			<Grid Grid.Column="1"></Grid>
 			<TextBlock Name="mx_fileNameTip"
 					   Grid.Column="1"
 					   Foreground="#ff888888"
@@ -44,7 +44,6 @@
 					   Text="不含后缀名"/>
 			<TextBox Name="mx_fileName"
 					 Grid.Column="1"
-					 Background="#00000000"
 					 TextChanged="mx_fileName_TextChanged"
 					 GotFocus="mx_fileName_GotFocus"/>
 		</Grid>
@@ -55,7 +54,7 @@
 				<ColumnDefinition Width="auto"/>
 			</Grid.ColumnDefinitions>
 			<Label Grid.Column="0">工程路径：</Label>
-			<Grid Grid.Column="1" Background="White"></Grid>
+			<Grid Grid.Column="1"></Grid>
 			<TextBox Name="mx_projPath"
 					 Grid.Column="1"
 					 TextChanged="mx_projPath_TextChanged"/>

@@ -1427,13 +1427,17 @@ namespace UIEditor
 		}
 
 		#region 资源读取
-		public void hiddenAllAttr()
+		public void hiddenOtherAttrList()
 		{
 			if (m_otherAttrList != null)
 			{
 				mx_toolArea.Children.Remove(m_otherAttrList);
 				m_otherAttrList = null;
 			}
+		}
+		public void hiddenAllAttr()
+		{
+			hiddenOtherAttrList();
 			foreach (AttrList attrList in mx_toolArea.Children)
 			{
 				attrList.Visibility = Visibility.Collapsed;
@@ -1788,13 +1792,11 @@ namespace UIEditor
 			if (mx_search.Text != "")
 			{
 				refreshSearch(mx_treePro, null, isDefEx);
-				mx_searchTip.Visibility = System.Windows.Visibility.Collapsed;
 				refreshSearch(mx_treePro, mx_search.Text.ToString());
 			}
 			else
 			{
 				refreshSearch(mx_treePro, null, isDefEx);
-				mx_searchTip.Visibility = System.Windows.Visibility.Visible;
 			}
 		}
 		private void mx_uiSearch_TextChanged(object sender, TextChangedEventArgs e)
@@ -1814,7 +1816,6 @@ namespace UIEditor
 					refreshSearch((TreeViewItem)mx_treeCtrlFrame.Items.GetItemAt(0), null, isDefEx);
 					refreshSearch((TreeViewItem)mx_treeCtrlFrame.Items.GetItemAt(0), mx_uiSearch.Text.ToString(), isDefEx);
 				}
-				mx_uiSearchTip.Visibility = System.Windows.Visibility.Collapsed;
 			}
 			else
 			{
@@ -1828,7 +1829,6 @@ namespace UIEditor
 				{
 					refreshSearch((TreeViewItem)mx_treeCtrlFrame.Items.GetItemAt(0), null, isDefEx);
 				}
-				mx_uiSearchTip.Visibility = System.Windows.Visibility.Visible;
 			}
 		}
 		private void mx_skinSearch_TextChanged(object sender, TextChangedEventArgs e)
@@ -1848,7 +1848,6 @@ namespace UIEditor
 					refreshSearch((TreeViewItem)mx_treeSkinFrame.Items.GetItemAt(0), null, isDefEx);
 					refreshSearch((TreeViewItem)mx_treeSkinFrame.Items.GetItemAt(0), mx_skinSearch.Text.ToString(), isDefEx);
 				}
-				mx_skinSearchTip.Visibility = System.Windows.Visibility.Collapsed;
 			}
 			else
 			{
@@ -1862,7 +1861,6 @@ namespace UIEditor
 				{
 					refreshSearch((TreeViewItem)mx_treeSkinFrame.Items.GetItemAt(0), null, isDefEx);
 				}
-				mx_skinSearchTip.Visibility = System.Windows.Visibility.Visible;
 			}
 		}
 

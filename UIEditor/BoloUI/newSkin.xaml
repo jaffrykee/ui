@@ -32,7 +32,7 @@
 		<Label Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Margin="5">皮肤名</Label>
 		<TextBox Name="mx_skinName" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Width="125" Margin="7" TextChanged="mx_skinName_TextChanged"/>
 		<Label Name="mx_errorInfo" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="15,0,0,5">请选择皮肤组，并填写皮肤名</Label>
-		<Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Background="#11222222">
+		<Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
 			<WrapPanel HorizontalAlignment="Right" VerticalAlignment="Bottom">
 				<Button Name="mx_ok" Margin="5" Padding="15,2,15,2" Click="mx_ok_Click">确定</Button>
 				<Button Name="mx_cancel" Margin="5" Padding="15,2,15,2" Click="mx_cancel_Click">取消</Button>

@@ -44,7 +44,7 @@
 		<Grid Grid.Column="1" Grid.Row="0">
 			<Border Name="mx_viewFrame" Grid.Row="1" Grid.Column="0" Margin="5"/>
 		</Grid>
-		<Grid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Background="#ffeeeeee">
+		<Grid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
 			<WrapPanel HorizontalAlignment="Right">
 				<Button Name="mx_ok"
 						Padding="15,2,15,2"

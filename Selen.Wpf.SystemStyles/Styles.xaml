@@ -13,8 +13,11 @@
         <ResourceDictionary Source="GroupBoxStyles.xaml"/>
         <ResourceDictionary Source="AppTreeStyle.xaml"/>
     </ResourceDictionary.MergedDictionaries>
-    <Style TargetType="Button" BasedOn="{StaticResource StandardButton}"/>
-    <Style TargetType="Window" BasedOn="{StaticResource StandardWindow}"/>
+	<Style TargetType="Button" BasedOn="{StaticResource StandardButton}">
+		<Setter Property="Margin" Value="2"/>
+		<Setter Property="Height" Value="20"/>
+	</Style>
+	<Style TargetType="Window" BasedOn="{StaticResource StandardWindow}"/>
     <Style TargetType="TabControl" BasedOn="{StaticResource StandardTabControl}"/>
     <Style TargetType="Menu" BasedOn="{StaticResource StandardMenu}"/>
     <Style TargetType="ListBox" BasedOn="{StaticResource StandardListBox}"/>
