@@ -1,8 +1,9 @@
-﻿<Window
+﻿<Controls:MetroWindow
 	x:Class="UIEditor.MainWindow"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d"
 	xmlns:userView="clr-namespace:UIEditor"
@@ -12,7 +13,7 @@
 	Width="1280"
 	Height="800"
 	Foreground="{StaticResource Foreground}"
-	Background="{StaticResource Background}"
+	Background="{StaticResource BackgroundHighlighted}"
 	Loaded="mx_root_Loaded"
 	Closing="mx_root_Closing">
 	<Window.Resources>
@@ -409,7 +410,9 @@
 					<TextBox Name="mx_search"
 							 Grid.Row="1"
 							 Margin="5"
-							 TextChanged="mx_search_TextChanged"/>
+							 TextChanged="mx_search_TextChanged">
+					</TextBox>
+					<Image Width="17" Margin="0,4,6,3" HorizontalAlignment="Right" Grid.Row="1" Source="pack://application:,,,/data/image/search.png"/>
 					<TreeView Grid.Row="2">
 						<TreeViewItem Name="mx_treePro">
 						</TreeViewItem>
@@ -460,6 +463,13 @@
 								 Grid.ColumnSpan="2"
 								 Margin="5"
 								 TextChanged="mx_uiSearch_TextChanged"/>
+						<Image Grid.Row="1"
+							   Grid.Column="0"
+							   Grid.ColumnSpan="2"
+							   Width="17"
+							   Margin="0,4,6,3"
+							   HorizontalAlignment="Right"
+							   Source="pack://application:,,,/data/image/search.png"/>
 					</Grid>
 					<TreeView Grid.Row="2" Name="mx_treeCtrlFrame">
 					</TreeView>
@@ -480,6 +490,11 @@
 							 Grid.Row="1"
 							 Margin="5"
 							 TextChanged="mx_skinSearch_TextChanged"/>
+					<Image Grid.Row="1"
+						   Width="17"
+						   Margin="0,4,6,3"
+						   HorizontalAlignment="Right"
+						   Source="pack://application:,,,/data/image/search.png"/>
 					<TreeView Name="mx_treeSkinFrame" Grid.Row="2">
 					</TreeView>
 				</Grid>
@@ -596,4 +611,4 @@
 			</Border>
 		</Grid>
 	</Grid>
-</Window>
+</Controls:MetroWindow>

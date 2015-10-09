@@ -423,6 +423,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="data\a.txt" />
+    <Resource Include="data\image\search.png" />
     <Resource Include="data\image\treeLine.png" />
     <Resource Include="data\image\viewMode.png" />
     <Resource Include="data\image\refresh.png" />

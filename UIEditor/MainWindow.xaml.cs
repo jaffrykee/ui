@@ -51,7 +51,7 @@ namespace UIEditor
 	};
 	#endregion
 
-	public partial class MainWindow : Window
+	public partial class MainWindow
 	{
 		public static MainWindow s_pW;
 

@@ -47,12 +47,17 @@ namespace UIEditor.BoloUI
 				{
 					m_vId = System.Guid.NewGuid().ToString().Substring(10);
 					m_rootControl.m_mapCtrlUI[m_vId] = this;
+					IsExpanded = true;
 				}
 				else
 				{
 					m_vId = "";
 				}
 				addChild();
+			}
+			else
+			{
+				IsExpanded = true;
 			}
 			initHeader();
 		}

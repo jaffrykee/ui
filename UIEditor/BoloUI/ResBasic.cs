@@ -33,6 +33,7 @@ namespace UIEditor.BoloUI
 			InitializeComponent();
 			m_isCtrl = false;
 
+			IsExpanded = true;
 			if (m_curDeepDef != null)
 			{
 				if (m_xe.Name == "skin" || m_xe.Name == "publicskin")
@@ -48,6 +49,7 @@ namespace UIEditor.BoloUI
 						Public.ErrorInfo.addToErrorInfo(errorInfo);
 					}
 					m_rootControl.m_mapSkin[m_xe.GetAttribute("Name")] = this;
+					IsExpanded = false;
 				}
 				addChild();
 			}
