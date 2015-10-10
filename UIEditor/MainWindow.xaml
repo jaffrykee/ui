@@ -9,11 +9,14 @@
 	xmlns:userView="clr-namespace:UIEditor"
 	Name="mx_root"
 	Title="&lt;未加载项目&gt; - UI编辑器"
-	WindowState="Maximized"
+	TitleCaps="False"
+	WindowStartupLocation="CenterScreen"
 	Width="1280"
 	Height="800"
+	Icon="pack://application:,,,/data/image/SpeedShark_ws.ico"
+	WindowState="Maximized"
 	Foreground="{StaticResource Foreground}"
-	Background="{StaticResource BackgroundHighlighted}"
+	Background="{StaticResource BackgroundNormal}"
 	Loaded="mx_root_Loaded"
 	Closing="mx_root_Closing">
 	<Window.Resources>
@@ -34,13 +37,14 @@
 		<CommandBinding Command="{StaticResource btnClick_mx_toolSave}" Executed="mx_toolSave_Click" />
 		<CommandBinding Command="{StaticResource btnClick_mx_toolSaveAll}" Executed="mx_toolSaveAll_Click" />
 	</Window.CommandBindings>
-	<Grid>
+	<Grid Background="{StaticResource Background}">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="55"/>
 			<RowDefinition Height="*" MinHeight="20"/>
-			<RowDefinition Height="248"/>
+			<RowDefinition Height="325"/>
+			<RowDefinition Height="23"/>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="280"/>
@@ -89,7 +93,7 @@
 					</MenuItem.Icon>
 				</MenuItem>
 				<Separator/>
-				<MenuItem Header="退出" InputGestureText="Alt+F4" IsEnabled="False"/>
+				<MenuItem Name="mx_closeWin" Header="退出" InputGestureText="Alt+F4" Click="mx_closeWin_Click"/>
 			</MenuItem>
 			<MenuItem Header="编辑">
 				<MenuItem Header="撤销"
@@ -158,6 +162,9 @@
 						<Image Width="16" Source="pack://application:,,,/data/image/moveDown.png"/>
 					</MenuItem.Icon>
 				</MenuItem>
+			</MenuItem>
+			<MenuItem Header="项目">
+				<MenuItem Name="mx_projSetting" Header="项目选项..." IsEnabled="False"/>
 			</MenuItem>
 			<MenuItem Header="工具">
 				<MenuItem Header="图片打包"
@@ -359,15 +366,12 @@
 								Click="mx_isShowAll_CheckChanged">
 							<Image Width="16" Source="pack://application:,,,/data/image/refresh.png"/>
 						</Button>
-						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
-								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
-								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
 					</WrapPanel>
 					<ToolBar Name="mx_viewModeTools"
 							 Height="{Binding ElementName=mx_toolNew, Path=Height}"
 							 Background="{Binding ElementName=mx_wpTools, Path=Background}"
 							 HorizontalAlignment="Left"
-							 VerticalAlignment="Center">
+							 VerticalAlignment="Center" Template="{DynamicResource ToolBar_Template_UIEditor}">
 						<CheckBox Name="mx_isShowAll"
 								  Width="{Binding ElementName=mx_toolNew, Path=Width}"
 								  Height="{Binding ElementName=mx_toolNew, Path=Height}"
@@ -560,6 +564,18 @@
 								 FontFamily="Consolas"
 								 TextChanged="mx_xmlText_TextChanged">
 					</RichTextBox>
+					<TextBox Name="mx_xmlTextSearch"
+							 Width="200"
+							 Height="22"
+							 Margin="0,0,22,0"
+							 HorizontalAlignment="Right"
+							 VerticalAlignment="Top"
+							 TextChanged="mx_xmlTextSearch_TextChanged"
+							 KeyDown="mx_xmlTextSearch_KeyDown"/>
+					<Image Width="17"
+						   Margin="0,3,25,3"
+						   HorizontalAlignment="Right" VerticalAlignment="Top"
+						   Source="pack://application:,,,/data/image/search.png"/>
 				</Grid>
 				<GridSplitter Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Width="5" HorizontalAlignment="Right"/>
 				<ScrollViewer Grid.Column="1" Grid.Row="0" Margin="0,0,0,5">
@@ -610,5 +626,24 @@
 					Padding="0,0,18,18">
 			</Border>
 		</Grid>
+		<Grid Grid.Row="3"
+			  Grid.Column="1">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="960"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="540"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+			<Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"></Grid>
+		</Grid>
+		<StatusBar Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3">
+			<StatusBarItem Background="{StaticResource BackgroundSelected}">
+				<StackPanel Orientation="Horizontal" Background="#00000000">
+					<TextBlock Foreground="{StaticResource Foreground}">就绪</TextBlock>
+				</StackPanel>
+			</StatusBarItem>
+		</StatusBar>
 	</Grid>
 </Controls:MetroWindow>

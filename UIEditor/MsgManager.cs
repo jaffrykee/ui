@@ -56,7 +56,7 @@ namespace UIEditor
 		public IntPtr m_hwndGLParent;
 		public IntPtr m_hwndGLFrame;
 
-		public MsgManager(bool isInit = false, double width = 960, double height = 640)
+		public MsgManager(bool isInit = false, double width = 960, double height = 540)
 		{
 			m_hwndGL = IntPtr.Zero;
 			m_hwndGLParent = IntPtr.Zero;

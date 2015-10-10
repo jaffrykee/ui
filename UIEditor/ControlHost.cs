@@ -18,7 +18,7 @@ namespace UIEditor
 		int m_hostHeight;
 		int m_hostWidth;
 
-		public ControlHost(MsgManager msgMng,double width = 960, double height = 640)
+		public ControlHost(MsgManager msgMng,double width = 960, double height = 540)
 		{
 			m_msgMng = msgMng;
 			m_hostWidth = (int)width;

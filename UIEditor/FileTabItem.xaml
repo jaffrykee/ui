@@ -8,7 +8,7 @@
              >
 	<Grid>
 		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="20"/>
 			<RowDefinition Height="*"/>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
@@ -16,7 +16,7 @@
 			<ColumnDefinition Width="25"/>
 		</Grid.ColumnDefinitions>
 		<TextBox Grid.Row="0" Grid.Column="0" Name="filePath" IsReadOnly="True"/>
-		<Button Grid.Row="0" Grid.Column="1" Width="25" HorizontalAlignment="Right" Click="closeFileTab">x</Button>
+		<Button Grid.Row="0" Grid.Column="1" Margin="5,0,0,0" Height="20" HorizontalAlignment="Stretch" Click="closeFileTab">x</Button>
 		<Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
 			<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
 				<Grid Name="itemFrame" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5">

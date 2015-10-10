@@ -118,27 +118,32 @@ namespace UIEditor.BoloUI
 					m_attrRow.m_value = m_skinName;
 					if (System.IO.File.Exists(m_skinGroup))
 					{
-						XmlControl curCtrl = XmlControl.getCurXmlControl();
-						Dictionary<string, XmlElement> mapXeGroup = curCtrl.getSkinGroupMap();
+						XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
 
-						if (m_skinGroupShortName != null && m_skinGroupShortName != "")
+						if (curXmlCtrl != null)
 						{
-							XmlElement xeOut;
+							Dictionary<string, XmlElement> mapXeGroup = curXmlCtrl.getSkinGroupMap();
 
-							if(!mapXeGroup.TryGetValue(m_skinGroupShortName, out xeOut))
+							if (m_skinGroupShortName != null && m_skinGroupShortName != "")
 							{
-								XmlElement newXe = curCtrl.m_xmlDoc.CreateElement("skingroup");
-								newXe.SetAttribute("Name", m_skinGroupShortName);
-								BoloUI.Basic treeChild = new BoloUI.Basic(newXe, curCtrl);
+								XmlElement xeOut;
 
-								curCtrl.m_openedFile.m_lstOpt.addOperation(
-									new XmlOperation.HistoryNode(
-										XmlOperation.XmlOptType.NODE_INSERT,
-										treeChild.m_xe,
-										curCtrl.m_xmlDoc.DocumentElement)
-									);
+								if (!mapXeGroup.TryGetValue(m_skinGroupShortName, out xeOut))
+								{
+									XmlElement newXe = curXmlCtrl.m_xmlDoc.CreateElement("skingroup");
+									newXe.SetAttribute("Name", m_skinGroupShortName);
+									BoloUI.Basic treeChild = new BoloUI.Basic(newXe, curXmlCtrl);
+
+									curXmlCtrl.m_openedFile.m_lstOpt.addOperation(
+										new XmlOperation.HistoryNode(
+											XmlOperation.XmlOptType.NODE_INSERT,
+											treeChild.m_xe,
+											curXmlCtrl.m_xmlDoc.DocumentElement)
+										);
+								}
 							}
 						}
+
 						MainWindow.s_pW.openFileByPath(m_skinGroup);
 						if (MainWindow.s_pW.m_mapOpenedFiles.TryGetValue(m_skinGroup, out fileDef))
 						{

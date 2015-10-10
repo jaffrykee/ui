@@ -444,7 +444,7 @@ namespace UIEditor.Project
 		}
 		private void mx_tbRename_KeyDown(object sender, KeyEventArgs e)
 		{
-			if(e.Key == Key.Return)
+			if (e.Key == Key.Return || e.Key == Key.Enter)
 			{
 				mx_radio.Visibility = System.Windows.Visibility.Visible;
 				mx_tbRename.Visibility = System.Windows.Visibility.Collapsed;

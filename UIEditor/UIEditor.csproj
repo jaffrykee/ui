@@ -56,7 +56,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>data\image\SpeedShark.ico</ApplicationIcon>
+    <ApplicationIcon>ss_32.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>
@@ -423,6 +423,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="data\a.txt" />
+    <Resource Include="ss_32.ico" />
+    <Resource Include="data\image\ss_32.ico" />
+    <Resource Include="data\image\SpeedShark_ws.ico" />
+    <Resource Include="data\image\SpeedShark_w.ico" />
     <Resource Include="data\image\search.png" />
     <Resource Include="data\image\treeLine.png" />
     <Resource Include="data\image\viewMode.png" />

@@ -41,8 +41,13 @@ namespace UIEditor
 		public BoloUI.Basic m_treeUI;
 		public BoloUI.ResBasic m_treeSkin;
 
+		public Run m_curSearchRun;
+		public int m_curSearchIndex;
+
 		public XmlControl(FileTabItem parent, OpenedFile fileDef, string skinName = "")
 		{
+			m_curSearchIndex = 0;
+
 			InitializeComponent();
 			m_parent = parent;
 			m_showGL = false;

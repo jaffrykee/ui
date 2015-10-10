@@ -348,7 +348,7 @@ namespace UIEditor
 
 		private void mx_value_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (e.Key == Key.Return)
+			if (e.Key == Key.Return || e.Key == Key.Enter)
 			{
 				m_value = mx_value.Text;
 			}

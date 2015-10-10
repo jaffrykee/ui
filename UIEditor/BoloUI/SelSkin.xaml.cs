@@ -45,7 +45,7 @@ namespace UIEditor.BoloUI
 			XmlElement xePanel = m_docView.CreateElement("panel");
 
 			xePanel.SetAttribute("w", "960");
-			xePanel.SetAttribute("h", "640");
+			xePanel.SetAttribute("h", "540");
 			xePanel.SetAttribute("dock", "4");
 			xePanel.InnerXml = xmlData;
 			m_testCtrl = (XmlElement)xePanel.FirstChild;

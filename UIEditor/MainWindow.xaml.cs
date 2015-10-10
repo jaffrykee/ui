@@ -154,7 +154,7 @@ namespace UIEditor
 			InitializeComponent();
 
 			m_screenWidth = 960;
-			m_screenHeight = 640;
+			m_screenHeight = 540;
 			m_mapSkinAllDef = new Dictionary<string, SkinDef_T>();
 			m_dpiSysX = 96.0f;
 			m_dpiSysY = 96.0f;
@@ -241,6 +241,10 @@ namespace UIEditor
 			m_textTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
 			m_textTimer.Tick += new EventHandler(m_textTimer_Tick);
 			m_textTimer.Start();
+		}
+		private void mx_closeWin_Click(object sender, RoutedEventArgs e)
+		{
+			this.Close();
 		}
 
 		public void openProjByPath(string projPath, string projName)
@@ -1383,7 +1387,7 @@ namespace UIEditor
 			{
 				if (isCtrlUI == false)
 				{
-					string strTmp = "<panel dock=\"4\" w=\"960\" h=\"640\" name=\"background\" skin=\"BackPure\"></panel>";
+					string strTmp = "<panel dock=\"4\" name=\"background\" skin=\"BackPure\"></panel>";
 
 					XmlElement xeTmp = newDoc.CreateElement("tmp");
 					xeTmp.InnerXml = strTmp;
@@ -1967,6 +1971,10 @@ namespace UIEditor
 
 		static public List<TextRange> FindAllMatchedTextRanges(RichTextBox richBox, string keyWord)
 		{
+			if(keyWord == "" || keyWord == null)
+			{
+				return null;
+			}
 			List<TextRange> trList = new List<TextRange>();
 			//设置文字指针为Document初始位置
 			TextPointer position = richBox.Document.ContentStart;
@@ -2163,6 +2171,69 @@ namespace UIEditor
 				openProjByPath(
 					System.IO.Path.GetDirectoryName((sender as MenuItem).ToolTip.ToString()),
 					System.IO.Path.GetFileName((sender as MenuItem).ToolTip.ToString()));
+			}
+		}
+		public void changeCurSearchSelection(TextRange trSel)
+		{
+			XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
+
+			if (trSel != null && curXmlCtrl != null)
+			{
+				if(trSel.Start.Parent is Run)
+				{
+					Run runSel = (Run)trSel.Start.Parent;
+
+					if (curXmlCtrl.m_curSearchRun != null)
+					{
+						curXmlCtrl.m_curSearchRun.Background = new SolidColorBrush(Colors.White);
+					}
+					curXmlCtrl.m_curSearchRun = runSel;
+					runSel.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0xaa, 0xaa, 0xaa, 0x33));
+				}
+			}
+		}
+		private void setSearchHighLighted()
+		{
+			List<TextRange> lstRag = FindAllMatchedTextRanges(mx_xmlText, mx_xmlTextSearch.Text);
+			XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
+
+			if (curXmlCtrl != null && lstRag != null && lstRag.Count != 0)
+			{
+
+				if (lstRag.Count <= curXmlCtrl.m_curSearchIndex)
+				{
+					curXmlCtrl.m_curSearchIndex = 0;
+				}
+
+				TextRange trSel = lstRag[curXmlCtrl.m_curSearchIndex];
+
+				if (trSel != null)
+				{
+					mx_xmlText.Focus();
+					mx_xmlText.Selection.Select(trSel.Start, trSel.End);
+					mx_xmlTextSearch.Focus();
+					changeCurSearchSelection(trSel);
+				}
+			}
+		}
+		private void mx_xmlTextSearch_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
+
+			if(curXmlCtrl != null)
+			{
+				curXmlCtrl.m_curSearchIndex = 0;
+				setSearchHighLighted();
+			}
+		}
+		private void mx_xmlTextSearch_KeyDown(object sender, KeyEventArgs e)
+		{
+			XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
+
+			if ((e.Key == Key.Return || e.Key == Key.Enter) && curXmlCtrl != null)
+			{
+				curXmlCtrl.m_curSearchIndex++;
+				setSearchHighLighted();
 			}
 		}
 	}
