@@ -79,9 +79,9 @@ namespace UIEditor
 
 			m_process = System.Diagnostics.Process.Start(
 				MainWindow.conf_pathGlApp,
-				m_msgMng.m_hwndGLParent.ToString() + " " +
 					m_hostWidth.ToString() + " " +
 					m_hostHeight.ToString() + " " +
+					m_msgMng.m_hwndGLParent.ToString() + " " +
 					strRunMode);
 
 			return new HandleRef(this, m_msgMng.m_hwndGLParent);
