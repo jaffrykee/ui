@@ -416,7 +416,12 @@
 							 Margin="5"
 							 TextChanged="mx_search_TextChanged">
 					</TextBox>
-					<Image Width="17" Margin="0,4,6,3" HorizontalAlignment="Right" Grid.Row="1" Source="pack://application:,,,/data/image/search.png"/>
+					<Image Width="17"
+						   Margin="0,4,6,3"
+						   HorizontalAlignment="Right"
+						   Grid.Row="1"
+						   Source="pack://application:,,,/data/image/search.png"
+						   RenderOptions.BitmapScalingMode="Fant"/>
 					<TreeView Grid.Row="2">
 						<TreeViewItem Name="mx_treePro">
 						</TreeViewItem>
@@ -473,7 +478,8 @@
 							   Width="17"
 							   Margin="0,4,6,3"
 							   HorizontalAlignment="Right"
-							   Source="pack://application:,,,/data/image/search.png"/>
+							   Source="pack://application:,,,/data/image/search.png"
+						   RenderOptions.BitmapScalingMode="Fant"/>
 					</Grid>
 					<TreeView Grid.Row="2" Name="mx_treeCtrlFrame">
 					</TreeView>
@@ -498,7 +504,8 @@
 						   Width="17"
 						   Margin="0,4,6,3"
 						   HorizontalAlignment="Right"
-						   Source="pack://application:,,,/data/image/search.png"/>
+						   Source="pack://application:,,,/data/image/search.png"
+						   RenderOptions.BitmapScalingMode="Fant"/>
 					<TreeView Name="mx_treeSkinFrame" Grid.Row="2">
 					</TreeView>
 				</Grid>
@@ -575,7 +582,8 @@
 					<Image Width="17"
 						   Margin="0,3,25,3"
 						   HorizontalAlignment="Right" VerticalAlignment="Top"
-						   Source="pack://application:,,,/data/image/search.png"/>
+						   Source="pack://application:,,,/data/image/search.png"
+						   RenderOptions.BitmapScalingMode="Fant"/>
 				</Grid>
 				<GridSplitter Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Width="5" HorizontalAlignment="Right"/>
 				<ScrollViewer Grid.Column="1" Grid.Row="0" Margin="0,0,0,5">

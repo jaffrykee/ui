@@ -1,7 +1,14 @@
-﻿<Window x:Class="UIEditor.Public.ErrorInfo"
+﻿<Controls:MetroWindow x:Class="UIEditor.Public.ErrorInfo"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="UI编辑器错误" Width="600" Height="450">
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        Title="UI编辑器错误"
+		WindowStartupLocation="CenterScreen"
+		WindowStyle="None"
+		Foreground="{StaticResource Foreground}"
+		Background="{StaticResource BackgroundNormal}"
+		Width="600"
+		Height="450">
 	<Grid Margin="5">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
@@ -18,4 +25,4 @@
 				 IsReadOnly="True"
 				 FontFamily="Consolas"/>
 	</Grid>
-</Window>
+</Controls:MetroWindow>

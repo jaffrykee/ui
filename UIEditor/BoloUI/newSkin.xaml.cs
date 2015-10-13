@@ -15,7 +15,7 @@ using System.Xml;
 
 namespace UIEditor.BoloUI
 {
-	public partial class newSkin : Window
+	public partial class newSkin
 	{
 		public AttrRow m_attrRow;
 		public string m_skinGroup;

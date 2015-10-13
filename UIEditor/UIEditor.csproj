@@ -423,6 +423,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="data\a.txt" />
+    <SplashScreen Include="data\image\init.png" />
     <Resource Include="ss_32.ico" />
     <Resource Include="data\image\ss_32.ico" />
     <Resource Include="data\image\SpeedShark_ws.ico" />

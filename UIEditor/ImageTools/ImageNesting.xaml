@@ -1,15 +1,20 @@
-﻿<Window x:Class="UIEditor.ImageTools.ImageNesting"
+﻿<Controls:MetroWindow x:Class="UIEditor.ImageTools.ImageNesting"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         Title="图片打包"
 		Name="mx_root"
-		WindowStyle="ToolWindow"
 		ShowInTaskbar="False"
-		Loaded="mx_root_Loaded"
-		Unloaded="mx_root_Unloaded"
 		Width="1280"
-		Height="900">
-	<Grid Name="mx_rootGrid">
+		Height="900"
+		WindowStartupLocation="CenterScreen"
+		ResizeMode="NoResize"
+		WindowStyle="None"
+		Foreground="{StaticResource Foreground}"
+		Background="{StaticResource BackgroundNormal}"
+		Loaded="mx_root_Loaded"
+		Unloaded="mx_root_Unloaded">
+	<Grid Name="mx_rootGrid" Background="{StaticResource Background}">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*"/>
 			<ColumnDefinition Width="auto"/>
@@ -55,10 +60,11 @@
 				<Button Name="mx_start"
 						Margin="10"
 						Padding="0,7,0,7"
+						Height="30"
 						Click="mx_start_Click">
 					开始
 				</Button>
 			</StackPanel>
 		</Grid>
     </Grid>
-</Window>
+</Controls:MetroWindow>

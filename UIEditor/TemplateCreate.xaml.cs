@@ -18,7 +18,7 @@ namespace UIEditor
 	/// <summary>
 	/// TemplateCreate.xaml 的交互逻辑
 	/// </summary>
-	public partial class TemplateCreate : Window
+	public partial class TemplateCreate
 	{
 		XmlElement m_xe;
 		string m_strTmpl;

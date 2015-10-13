@@ -19,7 +19,7 @@ using System.Text.RegularExpressions;
 
 namespace UIEditor.BoloUI
 {
-	public partial class SelSkin : Window
+	public partial class SelSkin
 	{
 		public string m_path;
 		public XmlDocument m_docView;
