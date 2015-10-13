@@ -33,7 +33,7 @@ namespace UIEditor.ImageTools
 		}
 	}
 
-	public partial class ImageNesting : Window
+	public partial class ImageNesting
 	{
 		public static int s_fileCount;
 

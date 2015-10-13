@@ -14,7 +14,7 @@ using System.Windows.Shapes;
 
 namespace UIEditor.Public
 {
-	public partial class SaveConfirm : Window
+	public partial class SaveConfirm
 	{
 		public SaveConfirm()
 		{

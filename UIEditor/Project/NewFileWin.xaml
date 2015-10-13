@@ -1,11 +1,17 @@
-﻿<Window x:Class="UIEditor.Project.NewFileWin"
+﻿<Controls:MetroWindow x:Class="UIEditor.Project.NewFileWin"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
 		Name="mx_root"
         Title="新建文件"
 		ShowInTaskbar="False"
 		Width="600"
 		Height="500"
+		WindowStartupLocation="CenterScreen"
+		ResizeMode="NoResize"
+		WindowStyle="None"
+		Foreground="{StaticResource Foreground}"
+		Background="{StaticResource BackgroundNormal}"
 		Unloaded="mx_root_Unloaded">
 	<Grid>
 		<Grid.RowDefinitions>
@@ -73,4 +79,4 @@
 			</WrapPanel>
 		</Grid>
     </Grid>
-</Window>
+</Controls:MetroWindow>

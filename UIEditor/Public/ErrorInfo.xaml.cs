@@ -13,7 +13,7 @@ using System.Windows.Shapes;
 
 namespace UIEditor.Public
 {
-	public partial class ErrorInfo : Window
+	public partial class ErrorInfo
 	{
 		public static string s_errorInfo = "";
 

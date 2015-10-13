@@ -15,7 +15,7 @@ using System.IO;
 
 namespace UIEditor.BoloUI
 {
-	public partial class SelImage : Window
+	public partial class SelImage
 	{
 		public AttrRow m_rowImage;
 		public PngControl m_curPngCtrl;

@@ -16,7 +16,7 @@ using System.Xml;
 
 namespace UIEditor.Project
 {
-	public partial class NewFileWin : Window
+	public partial class NewFileWin
 	{
 		public string m_tmplPath;
 		public FileTypeRadio m_curFileType;
