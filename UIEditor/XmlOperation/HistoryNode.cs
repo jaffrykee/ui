@@ -105,6 +105,7 @@ namespace UIEditor.XmlOperation
 		static public bool deleteItemByXe(MainWindow pW, string path, XmlElement dstXe)
 		{
 			OpenedFile fileT;
+			bool ret = false;
 
 			if (pW.m_mapOpenedFiles.TryGetValue(path, out fileT))
 			{
@@ -118,6 +119,17 @@ namespace UIEditor.XmlOperation
 					{
 						if (dstItem != null)
 						{
+							XmlItem parentNode;
+
+							try
+							{
+								parentNode = (XmlItem)(dstItem.Parent);
+							}
+							catch
+							{
+								parentNode = null;
+							}
+
 							xmlCtrl.m_mapXeItem.Remove(dstXe);
 							if (dstItem.Parent != null)
 							{
@@ -134,18 +146,21 @@ namespace UIEditor.XmlOperation
 										if (xmlCtrl.m_mapCtrlUI.TryGetValue(uiCtrl.m_vId, out uiCtrl))
 										{
 											xmlCtrl.m_mapCtrlUI.Remove(uiCtrl.m_vId);
-
-											return true;
+											ret = true;
 										}
 									}
 								}
+							}
+							if (parentNode != null && parentNode.Items.Count <= 0)
+							{
+								parentNode.mx_imgFolder.Visibility = System.Windows.Visibility.Collapsed;
 							}
 						}
 					}
 				}
 			}
 
-			return false;
+			return ret;
 		}
 		static public bool insertItemByXe(MainWindow pW, string path, XmlElement dstXe, XmlElement srcXe, int index = 0)
 		{
@@ -182,6 +197,7 @@ namespace UIEditor.XmlOperation
 							if (srcItem != null)
 							{
 								srcItem.Items.Insert(index, treeChild);
+								srcItem.mx_imgFolder.Visibility = System.Windows.Visibility.Visible;
 							}
 						}
 					}

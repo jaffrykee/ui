@@ -100,6 +100,7 @@ namespace UIEditor.BoloUI
 							if (skinPtr != null)
 							{
 								this.Items.Add(new ResBasic(xe, m_rootControl, skinPtr));
+								mx_imgFolder.Visibility = System.Windows.Visibility.Visible;
 							}
 						}
 					}
@@ -180,11 +181,11 @@ namespace UIEditor.BoloUI
 
 				if (ctrlName != "")
 				{
-					tmpCon = "<" + ctrlName + ">";
+					tmpCon = ctrlName;
 				}
 				else
 				{
-					tmpCon = "<" + m_xe.Name + ">";
+					tmpCon = m_xe.Name;
 				}
 
 				if (ctrlTip != "")
@@ -205,7 +206,7 @@ namespace UIEditor.BoloUI
 				{
 					name = parseApprIdFromDic(name);
 				}
-				tmpCon += name;
+				tmpCon += "<" + name + ">";
 				mx_radio.Content = "_" + tmpCon;
 			}
 		}
@@ -241,6 +242,8 @@ namespace UIEditor.BoloUI
 			{
 				m_selLock.addLock(out stackLock);
 			}
+
+			MainWindow.s_pW.mx_treeFrame.SelectedItem = MainWindow.s_pW.mx_treeFrameSkin;
 			m_rootControl.m_curItem = this;
 			if(m_xe.Name != "BoloUI")
 			{

@@ -4,6 +4,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+	xmlns:local="clr-namespace:UIEditor"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d"
 	xmlns:userView="clr-namespace:UIEditor"
@@ -397,58 +398,56 @@
 		</DockPanel>
 		<DockPanel Grid.Row="2" Grid.RowSpan="3" Grid.Column="0" Margin="0,0,5,0">
 			<Grid>
-				<Grid.RowDefinitions>
-					<RowDefinition Height="3*"/>
-					<RowDefinition Height="5*"/>
-					<RowDefinition Height="4*"/>
-				</Grid.RowDefinitions>
-				<Grid Grid.Row="0" Margin="0,0,0,5">
-					<Grid.RowDefinitions>
-						<RowDefinition Height="auto"/>
-						<RowDefinition Height="auto"/>
-						<RowDefinition Height="*"/>
-					</Grid.RowDefinitions>
-					<Label Name="mx_lbProj" Margin="0" Padding="10,2,2,2" Background="{StaticResource LightBackground}">
-						工程目录
-					</Label>
-					<TextBox Name="mx_search"
+				<TabControl Name="mx_treeFrame">
+					<TabItem Name="mx_treeFrameProj" Header="工程目录">
+						<Grid Grid.Row="0" Margin="0,0,0,5">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="auto"/>
+								<RowDefinition Height="auto"/>
+								<RowDefinition Height="*"/>
+							</Grid.RowDefinitions>
+							<Label Name="mx_lbProj" Margin="0" Padding="10,2,2,2" Background="{StaticResource LightBackground}">
+								工程目录
+							</Label>
+							<TextBox Name="mx_search"
 							 Grid.Row="1"
 							 Margin="5"
 							 TextChanged="mx_search_TextChanged">
-					</TextBox>
-					<Image Width="17"
+							</TextBox>
+							<Image Width="17"
 						   Margin="0,4,6,3"
 						   HorizontalAlignment="Right"
 						   Grid.Row="1"
 						   Source="pack://application:,,,/data/image/search.png"
 						   RenderOptions.BitmapScalingMode="Fant"/>
-					<TreeView Grid.Row="2">
-						<TreeViewItem Name="mx_treePro">
-						</TreeViewItem>
-					</TreeView>
-				</Grid>
-				<GridSplitter Grid.Row="0" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
-				<Grid Grid.Row="1" Margin="0,0,0,5">
-					<Grid.RowDefinitions>
-						<RowDefinition Height="auto"/>
-						<RowDefinition Height="auto"/>
-						<RowDefinition Height="*"/>
-					</Grid.RowDefinitions>
-					<Label Margin="{Binding ElementName=mx_lbProj, Path=Margin}"
+							<TreeView Grid.Row="2">
+								<TreeViewItem Name="mx_treePro">
+								</TreeViewItem>
+							</TreeView>
+						</Grid>
+					</TabItem>
+					<TabItem Name="mx_treeFrameUI" Header="控件节点">
+						<Grid Grid.Row="1" Margin="0,0,0,5">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="auto"/>
+								<RowDefinition Height="auto"/>
+								<RowDefinition Height="*"/>
+							</Grid.RowDefinitions>
+							<Label Margin="{Binding ElementName=mx_lbProj, Path=Margin}"
 						   Padding="{Binding ElementName=mx_lbProj, Path=Padding}"
 						   Background="{Binding ElementName=mx_lbProj, Path=Background}">
-						控件节点
-					</Label>
-					<Grid Grid.Row="1">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="100"/>
-							<ColumnDefinition Width="*"/>
-						</Grid.ColumnDefinitions>
-						<Grid.RowDefinitions>
-							<RowDefinition Height="auto"/>
-							<RowDefinition Height="auto"/>
-						</Grid.RowDefinitions>
-						<CheckBox Name="mx_checkVName"
+								控件节点
+							</Label>
+							<Grid Grid.Row="1">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="100"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+								<Grid.RowDefinitions>
+									<RowDefinition Height="auto"/>
+									<RowDefinition Height="auto"/>
+								</Grid.RowDefinitions>
+								<CheckBox Name="mx_checkVName"
 								  Grid.Row="0"
 								  Grid.Column="0"
 								  IsChecked="True"
@@ -457,7 +456,7 @@
 								  Content="显示name"
 								  Checked="mx_checkVName_Checked"
 								  Unchecked="mx_checkVName_Unchecked"/>
-						<CheckBox Name="mx_checkVId"
+								<CheckBox Name="mx_checkVId"
 								  Grid.Row="0"
 								  Grid.Column="1"
 								  IsChecked="True"
@@ -466,13 +465,13 @@
 								  Content="显示id"
 								  Checked="mx_checkVId_Checked"
 								  Unchecked="mx_checkVId_Unchecked"/>
-						<TextBox Name="mx_uiSearch"
+								<TextBox Name="mx_uiSearch"
 								 Grid.Row="1"
 								 Grid.Column="0"
 								 Grid.ColumnSpan="2"
 								 Margin="5"
 								 TextChanged="mx_uiSearch_TextChanged"/>
-						<Image Grid.Row="1"
+								<Image Grid.Row="1"
 							   Grid.Column="0"
 							   Grid.ColumnSpan="2"
 							   Width="17"
@@ -480,35 +479,38 @@
 							   HorizontalAlignment="Right"
 							   Source="pack://application:,,,/data/image/search.png"
 						   RenderOptions.BitmapScalingMode="Fant"/>
-					</Grid>
-					<TreeView Grid.Row="2" Name="mx_treeCtrlFrame">
-					</TreeView>
-				</Grid>
-				<GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
-				<Grid Grid.Row="2" Margin="0,0,0,5">
-					<Grid.RowDefinitions>
-						<RowDefinition Height="auto"/>
-						<RowDefinition Height="auto"/>
-						<RowDefinition Height="*"/>
-					</Grid.RowDefinitions>
-					<Label Margin="{Binding ElementName=mx_lbProj, Path=Margin}"
+							</Grid>
+							<TreeView Grid.Row="2" Name="mx_treeCtrlFrame">
+							</TreeView>
+						</Grid>
+					</TabItem>
+					<TabItem Name="mx_treeFrameSkin" Header="非控件节点">
+						<Grid Grid.Row="2" Margin="0,0,0,5">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="auto"/>
+								<RowDefinition Height="auto"/>
+								<RowDefinition Height="*"/>
+							</Grid.RowDefinitions>
+							<Label Margin="{Binding ElementName=mx_lbProj, Path=Margin}"
 						   Padding="{Binding ElementName=mx_lbProj, Path=Padding}"
 						   Background="{Binding ElementName=mx_lbProj, Path=Background}">
-						非控件节点
-					</Label>
-					<TextBox Name="mx_skinSearch"
+								非控件节点
+							</Label>
+							<TextBox Name="mx_skinSearch"
 							 Grid.Row="1"
 							 Margin="5"
 							 TextChanged="mx_skinSearch_TextChanged"/>
-					<Image Grid.Row="1"
+							<Image Grid.Row="1"
 						   Width="17"
 						   Margin="0,4,6,3"
 						   HorizontalAlignment="Right"
 						   Source="pack://application:,,,/data/image/search.png"
 						   RenderOptions.BitmapScalingMode="Fant"/>
-					<TreeView Name="mx_treeSkinFrame" Grid.Row="2">
-					</TreeView>
-				</Grid>
+							<TreeView Name="mx_treeSkinFrame" Grid.Row="2">
+							</TreeView>
+						</Grid>
+					</TabItem>
+				</TabControl>
 			</Grid>
 		</DockPanel>
 		<GridSplitter Grid.Row="2" Grid.RowSpan="4" Grid.Column="0" Width="5"></GridSplitter>

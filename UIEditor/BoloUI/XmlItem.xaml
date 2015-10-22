@@ -6,13 +6,17 @@
 			  mc:Ignorable="d"
 			  Name="mx_root"
 			  IsExpanded="False"
-			  Padding="0">
+			  Padding="0"
+			  Style="{StaticResource WinFormsTreeViewStyle}">
 	<TreeViewItem.Header>
-		<RadioButton Name="mx_radio"
+		<WrapPanel>
+			<Image Name="mx_imgFolder" Width="16" Source="pack://application:,,,/data/image/folder.png" Visibility="Collapsed"/>
+			<RadioButton Name="mx_radio"
 					 GroupName="fileTree"
 					 Padding="0,2,0,2"
 					 Checked="mx_radio_Checked"
 					 MouseDoubleClick="mx_radio_MouseDoubleClick"/>
+		</WrapPanel>
 	</TreeViewItem.Header>
 	<TreeViewItem.ContextMenu>
 		<ContextMenu Name="mx_menu" Loaded="mx_menu_Loaded" Unloaded="mx_menu_Unloaded">

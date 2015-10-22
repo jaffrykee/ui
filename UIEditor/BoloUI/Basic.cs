@@ -75,6 +75,7 @@ namespace UIEditor.BoloUI
 					if (MainWindow.s_pW.m_mapCtrlDef.TryGetValue(xe.Name, out ctrlPtr))
 					{
 						this.Items.Add(new Basic(xe, m_rootControl, false));
+						mx_imgFolder.Visibility = System.Windows.Visibility.Visible;
 					}
 					else
 					{
@@ -98,11 +99,11 @@ namespace UIEditor.BoloUI
 
 				if (ctrlName != "")
 				{
-					tmpCon = "<" + ctrlName + ">";
+					tmpCon = ctrlName;
 				}
 				else
 				{
-					tmpCon = "<" + m_xe.Name + ">";
+					tmpCon = m_xe.Name;
 				}
 
 				if (ctrlTip != "")
@@ -121,7 +122,7 @@ namespace UIEditor.BoloUI
 				}
 				else
 				{
-					tmpCon = "<" + m_xe.Name + ">";
+					tmpCon = m_xe.Name;
 					if (m_xe.GetAttribute("Name") != "")
 					{
 						name = m_xe.GetAttribute("Name");
@@ -143,15 +144,33 @@ namespace UIEditor.BoloUI
 
 				if (MainWindow.s_pW.m_vCtrlName)
 				{
-					tmpCon += name;
+					tmpCon += "<" + name + ">";
 				}
 				if (MainWindow.s_pW.m_vCtrlId)
 				{
-					tmpCon += "(" + id + ")";
+					tmpCon += id;
 				}
 
 				mx_radio.Content = "_" + tmpCon;
 			}
+		}
+		public bool showBlueRect()
+		{
+			if (m_vId != null &&
+				m_vId != "" &&
+				m_rootControl != null &&
+				m_rootControl.m_openedFile != null &&
+				m_rootControl.m_openedFile.m_path != null)
+			{
+				MainWindow.s_pW.updateGL(
+					StringDic.getFileNameWithoutPath(m_rootControl.m_openedFile.m_path) + ":" + m_vId,
+					W2GTag.W2G_SELECT_UI
+				);
+
+				return true;
+			}
+
+			return false;
 		}
 		public override void changeSelectItem(object obj = null)
 		{
@@ -166,13 +185,9 @@ namespace UIEditor.BoloUI
 			}
 			MainWindow.s_pW.m_curFile = m_rootControl.m_openedFile.m_path;
 			MainWindow.s_pW.mx_workTabs.SelectedItem = m_rootControl.m_openedFile.m_tab;
-			if (m_vId != "")
-			{
-				MainWindow.s_pW.updateGL(
-					StringDic.getFileNameWithoutPath(m_rootControl.m_openedFile.m_path) + ":" + m_vId,
-					W2GTag.W2G_SELECT_UI
-				);
-			}
+			MainWindow.s_pW.mx_treeFrame.SelectedItem = MainWindow.s_pW.mx_treeFrameUI;
+
+			showBlueRect();
 
 			m_rootControl.m_curItem = this;
 			MainWindow.s_pW.hiddenAllAttr();

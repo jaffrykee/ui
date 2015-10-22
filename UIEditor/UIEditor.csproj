@@ -150,6 +150,9 @@
     <Compile Include="Project\IncludeFile.xaml.cs">
       <DependentUpon>IncludeFile.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Project\ReloadConfirm.xaml.cs">
+      <DependentUpon>ReloadConfirm.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Public\ErrorInfo.xaml.cs">
       <DependentUpon>ErrorInfo.xaml</DependentUpon>
     </Compile>
@@ -248,6 +251,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Project\IncludeFile.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Project\ReloadConfirm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -423,6 +430,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="data\a.txt" />
+    <Resource Include="data\image\folder.png" />
     <SplashScreen Include="data\image\init.png" />
     <Resource Include="ss_32.ico" />
     <Resource Include="data\image\ss_32.ico" />

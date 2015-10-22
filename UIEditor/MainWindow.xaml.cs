@@ -22,6 +22,7 @@ using UIEditor.BoloUI.DefConfig;
 using UIEditor.Project;
 using System.Threading;
 using System.Windows.Threading;
+using System.Collections;
 
 namespace UIEditor
 {
@@ -237,10 +238,15 @@ namespace UIEditor
 			MainWindow.s_pW.showGLCtrl(false);
 
 			DefConf.initXmlValueDef();
-			DispatcherTimer m_textTimer = new DispatcherTimer();
+			m_textTimer = new DispatcherTimer();
 			m_textTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
 			m_textTimer.Tick += new EventHandler(m_textTimer_Tick);
 			m_textTimer.Start();
+
+			m_fileChangeTimer = new DispatcherTimer();
+			m_fileChangeTimer.Interval = new TimeSpan(0, 0, 0, 0, 1000);
+			m_fileChangeTimer.Tick += new EventHandler(m_fileChangeTimer_Tick);
+			m_fileChangeTimer.Start();
 		}
 		private void mx_closeWin_Click(object sender, RoutedEventArgs e)
 		{
@@ -342,19 +348,19 @@ namespace UIEditor
 				{
 					refreshSkin(m_skinPath);
 				}
-				refreshProjTree(m_projPath, this.mx_treePro, true);
-				mx_root.Title = m_projPath + "\\" + m_projName + " - UI编辑器";
-				mx_toolNew.IsEnabled = true;
 			}
 			else
 			{
-				MessageBox.Show(
-					"没有找到皮肤目录：" + m_skinPath + "，请检查项目路径。",
-					m_projPath + "\\" + m_projName + " - UI编辑器",
-					MessageBoxButton.OK,
-					MessageBoxImage.Error
-				);
+// 				MessageBox.Show(
+// 					"没有找到皮肤目录：" + m_skinPath + "，请检查项目路径。",
+// 					m_projPath + "\\" + m_projName + " - UI编辑器",
+// 					MessageBoxButton.OK,
+// 					MessageBoxImage.Warning
+// 				);
 			}
+			refreshProjTree(m_projPath, this.mx_treePro, true);
+			mx_root.Title = m_projPath + "\\" + m_projName + " - UI编辑器";
+			mx_toolNew.IsEnabled = true;
 		}
 		public void refreshImageTree()
 		{
@@ -803,6 +809,16 @@ namespace UIEditor
 					SendMessage(m_msgMng.m_hwndGL, WM_COPYDATA, (int)m_msgMng.m_hwndGLParent, ref msgData);
 				}
 			}
+			if(msgTag != W2GTag.W2G_SELECT_UI)
+			{
+				XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
+				if (curXmlCtrl != null && curXmlCtrl.m_curItem != null && curXmlCtrl.m_curItem is BoloUI.Basic)
+				{
+					BoloUI.Basic curUICtrl = (BoloUI.Basic)curXmlCtrl.m_curItem;
+
+					curUICtrl.showBlueRect();
+				}
+			}
 		}
 		private IntPtr ControlMsgFilter(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)//响应主逻辑
 		{
@@ -856,17 +872,11 @@ namespace UIEditor
 						{
 							break;
 						}
-						if (m_curFile != null && m_curFile != "")
-						{
-							OpenedFile fileDef;
+						XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
 
-							if(m_mapOpenedFiles.TryGetValue(m_curFile, out fileDef))
-							{
-								if(fileDef.m_frame is XmlControl)
-								{
-									((XmlControl)fileDef.m_frame).refreshVRect();
-								}
-							}
+						if (curXmlCtrl != null)
+						{
+							curXmlCtrl.refreshVRect();
 						}
 						int pX = (int)lParam & 0xFFFF;
 						int pY = ((int)lParam >> 16) & 0xFFFF;
@@ -897,35 +907,41 @@ namespace UIEditor
 
 								mx_selCtrlLstFrame.Children.Clear();
 								m_mapXeSel.Clear();
-								foreach (KeyValuePair<string, BoloUI.Basic> pairCtrlDef in
-									((XmlControl)m_mapOpenedFiles[m_curFile].m_frame).m_mapCtrlUI.ToList())
-								{
-									if (pairCtrlDef.Value.checkPointInFence(pX, pY))
-									{
-										BoloUI.SelButton selCtrlButton;
-										if (!m_mapXeSel.TryGetValue(pairCtrlDef.Value.m_xe, out selCtrlButton))
-										{
-											lstSelCtrl.Add(pairCtrlDef.Value);
-											if (XmlItem.getCurItem() == pairCtrlDef.Value)
-											{
-												selCtrl = lastCtrl;
-											}
-											lastCtrl = pairCtrlDef.Value;
 
-											selCtrlButton = new BoloUI.SelButton(this, pairCtrlDef.Value);
-											selCtrlButton.mx_radio.Content = pairCtrlDef.Value.mx_radio.Content;
-											mx_selCtrlLstFrame.Children.Add(selCtrlButton);
-											m_mapXeSel.Add(pairCtrlDef.Value.m_xe, selCtrlButton);
+								XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
+
+								if(curXmlCtrl != null)
+								{
+									foreach (KeyValuePair<string, BoloUI.Basic> pairCtrlDef in
+										curXmlCtrl.m_mapCtrlUI.ToList())
+									{
+										if (pairCtrlDef.Value.checkPointInFence(pX, pY))
+										{
+											BoloUI.SelButton selCtrlButton;
+											if (!m_mapXeSel.TryGetValue(pairCtrlDef.Value.m_xe, out selCtrlButton))
+											{
+												lstSelCtrl.Add(pairCtrlDef.Value);
+												if (XmlItem.getCurItem() == pairCtrlDef.Value)
+												{
+													selCtrl = lastCtrl;
+												}
+												lastCtrl = pairCtrlDef.Value;
+
+												selCtrlButton = new BoloUI.SelButton(this, pairCtrlDef.Value);
+												selCtrlButton.mx_radio.Content = pairCtrlDef.Value.mx_radio.Content;
+												mx_selCtrlLstFrame.Children.Add(selCtrlButton);
+												m_mapXeSel.Add(pairCtrlDef.Value.m_xe, selCtrlButton);
+											}
 										}
 									}
-								}
-								if (lstSelCtrl.Count > 0)
-								{
-									if (selCtrl == null)
+									if (lstSelCtrl.Count > 0)
 									{
-										selCtrl = lstSelCtrl.Last();
+										if (selCtrl == null)
+										{
+											selCtrl = lstSelCtrl.Last();
+										}
+										selCtrl.changeSelectItem();
 									}
-									selCtrl.changeSelectItem();
 								}
 							}
 							else
@@ -1012,11 +1028,18 @@ namespace UIEditor
 									switch(ent)
 									{
 										case "click":
-											BoloUI.Basic tmpCtrl;
-											if (((XmlControl)m_mapOpenedFiles[m_curFile].m_frame).m_mapCtrlUI.TryGetValue(id, out tmpCtrl))
 											{
-												tmpCtrl.changeSelectItem();
-												tmpCtrl.IsSelected = true;
+												BoloUI.Basic tmpCtrl;
+												XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
+
+												if (curXmlCtrl != null && curXmlCtrl.m_mapCtrlUI != null)
+												{
+													if (curXmlCtrl.m_mapCtrlUI.TryGetValue(id, out tmpCtrl))
+													{
+														tmpCtrl.changeSelectItem();
+														tmpCtrl.IsSelected = true;
+													}
+												}
 											}
 											break;
 										default:
@@ -1032,37 +1055,22 @@ namespace UIEditor
 								for(int i = 5; i < sArray.Length; i+=5)
 								{
 									string baseId = sArray[i - 5];
-									OpenedFile fileDef;
-									if(m_mapOpenedFiles.TryGetValue(m_curFile, out fileDef))
+									XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
+
+									if (curXmlCtrl != null)
 									{
 										BoloUI.Basic curCtrl;
 
-										if(fileDef.m_frame != null)
+										if (curXmlCtrl.m_mapCtrlUI.TryGetValue(baseId, out curCtrl))
 										{
-											if(fileDef.m_frame is XmlControl)
-											{
-												XmlControl xmlCtrl = (XmlControl)fileDef.m_frame;
-
-												if (xmlCtrl.m_mapCtrlUI.TryGetValue(baseId, out curCtrl))
-												{
-													curCtrl.m_selX = int.Parse(sArray[i - 4]);
-													curCtrl.m_selY = int.Parse(sArray[i - 3]);
-													curCtrl.m_selW = int.Parse(sArray[i - 2]);
-													curCtrl.m_selH = int.Parse(sArray[i - 1]);
-												}
-												else
-												{
-													mx_debug.Text += "<G2W_UI_VRECT>没有找到控件，vId:" + baseId + "\r\n";
-												}
-											}
-											else
-											{
-
-											}
+											curCtrl.m_selX = int.Parse(sArray[i - 4]);
+											curCtrl.m_selY = int.Parse(sArray[i - 3]);
+											curCtrl.m_selW = int.Parse(sArray[i - 2]);
+											curCtrl.m_selH = int.Parse(sArray[i - 1]);
 										}
 										else
 										{
-
+											mx_debug.Text += "<G2W_UI_VRECT>没有找到控件，vId:" + baseId + "\r\n";
 										}
 									}
 									else
@@ -1533,16 +1541,13 @@ namespace UIEditor
 		}
 		private void mx_toolSave_Click(object sender, RoutedEventArgs e)
 		{
-			OpenedFile savedFile;
+			XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
 
-			if (m_mapOpenedFiles.Count > 0 && m_curFile != "" && m_mapOpenedFiles.TryGetValue(m_curFile, out savedFile))
+			if (curXmlCtrl != null)
 			{
-				if (savedFile.frameIsXmlCtrl())
-				{
-					((XmlControl)savedFile.m_frame).m_xmlDoc.Save(m_curFile);
-					savedFile.m_lstOpt.m_saveNode = m_mapOpenedFiles[m_curFile].m_lstOpt.m_curNode;
-					savedFile.updateSaveStatus();
-				}
+				curXmlCtrl.m_xmlDoc.Save(m_curFile);
+				curXmlCtrl.m_openedFile.m_lstOpt.m_saveNode = m_mapOpenedFiles[m_curFile].m_lstOpt.m_curNode;
+				curXmlCtrl.m_openedFile.updateSaveStatus();
 			}
 		}
 		private void mx_toolSaveAll_Click(object sender, RoutedEventArgs e)
@@ -2048,6 +2053,7 @@ namespace UIEditor
 		public long m_tLast;
 		public int m_hitCount;
 		public DispatcherTimer m_textTimer;
+		public DispatcherTimer m_fileChangeTimer;
 		public Run m_lastSelRun;
 		public Run m_lastUpdateRun;
 		private void mx_xmlText_TextChanged(object sender, TextChangedEventArgs e)
@@ -2061,6 +2067,24 @@ namespace UIEditor
 				hiddenAllAttr();
 
 				m_isCanEdit = true;
+			}
+		}
+		private void m_fileChangeTimer_Tick(object send, EventArgs e)
+		{
+			ArrayList arrFileChanged = OpenedFile.checkFileChangedAtOutside();
+
+			foreach(object objFile in arrFileChanged)
+			{
+				if(objFile is string)
+				{
+					string path = (string)objFile;
+
+					if(File.Exists(path))
+					{
+						ReloadConfirm winReload = new ReloadConfirm(path);
+						winReload.ShowDialog();
+					}
+				}
 			}
 		}
 		private void m_textTimer_Tick(object send, EventArgs e)
@@ -2235,6 +2259,23 @@ namespace UIEditor
 				curXmlCtrl.m_curSearchIndex++;
 				setSearchHighLighted();
 			}
+		}
+	}
+
+	class TreeViewLineConverter : IValueConverter
+	{
+		public object Convert(object value, Type targetType,
+		object parameter, System.Globalization.CultureInfo culture)
+		{
+			TreeViewItem item = (TreeViewItem)value;
+			ItemsControl ic = ItemsControl.ItemsControlFromItemContainer(item);
+			return ic.ItemContainerGenerator.IndexFromContainer(item) == ic.Items.Count - 1;
+		}
+
+		public object ConvertBack(object value, Type targetType,
+		object parameter, System.Globalization.CultureInfo culture)
+		{
+			return false;
 		}
 	}
 }

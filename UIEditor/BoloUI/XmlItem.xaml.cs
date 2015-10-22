@@ -123,7 +123,6 @@ namespace UIEditor.BoloUI
 		}
 		protected virtual void addChild()
 		{
-
 		}
 
 		private void mx_radio_Checked(object sender, RoutedEventArgs e)

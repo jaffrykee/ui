@@ -18,6 +18,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using System.Text.RegularExpressions;
 using UIEditor.XmlOperation;
+using System.Collections;
 
 namespace UIEditor
 {
@@ -35,12 +36,20 @@ namespace UIEditor
 		public string m_preViewSkinName;
 		public BoloUI.Basic m_prePlusCtrlUI;
 
+		public DateTime m_lastWriteTime;
+
 		public OpenedFile(string path, string skinName = "", bool isShowTabItem = true)
 		{
 			Public.ErrorInfo.clearErrorInfo();
 			MainWindow pW = MainWindow.s_pW;
 
 			m_path = path;
+			if(File.Exists(m_path))
+			{
+				FileInfo fi = new FileInfo(m_path);
+
+				m_lastWriteTime = fi.LastWriteTime;
+			}
 			m_fileType = StringDic.getFileType(m_path);
 			m_tab = new TabItem();
 			m_curViewSkin = skinName;
@@ -107,6 +116,12 @@ namespace UIEditor
 		}
 		public void updateSaveStatus()
 		{
+			if (File.Exists(m_path))
+			{
+				FileInfo fi = new FileInfo(m_path);
+
+				m_lastWriteTime = fi.LastWriteTime;
+			}
 			string ec = m_tab.Header.ToString().Substring(m_tab.Header.ToString().Length - 1, 1);
 			if (haveDiffToFile())
 			{
@@ -124,6 +139,28 @@ namespace UIEditor
 					m_tab.Header = m_tab.Header.ToString().Substring(0, m_tab.Header.ToString().Length - 1);
 				}
 			}
+		}
+
+		static public ArrayList checkFileChangedAtOutside()
+		{
+			ArrayList arrFileChanged = new ArrayList();
+
+			foreach(KeyValuePair<string, OpenedFile> pairFiledef in MainWindow.s_pW.m_mapOpenedFiles.ToList())
+			{
+				if(File.Exists(pairFiledef.Value.m_path))
+				{
+					
+					FileInfo fi = new FileInfo(pairFiledef.Value.m_path);
+
+					if(fi.LastWriteTime != pairFiledef.Value.m_lastWriteTime)
+					{
+						arrFileChanged.Add(pairFiledef.Value.m_path);
+						pairFiledef.Value.m_lastWriteTime = fi.LastWriteTime;
+					}
+				}
+			}
+
+			return arrFileChanged;
 		}
 	}
 }
