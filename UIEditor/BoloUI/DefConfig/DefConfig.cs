@@ -428,13 +428,13 @@ namespace UIEditor.BoloUI.DefConfig
 			foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in pW.m_mapCtrlDef.ToList())
 			{
 				pairCtrlDef.Value.m_ctrlAttrList = new AttrList(pairCtrlDef.Key, pairCtrlDef.Value.m_mapAttrDef);
-				pW.mx_toolArea.Children.Add(pairCtrlDef.Value.m_ctrlAttrList);
+				pW.mx_toolArea.Items.Add(pairCtrlDef.Value.m_ctrlAttrList);
 				pairCtrlDef.Value.m_ctrlAttrList.Visibility = Visibility.Collapsed;
 			}
 			foreach (KeyValuePair<string, SkinDef_T> pairSkinDef in pW.m_mapSkinAllDef.ToList())
 			{
 				pairSkinDef.Value.m_skinAttrList = new AttrList(pairSkinDef.Key, pairSkinDef.Value.m_mapAttrDef);
-				pW.mx_toolArea.Children.Add(pairSkinDef.Value.m_skinAttrList);
+				pW.mx_toolArea.Items.Add(pairSkinDef.Value.m_skinAttrList);
 				pairSkinDef.Value.m_skinAttrList.Visibility = Visibility.Collapsed;
 			}
 		}

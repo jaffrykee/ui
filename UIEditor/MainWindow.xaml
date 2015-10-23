@@ -398,7 +398,7 @@
 		</DockPanel>
 		<DockPanel Grid.Row="2" Grid.RowSpan="3" Grid.Column="0" Margin="0,0,5,0">
 			<Grid>
-				<TabControl Name="mx_treeFrame">
+				<TabControl Name="mx_treeFrame" BorderThickness="0,2,0,0">
 					<TabItem Name="mx_treeFrameProj" Header="工程目录">
 						<Grid Grid.Row="0" Margin="0,0,0,5">
 							<Grid.RowDefinitions>
@@ -457,14 +457,14 @@
 								  Checked="mx_checkVName_Checked"
 								  Unchecked="mx_checkVName_Unchecked"/>
 								<CheckBox Name="mx_checkVId"
-								  Grid.Row="0"
-								  Grid.Column="1"
-								  IsChecked="True"
-								  VerticalAlignment="Center"
-								  Margin="10,5,0,5"
-								  Content="显示id"
-								  Checked="mx_checkVId_Checked"
-								  Unchecked="mx_checkVId_Unchecked"/>
+										  Grid.Row="0"
+										  Grid.Column="1"
+										  IsChecked="True"
+										  VerticalAlignment="Center"
+										  Margin="10,5,0,5"
+										  Content="显示id"
+										  Checked="mx_checkVId_Checked"
+										  Unchecked="mx_checkVId_Unchecked"/>
 								<TextBox Name="mx_uiSearch"
 								 Grid.Row="1"
 								 Grid.Column="0"
@@ -519,27 +519,11 @@
 				<RowDefinition Height="auto"/>
 				<RowDefinition Height="*"/>
 			</Grid.RowDefinitions>
-			<WrapPanel Grid.Row="0" Visibility="Collapsed">
-				<RadioButton Padding="10,2,10,2">控件</RadioButton>
-				<RadioButton Padding="10,2,10,2">皮肤</RadioButton>
-			</WrapPanel>
-			<Grid Grid.Row="1">
-				<Grid.RowDefinitions>
-					<RowDefinition Height="auto"/>
-					<RowDefinition Height="*"/>
-				</Grid.RowDefinitions>
-				<GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="5"/>
-				<TreeView Name="mx_skinFrameTree" Grid.Row="0" Height="200" Margin="0,5,0,0" Visibility="Collapsed">
-				</TreeView>
-				<ScrollViewer Name="mx_toolScroll"
-							  Grid.Row="1"
-							  HorizontalScrollBarVisibility="Auto"
-							  VerticalScrollBarVisibility="Auto"
-							  SizeChanged="ScrollViewer_SizeChanged">
-					<StackPanel Name="mx_toolArea" Width="auto">
-					</StackPanel>
-				</ScrollViewer>
-			</Grid>
+			<GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="5"/>
+			<TreeView Name="mx_skinFrameTree" Grid.Row="0" Height="200" Margin="0,5,0,0" Visibility="Collapsed">
+			</TreeView>
+			<TabControl Name="mx_toolArea" Grid.Row="1" Width="auto" BorderThickness="0,2,0,0">
+			</TabControl>
 		</Grid>
 		<GridSplitter Grid.Row="2" Grid.RowSpan="3" Grid.Column="2" Width="5" HorizontalAlignment="Left"/>
 		<DockPanel Name="mx_normalFrame"

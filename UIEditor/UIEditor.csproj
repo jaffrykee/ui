@@ -437,7 +437,6 @@
     <Resource Include="data\image\SpeedShark_ws.ico" />
     <Resource Include="data\image\SpeedShark_w.ico" />
     <Resource Include="data\image\search.png" />
-    <Resource Include="data\image\treeLine.png" />
     <Resource Include="data\image\viewMode.png" />
     <Resource Include="data\image\refresh.png" />
   </ItemGroup>

@@ -463,7 +463,7 @@ namespace UIEditor
 				mx_drawFrame.Visibility = System.Windows.Visibility.Collapsed;
 				mx_GLCtrl.Visibility = System.Windows.Visibility.Collapsed;
 				mx_scrollFrame.Visibility = System.Windows.Visibility.Collapsed;
-				foreach (object attrList in mx_toolArea.Children)
+				foreach (object attrList in mx_toolArea.Items)
 				{
 					if (attrList is AttrList)
 					{
@@ -1443,14 +1443,14 @@ namespace UIEditor
 		{
 			if (m_otherAttrList != null)
 			{
-				mx_toolArea.Children.Remove(m_otherAttrList);
+				mx_toolArea.Items.Remove(m_otherAttrList);
 				m_otherAttrList = null;
 			}
 		}
 		public void hiddenAllAttr()
 		{
 			hiddenOtherAttrList();
-			foreach (AttrList attrList in mx_toolArea.Children)
+			foreach (AttrList attrList in mx_toolArea.Items)
 			{
 				attrList.Visibility = Visibility.Collapsed;
 			}
@@ -1488,10 +1488,6 @@ namespace UIEditor
 					}
 				}
 			}
-		}
-		private void ScrollViewer_SizeChanged(object sender, SizeChangedEventArgs e)
-		{
-			mx_toolScroll.ScrollToRightEnd();
 		}
 		private void selCtrlBybutton(object sender, RoutedEventArgs e)
 		{

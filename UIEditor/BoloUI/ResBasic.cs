@@ -336,6 +336,7 @@ namespace UIEditor.BoloUI
 			mx_radio.IsChecked = true;
 			BringIntoView();
 			gotoSelectXe();
+			AttrList.selectFirstVisibleAttrList();
 			m_selLock.delLock(ref stackLock);
 		}
 	}

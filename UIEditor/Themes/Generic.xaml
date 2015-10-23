@@ -535,7 +535,7 @@
 	</Style>
 	<!-- TreeViewItem -->
 	<Style x:Key="WinFormsTreeViewStyle" TargetType="{x:Type TreeViewItem}">
-		<Setter Property="Padding" Value="4,2,4,2"/>
+		<!--<Setter Property="Padding" Value="4,2,4,2"/>-->
 		<Setter Property="Background" Value="{StaticResource Background}"/>
 		<Setter Property="Foreground" Value="{StaticResource Foreground}"/>
 		<Setter Property="Template">
@@ -592,7 +592,7 @@
 					<ControlTemplate.Triggers>
 						<!-- This trigger changes the connecting lines if the item is the last in the list -->
 						<DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource LineConverter}}" Value="true">
-							<Setter TargetName="VerLn" Property="Height" Value="6"/>
+							<Setter TargetName="VerLn" Property="Height" Value="10"/>
 							<Setter TargetName="VerLn" Property="VerticalAlignment" Value="Top"/>
 						</DataTrigger>
 						<Trigger Property="IsExpanded" Value="false">

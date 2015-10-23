@@ -243,7 +243,7 @@ namespace UIEditor.BoloUI
 					if (MainWindow.s_pW.m_otherAttrList == null)
 					{
 						MainWindow.s_pW.m_otherAttrList = new AttrList("other");
-						MainWindow.s_pW.mx_toolArea.Children.Add(MainWindow.s_pW.m_otherAttrList);
+						MainWindow.s_pW.mx_toolArea.Items.Add(MainWindow.s_pW.m_otherAttrList);
 					}
 					MainWindow.s_pW.m_otherAttrList.mx_frame.Children.Add(new AttrRow("string", attr.Name, attr.Value, MainWindow.s_pW.m_otherAttrList));
 				}
@@ -283,6 +283,7 @@ namespace UIEditor.BoloUI
 			MainWindow.s_pW.hiddenOtherAttrList();
 			gotoSelectXe();
 			BringIntoView();
+			AttrList.selectFirstVisibleAttrList();
 			mx_radio.IsChecked = true;
 
 			m_selLock.delLock(ref stackLock);

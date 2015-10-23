@@ -17,7 +17,7 @@ using UIEditor.BoloUI.DefConfig;
 
 namespace UIEditor
 {
-	public partial class AttrList : Grid
+	public partial class AttrList : TabItem
 	{
 		public string m_name;
 		public XmlElement m_xe;
@@ -44,6 +44,7 @@ namespace UIEditor
 			{
 				ctrlWord = m_name;
 			}
+			this.Header = ctrlWord;
 			mx_title.Content = ctrlWord;
 		}
 
@@ -112,9 +113,25 @@ namespace UIEditor
 					}
 				}
 			}
-			MainWindow.s_pW.mx_toolScroll.ScrollToRightEnd();
+			mx_toolScroll.ScrollToRightEnd();
+		}
+		static public void selectFirstVisibleAttrList()
+		{
+			foreach(TabItem tabItem in MainWindow.s_pW.mx_toolArea.Items)
+			{
+				if (tabItem.Visibility == Visibility.Visible)
+				{
+					MainWindow.s_pW.mx_toolArea.SelectedItem = tabItem;
+
+					return;
+				}
+			}
 		}
 
+		private void ScrollViewer_SizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			mx_toolScroll.ScrollToRightEnd();
+		}
 		private void mx_onlySetted_Checked(object sender, RoutedEventArgs e)
 		{
 			refreshRowVisible();

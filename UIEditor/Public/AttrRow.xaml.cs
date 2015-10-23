@@ -181,11 +181,10 @@ namespace UIEditor
 								{
 									if (value == "")
 									{
-										mx_defaultBool.IsChecked = true;
+										mx_valueBool.IsChecked = null;
 									}
 									else
 									{
-										mx_defaultBool.IsChecked = false;
 										switch (value)
 										{
 											case "true":
@@ -196,7 +195,7 @@ namespace UIEditor
 												break;
 											default:
 												//todo 这里是非法值的处理，还没有想好机制
-												mx_defaultBool.IsChecked = true;
+												mx_valueBool.IsChecked = null;
 												break;
 										}
 									}
@@ -255,6 +254,14 @@ namespace UIEditor
 								{
 									//m_name.set
 									//mx_apprFrame.Visibility = Visibility.Visible;
+								}
+								break;
+							case "halfNormal":
+								{
+									mx_normalFrame.Visibility = Visibility.Visible;
+									mx_c2.Width = new GridLength(75);
+									mx_normalFrame.MinWidth = 150;
+									mx_root.MinWidth = 150;
 								}
 								break;
 							default:
@@ -370,24 +377,6 @@ namespace UIEditor
 				mx_link.Content = "跳转";
 			}
 		}
-		private void mx_defaultBool_Unchecked(object sender, RoutedEventArgs e)
-		{
-			mx_valueBool.IsEnabled = true;
-
-			if(mx_valueBool.IsChecked == true)
-			{
-				m_value = "true";
-			}
-			else
-			{
-				m_value = "false";
-			}
-		}
-		private void mx_defaultBool_Checked(object sender, RoutedEventArgs e)
-		{
-			mx_valueBool.IsEnabled = false;
-			m_value = "";
-		}
 		private void mx_valueBool_Checked(object sender, RoutedEventArgs e)
 		{
 			m_value = "true";
@@ -396,8 +385,9 @@ namespace UIEditor
 		{
 			m_value = "false";
 		}
-		private void mx_valueBool_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+		private void mx_valueBool_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
 		{
+			m_value = "";
 		}
 		private void mx_valueEnum_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{

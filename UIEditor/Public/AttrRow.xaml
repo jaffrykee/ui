@@ -4,11 +4,10 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 	mc:Ignorable="d"
-	HorizontalAlignment="Right"
 	Name="mx_root"
 	Margin="2,2,2,2"
-	MinWidth="200">
-	<Grid Name="mx_normalFrame" Visibility="Collapsed" IsVisibleChanged="mx_frame_IsVisibleChanged">
+	HorizontalAlignment="Right">
+	<Grid Name="mx_normalFrame" Visibility="Collapsed" IsVisibleChanged="mx_frame_IsVisibleChanged" MinWidth="300">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Name="mx_c0" Width="*"/>
 			<ColumnDefinition Name="mx_c1" Width="10"/>
@@ -47,34 +46,26 @@
 			</Grid>
 		</Grid>
 	</Grid>
-	<Grid Name="mx_boolFrame" Visibility="Collapsed" IsVisibleChanged="mx_frame_IsVisibleChanged">
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Name="mx_cb0" Width="*"/>
-			<ColumnDefinition Name="mx_cb1" Width="10"/>
-			<ColumnDefinition Name="mx_cb2" Width="125"/>
-		</Grid.ColumnDefinitions>
+	<Grid Name="mx_boolFrame"
+		  MinWidth="150"
+		  Margin="0,2,0,2"
+		  Visibility="Collapsed"
+		  IsVisibleChanged="mx_frame_IsVisibleChanged">
 		<CheckBox Name="mx_valueBool"
-				  Grid.Column="0"
-				  IsEnabledChanged="mx_valueBool_IsEnabledChanged"
+				  HorizontalAlignment="Left"
 				  VerticalAlignment="Center"
-				  Margin="10,0,0,0"
+				  Margin="10,0,10,0"
 				  Content="{Binding ElementName=mx_name, Path=Content}"
+				  IsChecked="{x:Null}"
 				  Checked="mx_valueBool_Checked"
-				  Unchecked="mx_valueBool_Unchecked"/>
-		<CheckBox Name="mx_defaultBool"
-				  Grid.Column="2"
-				  VerticalAlignment="Center"
-				  Margin="10,0,0,0"
-				  Content="[默认值]"
-				  IsChecked="True"
-				  Checked="mx_defaultBool_Checked"
-				  Unchecked="mx_defaultBool_Unchecked"/>
+				  Unchecked="mx_valueBool_Unchecked"
+				  MouseRightButtonUp="mx_valueBool_MouseRightButtonUp"/>
 	</Grid>
-	<Grid Name="mx_enumFrame" Visibility="Collapsed" IsVisibleChanged="mx_frame_IsVisibleChanged">
+	<Grid Name="mx_enumFrame" Visibility="Collapsed" IsVisibleChanged="mx_frame_IsVisibleChanged" MinWidth="300">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Name="mx_ce0" Width="*"/>
 			<ColumnDefinition Name="mx_ce1" Width="10"/>
-			<ColumnDefinition Name="mx_ce2" Width="125"/>
+			<ColumnDefinition Name="mx_ce2" Width="150"/>
 		</Grid.ColumnDefinitions>
 		<Label Name="mx_nameEnum"
 			Grid.Column="0"
@@ -89,7 +80,7 @@
 			<ComboBoxItem Name="mx_defaultEnum" Content="[默认值]" ToolTip="" IsSelected="True"/>
 		</ComboBox>
 	</Grid>
-	<Grid Name="mx_apprFrame" Visibility="Collapsed" IsVisibleChanged="mx_frame_IsVisibleChanged">
+	<Grid Name="mx_apprFrame" Visibility="Collapsed" IsVisibleChanged="mx_frame_IsVisibleChanged" MinWidth="300">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*"></RowDefinition>
 			<RowDefinition Height="*"></RowDefinition>
