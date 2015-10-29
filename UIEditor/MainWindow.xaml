@@ -50,7 +50,7 @@
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="280"/>
 			<ColumnDefinition Width="*" MinWidth="20"/>
-			<ColumnDefinition Width="345"/>
+			<ColumnDefinition Width="345" MinWidth="10"/>
 		</Grid.ColumnDefinitions>
 		<Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Top">
 			<MenuItem Header="文件">
@@ -540,43 +540,20 @@
 		<GridSplitter Name="mx_debugSplitter" Grid.Row="4" Grid.Column="1" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
 		<DockPanel Grid.Row="4" Grid.Column="1" Margin="0,5,0,0">
 			<Grid>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="2*"/>
-					<ColumnDefinition Width="*"/>
-				</Grid.ColumnDefinitions>
 				<Grid.RowDefinitions>
+					<RowDefinition Height="auto"/>
 					<RowDefinition Height="*"/>
-					<RowDefinition Height="*"/>
+					<RowDefinition Height="2*"/>
 				</Grid.RowDefinitions>
-				<Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Margin="0,0,5,0">
-					<RichTextBox Name="mx_xmlText"
-								 AcceptsReturn="True"
-								 VerticalScrollBarVisibility="Visible"
-								 HorizontalScrollBarVisibility="Visible"
-								 HorizontalAlignment="Stretch"
-								 FontFamily="Consolas"
-								 TextChanged="mx_xmlText_TextChanged">
-					</RichTextBox>
-					<TextBox Name="mx_xmlTextSearch"
-							 Width="200"
-							 Height="22"
-							 Margin="0,0,22,0"
-							 HorizontalAlignment="Right"
-							 VerticalAlignment="Top"
-							 TextChanged="mx_xmlTextSearch_TextChanged"
-							 KeyDown="mx_xmlTextSearch_KeyDown"/>
-					<Image Width="17"
-						   Margin="0,3,25,3"
-						   HorizontalAlignment="Right" VerticalAlignment="Top"
-						   Source="pack://application:,,,/data/image/search.png"
-						   RenderOptions.BitmapScalingMode="Fant"/>
-				</Grid>
-				<GridSplitter Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Width="5" HorizontalAlignment="Right"/>
-				<ScrollViewer Grid.Column="1" Grid.Row="0" Margin="0,0,0,5">
+				<WrapPanel Grid.Row="0" Background="{StaticResource BackgroundNormal}">
+					<RadioButton Name="mx_showUITab" Padding="15,5,15,5" Margin="4,0,0,7" IsChecked="True" Checked="mx_showUITab_Checked">界面设计</RadioButton>
+					<RadioButton Name="mx_showTextTab" Padding="15,5,15,5" Margin="4,0,0,7" Checked="mx_showTextTab_Checked">文本内容</RadioButton>
+				</WrapPanel>
+				<ScrollViewer Grid.Row="1" Margin="0,0,0,5">
 					<WrapPanel Name="mx_selCtrlLstFrame" Orientation="Horizontal"/>
 				</ScrollViewer>
-				<GridSplitter Grid.Column="1" Grid.Row="0" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
-				<Grid Grid.Column="1" Grid.Row="1">
+				<GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
+				<Grid Grid.Row="2">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="auto"/>
 						<RowDefinition Height="*"/>
@@ -619,6 +596,33 @@
 					VerticalAlignment="Top"
 					Padding="0,0,18,18">
 			</Border>
+		</Grid>
+		<Grid Name="mx_textFrame"
+			  Grid.Row="3"
+			  Grid.Column="1"
+			  Margin="0,0,5,0"
+			  Visibility="Collapsed">
+			<RichTextBox Name="mx_xmlText"
+						 AcceptsReturn="True"
+						 VerticalScrollBarVisibility="Visible"
+						 HorizontalScrollBarVisibility="Visible"
+						 HorizontalAlignment="Stretch"
+						 FontFamily="Consolas"
+						 TextChanged="mx_xmlText_TextChanged">
+			</RichTextBox>
+			<TextBox Name="mx_xmlTextSearch"
+					 Width="200"
+					 Height="22"
+					 Margin="0,0,22,0"
+					 HorizontalAlignment="Right"
+					 VerticalAlignment="Top"
+					 TextChanged="mx_xmlTextSearch_TextChanged"
+					 KeyDown="mx_xmlTextSearch_KeyDown"/>
+			<Image Width="17"
+				   Margin="0,3,25,3"
+				   HorizontalAlignment="Right" VerticalAlignment="Top"
+				   Source="pack://application:,,,/data/image/search.png"
+				   RenderOptions.BitmapScalingMode="Fant"/>
 		</Grid>
 		<Grid Grid.Row="3"
 			  Grid.Column="1">

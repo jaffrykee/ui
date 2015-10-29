@@ -435,7 +435,7 @@ namespace UIEditor
 							}
 							foreach(XmlAttribute attr in xe.Attributes)
 							{
-								addRunAndLinkItem(para, "\n" + strTabs + "    ", xeItem, Colors.Blue, ref oldRun, ref diffRun);
+								//addRunAndLinkItem(para, "\n" + strTabs + "    ", xeItem, Colors.Blue, ref oldRun, ref diffRun);
 								addRunAndLinkItem(para, " " + attr.Name, xeItem, Colors.Red, ref oldRun, ref diffRun);
 								addRunAndLinkItem(para, "=\"" + attr.InnerXml + "\"", xeItem, Colors.Blue, ref oldRun, ref diffRun);
 							}

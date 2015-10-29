@@ -78,7 +78,7 @@ namespace UIEditor
 			}
 
 			m_process = System.Diagnostics.Process.Start(
-				MainWindow.conf_pathGlApp,
+				MainWindow.s_pW.m_pathGlApp,
 					m_hostWidth.ToString() + " " +
 					m_hostHeight.ToString() + " " +
 					m_msgMng.m_hwndGLParent.ToString() + " " +

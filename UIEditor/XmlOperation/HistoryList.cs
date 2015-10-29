@@ -57,23 +57,65 @@ namespace UIEditor.XmlOperation
 			redoOperation(true);
 			m_xmlCtrl.m_openedFile.updateSaveStatus();
 		}
+		static public void updateAttrToGL(XmlControl xmlCtrl, Basic uiCtrl, string attrName, string newValue)
+		{
+			if (attrName != "value" && MainWindow.s_pW.mx_isShowAll.IsChecked != true)
+			{
+				foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in MainWindow.s_pW.m_mapBasicCtrlDef.ToList())
+				{
+					AttrDef_T attrDef;
+
+					if (pairCtrlDef.Value.m_mapAttrDef.TryGetValue(attrName, out attrDef))
+					{
+						switch (attrName)
+						{
+							case "dock":
+								MainWindow.s_pW.updateGL(
+									System.IO.Path.GetFileName(xmlCtrl.m_openedFile.m_path) + ":" + uiCtrl.m_vId + ":" + attrName + ":" + newValue,
+									W2GTag.W2G_NORMAL_UPDATE);
+								MainWindow.s_pW.updateGL(
+									System.IO.Path.GetFileName(xmlCtrl.m_openedFile.m_path) + ":" + uiCtrl.m_vId + ":" + "w" + ":" + uiCtrl.m_xe.GetAttribute("w"),
+									W2GTag.W2G_NORMAL_UPDATE);
+								MainWindow.s_pW.updateGL(
+									System.IO.Path.GetFileName(xmlCtrl.m_openedFile.m_path) + ":" + uiCtrl.m_vId + ":" + "h" + ":" + uiCtrl.m_xe.GetAttribute("h"),
+									W2GTag.W2G_NORMAL_UPDATE);
+								MainWindow.s_pW.updateGL(
+									System.IO.Path.GetFileName(xmlCtrl.m_openedFile.m_path) + ":" + uiCtrl.m_vId + ":" + "x" + ":" + uiCtrl.m_xe.GetAttribute("x"),
+									W2GTag.W2G_NORMAL_UPDATE);
+								MainWindow.s_pW.updateGL(
+									System.IO.Path.GetFileName(xmlCtrl.m_openedFile.m_path) + ":" + uiCtrl.m_vId + ":" + "y" + ":" + uiCtrl.m_xe.GetAttribute("y"),
+									W2GTag.W2G_NORMAL_UPDATE);
+								break;
+							default:
+								MainWindow.s_pW.updateGL(
+									System.IO.Path.GetFileName(xmlCtrl.m_openedFile.m_path) + ":" + uiCtrl.m_vId + ":" + attrName + ":" + newValue,
+									W2GTag.W2G_NORMAL_UPDATE);
+								break;
+						}
+
+						return;
+					}
+				}
+			}
+			MainWindow.s_pW.updateXmlToGL(xmlCtrl);
+		}
 		static public void updateAttrToGL(XmlControl xmlCtrl, string baseID, string attrName, string newValue)
 		{
-			if (attrName == "visible" && MainWindow.s_pW.mx_isShowAll.IsChecked != true)
+			if (attrName != "value" && MainWindow.s_pW.mx_isShowAll.IsChecked != true)
  			{
  				foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in MainWindow.s_pW.m_mapBasicCtrlDef.ToList())
  				{
  					AttrDef_T attrDef;
  
  					if (pairCtrlDef.Value.m_mapAttrDef.TryGetValue(attrName, out attrDef))
- 					{
- 						MainWindow.s_pW.updateGL(
- 							System.IO.Path.GetFileName(xmlCtrl.m_openedFile.m_path) + ":" + baseID + ":" + attrName + ":" + newValue,
- 							W2GTag.W2G_NORMAL_UPDATE);
+					{
+						MainWindow.s_pW.updateGL(
+							System.IO.Path.GetFileName(xmlCtrl.m_openedFile.m_path) + ":" + baseID + ":" + attrName + ":" + newValue,
+							W2GTag.W2G_NORMAL_UPDATE);
  
  						return;
  					}
- 				}
+				}
  			}
 			MainWindow.s_pW.updateXmlToGL(xmlCtrl);
 		}
@@ -168,7 +210,7 @@ namespace UIEditor.XmlOperation
 				{
 					Basic ctrlItem = (Basic)dstItem;
 
-					updateAttrToGL(m_xmlCtrl, ctrlItem.m_vId, m_curNode.Value.m_attrName, m_curNode.Value.m_newValue);
+					updateAttrToGL(m_xmlCtrl, ctrlItem, m_curNode.Value.m_attrName, m_curNode.Value.m_newValue);
 				}
 				else
 				{
@@ -296,7 +338,7 @@ namespace UIEditor.XmlOperation
 			{
 				Basic ctrlItem = (Basic)dstItem;
 
-				updateAttrToGL(m_xmlCtrl, ctrlItem.m_vId, m_curNode.Value.m_attrName, m_curNode.Value.m_oldValue);
+				updateAttrToGL(m_xmlCtrl, ctrlItem, m_curNode.Value.m_attrName, m_curNode.Value.m_oldValue);
 			}
 			else
 			{

@@ -133,11 +133,13 @@ namespace UIEditor
 		public string m_curLang;
 
 		public const string conf_pathGlApp = @".\dsuieditor.exe";
+		public const string conf_pathGlApp_New = @".\SSUIEditor.exe";
 		public const string conf_pathConf = @".\conf.xml";
 		public const string conf_pathPlugInBoloUI = @".\data\PlugIn\BoloUI\";
 		public const string conf_pathStringDic = @".\data\Lang\";
 		public XmlDocument m_docConf;
 		public bool m_isDebug;
+		public string m_pathGlApp;
 
 		public MainWindow()
 		{
@@ -187,13 +189,36 @@ namespace UIEditor
 
 			if (m_docConf.SelectSingleNode("Config").SelectSingleNode("runMode") != null)
 			{
-				if (m_docConf.SelectSingleNode("Config").SelectSingleNode("runMode").InnerXml == "debug")
+				switch(m_docConf.SelectSingleNode("Config").SelectSingleNode("runMode").InnerXml)
 				{
-					m_isDebug = true;
-				}
-				else
-				{
-					m_isDebug = false;
+					case "debug":
+						{
+							m_isDebug = true;
+							m_pathGlApp = conf_pathGlApp_New;
+						}
+						break;
+					case "release":
+						{
+							m_isDebug = false;
+							m_pathGlApp = conf_pathGlApp_New;
+						}
+						break;
+					case "debug_old":
+						{
+							m_isDebug = true;
+							m_pathGlApp = conf_pathGlApp;
+						}
+						break;
+					case "release_old":
+						{
+							m_isDebug = false;
+							m_pathGlApp = conf_pathGlApp;
+						}
+						break;
+					default:
+						m_isDebug = false;
+						m_pathGlApp = conf_pathGlApp_New;
+						break;
 				}
 			}
 			else
@@ -205,6 +230,7 @@ namespace UIEditor
 				m_docConf.Save(conf_pathConf);
 
 				m_isDebug = false;
+				m_pathGlApp = conf_pathGlApp_New;
 			}
 
 			// hook keyboard
@@ -457,12 +483,14 @@ namespace UIEditor
 				mx_drawFrame.Visibility = System.Windows.Visibility.Visible;
 				mx_GLCtrl.Visibility = System.Windows.Visibility.Visible;
 				mx_scrollFrame.Visibility = System.Windows.Visibility.Visible;
+				mx_textFrame.Visibility = System.Windows.Visibility.Collapsed;
 			}
 			else
 			{
 				mx_drawFrame.Visibility = System.Windows.Visibility.Collapsed;
 				mx_GLCtrl.Visibility = System.Windows.Visibility.Collapsed;
 				mx_scrollFrame.Visibility = System.Windows.Visibility.Collapsed;
+				mx_textFrame.Visibility = System.Windows.Visibility.Collapsed;
 				foreach (object attrList in mx_toolArea.Items)
 				{
 					if (attrList is AttrList)
@@ -818,6 +846,10 @@ namespace UIEditor
 
 					curUICtrl.showBlueRect();
 				}
+			}
+			if (msgTag == W2GTag.W2G_PATH)
+			{
+				MoveWindow(m_msgMng.m_hwndGL, 0, 0, m_screenWidth, m_screenHeight, true);
 			}
 		}
 		private IntPtr ControlMsgFilter(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)//响应主逻辑
@@ -2254,6 +2286,24 @@ namespace UIEditor
 			{
 				curXmlCtrl.m_curSearchIndex++;
 				setSearchHighLighted();
+			}
+		}
+
+		private void mx_showUITab_Checked(object sender, RoutedEventArgs e)
+		{
+			if (mx_drawFrame != null && mx_textFrame != null)
+			{
+				mx_drawFrame.Visibility = System.Windows.Visibility.Visible;
+				mx_textFrame.Visibility = System.Windows.Visibility.Collapsed;
+			}
+		}
+
+		private void mx_showTextTab_Checked(object sender, RoutedEventArgs e)
+		{
+			if (mx_drawFrame != null && mx_textFrame != null)
+			{
+				mx_textFrame.Visibility = System.Windows.Visibility.Visible;
+				mx_drawFrame.Visibility = System.Windows.Visibility.Collapsed;
 			}
 		}
 	}
