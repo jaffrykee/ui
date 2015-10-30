@@ -435,8 +435,8 @@ namespace UIEditor
 			if (xn != null)
 			{
 				string buffer = xmlDoc.InnerXml;
-				updateGL("publicskin.xml", W2GTag.W2G_SKIN_NAME);
-				updateGL(buffer, W2GTag.W2G_SKIN_DATA);
+				updateGL("publicskin.xml", W2GTag.W2G_NORMAL_NAME);
+				updateGL(buffer, W2GTag.W2G_NORMAL_DATA);
 			}
 		}
 		public void refreshProjTree(string path, TreeViewItem rootItem, bool rootNode)
@@ -480,16 +480,24 @@ namespace UIEditor
 		{
 			if(isShow)
 			{
-				mx_drawFrame.Visibility = System.Windows.Visibility.Visible;
-				mx_GLCtrl.Visibility = System.Windows.Visibility.Visible;
 				mx_scrollFrame.Visibility = System.Windows.Visibility.Visible;
-				mx_textFrame.Visibility = System.Windows.Visibility.Collapsed;
+				mx_GLCtrl.Visibility = System.Windows.Visibility.Visible;
+				if (mx_showTextTab.IsChecked == true)
+				{
+					mx_textFrame.Visibility = System.Windows.Visibility.Visible;
+					mx_drawFrame.Visibility = System.Windows.Visibility.Collapsed;
+				}
+				else
+				{
+					mx_drawFrame.Visibility = System.Windows.Visibility.Visible;
+					mx_textFrame.Visibility = System.Windows.Visibility.Collapsed;
+				}
 			}
 			else
 			{
 				mx_drawFrame.Visibility = System.Windows.Visibility.Collapsed;
-				mx_GLCtrl.Visibility = System.Windows.Visibility.Collapsed;
 				mx_scrollFrame.Visibility = System.Windows.Visibility.Collapsed;
+				mx_GLCtrl.Visibility = System.Windows.Visibility.Collapsed;
 				mx_textFrame.Visibility = System.Windows.Visibility.Collapsed;
 				foreach (object attrList in mx_toolArea.Items)
 				{
@@ -532,8 +540,8 @@ namespace UIEditor
 		}
 		private void mx_workTabs_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			mx_treeCtrlFrame.Items.Clear();
-			mx_treeSkinFrame.Items.Clear();
+			XmlControl.clearNodeTreeFrame();
+
 			hiddenAllAttr();
 			if (((TabItem)mx_workTabs.SelectedItem) != null)
 			{
@@ -552,11 +560,12 @@ namespace UIEditor
 						{
 							if(openFile.m_frame is XmlControl)
 							{
-								updateGL(fileName, W2GTag.W2G_NORMAL_TURN);
+								//updateGL(fileName, W2GTag.W2G_NORMAL_TURN);
+								refreshCurFile();
 								XmlControl xmlCtrl = (XmlControl)openFile.m_frame;
 
-								mx_treeCtrlFrame.Items.Add(xmlCtrl.m_treeUI);
-								mx_treeSkinFrame.Items.Add(xmlCtrl.m_treeSkin);
+								xmlCtrl.m_treeUI.Visibility = System.Windows.Visibility.Visible;
+								xmlCtrl.m_treeSkin.Visibility = System.Windows.Visibility.Visible;
 								if (xmlCtrl.m_showGL)
 								{
 									MainWindow.s_pW.showGLCtrl(true);
@@ -1757,30 +1766,44 @@ namespace UIEditor
 			}
 		}
 
-		static private string getStrFromItemHeader(object header)
+		static private string getStrFromItemHeader(object header, string type = "")
 		{
-			if(header is RadioButton || header.GetType().BaseType.ToString() == "System.Windows.Controls.RadioButton")
+			switch(type)
 			{
-				RadioButton rb = (RadioButton)header;
-
-				return rb.Content.ToString();
-			}
-			else if(header is Grid)
-			{
-				Grid frame = (Grid)header;
-
-				foreach(UIElement ue in frame.Children)
-				{
-					if(ue is RadioButton)
+				case "XmlItem":
 					{
-						RadioButton rb = (RadioButton)ue;
+						XmlItem itemCtrl = (XmlItem)header;
 
-						return rb.Content.ToString();
+						return itemCtrl.mx_radio.Content.ToString();
 					}
-				}
-			}
+					break;
+				default:
+					{
+						if (header is RadioButton || header.GetType().BaseType.ToString() == "System.Windows.Controls.RadioButton")
+						{
+							RadioButton rb = (RadioButton)header;
 
-			return header.ToString();
+							return rb.Content.ToString();
+						}
+						else if (header is Grid)
+						{
+							Grid frame = (Grid)header;
+
+							foreach (UIElement ue in frame.Children)
+							{
+								if (ue is RadioButton)
+								{
+									RadioButton rb = (RadioButton)ue;
+
+									return rb.Content.ToString();
+								}
+							}
+						}
+
+						return header.ToString();
+					}
+					break;
+			}
 		}
 		static public void refreshSearch(TreeViewItem viewItem, string key, bool isExpanded = false)
 		{
@@ -1790,7 +1813,22 @@ namespace UIEditor
 				{
 					if(key != "" && key != null)
 					{
-						if (getStrFromItemHeader(item.Header).IndexOf(key, StringComparison.OrdinalIgnoreCase) < 0)
+						object header = null;
+						string type = "";
+
+						if (item is XmlItem || item.GetType().BaseType.ToString() == "UIEditor.BoloUI.XmlItem")
+						{
+							XmlItem itemCtrl = (XmlItem)item;
+
+							header = itemCtrl;
+							type = "XmlItem";
+						}
+						else
+						{
+							header = item.Header;
+						}
+
+						if (getStrFromItemHeader(header, type).IndexOf(key, StringComparison.OrdinalIgnoreCase) < 0)
 						{
 							item.Visibility = System.Windows.Visibility.Collapsed;
 						}
@@ -1839,65 +1877,34 @@ namespace UIEditor
 		private void mx_uiSearch_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			bool isDefEx = true;
+			XmlControl curCtrl = XmlControl.getCurXmlControl();
 
-			if (mx_uiSearch.Text != "")
+			if (curCtrl != null)
 			{
-				if (mx_treeCtrlFrame.Items.Count > 0 &&
-						(mx_treeCtrlFrame.Items.GetItemAt(0) is TreeViewItem ||
-							mx_treeCtrlFrame.Items.GetItemAt(0).GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem" ||
-							mx_treeCtrlFrame.Items.GetItemAt(0).GetType().BaseType.BaseType.ToString() == "System.Windows.Controls.TreeViewItem" ||
-							mx_treeCtrlFrame.Items.GetItemAt(0).GetType().BaseType.BaseType.BaseType.ToString() == "System.Windows.Controls.TreeViewItem"
-						)
-					)
+				if (mx_uiSearch.Text != "")
 				{
-					refreshSearch((TreeViewItem)mx_treeCtrlFrame.Items.GetItemAt(0), null, isDefEx);
-					refreshSearch((TreeViewItem)mx_treeCtrlFrame.Items.GetItemAt(0), mx_uiSearch.Text.ToString(), isDefEx);
+					refreshSearch(curCtrl.m_treeUI, null, isDefEx);
+					refreshSearch(curCtrl.m_treeUI, mx_uiSearch.Text.ToString(), isDefEx);
 				}
-			}
-			else
-			{
-				if (mx_treeCtrlFrame.Items.Count > 0 &&
-						(mx_treeCtrlFrame.Items.GetItemAt(0) is TreeViewItem ||
-							mx_treeCtrlFrame.Items.GetItemAt(0).GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem" ||
-							mx_treeCtrlFrame.Items.GetItemAt(0).GetType().BaseType.BaseType.ToString() == "System.Windows.Controls.TreeViewItem" ||
-							mx_treeCtrlFrame.Items.GetItemAt(0).GetType().BaseType.BaseType.BaseType.ToString() == "System.Windows.Controls.TreeViewItem"
-						)
-					)
+				else
 				{
-					refreshSearch((TreeViewItem)mx_treeCtrlFrame.Items.GetItemAt(0), null, isDefEx);
+					refreshSearch(curCtrl.m_treeUI, null, isDefEx);
 				}
 			}
 		}
 		private void mx_skinSearch_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			bool isDefEx = true;
+			XmlControl curCtrl = XmlControl.getCurXmlControl();
 
 			if (mx_skinSearch.Text != "")
 			{
-				if (mx_treeSkinFrame.Items.Count > 0 &&
-						(mx_treeSkinFrame.Items.GetItemAt(0) is TreeViewItem ||
-							mx_treeSkinFrame.Items.GetItemAt(0).GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem" ||
-							mx_treeSkinFrame.Items.GetItemAt(0).GetType().BaseType.BaseType.ToString() == "System.Windows.Controls.TreeViewItem" ||
-							mx_treeSkinFrame.Items.GetItemAt(0).GetType().BaseType.BaseType.BaseType.ToString() == "System.Windows.Controls.TreeViewItem"
-						)
-					)
-				{
-					refreshSearch((TreeViewItem)mx_treeSkinFrame.Items.GetItemAt(0), null, isDefEx);
-					refreshSearch((TreeViewItem)mx_treeSkinFrame.Items.GetItemAt(0), mx_skinSearch.Text.ToString(), isDefEx);
-				}
+				refreshSearch(curCtrl.m_treeSkin, null, isDefEx);
+				refreshSearch(curCtrl.m_treeSkin, mx_uiSearch.Text.ToString(), isDefEx);
 			}
 			else
 			{
-				if (mx_treeSkinFrame.Items.Count > 0 &&
-						(mx_treeSkinFrame.Items.GetItemAt(0) is TreeViewItem ||
-							mx_treeSkinFrame.Items.GetItemAt(0).GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem" ||
-							mx_treeSkinFrame.Items.GetItemAt(0).GetType().BaseType.BaseType.ToString() == "System.Windows.Controls.TreeViewItem" ||
-							mx_treeSkinFrame.Items.GetItemAt(0).GetType().BaseType.BaseType.BaseType.ToString() == "System.Windows.Controls.TreeViewItem"
-						)
-					)
-				{
-					refreshSearch((TreeViewItem)mx_treeSkinFrame.Items.GetItemAt(0), null, isDefEx);
-				}
+				refreshSearch(curCtrl.m_treeSkin, null, isDefEx);
 			}
 		}
 

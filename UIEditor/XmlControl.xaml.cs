@@ -73,16 +73,7 @@ namespace UIEditor
 		private void mx_root_Unloaded(object sender, RoutedEventArgs e)
 		{
 			MainWindow.s_pW.mx_selCtrlLstFrame.Children.Clear();
-			if (MainWindow.s_pW.mx_treeCtrlFrame.Items.Count > 0 && MainWindow.s_pW.mx_treeCtrlFrame.Items[0] != null)
-			{
-				TreeViewItem firstItem = (TreeViewItem)MainWindow.s_pW.mx_treeCtrlFrame.Items[0];
-
-				if (firstItem.Header.ToString() == StringDic.getFileNameWithoutPath(m_openedFile.m_path))
-				{
-					MainWindow.s_pW.mx_treeCtrlFrame.Items.Clear();
-					MainWindow.s_pW.mx_treeSkinFrame.Items.Clear();
-				}
-			}
+			//clearNodeTreeFrame();
 		}
 		
 		static public void setAllChildExpand(TreeViewItem item)
@@ -656,6 +647,27 @@ namespace UIEditor
 				}
 			}
 		}
+		static public void clearNodeTreeFrame()
+		{
+			foreach (object item in MainWindow.s_pW.mx_treeCtrlFrame.Items)
+			{
+				if (item != null && (item is XmlItem || item.GetType().BaseType.ToString() == "UIEditor.BoloUI.XmlItem"))
+				{
+					XmlItem xmlItem = (XmlItem)item;
+
+					xmlItem.Visibility = System.Windows.Visibility.Collapsed;
+				}
+			}
+			foreach (object item in MainWindow.s_pW.mx_treeSkinFrame.Items)
+			{
+				if (item != null && (item is XmlItem || item.GetType().BaseType.ToString() == "UIEditor.BoloUI.XmlItem"))
+				{
+					XmlItem xmlItem = (XmlItem)item;
+
+					xmlItem.Visibility = System.Windows.Visibility.Collapsed;
+				}
+			}
+		}
 		public void refreshControl(string skinName = "")
 		{
 			m_mapCtrlUI = new Dictionary<string, BoloUI.Basic>();
@@ -663,8 +675,7 @@ namespace UIEditor
 			m_mapSkin = new Dictionary<string, BoloUI.ResBasic>();
 			m_mapXeItem = new Dictionary<XmlElement, XmlItem>();
 			m_isOnlySkin = true;
-			MainWindow.s_pW.mx_treeCtrlFrame.Items.Clear();
-			MainWindow.s_pW.mx_treeSkinFrame.Items.Clear();
+			clearNodeTreeFrame();
 			m_xeRoot = m_xmlDoc.DocumentElement;
 
 			if (m_xeRoot != null)

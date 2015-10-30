@@ -466,18 +466,18 @@
 										  Checked="mx_checkVId_Checked"
 										  Unchecked="mx_checkVId_Unchecked"/>
 								<TextBox Name="mx_uiSearch"
-								 Grid.Row="1"
-								 Grid.Column="0"
-								 Grid.ColumnSpan="2"
-								 Margin="5"
-								 TextChanged="mx_uiSearch_TextChanged"/>
+										 Grid.Row="1"
+										 Grid.Column="0"
+										 Grid.ColumnSpan="2"
+										 Margin="5"
+										 TextChanged="mx_uiSearch_TextChanged"/>
 								<Image Grid.Row="1"
-							   Grid.Column="0"
-							   Grid.ColumnSpan="2"
-							   Width="17"
-							   Margin="0,4,6,3"
-							   HorizontalAlignment="Right"
-							   Source="pack://application:,,,/data/image/search.png"
+									   Grid.Column="0"
+									   Grid.ColumnSpan="2"
+									   Width="17"
+									   Margin="0,4,6,3"
+									   HorizontalAlignment="Right"
+									   Source="pack://application:,,,/data/image/search.png"
 						   RenderOptions.BitmapScalingMode="Fant"/>
 							</Grid>
 							<TreeView Grid.Row="2" Name="mx_treeCtrlFrame">

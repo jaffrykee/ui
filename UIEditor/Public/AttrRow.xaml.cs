@@ -106,6 +106,10 @@ namespace UIEditor
 						mx_skinFrame.Visibility = System.Windows.Visibility.Visible;
 						mx_link.Visibility = System.Windows.Visibility.Visible;
 						break;
+					case "image":
+						mx_skinFrame.Visibility = System.Windows.Visibility.Visible;
+						mx_link.Visibility = System.Windows.Visibility.Collapsed;
+						break;
 					case "ImageName":
 						mx_skinFrame.Visibility = System.Windows.Visibility.Visible;
 						mx_link.Visibility = System.Windows.Visibility.Collapsed;
@@ -419,6 +423,10 @@ namespace UIEditor
 							}
 						}
 						break;
+					case "image":
+						{
+						}
+						break;
 					case "ImageName":
 						{
 						}
@@ -455,6 +463,13 @@ namespace UIEditor
 			{
 				switch (m_name)
 				{
+					case "image":
+						{
+							BoloUI.SelImage winImage = new BoloUI.SelImage(this);
+
+							winImage.ShowDialog();
+						}
+						break;
 					case "ImageName":
 						{
 							BoloUI.SelImage winImage = new BoloUI.SelImage(this);

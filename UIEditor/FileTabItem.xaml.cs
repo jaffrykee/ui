@@ -94,15 +94,16 @@ namespace UIEditor
 			TabItem tabItem = (TabItem)this.Parent;
 			string tabPath = ((ToolTip)tabItem.ToolTip).Content.ToString();
 			MainWindow pW = MainWindow.s_pW;
+			XmlControl xmlCtrl = XmlControl.getCurXmlControl();
 
-			if (isForce == false && pW.m_mapOpenedFiles[pW.m_curFile].haveDiffToFile())
+			if (isForce == false && pW.m_mapOpenedFiles[pW.m_curFile].haveDiffToFile() && xmlCtrl != null)
 			{
 				MessageBoxResult ret = MessageBox.Show("是否将更改保存到 " + tabPath, "保存确认", MessageBoxButton.YesNoCancel, MessageBoxImage.Asterisk);
 				switch (ret)
 				{
 					case MessageBoxResult.Yes:
 						{
-							((XmlControl)pW.m_mapOpenedFiles[m_filePath].m_frame).m_xmlDoc.Save(m_filePath);
+							xmlCtrl.m_xmlDoc.Save(m_filePath);
 							pW.m_mapOpenedFiles[m_filePath].m_lstOpt.m_saveNode = pW.m_mapOpenedFiles[m_filePath].m_lstOpt.m_curNode;
 							pW.m_mapOpenedFiles[m_filePath].updateSaveStatus();
 						}
@@ -119,8 +120,11 @@ namespace UIEditor
 			pW.mx_workTabs.Items.Remove(tabItem);
 			if (pW.mx_workTabs.Items.Count == 0)
 			{
-				pW.mx_treeCtrlFrame.Items.Clear();
-				pW.mx_treeSkinFrame.Items.Clear();
+				if (xmlCtrl != null)
+				{
+					pW.mx_treeCtrlFrame.Items.Remove(xmlCtrl.m_treeUI);
+					pW.mx_treeSkinFrame.Items.Remove(xmlCtrl.m_treeSkin);
+				}
 				pW.mx_xmlText.Document = new FlowDocument();
 			}
 			pW.hiddenAllAttr();
