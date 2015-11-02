@@ -400,7 +400,7 @@
 			<Grid>
 				<TabControl Name="mx_treeFrame" BorderThickness="0,2,0,0">
 					<TabItem Name="mx_treeFrameProj" Header="工程目录">
-						<Grid Grid.Row="0" Margin="0,0,0,5">
+						<Grid Margin="0,0,0,5">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="auto"/>
 								<RowDefinition Height="auto"/>
@@ -427,7 +427,7 @@
 						</Grid>
 					</TabItem>
 					<TabItem Name="mx_treeFrameUI" Header="控件节点">
-						<Grid Grid.Row="1" Margin="0,0,0,5">
+						<Grid Margin="0,0,0,5">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="auto"/>
 								<RowDefinition Height="auto"/>
@@ -485,7 +485,7 @@
 						</Grid>
 					</TabItem>
 					<TabItem Name="mx_treeFrameSkin" Header="非控件节点">
-						<Grid Grid.Row="2" Margin="0,0,0,5">
+						<Grid Margin="0,0,0,5">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="auto"/>
 								<RowDefinition Height="auto"/>

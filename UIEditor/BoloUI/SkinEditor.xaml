@@ -1,13 +1,27 @@
-﻿<Window x:Class="UIEditor.BoloUI.SkinEditor"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-		Name="mx_root"
-        Title="皮肤编辑器"
-		WindowStyle="ToolWindow"
-		ShowInTaskbar="False"
-		Height="auto"
-		Width="auto"
-		Loaded="mx_root_Loaded">
+﻿<TabItem x:Class="UIEditor.BoloUI.SkinEditor"
+		 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+		 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+		 mc:Ignorable="d"
+		 Name="mx_root"
+		 Header="皮肤"
+		 Visibility="Collapsed">
 	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="auto"/>
+			<RowDefinition Height="auto"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+		<Grid Grid.Row="0">
+			<ComboBox Name="mx_skinApprPre"/>
+		</Grid>
+		<Grid Grid.Row="1">
+			<ComboBox Name="mx_skinApprSuf"/>
+		</Grid>
+		<Grid Grid.Row="2" Name="mx_skinAttrList">
+			<TreeView Name="mx_treeAppr">
+			</TreeView>
+		</Grid>
 	</Grid>
-</Window>
+</TabItem>

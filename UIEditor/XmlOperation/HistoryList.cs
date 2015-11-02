@@ -59,46 +59,95 @@ namespace UIEditor.XmlOperation
 		}
 		static public void updateAttrToGL(XmlControl xmlCtrl, Basic uiCtrl, string attrName, string newValue)
 		{
-// 			if (attrName != "value" &&
-// 				(attrName != "text" || MainWindow.s_pW.m_pathGlApp != MainWindow.conf_pathGlApp) &&
-// 				MainWindow.s_pW.mx_isShowAll.IsChecked != true)
-// 			{
-// 				foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in MainWindow.s_pW.m_mapBasicCtrlDef.ToList())
-// 				{
-// 					AttrDef_T attrDef;
-// 
-// 					if (pairCtrlDef.Value.m_mapAttrDef.TryGetValue(attrName, out attrDef))
-// 					{
-// 						switch (attrName)
-// 						{
-// 							case "dock":
-// 								MainWindow.s_pW.updateGL(
-// 									System.IO.Path.GetFileName(xmlCtrl.m_openedFile.m_path) + ":" + uiCtrl.m_vId + ":" + attrName + ":" + newValue,
-// 									W2GTag.W2G_NORMAL_UPDATE);
-// 								MainWindow.s_pW.updateGL(
-// 									System.IO.Path.GetFileName(xmlCtrl.m_openedFile.m_path) + ":" + uiCtrl.m_vId + ":" + "w" + ":" + uiCtrl.m_xe.GetAttribute("w"),
-// 									W2GTag.W2G_NORMAL_UPDATE);
-// 								MainWindow.s_pW.updateGL(
-// 									System.IO.Path.GetFileName(xmlCtrl.m_openedFile.m_path) + ":" + uiCtrl.m_vId + ":" + "h" + ":" + uiCtrl.m_xe.GetAttribute("h"),
-// 									W2GTag.W2G_NORMAL_UPDATE);
-// 								MainWindow.s_pW.updateGL(
-// 									System.IO.Path.GetFileName(xmlCtrl.m_openedFile.m_path) + ":" + uiCtrl.m_vId + ":" + "x" + ":" + uiCtrl.m_xe.GetAttribute("x"),
-// 									W2GTag.W2G_NORMAL_UPDATE);
-// 								MainWindow.s_pW.updateGL(
-// 									System.IO.Path.GetFileName(xmlCtrl.m_openedFile.m_path) + ":" + uiCtrl.m_vId + ":" + "y" + ":" + uiCtrl.m_xe.GetAttribute("y"),
-// 									W2GTag.W2G_NORMAL_UPDATE);
-// 								break;
-// 							default:
-// 								MainWindow.s_pW.updateGL(
-// 									System.IO.Path.GetFileName(xmlCtrl.m_openedFile.m_path) + ":" + uiCtrl.m_vId + ":" + attrName + ":" + newValue,
-// 									W2GTag.W2G_NORMAL_UPDATE);
-// 								break;
-// 						}
-// 
-// 						return;
-// 					}
-// 				}
-// 			}
+			if (MainWindow.s_pW.mx_isShowAll.IsChecked != true)
+			{
+				foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in MainWindow.s_pW.m_mapBasicCtrlDef.ToList())
+				{
+					AttrDef_T attrDef;
+
+					if (pairCtrlDef.Value.m_mapAttrDef.TryGetValue(attrName, out attrDef))
+					{
+						switch (attrName)
+						{
+							case "name":
+								break;
+							case "baseID":
+								break;
+							case "visible":
+								break;
+							case "enable":
+								break;
+							case "canFocus":
+								break;
+							case "skin":
+								break;
+							case "angle":
+								break;
+							case "rotateType":
+								break;
+							case "ownEvt":
+								break;
+							case "ownDragEvt":
+								break;
+							case "isEffectParentAutosize":
+								break;
+							case "canUsedEvent":
+								break;
+							case "canHandleEvent":
+								break;
+							case "canSelectByKey":
+								break;
+							case "onSelectByKey":
+								break;
+							case "isMaskAreaByKey":
+								break;
+							case "canAutoBuildTopKey":
+								break;
+							case "canAutoBuildBottomKey":
+								break;
+							case "canAutoBuildLeftKey":
+								break;
+							case "canAutoBuildRightKey":
+								break;
+							case "assignTopKeyBaseID":
+								break;
+							case "assignBottomKeyBaseID":
+								break;
+							case "assignLeftKeyBaseID":
+								break;
+							case "assignRightKeyBaseID":
+								break;
+							case "enCloseAni":
+								break;
+							case "showStyle":
+								break;
+							case "movieLayer":
+								break;
+							case "movieSpe":
+								break;
+							case "movieType":
+								break;
+							case "aimSpeed":
+								break;
+							case "text":
+								if (uiCtrl.m_xe.Name == "richText")
+								{
+									MainWindow.s_pW.updateXmlToGL(xmlCtrl);
+									return;
+								}
+								break;
+							default:
+								MainWindow.s_pW.updateXmlToGL(xmlCtrl);
+								return;
+						}
+						MainWindow.s_pW.updateGL(
+							System.IO.Path.GetFileName(xmlCtrl.m_openedFile.m_path) + ":" + uiCtrl.m_vId + ":" + attrName + ":" + newValue,
+							W2GTag.W2G_NORMAL_UPDATE);
+
+						return;
+					}
+				}
+			}
 			MainWindow.s_pW.updateXmlToGL(xmlCtrl);
 		}
 		static public void updateAttrToGL(XmlControl xmlCtrl, string baseID, string attrName, string newValue)

@@ -82,6 +82,7 @@ namespace UIEditor
 		public float m_dpiSysX;
 		public float m_dpiSysY;
 		public AttrList m_otherAttrList;
+		public SkinEditor m_skinEditor;
 		public bool m_vCtrlName;
 		public bool m_vCtrlId;
 
@@ -153,6 +154,7 @@ namespace UIEditor
 			m_isCanEdit = true;
 			m_tLast = 0;
 			m_hitCount = 0;
+			m_skinEditor = new SkinEditor();
 
 			InitializeComponent();
 
@@ -166,6 +168,7 @@ namespace UIEditor
 			m_vCtrlId = true;
 			m_xePaste = null;
 			m_mapXeSel = new Dictionary<XmlElement, BoloUI.SelButton>();
+			mx_treeFrame.Items.Add(m_skinEditor);
 
 			m_xdTest = new XmlDocument();
 			// w=\"400\" h=\"300\"
@@ -1491,9 +1494,19 @@ namespace UIEditor
 		public void hiddenAllAttr()
 		{
 			hiddenOtherAttrList();
-			foreach (AttrList attrList in mx_toolArea.Items)
+			//AttrList
+			foreach (object attrList in mx_toolArea.Items)
 			{
-				attrList.Visibility = Visibility.Collapsed;
+				if (attrList is TabItem)
+				{
+					TabItem tab = (TabItem)attrList;
+
+					tab.Visibility = Visibility.Collapsed;
+				}
+			}
+			if (m_skinEditor != null)
+			{
+				m_skinEditor.Visibility = System.Windows.Visibility.Collapsed;
 			}
 		}
 		#endregion

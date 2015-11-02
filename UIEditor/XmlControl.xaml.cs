@@ -186,6 +186,51 @@ namespace UIEditor
 
 			return mapXeGroup;
 		}
+		public object findSkin(string skinName)
+		{
+			string groupName;
+			ResBasic retSkinCtrl = null;
+
+			if (m_mapSkin.TryGetValue(skinName, out retSkinCtrl) && retSkinCtrl != null && retSkinCtrl.m_xe != null)
+			{
+				return retSkinCtrl;
+			}
+			else if (m_mapSkinLink.TryGetValue(skinName, out groupName) && groupName != null && groupName != "")
+			{
+				string path = MainWindow.s_pW.m_skinPath + "\\" + groupName + ".xml";
+
+				if(File.Exists(path))
+				{
+					XmlDocument docSkin = new XmlDocument();
+
+					try
+					{
+						docSkin.Load(path);
+					}
+					catch
+					{
+						return null;
+					}
+					if (docSkin.DocumentElement != null && docSkin.DocumentElement.Name == "BoloUI")
+					{
+						foreach(XmlNode xnSkin in docSkin.DocumentElement.ChildNodes)
+						{
+							if(xnSkin.NodeType == XmlNodeType.Element)
+							{
+								XmlElement xeSkin = (XmlElement)xnSkin;
+
+								if ((xeSkin.Name == "skin" || xeSkin.Name == "publicskin") && xeSkin.GetAttribute("Name") == skinName)
+								{
+									return xeSkin;
+								}
+							}
+						}
+					}
+				}
+			}
+
+			return null;
+		}
 		public bool findSkinAndSelect(string skinName, BoloUI.Basic ctrlUI = null)
 		{
 			string groupName;

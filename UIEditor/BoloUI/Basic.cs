@@ -284,6 +284,10 @@ namespace UIEditor.BoloUI
 			gotoSelectXe();
 			BringIntoView();
 			AttrList.selectFirstVisibleAttrList();
+			if(MainWindow.s_pW.m_skinEditor != null)
+			{
+				MainWindow.s_pW.m_skinEditor.refreshSkinEditor(this);
+			}
 			mx_radio.IsChecked = true;
 
 			m_selLock.delLock(ref stackLock);
