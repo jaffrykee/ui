@@ -82,7 +82,7 @@ namespace UIEditor
 		public float m_dpiSysX;
 		public float m_dpiSysY;
 		public AttrList m_otherAttrList;
-		public SkinEditor m_skinEditor;
+		public SkinEditor mx_skinEditor;
 		public bool m_vCtrlName;
 		public bool m_vCtrlId;
 
@@ -154,7 +154,7 @@ namespace UIEditor
 			m_isCanEdit = true;
 			m_tLast = 0;
 			m_hitCount = 0;
-			m_skinEditor = new SkinEditor();
+			mx_skinEditor = new SkinEditor();
 
 			InitializeComponent();
 
@@ -168,7 +168,7 @@ namespace UIEditor
 			m_vCtrlId = true;
 			m_xePaste = null;
 			m_mapXeSel = new Dictionary<XmlElement, BoloUI.SelButton>();
-			mx_treeFrame.Items.Add(m_skinEditor);
+			mx_treeFrame.Items.Add(mx_skinEditor);
 
 			m_xdTest = new XmlDocument();
 			// w=\"400\" h=\"300\"
@@ -1504,9 +1504,37 @@ namespace UIEditor
 					tab.Visibility = Visibility.Collapsed;
 				}
 			}
-			if (m_skinEditor != null)
+			if (mx_skinEditor != null)
 			{
-				m_skinEditor.Visibility = System.Windows.Visibility.Collapsed;
+				XmlControl curXml = XmlControl.getCurXmlControl();
+
+				if(curXml != null && curXml.m_curItem != null && curXml.m_curItem is ResBasic)
+				{
+					ResBasic curSkin = (ResBasic)curXml.m_curItem;
+
+					if(curSkin.m_isSkinEditor == true)
+					{
+						mx_skinEditor.Visibility = System.Windows.Visibility.Visible;
+					}
+					else
+					{
+						mx_skinEditor.Visibility = System.Windows.Visibility.Collapsed;
+						if (mx_treeFrame.SelectedItem == mx_skinEditor)
+						{
+							mx_skinEditor.mx_treeAppr.Items.Clear();
+							mx_treeFrame.SelectedIndex = 0;
+						}
+					}
+				}
+				else
+				{
+					mx_skinEditor.Visibility = System.Windows.Visibility.Collapsed;
+					if (mx_treeFrame.SelectedItem == mx_skinEditor)
+					{
+						mx_skinEditor.mx_treeAppr.Items.Clear();
+						mx_treeFrame.SelectedIndex = 0;
+					}
+				}
 			}
 		}
 		#endregion
@@ -2325,6 +2353,119 @@ namespace UIEditor
 				mx_textFrame.Visibility = System.Windows.Visibility.Visible;
 				mx_drawFrame.Visibility = System.Windows.Visibility.Collapsed;
 			}
+		}
+		private void mx_treeFrame_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (mx_skinEditor != null)
+			{
+				if (mx_treeFrame.SelectedItem == mx_treeFrameUI)
+				{
+					XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
+
+					if (curXmlCtrl != null && curXmlCtrl.m_curItem != null && curXmlCtrl.m_curItem is ResBasic)
+					{
+						ResBasic curResItem = (ResBasic)curXmlCtrl.m_curItem;
+
+						if (curResItem.m_isSkinEditor == true)
+						{
+							if (mx_skinEditor.m_curCtrl != null)
+							{
+								mx_skinEditor.m_curCtrl.changeSelectItem();
+							}
+						}
+					}
+				}
+				else if (mx_treeFrame.SelectedItem == mx_skinEditor)
+				{
+					if(mx_skinEditor.mx_skinApprPre.SelectedItem == null || mx_skinEditor.mx_skinApprSuf.SelectedItem == null)
+					{
+						mx_skinEditor.mx_skinApprPre.SelectedIndex = 0;
+						mx_skinEditor.mx_skinApprSuf.SelectedIndex = 0;
+						//mx_skinEditor.mx_treeAppr.Items.Clear();
+					}
+				}
+			}
+		}
+		private void mx_refreshShape_Click(object sender, RoutedEventArgs e)
+		{
+			mx_debug.Text += "开始shape的重排\r\n";
+			if(m_skinPath != null && m_skinPath != "")
+			{
+				if(Directory.Exists(m_skinPath))
+				{
+					DirectoryInfo di = new DirectoryInfo(m_skinPath);
+
+					foreach(FileInfo fi in di.GetFiles())
+					{
+						if(fi.Extension == ".xml")
+						{
+							XmlDocument docSkin = new XmlDocument();
+							bool isChange = false;
+
+							try
+							{
+								docSkin.Load(fi.FullName);
+							}
+							catch
+							{
+								continue;
+							}
+
+							if (docSkin.DocumentElement.Name != "BoloUI")
+							{
+								continue;
+							}
+							foreach (XmlNode xnSkin in docSkin.DocumentElement.ChildNodes)
+							{
+								if (xnSkin is XmlElement && (xnSkin.Name == "skin" || xnSkin.Name == "publicskin"))
+								{
+									foreach (XmlNode xnAppr in xnSkin.ChildNodes)
+									{
+										if(xnAppr is XmlElement && (xnAppr.Name == "apperance"))
+										{
+											//用于多个textShape的情况
+											//List<XmlElement> lstShape = new List<XmlElement>();
+											for(int i = 0; i < xnAppr.ChildNodes.Count; i++)
+											{
+												XmlNode xnShape = xnAppr.ChildNodes[i];
+
+												if (xnShape is XmlElement && xnShape.Name == "textShape")
+												{
+													if(i == xnAppr.ChildNodes.Count - 1)
+													{
+														break;
+													}
+													else
+													{
+														XmlOperation.HistoryNode.deleteXmlNode(
+															this,
+															null,
+															(XmlElement)xnShape);
+														XmlOperation.HistoryNode.insertXmlNode(
+															this,
+															null,
+															(XmlElement)xnShape,
+															(XmlElement)xnAppr,
+															xnAppr.ChildNodes.Count);
+														isChange = true;
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+
+							if(isChange)
+							{
+								docSkin.Save(fi.FullName);
+								mx_debug.Text += fi.Name + "\r\n";
+							}
+						}
+					}
+				}
+			}
+			mx_debug.Text += "重排完成\r\n";
 		}
 	}
 

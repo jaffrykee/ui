@@ -172,13 +172,19 @@ namespace UIEditor.XmlOperation
 		}
 		public void redoOperation(bool isAddOpt = false)
 		{
+			XmlDocument docXml = null;
+
+			if (m_curNode.Value.m_dstXe != null)
+			{
+				docXml = m_curNode.Value.m_dstXe.OwnerDocument;
+			}
 			switch (m_curNode.Value.m_optType)
 			{
 				case XmlOptType.NODE_INSERT:
 					{
 						HistoryNode.insertXmlNode(
 							m_pW,
-							m_xmlCtrl.m_openedFile.m_path,
+							m_xmlCtrl,
 							m_curNode.Value.m_dstXe,
 							m_curNode.Value.m_srcXe);
 					}
@@ -187,7 +193,7 @@ namespace UIEditor.XmlOperation
 					{
 						HistoryNode.deleteXmlNode(
 							m_pW,
-							m_xmlCtrl.m_openedFile.m_path,
+							m_xmlCtrl,
 							m_curNode.Value.m_dstXe);
 					}
 					break;
@@ -195,11 +201,11 @@ namespace UIEditor.XmlOperation
 					{
 						HistoryNode.deleteXmlNode(
 							m_pW,
-							m_xmlCtrl.m_openedFile.m_path,
+							m_xmlCtrl,
 							m_curNode.Value.m_dstXe);
 						HistoryNode.insertXmlNode(
 							m_pW,
-							m_xmlCtrl.m_openedFile.m_path,
+							m_xmlCtrl,
 							m_curNode.Value.m_dstXe,
 							m_curNode.Value.m_newSrcXe,
 							m_curNode.Value.m_newIndex);
@@ -209,7 +215,6 @@ namespace UIEditor.XmlOperation
 					{
 						HistoryNode.updateXmlNode(
 							m_pW,
-							m_xmlCtrl.m_openedFile.m_path,
 							m_curNode.Value.m_dstXe,
 							m_curNode.Value.m_attrName,
 							m_curNode.Value.m_newValue);
@@ -227,6 +232,13 @@ namespace UIEditor.XmlOperation
 					break;
 				default:
 					return;
+			}
+			if (m_curNode.Value.m_path != null && m_curNode.Value.m_path != "")
+			{
+				if (docXml != null)
+				{
+					docXml.Save(m_curNode.Value.m_path);
+				}
 			}
 			if (m_xmlCtrl.m_isOnlySkin)
 			{
@@ -303,7 +315,14 @@ namespace UIEditor.XmlOperation
 				}
 			}
 
-			m_xmlCtrl.refreshXmlText();
+			if (m_curNode.Value.m_path != null && m_curNode.Value.m_path != "")
+			{
+
+			}
+			else
+			{
+				m_xmlCtrl.refreshXmlText();
+			}
 		}
 		static public void refreshItemHeader(XmlItem dstItem)
 		{
@@ -328,13 +347,19 @@ namespace UIEditor.XmlOperation
 		}
 		public void undoOperation()
 		{
+			XmlDocument docXml = null;
+
+			if (m_curNode.Value.m_dstXe != null)
+			{
+				docXml = m_curNode.Value.m_dstXe.OwnerDocument;
+			}
 			switch (m_curNode.Value.m_optType)
 			{
 				case XmlOptType.NODE_INSERT:
 					{
 						HistoryNode.deleteXmlNode(
 							m_pW,
-							m_xmlCtrl.m_openedFile.m_path,
+							m_xmlCtrl,
 							m_curNode.Value.m_dstXe);
 					}
 					break;
@@ -342,7 +367,7 @@ namespace UIEditor.XmlOperation
 					{
 						HistoryNode.insertXmlNode(
 							m_pW,
-							m_xmlCtrl.m_openedFile.m_path,
+							m_xmlCtrl,
 							m_curNode.Value.m_dstXe,
 							m_curNode.Value.m_srcXe,
 							m_curNode.Value.m_oldIndex);
@@ -352,11 +377,11 @@ namespace UIEditor.XmlOperation
 					{
 						HistoryNode.deleteXmlNode(
 							m_pW,
-							m_xmlCtrl.m_openedFile.m_path,
+							m_xmlCtrl,
 							m_curNode.Value.m_dstXe);
 						HistoryNode.insertXmlNode(
 							m_pW,
-							m_xmlCtrl.m_openedFile.m_path,
+							m_xmlCtrl,
 							m_curNode.Value.m_dstXe,
 							m_curNode.Value.m_srcXe,
 							m_curNode.Value.m_oldIndex);
@@ -366,7 +391,6 @@ namespace UIEditor.XmlOperation
 					{
 						HistoryNode.updateXmlNode(
 							m_pW,
-							m_xmlCtrl.m_openedFile.m_path,
 							m_curNode.Value.m_dstXe,
 							m_curNode.Value.m_attrName,
 							m_curNode.Value.m_oldValue);
@@ -381,6 +405,13 @@ namespace UIEditor.XmlOperation
 					break;
 				default:
 					return;
+			}
+			if (m_curNode.Value.m_path != null && m_curNode.Value.m_path != "")
+			{
+				if (docXml != null)
+				{
+					docXml.Save(m_curNode.Value.m_path);
+				}
 			}
 			XmlItem dstItem = null;
 
@@ -415,7 +446,14 @@ namespace UIEditor.XmlOperation
 				}
 			}
 
-			m_xmlCtrl.refreshXmlText();
+			if (m_curNode.Value.m_path != null && m_curNode.Value.m_path != "")
+			{
+
+			}
+			else
+			{
+				m_xmlCtrl.refreshXmlText();
+			}
 		}
 		public void undo()
 		{

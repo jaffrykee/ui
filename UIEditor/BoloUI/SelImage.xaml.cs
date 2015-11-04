@@ -38,6 +38,7 @@ namespace UIEditor.BoloUI
 		}
 		public Dictionary<string, TreeViewItem> m_mapLocalRes;
 		public Dictionary<string, TreeViewItem> m_mapOtherRes;
+		public XmlDocument m_doc;
 
 		static public SelImage s_pW;
 
@@ -91,12 +92,23 @@ namespace UIEditor.BoloUI
 		}
 		public void refreshResMap()
 		{
-			if (m_rowImage != null && m_rowImage.m_parent != null && m_rowImage.m_parent.m_xmlCtrl != null &&
-				m_rowImage.m_parent.m_xmlCtrl.m_xmlDoc != null)
-			{
-				XmlDocument doc = m_rowImage.m_parent.m_xmlCtrl.m_xmlDoc;
-				XmlElement xeRoot = doc.DocumentElement;
+			XmlElement xeRoot = null;
 
+			if (SkinEditor.isCurItemSkinEditor())
+			{
+				m_doc = XmlControl.getCurXmlControl().m_curItem.m_xe.OwnerDocument;
+			}
+			else
+			{
+				if (m_rowImage != null && m_rowImage.m_parent != null && m_rowImage.m_parent.m_xmlCtrl != null &&
+					m_rowImage.m_parent.m_xmlCtrl.m_xmlDoc != null)
+				{
+					m_doc = m_rowImage.m_parent.m_xmlCtrl.m_xmlDoc;
+				}
+			}
+			if (m_doc != null)
+			{
+				xeRoot = m_doc.DocumentElement;
 				if (xeRoot.Name == "BoloUI")
 				{
 					foreach (XmlNode xn in xeRoot.ChildNodes)
@@ -204,10 +216,18 @@ namespace UIEditor.BoloUI
 				{
 					if (((TreeViewItem)m_curImg.Parent).Parent == mx_otherRes)
 					{
-						XmlElement newXe = m_rowImage.m_parent.m_xe.OwnerDocument.CreateElement("resource");
+						XmlElement newXe = m_doc.CreateElement("resource");
 
 						newXe.SetAttribute("name", ((TreeViewItem)m_curImg.Parent).Header.ToString());
-						m_rowImage.m_parent.m_xmlCtrl.m_treeSkin.addResItem(newXe);
+
+						if (SkinEditor.isCurItemSkinEditor())
+						{
+							m_doc.DocumentElement.PrependChild(newXe);
+						}
+						else
+						{
+							m_rowImage.m_parent.m_xmlCtrl.m_treeSkin.addResItem(newXe);
+						}
 					}
 
 					newImgValue = ((TreeViewItem)m_curImg.Parent).Header.ToString() + "." + m_curImg.Header.ToString();

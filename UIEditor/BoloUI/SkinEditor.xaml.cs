@@ -19,7 +19,9 @@ namespace UIEditor.BoloUI
 	/// </summary>
 	public partial class SkinEditor : TabItem
 	{
+		public string m_xmlPath;
 		public object m_curSkin;
+		public object m_selResItem;
 		private Basic mt_curCtrl;
 		public Basic m_curCtrl
 		{
@@ -34,7 +36,7 @@ namespace UIEditor.BoloUI
 
 					if (skinName != "")
 					{
-						object retSkin = value.m_rootControl.findSkin(skinName);
+						object retSkin = value.m_rootControl.findSkin(skinName, out m_xmlPath);
 
 						if(retSkin != null)
 						{
@@ -85,7 +87,20 @@ namespace UIEditor.BoloUI
 				}
 			}
 		}
-		public void refreshAppr(string apprName)
+		static public void deleteEmptyApprElement(XmlElement xeSkin)
+		{
+			for(int i = 0; i < xeSkin.ChildNodes.Count; i++)
+			{
+				XmlNode xnAppr = xeSkin.ChildNodes[i];
+
+				if (xnAppr is XmlElement && xnAppr.ChildNodes.Count == 0)
+				{
+					xeSkin.RemoveChild(xnAppr);
+					i--;
+				}
+			}
+		}
+		public bool refreshAppr(string apprName)
 		{
 			mx_treeAppr.Items.Clear();
 
@@ -95,6 +110,7 @@ namespace UIEditor.BoloUI
 				{
 					XmlElement xeSkin = (XmlElement)m_curSkin;
 
+					deleteEmptyApprElement(xeSkin);
 					foreach(XmlNode xnAppr in xeSkin.ChildNodes)
 					{
 						if(xnAppr is XmlElement)
@@ -103,21 +119,31 @@ namespace UIEditor.BoloUI
 
 							if (xeAppr.Name == "apperance" && xeAppr.GetAttribute("id") == apprName)
 							{
-								foreach(XmlNode xnShape in xeAppr.ChildNodes)
-								{
-									if(xnShape is XmlElement)
-									{
-										XmlElement xeShape = (XmlElement)xnShape;
+								ResBasic apprCtrl = new ResBasic(xeAppr, XmlControl.getCurXmlControl(), MainWindow.s_pW.m_mapSkinAllDef[xeAppr.Name], true);
 
-										ResBasic apprCtrl = new ResBasic(xeShape, XmlControl.getCurXmlControl(), MainWindow.s_pW.m_mapSkinAllDef[xeShape.Name]);
-										mx_treeAppr.Items.Add(apprCtrl);
-									}
-								}
+								mx_treeAppr.Items.Add(apprCtrl);
+
+								return true;
 							}
 						}
 					}
+
+					XmlElement xeNewAppr = xeSkin.OwnerDocument.CreateElement("apperance");
+
+					xeNewAppr.SetAttribute("id", apprName);
+					xeSkin.AppendChild(xeNewAppr);
+
+					ResBasic newApprCtrl = new ResBasic(xeNewAppr, XmlControl.getCurXmlControl(), MainWindow.s_pW.m_mapSkinAllDef[xeNewAppr.Name], true);
+
+					mx_treeAppr.Items.Add(newApprCtrl);
+				}
+				else if(m_curSkin is ResBasic)
+				{
+					//todo
 				}
 			}
+
+			return false;
 		}
 		private void mx_cbItemSuffix_Selected(object sender, RoutedEventArgs e)
 		{
@@ -164,6 +190,19 @@ namespace UIEditor.BoloUI
 			else
 			{
 				m_curCtrl = curCtrl;
+			}
+		}
+		static public bool isCurItemSkinEditor()
+		{
+			XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
+
+			if (curXmlCtrl.m_curItem != null && curXmlCtrl.m_curItem is ResBasic && ((ResBasic)curXmlCtrl.m_curItem).m_isSkinEditor)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
 			}
 		}
 	}

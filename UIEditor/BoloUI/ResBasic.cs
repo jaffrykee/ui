@@ -21,8 +21,9 @@ namespace UIEditor.BoloUI
 	public class ResBasic : UIEditor.BoloUI.XmlItem
 	{
 		public SkinDef_T m_curDeepDef;
+		public bool m_isSkinEditor;
 
-		public ResBasic(XmlElement xe, XmlControl rootControl, SkinDef_T deepDef)
+		public ResBasic(XmlElement xe, XmlControl rootControl, SkinDef_T deepDef, bool isSkinEditor = false)
 			: base(xe, rootControl)
 		{
 			m_type = "Skin";
@@ -30,19 +31,20 @@ namespace UIEditor.BoloUI
 			m_apprPre = "";
 			m_apprTagStr = "";
 			m_apprSuf = "";
+			m_isSkinEditor = isSkinEditor;
 			InitializeComponent();
 			m_isCtrl = false;
 
 			IsExpanded = true;
 			if (m_curDeepDef != null)
 			{
-				if (m_xe.Name == "skin" || m_xe.Name == "publicskin")
+				if ((m_xe.Name == "skin" || m_xe.Name == "publicskin") && m_rootControl != null)
 				{
 					ResBasic nullPtr;
 
 					if (m_rootControl.m_mapSkin.TryGetValue(m_xe.GetAttribute("Name"), out nullPtr))
 					{
-						string errorInfo = "<错误>文件:\"" + rootControl.m_openedFile.m_path + "\"中，存在重复Name的皮肤(" +
+						string errorInfo = "<错误>文件:\"" + m_rootControl.m_openedFile.m_path + "\"中，存在重复Name的皮肤(" +
 							m_xe.GetAttribute("Name") + ")，前一个同名的皮肤将不能正确显示。\r\n";
 
 						MainWindow.s_pW.mx_debug.Text += errorInfo;
@@ -99,7 +101,7 @@ namespace UIEditor.BoloUI
 						{
 							if (skinPtr != null)
 							{
-								this.Items.Add(new ResBasic(xe, m_rootControl, skinPtr));
+								this.Items.Add(new ResBasic(xe, m_rootControl, skinPtr, m_isSkinEditor));
 								mx_imgFolder.Visibility = System.Windows.Visibility.Visible;
 							}
 						}
@@ -243,8 +245,21 @@ namespace UIEditor.BoloUI
 				m_selLock.addLock(out stackLock);
 			}
 
-			MainWindow.s_pW.mx_treeFrame.SelectedItem = MainWindow.s_pW.mx_treeFrameSkin;
-			m_rootControl.m_curItem = this;
+			if (m_isSkinEditor == false)
+			{
+				MainWindow.s_pW.mx_treeFrame.SelectedItem = MainWindow.s_pW.mx_treeFrameSkin;
+			}
+			if (m_rootControl != null)
+			{
+				m_rootControl.m_curItem = this;
+				if (m_isSkinEditor == true)
+				{
+					if(MainWindow.s_pW.mx_skinEditor != null)
+					{
+						MainWindow.s_pW.mx_skinEditor.m_selResItem = this;
+					}
+				}
+			}
 			if(m_xe.Name != "BoloUI")
 			{
 				BoloUI.Basic ctrlUI;
@@ -256,7 +271,7 @@ namespace UIEditor.BoloUI
 				}
 				else
 				{
-					if (m_rootControl.m_skinViewCtrlUI != null)
+					if (m_rootControl != null && m_rootControl.m_skinViewCtrlUI != null)
 					{
 						ctrlUI = m_rootControl.m_skinViewCtrlUI;
 					}

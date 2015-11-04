@@ -186,14 +186,16 @@ namespace UIEditor
 
 			return mapXeGroup;
 		}
-		public object findSkin(string skinName)
+		public object findSkin(string skinName, out string xmlPath)
 		{
 			string groupName;
 			ResBasic retSkinCtrl = null;
+			xmlPath = null;
 
 			if (m_mapSkin.TryGetValue(skinName, out retSkinCtrl) && retSkinCtrl != null && retSkinCtrl.m_xe != null)
 			{
-				return retSkinCtrl;
+				return retSkinCtrl.m_xe;
+				//return retSkinCtrl;
 			}
 			else if (m_mapSkinLink.TryGetValue(skinName, out groupName) && groupName != null && groupName != "")
 			{
@@ -221,6 +223,8 @@ namespace UIEditor
 
 								if ((xeSkin.Name == "skin" || xeSkin.Name == "publicskin") && xeSkin.GetAttribute("Name") == skinName)
 								{
+									xmlPath = path;
+
 									return xeSkin;
 								}
 							}
@@ -655,7 +659,7 @@ namespace UIEditor
 							{
 								Run run = (Run)line;
 
-								if(run.Text.Last() == '<')
+								if (run.Text != null && run.Text != "" && run.Text.Last() == '<')
 								{
 									if (run.NextInline != null && run.NextInline is Run)
 									{
@@ -667,7 +671,7 @@ namespace UIEditor
 											item.m_runXeName = runXe;
 											XmlElement xeNext = getNextXmlElement(xeCount);
 
-											if(xeNext != null)
+											if (xeNext != null)
 											{
 												xeCount = xeNext;
 											}

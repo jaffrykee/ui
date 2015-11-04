@@ -284,9 +284,9 @@ namespace UIEditor.BoloUI
 			gotoSelectXe();
 			BringIntoView();
 			AttrList.selectFirstVisibleAttrList();
-			if(MainWindow.s_pW.m_skinEditor != null)
+			if(MainWindow.s_pW.mx_skinEditor != null)
 			{
-				MainWindow.s_pW.m_skinEditor.refreshSkinEditor(this);
+				MainWindow.s_pW.mx_skinEditor.refreshSkinEditor(this);
 			}
 			mx_radio.IsChecked = true;
 

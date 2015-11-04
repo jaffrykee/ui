@@ -45,7 +45,11 @@ namespace UIEditor.BoloUI
 			InitializeComponent();
 			m_rootControl = rootControl;
 			m_xe = xe;
-			m_rootControl.m_mapXeItem[xe] = this;
+
+			if (m_rootControl != null && m_rootControl.m_mapXeItem != null)
+			{
+				m_rootControl.m_mapXeItem[xe] = this;
+			}
 		}
 
 		static public XmlItem getCurItem()

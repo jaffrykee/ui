@@ -6,7 +6,8 @@
 		 mc:Ignorable="d"
 		 Name="mx_root"
 		 Header="皮肤"
-		 Visibility="Collapsed">
+		 Visibility="Collapsed"
+		 Style="{StaticResource TmplFileItem}">
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="auto"/>

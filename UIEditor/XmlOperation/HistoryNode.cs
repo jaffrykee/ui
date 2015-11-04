@@ -25,6 +25,8 @@ namespace UIEditor.XmlOperation
 		public XmlDocument m_oldDoc;
 		public XmlDocument m_newDoc;
 
+		public string m_path;
+
 		public static int getXeIndex(XmlElement xe)
 		{
 			int iXe = 0;
@@ -55,6 +57,13 @@ namespace UIEditor.XmlOperation
 
 		public HistoryNode(XmlOptType optType, XmlElement dstXe, XmlElement srcXe = null, int newIndex = 0)
 		{
+			if(SkinEditor.isCurItemSkinEditor())
+			{
+				if (MainWindow.s_pW.mx_skinEditor.m_xmlPath != null && MainWindow.s_pW.mx_skinEditor.m_xmlPath != "")
+				{
+					m_path = MainWindow.s_pW.mx_skinEditor.m_xmlPath;
+				}
+			}
 			m_optType = optType;
 			m_dstXe = dstXe;
 			switch (optType)
@@ -87,6 +96,13 @@ namespace UIEditor.XmlOperation
 		}
 		public HistoryNode(XmlElement dstXe, string attrName, string oldValue, string newValue)
 		{
+			if (SkinEditor.isCurItemSkinEditor())
+			{
+				if (MainWindow.s_pW.mx_skinEditor.m_xmlPath != null && MainWindow.s_pW.mx_skinEditor.m_xmlPath != "")
+				{
+					m_path = MainWindow.s_pW.mx_skinEditor.m_xmlPath;
+				}
+			}
 			//NODE_UPDATE
 			m_optType = XmlOptType.NODE_UPDATE;
 			m_attrName = attrName;
@@ -96,142 +112,142 @@ namespace UIEditor.XmlOperation
 		}
 		public HistoryNode(XmlDocument oldDoc, XmlDocument newDoc)
 		{
-			//todo TEXT
 			m_optType = XmlOptType.TEXT;
 			m_oldDoc = oldDoc;
 			m_newDoc = newDoc;
 		}
 
-		static public bool deleteItemByXe(MainWindow pW, string path, XmlElement dstXe)
+		static public bool deleteItemByXe(MainWindow pW, XmlControl xmlCtrl, XmlElement dstXe)
 		{
-			OpenedFile fileT;
 			bool ret = false;
+			CtrlDef_T nullCtrlDef;
+			XmlItem dstItem;
 
-			if (pW.m_mapOpenedFiles.TryGetValue(path, out fileT))
+			if (xmlCtrl != null && xmlCtrl.m_mapXeItem != null && xmlCtrl.m_mapXeItem.TryGetValue(dstXe, out dstItem))
 			{
-				if (fileT.m_frame is XmlControl)
+				if (dstItem != null)
 				{
-					XmlControl xmlCtrl = (XmlControl)fileT.m_frame;
-					CtrlDef_T nullCtrlDef;
-					XmlItem dstItem;
+					XmlItem parentNode;
 
-					if (xmlCtrl.m_mapXeItem.TryGetValue(dstXe, out dstItem))
+					if (dstItem.Parent is XmlItem || dstItem.Parent.GetType().BaseType.ToString() == "UIEditor.BoloUI.XmlItem")
 					{
-						if (dstItem != null)
+						parentNode = (XmlItem)(dstItem.Parent);
+					}
+					else
+					{
+						parentNode = null;
+					}
+
+					xmlCtrl.m_mapXeItem.Remove(dstXe);
+					if (dstItem.Parent != null)
+					{
+						((TreeViewItem)dstItem.Parent).Items.Remove(dstItem);
+						if (pW.m_mapCtrlDef.TryGetValue(dstXe.Name, out nullCtrlDef) &&
+							dstXe.Name != "event")
 						{
-							XmlItem parentNode;
+							//仅Ctrl
+							BoloUI.Basic uiCtrl;
 
-							try
+							if (dstItem.m_type == "CtrlUI")
 							{
-								parentNode = (XmlItem)(dstItem.Parent);
-							}
-							catch
-							{
-								parentNode = null;
-							}
-
-							xmlCtrl.m_mapXeItem.Remove(dstXe);
-							if (dstItem.Parent != null)
-							{
-								((TreeViewItem)dstItem.Parent).Items.Remove(dstItem);
-								if (pW.m_mapCtrlDef.TryGetValue(dstXe.Name, out nullCtrlDef) &&
-									dstXe.Name != "event")
+								uiCtrl = (BoloUI.Basic)dstItem;
+								if (xmlCtrl.m_mapCtrlUI.TryGetValue(uiCtrl.m_vId, out uiCtrl))
 								{
-									//仅Ctrl
-									BoloUI.Basic uiCtrl;
-
-									if (dstItem.m_type == "CtrlUI")
-									{
-										uiCtrl = (BoloUI.Basic)dstItem;
-										if (xmlCtrl.m_mapCtrlUI.TryGetValue(uiCtrl.m_vId, out uiCtrl))
-										{
-											xmlCtrl.m_mapCtrlUI.Remove(uiCtrl.m_vId);
-											ret = true;
-										}
-									}
+									xmlCtrl.m_mapCtrlUI.Remove(uiCtrl.m_vId);
+									ret = true;
 								}
 							}
-							if (parentNode != null && parentNode.Items.Count <= 0)
-							{
-								parentNode.mx_imgFolder.Visibility = System.Windows.Visibility.Collapsed;
-							}
 						}
+					}
+
+					if (parentNode != null && parentNode.Items.Count <= 0)
+					{
+						parentNode.mx_imgFolder.Visibility = System.Windows.Visibility.Collapsed;
 					}
 				}
 			}
 
 			return ret;
 		}
-		static public bool insertItemByXe(MainWindow pW, string path, XmlElement dstXe, XmlElement srcXe, int index = 0)
+		static public bool insertItemByXe(MainWindow pW, XmlControl xmlCtrl, XmlElement dstXe, XmlElement srcXe, int index = 0)
 		{
 			CtrlDef_T nullCtrlDef;
-			OpenedFile fileT;
 
-			if (pW.m_mapOpenedFiles.TryGetValue(path, out fileT))
+			if (xmlCtrl != null)
 			{
-				if (fileT.m_frame is XmlControl)
-				{
-					XmlControl xmlCtrl = (XmlControl)fileT.m_frame;
-					TreeViewItem treeChild;
-					SkinDef_T skinPtr;
+				XmlItem dstItem;
+				XmlItem srcItem = null;
+				SkinDef_T skinPtr;
 
-					if (pW.m_mapCtrlDef.TryGetValue(dstXe.Name, out nullCtrlDef))
+				if (srcXe.Name != "BoloUI")
+				{
+					if (!(xmlCtrl.m_mapXeItem.TryGetValue(srcXe, out srcItem) && srcItem != null))
 					{
-						treeChild = new Basic(dstXe, xmlCtrl, false);
+						return false;
 					}
-					else if (pW.m_mapSkinAllDef.TryGetValue(dstXe.Name, out skinPtr))
+				}
+
+				if (pW.m_mapCtrlDef.TryGetValue(dstXe.Name, out nullCtrlDef))
+				{
+					dstItem = new Basic(dstXe, xmlCtrl, false);
+				}
+				else if (pW.m_mapSkinAllDef.TryGetValue(dstXe.Name, out skinPtr))
+				{
+
+					if (srcItem != null && srcItem is ResBasic && ((ResBasic)srcItem).m_isSkinEditor)
 					{
-						treeChild = new ResBasic(dstXe, xmlCtrl, skinPtr);
+						dstItem = new ResBasic(dstXe, xmlCtrl, skinPtr, true);
+					}
+					else
+					{
+						dstItem = new ResBasic(dstXe, xmlCtrl, skinPtr, false);
+					}
+				}
+				else
+				{
+					return false;
+				}
+
+				if (srcXe.Name != "BoloUI")
+				{
+					if (srcItem != null)
+					{
+						srcItem.Items.Insert(index, dstItem);
+						srcItem.mx_imgFolder.Visibility = System.Windows.Visibility.Visible;
 					}
 					else
 					{
 						return false;
 					}
-
-					if(srcXe.Name != "BoloUI")
-					{
-						XmlItem srcItem;
-
-						if (xmlCtrl.m_mapXeItem.TryGetValue(srcXe, out srcItem))
-						{
-							if (srcItem != null)
-							{
-								srcItem.Items.Insert(index, treeChild);
-								srcItem.mx_imgFolder.Visibility = System.Windows.Visibility.Visible;
-							}
-						}
-					}
-					else
-					{
-						XmlItem dstItem = (XmlItem)treeChild;
-
-						if(dstItem.m_type == "CtrlUI")
-						{
-							if (index > xmlCtrl.m_treeUI.Items.Count)
-							{
-								index = xmlCtrl.m_treeUI.Items.Count;
-							}
-							xmlCtrl.m_treeUI.Items.Insert(index, treeChild);
-						}
-						else if(dstItem.m_type == "Skin")
-						{
-							if (index > xmlCtrl.m_treeSkin.Items.Count)
-							{
-								index = xmlCtrl.m_treeSkin.Items.Count;
-							}
-							xmlCtrl.m_treeSkin.Items.Insert(index, treeChild);
-						}
-					}
-
-					return true;
 				}
+				else
+				{
+					if (dstItem.m_type == "CtrlUI")
+					{
+						if (index > xmlCtrl.m_treeUI.Items.Count)
+						{
+							index = xmlCtrl.m_treeUI.Items.Count;
+						}
+						xmlCtrl.m_treeUI.Items.Insert(index, dstItem);
+					}
+					else if (dstItem.m_type == "Skin")
+					{
+						if (index > xmlCtrl.m_treeSkin.Items.Count)
+						{
+							index = xmlCtrl.m_treeSkin.Items.Count;
+						}
+						xmlCtrl.m_treeSkin.Items.Insert(index, dstItem);
+					}
+				}
+
+				return true;
 			}
 
 			return false;
 		}
 		//直接和xml打交道的处理和部分对于显示的刷新。
 		//把dstXe加到srcXe里
-		static public bool insertXmlNode(MainWindow pW, string path, XmlElement dstXe, XmlElement srcXe, int index = 0)
+		static public bool insertXmlNode(MainWindow pW, XmlControl xmlCtrl, XmlElement dstXe, XmlElement srcXe, int index = 0)
 		{
 			XmlElement tmpXe1 = dstXe.OwnerDocument.CreateElement("tmp1");
 			XmlElement tmpXe2 = dstXe.OwnerDocument.CreateElement("tmp2");
@@ -266,21 +282,27 @@ namespace UIEditor.XmlOperation
 				}
 				srcXe.ReplaceChild(dstXe, tmpXe1);
 			}
-			insertItemByXe(pW, path, dstXe, srcXe, index);
+			if (xmlCtrl != null)
+			{
+				insertItemByXe(pW, xmlCtrl, dstXe, srcXe, index);
+			}
 
 			return false;
 		}
-		static public bool deleteXmlNode(MainWindow pW, string path, XmlElement dstXe)
+		static public bool deleteXmlNode(MainWindow pW, XmlControl xmlCtrl, XmlElement dstXe)
 		{
 			if (dstXe.ParentNode != null)
 			{
 				dstXe.ParentNode.RemoveChild(dstXe);
 			}
-			deleteItemByXe(pW, path, dstXe);
+			if (xmlCtrl != null)
+			{
+				deleteItemByXe(pW, xmlCtrl, dstXe);
+			}
 
 			return false;
 		}
-		static public bool updateXmlNode(MainWindow pW, string path, XmlElement dstXe, string attrName, string newValue)
+		static public bool updateXmlNode(MainWindow pW, XmlElement dstXe, string attrName, string newValue)
 		{
 			string oldValue = dstXe.GetAttribute(attrName);
 
