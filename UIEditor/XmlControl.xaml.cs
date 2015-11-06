@@ -828,5 +828,61 @@ namespace UIEditor
 				MainWindow.s_pW.mx_debug.Text += ("<错误>xml文件格式错误。" + "\r\n");
 			}
 		}
+
+		static public void addEventNodeByTemplateXmlElement(Dictionary<string, string> mapEvent, XmlElement xeTmpl)
+		{
+			if (mapEvent == null)
+			{
+				return;
+			}
+			foreach (XmlNode xnRow in xeTmpl.ChildNodes)
+			{
+				if (xnRow is XmlElement && xnRow.Name == "row")
+				{
+					string rowName = ((XmlElement)xnRow).GetAttribute("name");
+					string rowTip = ((XmlElement)xnRow).GetAttribute("tip");
+
+					mapEvent.Add(rowName, rowTip);
+				}
+			}
+		}
+		static public Dictionary<string, string> getCtrlEventMap(string ctrlName)
+		{
+			Dictionary<string, string> mapEvent = new Dictionary<string, string>();
+			CtrlDef_T ctrlDef;
+			XmlNode xnTmpls = MainWindow.s_pW.m_docConf.SelectSingleNode("Config").SelectSingleNode("template");
+
+			if (xnTmpls != null)
+			{
+				if (MainWindow.s_pW.m_mapCtrlDef.TryGetValue(ctrlName, out ctrlDef) && ctrlDef != null)
+				{
+					//控件节点的事件模板
+					if (ctrlDef.m_hasPointerEvent)
+					{
+						XmlNode xnPoi = xnTmpls.SelectSingleNode("eventTmpls_pointer");
+
+						if (xnPoi != null && xnPoi.NodeType == XmlNodeType.Element)
+						{
+							addEventNodeByTemplateXmlElement(mapEvent, (XmlElement)xnPoi);
+						}
+					}
+					XmlNode xnBasic = xnTmpls.SelectSingleNode("eventTmpls_basic");
+
+					if (xnBasic != null && xnBasic.NodeType == XmlNodeType.Element)
+					{
+						addEventNodeByTemplateXmlElement(mapEvent, (XmlElement)xnBasic);
+					}
+				}
+				//所有节点的事件模板
+				XmlNode xnCtrl = xnTmpls.SelectSingleNode("eventTmpls_" + ctrlName);
+
+				if (xnCtrl != null && xnCtrl.NodeType == XmlNodeType.Element)
+				{
+					addEventNodeByTemplateXmlElement(mapEvent, (XmlElement)xnCtrl);
+				}
+			}
+
+			return mapEvent;
+		}
 	}
 }

@@ -108,6 +108,9 @@
     <Compile Include="BoloUI\DefConfig\CtrlDef_T.cs" />
     <Compile Include="BoloUI\DefConfig\DefConfig.cs" />
     <Compile Include="BoloUI\ImageIndex.cs" />
+    <Compile Include="BoloUI\MenuWin\BatchUpdate.xaml.cs">
+      <DependentUpon>BatchUpdate.xaml</DependentUpon>
+    </Compile>
     <Compile Include="BoloUI\newSkin.xaml.cs">
       <DependentUpon>newSkin.xaml</DependentUpon>
     </Compile>
@@ -207,6 +210,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="BoloUI\CtrlTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="BoloUI\MenuWin\BatchUpdate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

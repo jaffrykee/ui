@@ -849,7 +849,7 @@ namespace UIEditor
 					SendMessage(m_msgMng.m_hwndGL, WM_COPYDATA, (int)m_msgMng.m_hwndGLParent, ref msgData);
 				}
 			}
-			if(msgTag != W2GTag.W2G_SELECT_UI)
+			if (msgTag != W2GTag.W2G_SELECT_UI && msgTag != W2GTag.W2G_VIEWMODE)
 			{
 				XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
 				if (curXmlCtrl != null && curXmlCtrl.m_curItem != null && curXmlCtrl.m_curItem is BoloUI.Basic)

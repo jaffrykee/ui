@@ -53,7 +53,10 @@ namespace UIEditor.BoloUI
 					m_rootControl.m_mapSkin[m_xe.GetAttribute("Name")] = this;
 					IsExpanded = false;
 				}
-				addChild();
+				else
+				{
+					addChild();
+				}
 			}
 
 			initHeader();

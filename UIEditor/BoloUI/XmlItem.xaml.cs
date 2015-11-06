@@ -731,6 +731,7 @@ namespace UIEditor.BoloUI
 			}
 			mx_addNode.Items.Add(ctrlMenuItem);
 		}
+
 		private void mx_addNode_Loaded(object sender, RoutedEventArgs e)
 		{
 			if (m_type == "CtrlUI")
@@ -749,6 +750,7 @@ namespace UIEditor.BoloUI
 					{
 						showTmplGroup(pairCtrlDef.Key);
 					}
+					mx_batchUpdate.Visibility = System.Windows.Visibility.Visible;
 				}
 				else
 				{
@@ -822,7 +824,7 @@ namespace UIEditor.BoloUI
 				}
 			}
 		}
-		void insertCtrlItem_Click(object sender, RoutedEventArgs e)
+		private void insertCtrlItem_Click(object sender, RoutedEventArgs e)
 		{
 			switch (sender.GetType().ToString())
 			{
@@ -859,7 +861,6 @@ namespace UIEditor.BoloUI
 			TemplateCreate winAddtmpl = new TemplateCreate(m_xe);
 			winAddtmpl.ShowDialog();
 		}
-
 		private void mx_radio_MouseDoubleClick(object sender, MouseButtonEventArgs e)
 		{
 			mx_root.IsExpanded = !(mx_root.IsExpanded);
@@ -869,6 +870,11 @@ namespace UIEditor.BoloUI
 
 				MainWindow.s_pW.openFileByPath(path);
 			}
+		}
+		private void mx_batchUpdate_Click(object sender, RoutedEventArgs e)
+		{
+			MenuWin.BatchUpdate winBatchUpdate = new MenuWin.BatchUpdate();
+			winBatchUpdate.ShowDialog();
 		}
 	}
 }

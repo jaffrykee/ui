@@ -20,6 +20,8 @@ namespace UIEditor
 	/// </summary>
 	public partial class TemplateCreate
 	{
+		public static TemplateCreate s_pW;
+
 		XmlElement m_xe;
 		string m_strTmpl;
 
@@ -27,6 +29,8 @@ namespace UIEditor
 		{
 			m_xe = xe;
 			InitializeComponent();
+			this.Owner = MainWindow.s_pW;
+			s_pW = this;
 		}
 
 		private void createTmpl(XmlElement xeConfig)
