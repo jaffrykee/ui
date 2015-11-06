@@ -645,7 +645,7 @@
 		<StatusBar Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3">
 			<StatusBarItem Background="{StaticResource BackgroundSelected}">
 				<StackPanel Orientation="Horizontal" Background="#00000000">
-					<TextBlock Foreground="{StaticResource Foreground}">就绪</TextBlock>
+					<TextBlock Name="mx_status" Foreground="{StaticResource Foreground}" Text="{Binding mb_status}"></TextBlock>
 				</StackPanel>
 			</StatusBarItem>
 		</StatusBar>

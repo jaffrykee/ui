@@ -142,6 +142,19 @@ namespace UIEditor
 		public bool m_isDebug;
 		public string m_pathGlApp;
 
+		private string mt_status;
+		public string mb_status{
+			get
+			{
+				return mt_status;
+			}
+			set
+			{
+				mt_status = value;
+				mx_status.Text = value;
+			}
+		}
+
 		public MainWindow()
 		{
 			s_pW = this;
@@ -157,7 +170,9 @@ namespace UIEditor
 			mx_skinEditor = new SkinEditor();
 
 			InitializeComponent();
+			this.DataContext = this;
 
+			mb_status = "就绪";
 			m_screenWidth = 960;
 			m_screenHeight = 540;
 			m_mapSkinAllDef = new Dictionary<string, SkinDef_T>();
@@ -872,6 +887,10 @@ namespace UIEditor
 				case WM_MOUSEMOVE:
 					#region WM_MOUSEMOVE
 					{
+						int pX = (int)lParam & 0xFFFF;
+						int pY = ((int)lParam >> 16) & 0xFFFF;
+
+						mb_status = "( " + pX + " , " + pY + " )";
 						if(mx_isViewMode.IsChecked == true)
 						{
 							break;
@@ -880,9 +899,6 @@ namespace UIEditor
 						{
 							if (m_isMouseDown)
 							{
-								int pX = (int)lParam & 0xFFFF;
-								int pY = ((int)lParam >> 16) & 0xFFFF;
-
 								if (m_isCtrlMoved == false)
 								{
 									if (System.Math.Abs(pX - m_downX) > 10 || System.Math.Abs(pY - m_downY) > 10)

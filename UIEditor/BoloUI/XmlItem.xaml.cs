@@ -873,7 +873,7 @@ namespace UIEditor.BoloUI
 		}
 		private void mx_batchUpdate_Click(object sender, RoutedEventArgs e)
 		{
-			MenuWin.BatchUpdate winBatchUpdate = new MenuWin.BatchUpdate();
+			MenuWin.BatchUpdate winBatchUpdate = new MenuWin.BatchUpdate(this);
 			winBatchUpdate.ShowDialog();
 		}
 	}

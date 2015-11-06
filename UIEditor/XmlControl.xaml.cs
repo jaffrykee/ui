@@ -884,5 +884,118 @@ namespace UIEditor
 
 			return mapEvent;
 		}
+		static public void getElementLocation(XmlElement xe, List<int> lstLc)
+		{
+			if(lstLc == null)
+			{
+				return;
+			}
+
+			if (xe.ParentNode != null && xe.ParentNode is XmlElement)
+			{
+				int count = 0;
+				foreach(XmlNode xn in xe.ParentNode.ChildNodes)
+				{
+					if(xn is XmlElement && xe == (XmlElement)xn)
+					{
+						lstLc.Insert(0, count);
+						break;
+					}
+					count++;
+				}
+				getElementLocation((XmlElement)xe.ParentNode, lstLc);
+			}
+
+			return;
+		}
+		static public XmlElement getXeByOffset(XmlElement xeParent, int offset)
+		{
+			XmlElement xe;
+			int count = 0;
+
+			foreach(XmlNode xn in xeParent.ChildNodes)
+			{
+				if(count == offset)
+				{
+					if(xn is XmlElement)
+					{
+						return (XmlElement)xn;
+					}
+					else
+					{
+						return null;
+					}
+				}
+				count++;
+			}
+
+			return null;
+		}
+		static public XmlElement getXeByLocationList(XmlDocument docXml, List<int> lstLc)
+		{
+			XmlElement xe = docXml.DocumentElement;
+
+			foreach(int offset in lstLc)
+			{
+				if (xe != null)
+				{
+					xe = getXeByOffset(xe, offset);
+				}
+			}
+
+			return xe;
+		}
+		static public int setEvent(XmlElement dstXe, string eName, string func)
+		{
+			XmlElement xeDel = null;
+
+			foreach(XmlNode xn in dstXe.ChildNodes)
+			{
+				if(xn is XmlElement && xn.Name == "event")
+				{
+					XmlElement xe = (XmlElement)xn;
+
+					if(xe.GetAttribute("type") == eName)
+					{
+						if (func == null || func == "")
+						{
+							xeDel = xe;
+
+							break;
+						}
+						else
+						{
+							xe.SetAttribute("function", func);
+
+							return 0;
+						}
+					}
+				}
+			}
+
+			if(xeDel != null)
+			{
+				dstXe.RemoveChild(xeDel);
+
+				return -1;
+			}
+			else
+			{
+				if (func == null || func == "")
+				{
+					return 0;
+				}
+				else
+				{
+					XmlElement xeEvent = dstXe.OwnerDocument.CreateElement("event");
+
+					xeEvent.SetAttribute("type", eName);
+					xeEvent.SetAttribute("function", func);
+					dstXe.AppendChild(xeEvent);
+
+					return 1;
+				}
+			}
+		}
 	}
 }
