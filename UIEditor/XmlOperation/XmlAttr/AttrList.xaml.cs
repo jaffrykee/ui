@@ -15,7 +15,7 @@ using System.Xml;
 using UIEditor.BoloUI;
 using UIEditor.BoloUI.DefConfig;
 
-namespace UIEditor
+namespace UIEditor.XmlOperation.XmlAttr
 {
 	public partial class AttrList : TabItem
 	{
@@ -33,8 +33,32 @@ namespace UIEditor
 			{
 				foreach (KeyValuePair<string, AttrDef_T> pairAttrDef in mapAttrDef.ToList())
 				{
-					pairAttrDef.Value.m_attrRowUI = new AttrRow(pairAttrDef.Value, pairAttrDef.Key, "", this);
-					mx_frame.Children.Add(pairAttrDef.Value.m_attrRowUI);
+					if (pairAttrDef.Value.m_isEnum == false)
+					{
+						switch (pairAttrDef.Value.m_type)
+						{
+							case "bool":
+								{
+									pairAttrDef.Value.m_iAttrRowUI = new RowBool(pairAttrDef.Value, pairAttrDef.Key, "", this);
+								}
+								break;
+							case "weight":
+								{
+									pairAttrDef.Value.m_iAttrRowUI = new RowWeight(pairAttrDef.Value, pairAttrDef.Key, "", this);
+								}
+								break;
+							default:
+								{
+									pairAttrDef.Value.m_iAttrRowUI = new RowNormal(pairAttrDef.Value, pairAttrDef.Key, "", this);
+								}
+								break;
+						}
+					}
+					else
+					{
+						pairAttrDef.Value.m_iAttrRowUI = new RowEnum(pairAttrDef.Value, pairAttrDef.Key, "", this);
+					}
+					mx_frame.Children.Add((Grid)pairAttrDef.Value.m_iAttrRowUI);
 				}
 			}
 
@@ -52,9 +76,9 @@ namespace UIEditor
 		{
 			foreach (object row in mx_frame.Children)
 			{
-				if (row is AttrRow)
+				if (row.GetType().ToString() != "System.Windows.Controls.Grid")
 				{
-					((AttrRow)row).m_preValue = "";
+					((IAttrRow)row).m_preValue = "";
 				}
 			}
 		}
@@ -82,21 +106,18 @@ namespace UIEditor
 			}
 			foreach (object row in mx_frame.Children)
 			{
-				if (row is AttrRow)
+				if (row.GetType().ToString() != "System.Windows.Controls.Grid")
 				{
-					((AttrRow)row).mx_root.Visibility = Visibility.Visible;
+					((Grid)row).Visibility = Visibility.Visible;
 				}
 			}
 			if(onlySetted)
 			{
 				foreach (object row in mx_frame.Children)
 				{
-					if (row is AttrRow)
+					if (row.GetType().ToString() != "System.Windows.Controls.Grid" && ((IAttrRow)row).m_preValue == "")
 					{
-						if (((AttrRow)row).m_preValue == "")
-						{
-							((AttrRow)row).mx_root.Visibility = Visibility.Collapsed;
-						}
+						((Grid)row).Visibility = Visibility.Collapsed;
 					}
 				}
 			}
@@ -104,12 +125,9 @@ namespace UIEditor
 			{
 				foreach (object row in mx_frame.Children)
 				{
-					if (row is AttrRow)
+					if (row.GetType().ToString() != "System.Windows.Controls.Grid" && ((IAttrRow)row).m_isCommon == false)
 					{
-						if (((AttrRow)row).m_isCommon == false)
-						{
-							((AttrRow)row).mx_root.Visibility = Visibility.Collapsed;
-						}
+						((Grid)row).Visibility = Visibility.Collapsed;
 					}
 				}
 			}

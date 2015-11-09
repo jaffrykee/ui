@@ -1,0 +1,20 @@
+﻿<Grid x:Class="UIEditor.XmlOperation.XmlAttr.RowBool"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d"
+			  Name="mx_root"
+			  HorizontalAlignment="Right"
+			  MinWidth="150"
+			  Margin="2,4,2,4">
+	<CheckBox Name="mx_valueBool"
+			  HorizontalAlignment="Left"
+			  VerticalAlignment="Center"
+			  Margin="10,0,10,0"
+			  Content="{Binding ElementName=mx_name, Path=Content}"
+			  IsChecked="{x:Null}"
+			  Checked="mx_valueBool_Checked"
+			  Unchecked="mx_valueBool_Unchecked"
+			  MouseRightButtonUp="mx_valueBool_MouseRightButtonUp"/>
+</Grid>

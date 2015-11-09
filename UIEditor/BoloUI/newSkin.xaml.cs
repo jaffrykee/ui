@@ -12,12 +12,13 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.IO;
 using System.Xml;
+using UIEditor.XmlOperation.XmlAttr;
 
 namespace UIEditor.BoloUI
 {
 	public partial class newSkin
 	{
-		public AttrRow m_attrRow;
+		public IAttrRow m_iAttrRow;
 		public string m_skinGroup;
 		public string m_skinGroupShortName;
 		public string m_skinName;
@@ -25,11 +26,11 @@ namespace UIEditor.BoloUI
 
 		static public newSkin s_pW;
 
-		public newSkin(AttrRow attrRow)
+		public newSkin(IAttrRow iAttrRow)
 		{
 			s_pW = this;
-			m_attrRow = attrRow;
-			m_skinGroup = m_attrRow.m_parent.m_xmlCtrl.m_openedFile.m_path;
+			m_iAttrRow = iAttrRow;
+			m_skinGroup = m_iAttrRow.m_parent.m_xmlCtrl.m_openedFile.m_path;
 			m_skinGroupShortName = "";
 			m_skinName = null;
 			InitializeComponent();
@@ -50,7 +51,7 @@ namespace UIEditor.BoloUI
 				}
 			}
 
-			object ret = XmlItem.showTmplGroup("skin", mx_tmplCbBox, mx_tmplCbi_Selected, m_attrRow.m_parent.m_xe.Name + "_skinTmpl");
+			object ret = XmlItem.showTmplGroup("skin", mx_tmplCbBox, mx_tmplCbi_Selected, m_iAttrRow.m_parent.m_xe.Name + "_skinTmpl");
 
 			if (mx_tmplCbBox.Items.Count > 0)
 			{
@@ -92,7 +93,7 @@ namespace UIEditor.BoloUI
 		}
 		private void mx_localCbi_Selected(object sender, RoutedEventArgs e)
 		{
-			m_skinGroup = m_attrRow.m_parent.m_xmlCtrl.m_openedFile.m_path;
+			m_skinGroup = m_iAttrRow.m_parent.m_xmlCtrl.m_openedFile.m_path;
 			m_skinGroupShortName = "";
 		}
 		private void mx_skinName_TextChanged(object sender, TextChangedEventArgs e)
@@ -115,7 +116,7 @@ namespace UIEditor.BoloUI
 				{
 					OpenedFile fileDef;
 
-					m_attrRow.m_value = m_skinName;
+					m_iAttrRow.m_value = m_skinName;
 					if (System.IO.File.Exists(m_skinGroup))
 					{
 						XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
@@ -175,10 +176,10 @@ namespace UIEditor.BoloUI
 								newXe.SetAttribute("Name", m_skinName);
 								xmlCtrl.m_treeSkin.addResItem(newXe);
 
-								if (m_attrRow != null && m_attrRow.m_parent != null && m_attrRow.m_parent.m_basic != null &&
-									m_attrRow.m_parent.m_basic is Basic)
+								if (m_iAttrRow != null && m_iAttrRow.m_parent != null && m_iAttrRow.m_parent.m_basic != null &&
+									m_iAttrRow.m_parent.m_basic is Basic)
 								{
-									xmlCtrl.findSkinAndSelect(m_skinName, (BoloUI.Basic)m_attrRow.m_parent.m_basic);
+									xmlCtrl.findSkinAndSelect(m_skinName, (BoloUI.Basic)m_iAttrRow.m_parent.m_basic);
 								}
 								else
 								{

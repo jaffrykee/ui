@@ -16,7 +16,7 @@ using System.Xml;
 using UIEditor.BoloUI;
 using UIEditor.BoloUI.DefConfig;
 
-namespace UIEditor
+namespace UIEditor.XmlOperation.XmlAttr
 {
 	public partial class AttrRow : Grid
 	{

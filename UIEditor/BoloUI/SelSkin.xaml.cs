@@ -16,6 +16,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using System.Text.RegularExpressions;
+using UIEditor.XmlOperation.XmlAttr;
 
 namespace UIEditor.BoloUI
 {
@@ -26,17 +27,17 @@ namespace UIEditor.BoloUI
 		public XmlElement m_testCtrl;
 		public bool m_isInitPath;
 		public TreeViewItem m_curSkin;
-		public AttrRow m_rowSkin;
+		public IAttrRow m_iRowSkin;
 		public MsgManager m_msgMng;
 
 		public static SelSkin s_pW;
 
-		public SelSkin(string path, string xmlData, AttrRow rowSkin)
+		public SelSkin(string path, string xmlData, IAttrRow iRowSkin)
 		{
 			s_pW = this;
 			m_isInitPath = false;
 			m_path = path;
-			m_rowSkin = rowSkin;
+			m_iRowSkin = iRowSkin;
 			m_curSkin = null;
 			InitializeComponent();
 
@@ -338,12 +339,12 @@ namespace UIEditor.BoloUI
 					((TreeViewItem)m_curSkin.Parent).Parent == mx_otherGroup &&
 					((TreeViewItem)m_curSkin.Parent).Header.ToString() != "publicskin")
 				{
-					XmlElement newXe = m_rowSkin.m_parent.m_xe.OwnerDocument.CreateElement("skingroup");
+					XmlElement newXe = m_iRowSkin.m_parent.m_xe.OwnerDocument.CreateElement("skingroup");
 
 					newXe.SetAttribute("Name", ((TreeViewItem)m_curSkin.Parent).Header.ToString());
-					m_rowSkin.m_parent.m_xmlCtrl.m_treeSkin.addResItem(newXe);
+					m_iRowSkin.m_parent.m_xmlCtrl.m_treeSkin.addResItem(newXe);
 				}
-				m_rowSkin.m_value = m_curSkin.Header.ToString();
+				m_iRowSkin.m_value = m_curSkin.Header.ToString();
 			}
 			this.Close();
 		}

@@ -12,12 +12,13 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Xml;
 using System.IO;
+using UIEditor.XmlOperation.XmlAttr;
 
 namespace UIEditor.BoloUI
 {
 	public partial class SelImage
 	{
-		public AttrRow m_rowImage;
+		public IAttrRow m_iRowImage;
 		public PngControl m_curPngCtrl;
 		private TreeViewItem mt_curImg;
 		public TreeViewItem m_curImg
@@ -42,10 +43,10 @@ namespace UIEditor.BoloUI
 
 		static public SelImage s_pW;
 
-		public SelImage(AttrRow rowImage)
+		public SelImage(IAttrRow iRowImage)
 		{
 			s_pW = this;
-			m_rowImage = rowImage;
+			m_iRowImage = iRowImage;
 			m_mapLocalRes = new Dictionary<string, TreeViewItem>();
 			m_mapOtherRes = new Dictionary<string, TreeViewItem>();
 			InitializeComponent();
@@ -100,10 +101,10 @@ namespace UIEditor.BoloUI
 			}
 			else
 			{
-				if (m_rowImage != null && m_rowImage.m_parent != null && m_rowImage.m_parent.m_xmlCtrl != null &&
-					m_rowImage.m_parent.m_xmlCtrl.m_xmlDoc != null)
+				if (m_iRowImage != null && m_iRowImage.m_parent != null && m_iRowImage.m_parent.m_xmlCtrl != null &&
+					m_iRowImage.m_parent.m_xmlCtrl.m_xmlDoc != null)
 				{
-					m_doc = m_rowImage.m_parent.m_xmlCtrl.m_xmlDoc;
+					m_doc = m_iRowImage.m_parent.m_xmlCtrl.m_xmlDoc;
 				}
 			}
 			if (m_doc != null)
@@ -226,23 +227,23 @@ namespace UIEditor.BoloUI
 						}
 						else
 						{
-							m_rowImage.m_parent.m_xmlCtrl.m_treeSkin.addResItem(newXe);
+							m_iRowImage.m_parent.m_xmlCtrl.m_treeSkin.addResItem(newXe);
 						}
 					}
 
 					newImgValue = ((TreeViewItem)m_curImg.Parent).Header.ToString() + "." + m_curImg.Header.ToString();
 
-					m_rowImage.m_value = newImgValue;
+					m_iRowImage.m_value = newImgValue;
 
-					m_rowImage.m_parent.m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
-						new XmlOperation.HistoryNode(m_rowImage.m_parent.m_xe, "Width", m_rowImage.m_parent.m_xe.GetAttribute("Width"),
+					m_iRowImage.m_parent.m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
+						new XmlOperation.HistoryNode(m_iRowImage.m_parent.m_xe, "Width", m_iRowImage.m_parent.m_xe.GetAttribute("Width"),
 							m_curPngCtrl.m_imgWidth.ToString())
 						);
-					m_rowImage.m_parent.m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
-						new XmlOperation.HistoryNode(m_rowImage.m_parent.m_xe, "Height", m_rowImage.m_parent.m_xe.GetAttribute("Height"),
+					m_iRowImage.m_parent.m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
+						new XmlOperation.HistoryNode(m_iRowImage.m_parent.m_xe, "Height", m_iRowImage.m_parent.m_xe.GetAttribute("Height"),
 							m_curPngCtrl.m_imgHeight.ToString())
 						);
-					m_rowImage.m_parent.m_basic.changeSelectItem();
+					m_iRowImage.m_parent.m_basic.changeSelectItem();
 				}
 			}
 			this.Close();

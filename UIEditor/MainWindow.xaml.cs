@@ -23,6 +23,7 @@ using UIEditor.Project;
 using System.Threading;
 using System.Windows.Threading;
 using System.Collections;
+using UIEditor.XmlOperation.XmlAttr;
 
 namespace UIEditor
 {
@@ -195,7 +196,7 @@ namespace UIEditor
 			m_docConf = new XmlDocument();
 			if(!File.Exists(conf_pathConf))
 			{
-				string initConfXml = "<Config><runMode>release</runMode><ProjHistory>E:\\mmo2013001\\artist\\client_resouce\\ui\\free</ProjHistory></Config>";
+				string initConfXml = "<Config><runMode>release</runMode><ProjHistory>E:\\mmo2015001\\artist\\ui\\free</ProjHistory></Config>";
 
 				m_docConf.LoadXml(initConfXml);
 				m_docConf.Save(conf_pathConf);
@@ -521,7 +522,7 @@ namespace UIEditor
 				{
 					if (attrList is AttrList)
 					{
-						((UIEditor.AttrList)attrList).Visibility = System.Windows.Visibility.Collapsed;
+						((AttrList)attrList).Visibility = System.Windows.Visibility.Collapsed;
 					}
 				}
 			}

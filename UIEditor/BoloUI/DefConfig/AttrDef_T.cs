@@ -3,13 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Controls;
+using UIEditor.XmlOperation.XmlAttr;
+using System.Collections;
 
 namespace UIEditor.BoloUI.DefConfig
 {
+	public class WeightRowGroup_T
+	{
+		public string m_groupName;
+		public List<string> m_lstRow;
+
+		public WeightRowGroup_T(string groupName)
+		{
+			m_groupName = groupName;
+			m_lstRow = new List<string>();
+		}
+	}
 	public class AttrDef_T
 	{
 		//右侧属性工具栏的UI
-		public AttrRow m_attrRowUI;
+		public IAttrRow m_iAttrRowUI;
 		//数据类型
 		public string m_type;
 		//子类型
@@ -22,14 +35,16 @@ namespace UIEditor.BoloUI.DefConfig
 		public bool m_isCommon;
 		//枚举列表
 		public Dictionary<string, ComboBoxItem> m_mapEnum;
+		public ArrayList m_lstWeight;
 
-		public AttrDef_T(string type = "int", string defValue = null, AttrRow rowUI = null, bool isEnum = false, Dictionary<string, ComboBoxItem> mapEnum = null)
+		public AttrDef_T(string type = "int", string defValue = null, IAttrRow iRowUI = null, bool isEnum = false, Dictionary<string, ComboBoxItem> mapEnum = null)
 		{
-			m_attrRowUI = rowUI;
+			m_iAttrRowUI = iRowUI;
 			m_type = type;
 			m_defValue = defValue;
 			m_isEnum = isEnum;
 			m_mapEnum = mapEnum;
+			m_lstWeight = null;
 		}
 	}
 }

@@ -188,11 +188,8 @@
       <DependentUpon>SaveConfirm.xaml</DependentUpon>
     </Compile>
     <Compile Include="XmlOperation\HistoryList.cs" />
-    <Compile Include="Public\AttrList.xaml.cs">
+    <Compile Include="XmlOperation\XmlAttr\AttrList.xaml.cs">
       <DependentUpon>AttrList.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Public\AttrRow.xaml.cs">
-      <DependentUpon>AttrRow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Public\SelectRect.xaml.cs">
       <DependentUpon>SelectRect.xaml</DependentUpon>
@@ -205,6 +202,20 @@
       <DependentUpon>XmlControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="XmlOperation\HistoryNode.cs" />
+    <Compile Include="XmlOperation\XmlAttr\IAttrRow.cs" />
+    <Compile Include="XmlOperation\XmlAttr\RowBool.xaml.cs">
+      <DependentUpon>RowBool.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="XmlOperation\XmlAttr\RowWeight.xaml.cs">
+      <DependentUpon>RowWeight.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="XmlOperation\XmlAttr\RowEnum.xaml.cs">
+      <DependentUpon>RowEnum.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="XmlOperation\XmlAttr\RowNormal.xaml.cs">
+      <DependentUpon>RowNormal.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Page Include="ani.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -316,13 +327,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Public\AttrList.xaml">
+    <Page Include="XmlOperation\XmlAttr\AttrList.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Public\AttrRow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Public\SaveConfirm.xaml">
       <SubType>Designer</SubType>
@@ -341,6 +348,22 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="XmlControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="XmlOperation\XmlAttr\RowBool.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="XmlOperation\XmlAttr\RowWeight.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="XmlOperation\XmlAttr\RowEnum.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="XmlOperation\XmlAttr\RowNormal.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

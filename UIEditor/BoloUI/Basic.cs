@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Xml;
 using UIEditor.BoloUI;
 using UIEditor.BoloUI.DefConfig;
+using UIEditor.XmlOperation.XmlAttr;
 
 namespace UIEditor.BoloUI
 {
@@ -220,13 +221,13 @@ namespace UIEditor.BoloUI
 					{
 						if (!tmpFound && pairCtrlDef.Value.m_mapAttrDef.TryGetValue(attr.Name, out attrDef))
 						{
-							attrDef.m_attrRowUI.m_preValue = attr.Value;
+							attrDef.m_iAttrRowUI.m_preValue = attr.Value;
 							tmpFound = true;
 						}
 					}
 					if (!tmpFound && ctrlDef.m_mapAttrDef.TryGetValue(attr.Name, out attrDef))
 					{
-						attrDef.m_attrRowUI.m_preValue = attr.Value;
+						attrDef.m_iAttrRowUI.m_preValue = attr.Value;
 					}
 					else
 					{
@@ -245,7 +246,7 @@ namespace UIEditor.BoloUI
 						MainWindow.s_pW.m_otherAttrList = new AttrList("other");
 						MainWindow.s_pW.mx_toolArea.Items.Add(MainWindow.s_pW.m_otherAttrList);
 					}
-					MainWindow.s_pW.m_otherAttrList.mx_frame.Children.Add(new AttrRow("string", attr.Name, attr.Value, MainWindow.s_pW.m_otherAttrList));
+					MainWindow.s_pW.m_otherAttrList.mx_frame.Children.Add(new RowNormal(null, attr.Name, attr.Value, MainWindow.s_pW.m_otherAttrList));
 				}
 			}
 			if (m_isCtrl)

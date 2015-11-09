@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Xml;
 using UIEditor.BoloUI;
 using UIEditor.BoloUI.DefConfig;
+using UIEditor.XmlOperation.XmlAttr;
 
 namespace UIEditor.BoloUI
 {
@@ -300,7 +301,7 @@ namespace UIEditor.BoloUI
 
 						if(skinDef.m_mapAttrDef.TryGetValue(attr.Name, out attrDef))
 						{
-							attrDef.m_attrRowUI.m_preValue = attr.Value;
+							attrDef.m_iAttrRowUI.m_preValue = attr.Value;
 						}
 					}
 				}

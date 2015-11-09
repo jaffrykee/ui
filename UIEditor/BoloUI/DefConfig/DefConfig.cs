@@ -5,6 +5,8 @@ using System.Text;
 using System.Xml;
 using System.Windows;
 using System.Windows.Controls;
+using UIEditor.XmlOperation.XmlAttr;
+using System.Collections;
 
 namespace UIEditor.BoloUI.DefConfig
 {
@@ -32,6 +34,40 @@ namespace UIEditor.BoloUI.DefConfig
 								if (xeAttr.GetAttribute("type") != "")
 								{
 									attrDef.m_type = xeAttr.GetAttribute("type");
+									if(xeAttr.GetAttribute("type") == "weight")
+									{
+										attrDef.m_lstWeight = new ArrayList();
+
+										foreach(XmlNode xnWt in xeAttr.ChildNodes)
+										{
+											if (xnWt is XmlElement)
+											{
+												switch(xnWt.Name)
+												{
+													case "rowGroup":
+														{
+															WeightRowGroup_T wtGroup = new WeightRowGroup_T(((XmlElement)xnWt).GetAttribute("key"));
+															attrDef.m_lstWeight.Add(wtGroup);
+															foreach(XmlNode xnRow in xnWt.ChildNodes)
+															{
+																if(xnRow is XmlElement && xnRow.Name == "row")
+																{
+																	wtGroup.m_lstRow.Add(xnRow.InnerText);
+																}
+															}
+														}
+														break;
+													case "row":
+														{
+															attrDef.m_lstWeight.Add(xnWt.InnerText);
+														}
+														break;
+													default:
+														break;
+												}
+											}
+										}
+									}
 								}
 								else
 								{
