@@ -22,7 +22,7 @@ namespace UIEditor.BoloUI
 {
 	public partial class XmlItem : TreeViewItem
 	{
-		public XmlControl m_rootControl;
+		public XmlControl m_xmlCtrl;
 		public XmlElement m_xe;
 		public bool m_isCtrl;
 		public string m_type;
@@ -43,12 +43,12 @@ namespace UIEditor.BoloUI
 			m_runXeName = null;
 			m_selLock = new EventLock();
 			InitializeComponent();
-			m_rootControl = rootControl;
+			m_xmlCtrl = rootControl;
 			m_xe = xe;
 
-			if (m_rootControl != null && m_rootControl.m_mapXeItem != null)
+			if (m_xmlCtrl != null && m_xmlCtrl.m_mapXeItem != null)
 			{
-				m_rootControl.m_mapXeItem[xe] = this;
+				m_xmlCtrl.m_mapXeItem[xe] = this;
 			}
 		}
 
@@ -112,7 +112,7 @@ namespace UIEditor.BoloUI
 					if (fDoc.Parent != null &&
 						fDoc.Parent == MainWindow.s_pW.mx_xmlText)
 					{
-						changeLightRun(m_runXeName);
+						MainWindow.s_pW.m_lastUpdateRun = m_runXeName;
 					}
 				}
 			}
@@ -303,7 +303,7 @@ namespace UIEditor.BoloUI
 		public void cutItem()
 		{
 			MainWindow.s_pW.m_xePaste = (XmlElement)m_xe.CloneNode(true);
-			m_rootControl.m_openedFile.m_lstOpt.addOperation(
+			m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
 				new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_DELETE, m_xe)
 				);
 		}
@@ -327,17 +327,17 @@ namespace UIEditor.BoloUI
 
 				if (MainWindow.s_pW.m_mapCtrlDef.TryGetValue(xeCopy.Name, out ctrlPtr))
 				{
-					treeChild = new BoloUI.Basic(xeCopy, m_rootControl);
+					treeChild = new BoloUI.Basic(xeCopy, m_xmlCtrl);
 				}
 				else if (MainWindow.s_pW.m_mapSkinAllDef.TryGetValue(xeCopy.Name, out skinPtr))
 				{
-					treeChild = new BoloUI.ResBasic(xeCopy, m_rootControl, skinPtr);
+					treeChild = new BoloUI.ResBasic(xeCopy, m_xmlCtrl, skinPtr);
 				}
 				if (treeChild != null)
 				{
 					if (xeCopy.Name == "event")
 					{
-						m_rootControl.m_openedFile.m_lstOpt.addOperation(
+						m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
 							new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe)
 							);
 					}
@@ -349,19 +349,19 @@ namespace UIEditor.BoloUI
 
 							if (m_xe.Name == "BoloUI" && MainWindow.s_pW.m_mapPanelCtrlDef.TryGetValue(treeChild.m_xe.Name, out panelCtrlDef))
 							{
-								m_rootControl.m_openedFile.m_lstOpt.addOperation(
+								m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
 									new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe)
 									);
 							}
 							else if (MainWindow.s_pW.m_mapPanelCtrlDef.TryGetValue(m_xe.Name, out panelCtrlDef))
 							{
-								m_rootControl.m_openedFile.m_lstOpt.addOperation(
+								m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
 									new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe)
 									);
 							}
 							else if (m_xe.ParentNode != null && m_xe.ParentNode.ParentNode != null && m_xe.ParentNode.ParentNode.NodeType == XmlNodeType.Element)
 							{
-								m_rootControl.m_openedFile.m_lstOpt.addOperation(
+								m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
 									new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, (XmlElement)m_xe.ParentNode)
 									);
 							}
@@ -375,7 +375,7 @@ namespace UIEditor.BoloUI
 								if (skinDef.m_mapEnChild != null && skinDef.m_mapEnChild.Count > 0
 									&& skinDef.m_mapEnChild.TryGetValue(treeChild.m_xe.Name, out skinChildDef))
 								{
-									m_rootControl.m_openedFile.m_lstOpt.addOperation(
+									m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
 										new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe)
 										);
 								}
@@ -386,7 +386,7 @@ namespace UIEditor.BoloUI
 										if (((XmlElement)m_xe.ParentNode).Name == "BoloUI" &&
 											MainWindow.s_pW.m_mapSkinTreeDef.TryGetValue(treeChild.m_xe.Name, out skinChildDef))
 										{
-											m_rootControl.m_openedFile.m_lstOpt.addOperation(
+											m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
 												new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, ((XmlElement)m_xe.ParentNode))
 												);
 										}
@@ -394,7 +394,7 @@ namespace UIEditor.BoloUI
 										{
 											if (skinDef.m_mapEnChild.TryGetValue(treeChild.m_xe.Name, out skinChildDef))
 											{
-												m_rootControl.m_openedFile.m_lstOpt.addOperation(
+												m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
 													new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, ((XmlElement)m_xe.ParentNode))
 													);
 											}
@@ -409,7 +409,7 @@ namespace UIEditor.BoloUI
 		}
 		public void deleteItem()
 		{
-			m_rootControl.m_openedFile.m_lstOpt.addOperation(
+			m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
 				new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_DELETE, m_xe)
 				);
 		}
@@ -417,7 +417,7 @@ namespace UIEditor.BoloUI
 		{
 			if (m_xe.ParentNode.LastChild != m_xe)
 			{
-				m_rootControl.m_openedFile.m_lstOpt.addOperation(
+				m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
 					new XmlOperation.HistoryNode(
 						XmlOperation.XmlOptType.NODE_MOVE,
 						m_xe,
@@ -431,7 +431,7 @@ namespace UIEditor.BoloUI
 		{
 			if (m_xe.ParentNode.FirstChild != m_xe)
 			{
-				m_rootControl.m_openedFile.m_lstOpt.addOperation(
+				m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
 					new XmlOperation.HistoryNode(
 						XmlOperation.XmlOptType.NODE_MOVE,
 						m_xe,
@@ -832,9 +832,9 @@ namespace UIEditor.BoloUI
 					{
 						MenuItem ctrlItem = (MenuItem)sender;
 						XmlElement newXe = m_xe.OwnerDocument.CreateElement(ctrlItem.ToolTip.ToString());
-						BoloUI.Basic treeChild = new BoloUI.Basic(newXe, m_rootControl);
+						BoloUI.Basic treeChild = new BoloUI.Basic(newXe, m_xmlCtrl);
 
-						m_rootControl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe));
+						m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe));
 					}
 					break;
 				case "UIEditor.BoloUI.CtrlTemplate":
@@ -848,8 +848,8 @@ namespace UIEditor.BoloUI
 							newXe.InnerXml = ctrlItem.ToolTip.ToString();
 							if (newXe.FirstChild.NodeType == XmlNodeType.Element)
 							{
-								BoloUI.Basic treeChild = new BoloUI.Basic((XmlElement)newXe.FirstChild, m_rootControl);
-								m_rootControl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe));
+								BoloUI.Basic treeChild = new BoloUI.Basic((XmlElement)newXe.FirstChild, m_xmlCtrl);
+								m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe));
 							}
 						}
 					}
@@ -864,11 +864,28 @@ namespace UIEditor.BoloUI
 		private void mx_radio_MouseDoubleClick(object sender, MouseButtonEventArgs e)
 		{
 			mx_root.IsExpanded = !(mx_root.IsExpanded);
-			if (m_xe.Name == "skingroup")
+			switch(m_xe.Name)
 			{
-				string path = MainWindow.s_pW.m_skinPath + "\\" + m_xe.GetAttribute("Name") + ".xml";
-
-				MainWindow.s_pW.openFileByPath(path);
+				case "skingroup":
+					{
+						string path = MainWindow.s_pW.m_skinPath + "\\" + m_xe.GetAttribute("Name") + ".xml";
+						MainWindow.s_pW.openFileByPath(path);
+					}
+					break;
+				case "resource":
+					{
+						string path = MainWindow.s_pW.m_imagePath + "\\" + m_xe.GetAttribute("name") + ".xml";
+						MainWindow.s_pW.openFileByPath(path);
+					}
+					break;
+				case "publicresource":
+					{
+						string path = MainWindow.s_pW.m_imagePath + "\\" + m_xe.GetAttribute("name") + ".xml";
+						MainWindow.s_pW.openFileByPath(path);
+					}
+					break;
+				default:
+					break;
 			}
 		}
 		private void mx_batchUpdate_Click(object sender, RoutedEventArgs e)

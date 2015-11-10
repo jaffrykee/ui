@@ -559,23 +559,27 @@
 					<WrapPanel Name="mx_selCtrlLstFrame" Orientation="Horizontal"/>
 				</ScrollViewer>
 				<GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
-				<Grid Grid.Row="2">
+				<Grid Grid.Row="2"
+					  Background="{StaticResource Background}">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="auto"/>
 						<RowDefinition Height="*"/>
 					</Grid.RowDefinitions>
-					<Button Grid.Row="0" Margin="2" Height="20" Width="50" HorizontalAlignment="Left" Click="mx_bClearDebug_Click">
+					<Button Grid.Row="0" Margin="2" Height="20" Width="50" HorizontalAlignment="Left">
 						清空
 					</Button>
-					<TextBox Name="mx_debug"
-							 Grid.Row="1"
-							 AcceptsReturn="True"
-							 VerticalScrollBarVisibility="Visible"
-							 HorizontalScrollBarVisibility="Visible"
-							 HorizontalAlignment="Stretch"
-							 IsReadOnly="True"
-							 TextChanged="mx_debug_TextChanged"
-							 SizeChanged="mx_debug_SizeChanged"/>
+					<RichTextBox Name="mx_resultFrame"
+								 Grid.Row="1"
+								 Background="{StaticResource Background}"
+								 Foreground="{StaticResource Foreground}"
+								 HorizontalScrollBarVisibility="Visible"
+								 VerticalScrollBarVisibility="Visible"
+								 TextChanged="mx_resultFrame_TextChanged">
+						<FlowDocument PageWidth="1000">
+							<Paragraph Name="mx_result">
+							</Paragraph>
+						</FlowDocument>
+					</RichTextBox>
 				</Grid>
 			</Grid>
 		</DockPanel>
@@ -607,7 +611,8 @@
 			  Grid.Row="3"
 			  Grid.Column="1"
 			  Margin="0,0,5,0"
-			  Visibility="Collapsed">
+			  Visibility="Collapsed"
+			  IsVisibleChanged="mx_textFrame_IsVisibleChanged">
 			<RichTextBox Name="mx_xmlText"
 						 AcceptsReturn="True"
 						 VerticalScrollBarVisibility="Visible"

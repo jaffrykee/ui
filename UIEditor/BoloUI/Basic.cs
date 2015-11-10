@@ -47,7 +47,7 @@ namespace UIEditor.BoloUI
 				if (m_xe.Name != "event")
 				{
 					m_vId = System.Guid.NewGuid().ToString().Substring(10);
-					m_rootControl.m_mapCtrlUI[m_vId] = this;
+					m_xmlCtrl.m_mapCtrlUI[m_vId] = this;
 					IsExpanded = true;
 				}
 				else
@@ -75,7 +75,7 @@ namespace UIEditor.BoloUI
 
 					if (MainWindow.s_pW.m_mapCtrlDef.TryGetValue(xe.Name, out ctrlPtr))
 					{
-						this.Items.Add(new Basic(xe, m_rootControl, false));
+						this.Items.Add(new Basic(xe, m_xmlCtrl, false));
 						mx_imgFolder.Visibility = System.Windows.Visibility.Visible;
 					}
 					else
@@ -159,12 +159,12 @@ namespace UIEditor.BoloUI
 		{
 			if (m_vId != null &&
 				m_vId != "" &&
-				m_rootControl != null &&
-				m_rootControl.m_openedFile != null &&
-				m_rootControl.m_openedFile.m_path != null)
+				m_xmlCtrl != null &&
+				m_xmlCtrl.m_openedFile != null &&
+				m_xmlCtrl.m_openedFile.m_path != null)
 			{
 				MainWindow.s_pW.updateGL(
-					StringDic.getFileNameWithoutPath(m_rootControl.m_openedFile.m_path) + ":" + m_vId,
+					StringDic.getFileNameWithoutPath(m_xmlCtrl.m_openedFile.m_path) + ":" + m_vId,
 					W2GTag.W2G_SELECT_UI
 				);
 
@@ -184,13 +184,13 @@ namespace UIEditor.BoloUI
 			{
 				m_selLock.addLock(out stackLock);
 			}
-			MainWindow.s_pW.m_curFile = m_rootControl.m_openedFile.m_path;
-			MainWindow.s_pW.mx_workTabs.SelectedItem = m_rootControl.m_openedFile.m_tab;
+			MainWindow.s_pW.m_curFile = m_xmlCtrl.m_openedFile.m_path;
+			MainWindow.s_pW.mx_workTabs.SelectedItem = m_xmlCtrl.m_openedFile.m_tab;
 			MainWindow.s_pW.mx_treeFrame.SelectedItem = MainWindow.s_pW.mx_treeFrameUI;
 
 			showBlueRect();
 
-			m_rootControl.m_curItem = this;
+			m_xmlCtrl.m_curItem = this;
 			MainWindow.s_pW.hiddenAllAttr();
 			CtrlDef_T ctrlDef;
 
@@ -254,12 +254,12 @@ namespace UIEditor.BoloUI
 				foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in MainWindow.s_pW.m_mapBasicCtrlDef.ToList())
 				{
 					pairCtrlDef.Value.m_ctrlAttrList.refreshRowVisible();
-					pairCtrlDef.Value.m_ctrlAttrList.m_xmlCtrl = m_rootControl;
+					pairCtrlDef.Value.m_ctrlAttrList.m_xmlCtrl = m_xmlCtrl;
 					pairCtrlDef.Value.m_ctrlAttrList.m_basic = this;
 					pairCtrlDef.Value.m_ctrlAttrList.m_xe = m_xe;
 				}
 				ctrlDef.m_ctrlAttrList.refreshRowVisible();
-				ctrlDef.m_ctrlAttrList.m_xmlCtrl = m_rootControl;
+				ctrlDef.m_ctrlAttrList.m_xmlCtrl = m_xmlCtrl;
 				ctrlDef.m_ctrlAttrList.m_basic = this;
 				ctrlDef.m_ctrlAttrList.m_xe = m_xe;
 			}
@@ -267,7 +267,7 @@ namespace UIEditor.BoloUI
 			{
 				MainWindow.s_pW.m_otherAttrList.refreshRowVisible();
 				MainWindow.s_pW.m_otherAttrList.Visibility = Visibility.Visible;
-				MainWindow.s_pW.m_otherAttrList.m_xmlCtrl = m_rootControl;
+				MainWindow.s_pW.m_otherAttrList.m_xmlCtrl = m_xmlCtrl;
 				MainWindow.s_pW.m_otherAttrList.m_basic = this;
 				MainWindow.s_pW.m_otherAttrList.m_xe = m_xe;
 			}
@@ -282,8 +282,8 @@ namespace UIEditor.BoloUI
 				}
 			}
 			MainWindow.s_pW.hiddenOtherAttrList();
-			gotoSelectXe();
 			BringIntoView();
+			gotoSelectXe();
 			AttrList.selectFirstVisibleAttrList();
 			if(MainWindow.s_pW.mx_skinEditor != null)
 			{
@@ -309,13 +309,13 @@ namespace UIEditor.BoloUI
 		{
 			XmlElement xeRet = null;
 
-			m_rootControl.refreshSkinDicForAll();
+			m_xmlCtrl.refreshSkinDicForAll();
 			if (m_xe != null && m_xe.GetAttribute("skin") != "")
 			{
 				string skinName = m_xe.GetAttribute("skin");
 				string groupName;
 
-				if (m_rootControl.m_mapSkinLink.TryGetValue(skinName, out groupName))
+				if (m_xmlCtrl.m_mapSkinLink.TryGetValue(skinName, out groupName))
 				{
 					string path = MainWindow.s_pW.m_skinPath + "\\" + groupName + ".xml";
 

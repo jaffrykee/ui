@@ -8,7 +8,7 @@
 	Margin="2,2,2,2"
 	HorizontalAlignment="Right"
 	MinWidth="300">
-	<StackPanel Name="mx_frame" Background="{StaticResource BackgroundHighlighted}">
+	<StackPanel Name="mx_frame" Background="{StaticResource BackgroundNormal}">
 		<Label Name="mx_name">
 			字体图片锚点
 		</Label>

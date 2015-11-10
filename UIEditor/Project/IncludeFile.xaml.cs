@@ -114,7 +114,8 @@ namespace UIEditor.Project
 				}
 				catch
 				{
-					MainWindow.s_pW.mx_debug.Text += "<错误>:移动(从" + oldPath + "，到" + newPath + ")失败。\r\n";
+					MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_ERROR,
+						"移动(从" + oldPath + "，到" + newPath + ")失败。\r\n"));
 
 					return;
 				}
@@ -164,7 +165,8 @@ namespace UIEditor.Project
 				}
 				catch
 				{
-					MainWindow.s_pW.mx_debug.Text += "<错误>:移动(从" + oldPath + "，到" + newPath + ")失败。\r\n";
+					MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_ERROR,
+						"移动(从" + oldPath + "，到" + newPath + ")失败。\r\n"));
 
 					return;
 				}
@@ -243,8 +245,8 @@ namespace UIEditor.Project
 													}
 													catch
 													{
-														MainWindow.s_pW.mx_debug.Text += "<错误>:拷贝(从" + m_path + "，到" + newPath +
-															")失败。\r\n";
+														MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_ERROR,
+															"拷贝(从" + m_path + "，到" + newPath + ")失败。\r\n"));
 
 														return;
 													}
@@ -469,7 +471,9 @@ namespace UIEditor.Project
 				}
 				catch
 				{
-					MainWindow.s_pW.mx_debug.Text += "<错误>:图片包(" + newPath + ")创建失败，可能是由于文件名重复或没有写权限。\r\n";
+					MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_ERROR,
+						"图片包(" + newPath + ")创建失败，可能是由于文件名重复或没有写权限。\r\n"));
+
 					return;
 				}
 				IncludeFile newImageFolder = new IncludeFile(newPath);

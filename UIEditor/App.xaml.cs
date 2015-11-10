@@ -19,7 +19,7 @@ namespace UIEditor
 
 			if(UIEditor.MainWindow.s_pW != null)
 			{
-				strInfo += "\r\n调试记录:\r\n" + UIEditor.MainWindow.s_pW.mx_debug.Text + "\r\n";
+				//strInfo += "\r\n调试记录:\r\n" + UIEditor.MainWindow.s_pW.mx_debug.Text + "\r\n";
 			}
 			Public.ErrorInfo winError = new Public.ErrorInfo(strInfo);
 			winError.ShowDialog();

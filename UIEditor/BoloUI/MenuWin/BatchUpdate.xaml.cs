@@ -114,7 +114,7 @@ namespace UIEditor.BoloUI.MenuWin
 			{
 				ComboBoxItem cbiCtrl = (ComboBoxItem)mx_cbCtrl.SelectedItem;
 				ComboBoxItem cbiAttr = (ComboBoxItem)mx_cbAttr.SelectedItem;
-				XmlControl xmlCtrlDef = m_ctrlDef.m_rootControl;
+				XmlControl xmlCtrlDef = m_ctrlDef.m_xmlCtrl;
 				XmlDocument docBatch = new XmlDocument();
 				List<int> lstXeLc = new List<int>();
 				XmlElement xeDst;

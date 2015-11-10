@@ -545,8 +545,8 @@ namespace UIEditor
 				}
 				else
 				{
-					//不存在
-					mx_debug.Text += "<错误>文件：\"" + path + "\"不存在，请检查路径。\r\n";
+					MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_ERROR,
+						"文件：\"" + path + "\"不存在，请检查路径。\r\n"));
 				}
 			}
 		}
@@ -583,10 +583,10 @@ namespace UIEditor
 								refreshCurFile();
 								XmlControl xmlCtrl = (XmlControl)openFile.m_frame;
 
-								xmlCtrl.m_treeUI.Visibility = System.Windows.Visibility.Visible;
-								xmlCtrl.m_treeSkin.Visibility = System.Windows.Visibility.Visible;
 								if (xmlCtrl.m_showGL)
 								{
+									xmlCtrl.m_treeUI.Visibility = System.Windows.Visibility.Visible;
+									xmlCtrl.m_treeSkin.Visibility = System.Windows.Visibility.Visible;
 									MainWindow.s_pW.showGLCtrl(true);
 								}
 								else
@@ -865,7 +865,7 @@ namespace UIEditor
 					SendMessage(m_msgMng.m_hwndGL, WM_COPYDATA, (int)m_msgMng.m_hwndGLParent, ref msgData);
 				}
 			}
-			if (msgTag != W2GTag.W2G_SELECT_UI && msgTag != W2GTag.W2G_VIEWMODE)
+			if (msgTag != W2GTag.W2G_SELECT_UI && msgTag != W2GTag.W2G_VIEWMODE && msgTag != W2GTag.W2G_DRAWRECT)
 			{
 				XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
 				if (curXmlCtrl != null && curXmlCtrl.m_curItem != null && curXmlCtrl.m_curItem is BoloUI.Basic)
@@ -911,7 +911,7 @@ namespace UIEditor
 								{
 									XmlItem curItem = XmlItem.getCurItem();
 
-									if (curItem != null && curItem.m_type == "CtrlUI")
+									if (curItem != null && curItem is BoloUI.Basic)
 									{
 										BoloUI.Basic selItem = (BoloUI.Basic)curItem;
 										string msgData;
@@ -1024,7 +1024,7 @@ namespace UIEditor
 											x = int.Parse(selItem.m_xe.GetAttribute("x"));
 										}
 										x += pX - m_downX;
-										selItem.m_rootControl.m_openedFile.m_lstOpt.addOperation(
+										selItem.m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
 											new XmlOperation.HistoryNode(selItem.m_xe, "x", selItem.m_xe.GetAttribute("x"), x.ToString())
 											);
 										if (selItem.m_xe.GetAttribute("y") == "")
@@ -1036,7 +1036,7 @@ namespace UIEditor
 											y = int.Parse(selItem.m_xe.GetAttribute("y"));
 										}
 										y += pY - m_downY;
-										selItem.m_rootControl.m_openedFile.m_lstOpt.addOperation(
+										selItem.m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
 											new XmlOperation.HistoryNode(selItem.m_xe, "y", selItem.m_xe.GetAttribute("y"), y.ToString())
 											);
 										selItem.changeSelectItem();
@@ -1131,7 +1131,8 @@ namespace UIEditor
 										}
 										else
 										{
-											mx_debug.Text += "<G2W_UI_VRECT>没有找到控件，vId:" + baseId + "\r\n";
+											MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_ERROR,
+												"<G2W_UI_VRECT>没有找到控件，vId:" + baseId + "\r\n"));
 										}
 									}
 									else
@@ -1592,28 +1593,6 @@ namespace UIEditor
 		{
 		}
 
-		private void mx_bClearDebug_Click(object sender, RoutedEventArgs e)
-		{
-			mx_debug.Text = "";
-		}
-		private void mx_debug_TextChanged(object sender, TextChangedEventArgs e)
-		{
-			if (sender is TextBox)
-			{
-				TextBox tb = (TextBox)sender;
-
-				tb.ScrollToEnd();
-			}
-		}
-		private void mx_debug_SizeChanged(object sender, SizeChangedEventArgs e)
-		{
-			if (sender is TextBox)
-			{
-				TextBox tb = (TextBox)sender;
-
-				tb.ScrollToEnd();
-			}
-		}
 		private void mx_checkVName_Checked(object sender, RoutedEventArgs e)
 		{
 			m_vCtrlName = true;
@@ -1955,14 +1934,17 @@ namespace UIEditor
 			bool isDefEx = true;
 			XmlControl curCtrl = XmlControl.getCurXmlControl();
 
-			if (mx_skinSearch.Text != "")
+			if (curCtrl != null)
 			{
-				refreshSearch(curCtrl.m_treeSkin, null, isDefEx);
-				refreshSearch(curCtrl.m_treeSkin, mx_uiSearch.Text.ToString(), isDefEx);
-			}
-			else
-			{
-				refreshSearch(curCtrl.m_treeSkin, null, isDefEx);
+				if (mx_skinSearch.Text != "")
+				{
+					refreshSearch(curCtrl.m_treeSkin, null, isDefEx);
+					refreshSearch(curCtrl.m_treeSkin, mx_skinSearch.Text.ToString(), isDefEx);
+				}
+				else
+				{
+					refreshSearch(curCtrl.m_treeSkin, null, isDefEx);
+				}
 			}
 		}
 
@@ -1976,7 +1958,8 @@ namespace UIEditor
 			}
 			else
 			{
-				mx_debug.Text += "<错误>没有找到文件：" + path + "。\r\n";
+				MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_ERROR,
+					"没有找到文件：" + path + "。\r\n"));
 			}
 		}
 		private void mx_version_Click(object sender, RoutedEventArgs e)
@@ -1989,7 +1972,8 @@ namespace UIEditor
 			}
 			else
 			{
-				mx_debug.Text += "<错误>没有找到文件：" + path + "。\r\n";
+				MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_ERROR,
+					"没有找到文件：" + path + "。\r\n"));
 			}
 		}
 
@@ -2405,7 +2389,8 @@ namespace UIEditor
 		}
 		private void mx_refreshShape_Click(object sender, RoutedEventArgs e)
 		{
-			mx_debug.Text += "开始shape的重排\r\n";
+			MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_INFO,
+				"开始shape的重排\r\n"));
 			if(m_skinPath != null && m_skinPath != "")
 			{
 				if(Directory.Exists(m_skinPath))
@@ -2476,13 +2461,29 @@ namespace UIEditor
 							if(isChange)
 							{
 								docSkin.Save(fi.FullName);
-								mx_debug.Text += fi.Name + "\r\n";
+								MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_INFO, fi.Name + "\r\n"));
 							}
 						}
 					}
 				}
 			}
-			mx_debug.Text += "重排完成\r\n";
+			MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_INFO, "重排完成\r\n"));
+		}
+		private void mx_resultFrame_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			mx_resultFrame.ScrollToEnd();
+		}
+		private void mx_textFrame_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+		{
+			if((bool)e.NewValue)
+			{
+				XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
+
+				if(curXmlCtrl != null && curXmlCtrl.m_curItem != null)
+				{
+					curXmlCtrl.m_curItem.gotoSelectXe();
+				}
+			}
 		}
 	}
 

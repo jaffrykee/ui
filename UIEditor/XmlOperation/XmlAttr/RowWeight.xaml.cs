@@ -29,6 +29,8 @@ namespace UIEditor.XmlOperation.XmlAttr
 		private bool m_eventLock;
 		private Dictionary<string, CheckBox> m_mapRow;
 		private Dictionary<string, Dictionary<string, RadioButton>> m_mapRowGroup;
+		private Dictionary<RadioButton, string> m_mapRbGroupName;
+		private Dictionary<string, int> m_mapGroupTakeBack;
 
 		private void setValue(bool isPre, string value)
 		{
@@ -85,7 +87,7 @@ namespace UIEditor.XmlOperation.XmlAttr
 
 								if (int.TryParse(subRow, out iSubRow))
 								{
-									if (iSubRow == 0 || (iValue & iSubRow) > 0)
+									if (iSubRow == 0 || (iValue & iSubRow) == iSubRow)
 									{
 										isChecked = true;
 									}
@@ -175,7 +177,8 @@ namespace UIEditor.XmlOperation.XmlAttr
 		{
 			m_mapRow = new Dictionary<string, CheckBox>();
 			m_mapRowGroup = new Dictionary<string, Dictionary<string, RadioButton>>();
-			m_iLastValue = 0;
+			m_mapRbGroupName = new Dictionary<RadioButton, string>();
+			m_mapGroupTakeBack = new Dictionary<string, int>();
 			InitializeComponent();
 			m_parent = parent;
 			m_lstWeight = attrDef.m_lstWeight;
@@ -233,8 +236,10 @@ namespace UIEditor.XmlOperation.XmlAttr
 							lbTitle.Content = strGroup;
 							lbTitle.ToolTip = wrgDef.m_groupName;
 							wpGroup.Children.Add(lbTitle);
-							wpGroup.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0x33, 0xff, 0xff, 0xff));
+							wpGroup.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0x88, 0x00, 0x00, 0x00));
 							mx_valueFrame.Children.Add(wpGroup);
+
+							int numTakeBack = 0;
 
 							foreach (string rowName in wrgDef.m_lstRow)
 							{
@@ -254,13 +259,21 @@ namespace UIEditor.XmlOperation.XmlAttr
 								rbRow.ToolTip = rowName;
 								rbRow.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
 								rbRow.Checked += mx_rbRow_Checked;
-								rbRow.Unchecked += mx_rbRow_Unchecked;
 								rbRow.Margin = new Thickness(1);
 								rbRow.Padding = new Thickness(5);
 								wpGroup.Children.Add(rbRow);
 								mapRow.Add(rowName, rbRow);
+								m_mapRbGroupName.Add(rbRow, wrgDef.m_groupName);
+
+								int subNum;
+
+								if(int.TryParse(rowName, out subNum))
+								{
+									numTakeBack |= subNum;
+								}
 							}
 							m_mapRowGroup.Add(wrgDef.m_groupName, mapRow);
+							m_mapGroupTakeBack.Add(wrgDef.m_groupName, numTakeBack);
 						}
 					}
 				}
@@ -324,39 +337,36 @@ namespace UIEditor.XmlOperation.XmlAttr
 				m_value = iValue.ToString();
 			}
 		}
-		private int m_iLastValue;
 		void mx_rbRow_Checked(object sender, RoutedEventArgs e)
 		{
 			int iWtValue;
 
 			if (sender is RadioButton && int.TryParse(((RadioButton)sender).ToolTip.ToString(), out iWtValue))
 			{
-				int iValue;
+				RadioButton rbSender = (RadioButton)sender;
+				string groupName;
 
-				if (m_value != "" && int.TryParse(m_value, out iValue))
+				if(m_mapRbGroupName.TryGetValue(rbSender, out groupName) && groupName != null)
 				{
-					iValue |= iWtValue;
-					if (m_iLastValue != 0 && (iValue & m_iLastValue) != 0)
+					int iTakeBack;
+
+					if(m_mapGroupTakeBack.TryGetValue(groupName, out iTakeBack))
 					{
-						iValue -= m_iLastValue;
-						m_iLastValue = 0;
+						int iValue;
+
+						if (m_value != "" && int.TryParse(m_value, out iValue))
+						{
+							iValue &= (~iTakeBack);
+							iValue |= iWtValue;
+						}
+						else
+						{
+							iValue = iWtValue;
+						}
+
+						m_value = iValue.ToString();
 					}
 				}
-				else
-				{
-					iValue = iWtValue;
-				}
-
-				m_value = iValue.ToString();
-			}
-		}
-		void mx_rbRow_Unchecked(object sender, RoutedEventArgs e)
-		{
-			int iWtValue;
-
-			if (sender is RadioButton && int.TryParse(((RadioButton)sender).ToolTip.ToString(), out iWtValue))
-			{
-				m_iLastValue = iWtValue;
 			}
 		}
 	}

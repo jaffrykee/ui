@@ -191,6 +191,7 @@ namespace UIEditor.XmlOperation.XmlAttr
 
 								winNewSkin.ShowDialog();
 							}
+							MainWindow.s_pW.mx_showTextTab.IsChecked = true;
 						}
 						break;
 					case "image":

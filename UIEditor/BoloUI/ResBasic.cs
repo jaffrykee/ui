@@ -39,19 +39,24 @@ namespace UIEditor.BoloUI
 			IsExpanded = true;
 			if (m_curDeepDef != null)
 			{
-				if ((m_xe.Name == "skin" || m_xe.Name == "publicskin") && m_rootControl != null)
+				if ((m_xe.Name == "skin" || m_xe.Name == "publicskin") && m_xmlCtrl != null)
 				{
-					ResBasic nullPtr;
+					ResBasic resItem;
 
-					if (m_rootControl.m_mapSkin.TryGetValue(m_xe.GetAttribute("Name"), out nullPtr))
+					if (m_xmlCtrl.m_mapSkin.TryGetValue(m_xe.GetAttribute("Name"), out resItem))
 					{
-						string errorInfo = "<错误>文件:\"" + m_rootControl.m_openedFile.m_path + "\"中，存在重复Name的皮肤(" +
-							m_xe.GetAttribute("Name") + ")，前一个同名的皮肤将不能正确显示。\r\n";
+						string errorInfo = m_xmlCtrl.m_openedFile.m_path + " - 存在重名皮肤(" +
+							m_xe.GetAttribute("Name") + ")，前一个同名的皮肤将不能被正确引用。";
 
-						MainWindow.s_pW.mx_debug.Text += errorInfo;
-						Public.ErrorInfo.addToErrorInfo(errorInfo);
+						MainWindow.s_pW.mx_result.Inlines.Add(
+							new Public.ResultLink(Public.ResultType.RT_ERROR, errorInfo));
+						MainWindow.s_pW.mx_result.Inlines.Add(
+							new Public.ResultLink(Public.ResultType.RT_ERROR, "<重名皮肤1> ", resItem));
+						MainWindow.s_pW.mx_result.Inlines.Add(
+							new Public.ResultLink(Public.ResultType.RT_ERROR, "<重名皮肤2>\r\n", this));
+						//Public.ErrorInfo.addToErrorInfo(errorInfo);
 					}
-					m_rootControl.m_mapSkin[m_xe.GetAttribute("Name")] = this;
+					m_xmlCtrl.m_mapSkin[m_xe.GetAttribute("Name")] = this;
 					IsExpanded = false;
 				}
 				else
@@ -68,14 +73,14 @@ namespace UIEditor.BoloUI
 			ResBasic treeChild;
 			if (m_xe.Name == "BoloUI")
 			{
-				treeChild = new ResBasic(newXe, m_rootControl, MainWindow.s_pW.m_mapSkinTreeDef[newXe.Name]);
+				treeChild = new ResBasic(newXe, m_xmlCtrl, MainWindow.s_pW.m_mapSkinTreeDef[newXe.Name]);
 			}
 			else
 			{
-				treeChild = new ResBasic(newXe, m_rootControl, m_curDeepDef.m_mapEnChild[newXe.Name]);
+				treeChild = new ResBasic(newXe, m_xmlCtrl, m_curDeepDef.m_mapEnChild[newXe.Name]);
 			}
 
-			m_rootControl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe));
+			m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe));
 		}
 		void insertSkinItem_Click(object sender, RoutedEventArgs e)
 		{
@@ -105,7 +110,7 @@ namespace UIEditor.BoloUI
 						{
 							if (skinPtr != null)
 							{
-								this.Items.Add(new ResBasic(xe, m_rootControl, skinPtr, m_isSkinEditor));
+								this.Items.Add(new ResBasic(xe, m_xmlCtrl, skinPtr, m_isSkinEditor));
 								mx_imgFolder.Visibility = System.Windows.Visibility.Visible;
 							}
 						}
@@ -253,9 +258,9 @@ namespace UIEditor.BoloUI
 			{
 				MainWindow.s_pW.mx_treeFrame.SelectedItem = MainWindow.s_pW.mx_treeFrameSkin;
 			}
-			if (m_rootControl != null)
+			if (m_xmlCtrl != null)
 			{
-				m_rootControl.m_curItem = this;
+				m_xmlCtrl.m_curItem = this;
 				if (m_isSkinEditor == true)
 				{
 					if(MainWindow.s_pW.mx_skinEditor != null)
@@ -275,9 +280,9 @@ namespace UIEditor.BoloUI
 				}
 				else
 				{
-					if (m_rootControl != null && m_rootControl.m_skinViewCtrlUI != null)
+					if (m_xmlCtrl != null && m_xmlCtrl.m_skinViewCtrlUI != null)
 					{
-						ctrlUI = m_rootControl.m_skinViewCtrlUI;
+						ctrlUI = m_xmlCtrl.m_skinViewCtrlUI;
 					}
 					else
 					{
@@ -291,7 +296,7 @@ namespace UIEditor.BoloUI
 					skinDef.m_skinAttrList.clearRowValue();
 
 					skinDef.m_skinAttrList.refreshRowVisible();
-					skinDef.m_skinAttrList.m_xmlCtrl = m_rootControl;
+					skinDef.m_skinAttrList.m_xmlCtrl = m_xmlCtrl;
 					skinDef.m_skinAttrList.m_basic = this;
 					skinDef.m_skinAttrList.m_xe = m_xe;
 
@@ -330,11 +335,11 @@ namespace UIEditor.BoloUI
 				}
 				if (xeSkin != null)
 				{
-					if (m_rootControl.m_isOnlySkin)
+					if (m_xmlCtrl.m_isOnlySkin)
 					{
 						XmlElement xeView;
 
-						if (ctrlUI == null && m_rootControl.m_skinViewCtrlUI == null)
+						if (ctrlUI == null && m_xmlCtrl.m_skinViewCtrlUI == null)
 						{
 							xeView = MainWindow.s_pW.m_xeTest;
 						}
@@ -342,12 +347,12 @@ namespace UIEditor.BoloUI
 						{
 							if (ctrlUI != null)
 							{
-								m_rootControl.m_skinViewCtrlUI = ctrlUI;
+								m_xmlCtrl.m_skinViewCtrlUI = ctrlUI;
 							}
-							resetXeView(m_rootControl.m_skinViewCtrlUI, out xeView);
+							resetXeView(m_xmlCtrl.m_skinViewCtrlUI, out xeView);
 						}
 						((XmlElement)xeView).SetAttribute("skin", xeSkin.GetAttribute("Name"));
-						MainWindow.s_pW.updateXmlToGL(m_rootControl, xeView, false);
+						MainWindow.s_pW.updateXmlToGL(m_xmlCtrl, xeView, false);
 					}
 					//todo 更改皮肤预览
 				}

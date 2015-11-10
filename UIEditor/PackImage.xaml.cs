@@ -22,6 +22,41 @@ namespace UIEditor
 		public Dictionary<string, System.Drawing.Rectangle> m_mapImgRect;
 		public XmlControl m_xmlDef;
 
+		private int mt_poiX;
+		public int m_poiX
+		{
+			get { return mt_poiX; }
+			set
+			{
+				mt_poiX = value;
+				refreshWinStatus();
+			}
+		}
+		private int mt_poiY;
+		public int m_poiY
+		{
+			get { return mt_poiY; }
+			set
+			{
+				mt_poiY = value;
+				refreshWinStatus();
+			}
+		}
+		private string mt_namePng;
+		public string m_namePng
+		{
+			get { return mt_namePng; }
+			set
+			{
+				mt_namePng = value;
+				refreshWinStatus();
+			}
+		}
+
+		private void refreshWinStatus()
+		{
+			MainWindow.s_pW.mb_status = "( " + m_poiX + " , " + m_poiY + " )" + m_namePng;
+		}
 		static private void getMapImgRect(
 			XmlDocument docXml,
 			out Dictionary<string, System.Drawing.Rectangle> mapImgRect,
@@ -189,7 +224,9 @@ namespace UIEditor
 
 			if (imgHeight > 4096)
 			{
-				MainWindow.s_pW.mx_debug.Text += "<警告>图片尺寸过大，不提供预览功能\r\n";
+				MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_WARNING,
+					"图片尺寸过大，不提供预览功能\r\n"));
+
 				return;
 			}
 
@@ -245,14 +282,12 @@ namespace UIEditor
 
 		private void mx_canvas_MouseDown(object sender, MouseButtonEventArgs e)
 		{
-			int x = (int)Math.Round(e.GetPosition(mx_canvas).X);
-			int y = (int)Math.Round(e.GetPosition(mx_canvas).Y);
+			m_poiX = (int)Math.Round(e.GetPosition(mx_canvas).X);
+			m_poiY = (int)Math.Round(e.GetPosition(mx_canvas).Y);
 
-			MainWindow.s_pW.mx_debug.Text += "<坐标>(" + e.GetPosition(mx_canvas).X.ToString() + "," + 
-				e.GetPosition(mx_canvas).Y.ToString() + ")\r\n";
 			foreach (KeyValuePair<string, System.Drawing.Rectangle> pairImgRect in m_mapImgRect.ToList())
 			{
-				if(pairImgRect.Value.Contains(x, y))
+				if (pairImgRect.Value.Contains(m_poiX, m_poiY))
 				{
 					mx_selPath.Visibility = System.Windows.Visibility.Visible;
 					mx_selPath.Data = new RectangleGeometry(new Rect(
@@ -261,7 +296,7 @@ namespace UIEditor
 						pairImgRect.Value.Width,
 						pairImgRect.Value.Height
 					));
-					MainWindow.s_pW.mx_debug.Text += "<图片>Name:" + pairImgRect.Key + "\r\n";
+
 					if (e.ChangedButton == MouseButton.Right)
 					{
 						string pngPath = m_xmlDef.m_openedFile.m_path.Remove(m_xmlDef.m_openedFile.m_path.IndexOf(".")) +
@@ -276,20 +311,22 @@ namespace UIEditor
 							pngFileDef.mx_menu.IsOpen = true;
 						}
 					}
+					m_namePng = pairImgRect.Key;
 
 					return;
 				}
 			}
+			m_namePng = "";
 			mx_selPath.Visibility = System.Windows.Visibility.Collapsed;
 		}
 		private void mx_canvas_MouseMove(object sender, MouseEventArgs e)
 		{
-			int x = (int)Math.Round(e.GetPosition(mx_canvas).X);
-			int y = (int)Math.Round(e.GetPosition(mx_canvas).Y);
+			m_poiX = (int)Math.Round(e.GetPosition(mx_canvas).X);
+			m_poiY = (int)Math.Round(e.GetPosition(mx_canvas).Y);
 
 			foreach (KeyValuePair<string, System.Drawing.Rectangle> pairImgRect in m_mapImgRect.ToList())
 			{
-				if (pairImgRect.Value.Contains(x, y))
+				if (pairImgRect.Value.Contains(m_poiX, m_poiY))
 				{
 					mx_overPath.Visibility = System.Windows.Visibility.Visible;
 					mx_overPath.Data = new RectangleGeometry(

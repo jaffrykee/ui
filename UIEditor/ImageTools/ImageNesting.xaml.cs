@@ -135,7 +135,8 @@ namespace UIEditor.ImageTools
 			}
 			else
 			{
-				tbDebug = MainWindow.s_pW.mx_debug;
+				return;
+				//tbDebug = MainWindow.s_pW.mx_debug;
 			}
 			if (delLast)
 			{

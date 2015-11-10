@@ -30,13 +30,13 @@ namespace UIEditor.BoloUI
 			{
 				mt_curCtrl = value;
 
-				if(value.m_rootControl != null)
+				if(value.m_xmlCtrl != null)
 				{
 					string skinName = value.m_xe.GetAttribute("skin");
 
 					if (skinName != "")
 					{
-						object retSkin = value.m_rootControl.findSkin(skinName, out m_xmlPath);
+						object retSkin = value.m_xmlCtrl.findSkin(skinName, out m_xmlPath);
 
 						if(retSkin != null)
 						{
@@ -81,7 +81,8 @@ namespace UIEditor.BoloUI
 						}
 						else
 						{
-							MainWindow.s_pW.mx_debug.Text += "无法找到皮肤：\"" + skinName + "\"\r\n";
+							MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_ERROR,
+								"无法找到皮肤：\"" + skinName + "\"\r\n"));
 						}
 					}
 				}

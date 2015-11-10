@@ -128,6 +128,7 @@ namespace UIEditor
 				pW.mx_xmlText.Document = new FlowDocument();
 			}
 			pW.hiddenAllAttr();
+			//pW.mx_result.Inlines.Clear();
 		}
 		private void closeFileTab(object sender, RoutedEventArgs e)
 		{

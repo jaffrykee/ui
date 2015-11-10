@@ -55,7 +55,6 @@ namespace UIEditor
 			m_openedFile = fileDef;
 			m_openedFile.m_frame = this;
 
-			MainWindow.s_pW.mx_debug.Text += "=====" + m_openedFile.m_path + "=====\r\n";
 			try
 			{
 				m_xmlDoc = new XmlDocument();
@@ -111,18 +110,19 @@ namespace UIEditor
 			}
 			else
 			{
-				pW.mx_debug.Text += "<警告>文件：\"" + path + "\"不存在，请检查路径。\r\n";
+				MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_WARNING,
+					"文件：\"" + path + "\"不存在，请检查路径。\r\n"));
 			}
 		}
-		static public void changeSelectSkinAndFile(MainWindow pW, string path, string skinName, BoloUI.Basic ctrlUI = null)
+		static public void changeSelectSkinAndFile(string path, string skinName, BoloUI.Basic ctrlUI = null)
 		{
 			if (File.Exists(path))
 			{
 				OpenedFile skinFile;
 
 				//pW.openFileByPath(path, skinName);
-				pW.openFileByPath(path);
-				if(pW.m_mapOpenedFiles.TryGetValue(path, out skinFile))
+				MainWindow.s_pW.openFileByPath(path);
+				if (MainWindow.s_pW.m_mapOpenedFiles.TryGetValue(path, out skinFile))
 				{
 					if (skinFile.m_frame != null)
 					{
@@ -138,7 +138,8 @@ namespace UIEditor
 							}
 							else
 							{
-								pW.mx_debug.Text += "<警告>然而，并没有这个皮肤。(" + skinName + ")\r\n";
+								MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_WARNING,
+									"没有找到该皮肤。(" + skinName + ")\r\n"));
 							}
 						}
 					}
@@ -151,7 +152,8 @@ namespace UIEditor
 			}
 			else
 			{
-				pW.mx_debug.Text += "<警告>文件：\"" + path + "\"不存在，请检查路径。\r\n";
+				MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_WARNING,
+					"文件：\"" + path + "\"不存在，请检查路径。\r\n"));
 			}
 		}
 		public Dictionary<string, XmlElement> getSkinGroupMap()
@@ -249,11 +251,12 @@ namespace UIEditor
 			{
 				string path = MainWindow.s_pW.m_skinPath + "\\" + groupName + ".xml";
 
-				changeSelectSkinAndFile(MainWindow.s_pW, path, skinName, ctrlUI);
+				changeSelectSkinAndFile(path, skinName, ctrlUI);
 			}
 			else
 			{
-				MainWindow.s_pW.mx_debug.Text += "<警告>然而，并没有这个皮肤。(" + skinName + ")\r\n";
+				MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_WARNING,
+					"没有找到该皮肤。(" + skinName + ")\r\n"));
 			}
 
 			return false;
@@ -315,19 +318,24 @@ namespace UIEditor
 							{
 								if (xeSkin.GetAttribute("Name") != "")
 								{
-									string nullStr;
-									if (!m_mapSkinLink.TryGetValue(xeSkin.GetAttribute("Name"), out nullStr))
+									string skinName;
+									if (!m_mapSkinLink.TryGetValue(xeSkin.GetAttribute("Name"), out skinName))
 									{
 										m_mapSkinLink.Add(xeSkin.GetAttribute("Name"), skinGroupName);
 									}
 									else
 									{
-										m_mapSkinLink[xeSkin.GetAttribute("Name")] = skinGroupName;
-										string errorInfo = "<错误>文件:\"" + path + "\"中，存在重复Name的皮肤(" +
-											xeSkin.GetAttribute("Name") + ")，前一个同名的皮肤将不能正确显示。\r\n";
+										string oldSkinPath = MainWindow.s_pW.m_skinPath + "\\" + skinName + ".xml";
+										string newSkinPath = MainWindow.s_pW.m_skinPath + "\\" + skinGroupName + ".xml";
 
-										MainWindow.s_pW.mx_debug.Text += errorInfo;
-										//Public.ErrorInfo.addToErrorInfo(errorInfo);
+										m_mapSkinLink[xeSkin.GetAttribute("Name")] = skinGroupName;
+
+										MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_WARNING,
+											"<" + oldSkinPath + ">和", new Public.SkinLinkDef_T(oldSkinPath, xeSkin.GetAttribute("Name"))));
+										MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_WARNING,
+											"<" + path + "> - ", new Public.SkinLinkDef_T(newSkinPath, xeSkin.GetAttribute("Name"))));
+										MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_WARNING,
+											"存在同名皮肤引用：" + xeSkin.GetAttribute("Name") + "。\r\n"));
 									}
 								}
 							}
@@ -340,7 +348,8 @@ namespace UIEditor
 				//不存在
 				if (skinGroupName != "publicskin")
 				{
-					MainWindow.s_pW.mx_debug.Text += "<警告>皮肤组：\"" + skinGroupName + "\"不存在，请检查路径：\"" + path + "\"。\r\n";
+					MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_WARNING,
+						"皮肤组：\"" + skinGroupName + "\"不存在，请检查路径：\"" + path + "\"。\r\n"));
 				}
 			}
 		}
@@ -770,7 +779,10 @@ namespace UIEditor
 										{
 											ResBasic treeChild = new ResBasic(xe, this, skinPtr);
 
-											m_treeSkin.Items.Add(treeChild);
+											if (xe.Name != "skin" && xe.Name != "publicskin")
+											{
+												m_treeSkin.Items.Add(treeChild);
+											}
 											if (xe.Name == "skingroup")
 											{
 												refreshSkinDicByGroupName(xe.GetAttribute("Name"));
@@ -791,7 +803,8 @@ namespace UIEditor
 								}
 								else
 								{
-									MainWindow.s_pW.mx_debug.Text += "<警告>然而，并没有这个皮肤。(" + m_openedFile.m_preViewSkinName + ")\r\n";
+									MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_WARNING,
+										"没有找到该皮肤。(" + m_openedFile.m_preViewSkinName + ")\r\n"));
 								}
 							}
 						}
@@ -807,11 +820,11 @@ namespace UIEditor
 							{
 								mx_root.AddChild(new PackImage(this, false));
 							}
-							MainWindow.s_pW.mx_debug.Text += ("<提示>todo。" + "\r\n");
 						}
 						break;
 					default:
-						MainWindow.s_pW.mx_debug.Text += ("<错误>这不是一个有效的BoloUI或UIImageResource文件。" + "\r\n");
+						MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_ERROR,
+							"这不是一个有效的BoloUI或UIImageResource文件。\r\n"));
 						break;
 				}
 				if(m_showGL)
@@ -825,7 +838,8 @@ namespace UIEditor
 			}
 			else
 			{
-				MainWindow.s_pW.mx_debug.Text += ("<错误>xml文件格式错误。" + "\r\n");
+				MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_ERROR,
+					"xml文件格式错误。\r\n"));
 			}
 		}
 
