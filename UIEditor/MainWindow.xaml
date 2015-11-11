@@ -340,10 +340,41 @@
 						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
 								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
 								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
-						<TextBlock Padding="5,0,0,0" VerticalAlignment="Center">宽：</TextBlock>
-						<TextBox Name="mx_screenWidth" TextChanged="mx_screenSize_TextChanged" Width="50" Height="20"></TextBox>
-						<TextBlock Padding="5,0,0,0" VerticalAlignment="Center">高：</TextBlock>
-						<TextBox Name="mx_screenHeight" Margin="0,0,5,0" TextChanged="mx_screenSize_TextChanged" Width="50" Height="20"></TextBox>
+						<TextBlock Padding="5,0,0,0" VerticalAlignment="Center">分辨率：</TextBlock>
+						<ComboBox Name="mx_resolution" Margin="5" SelectedIndex="2" SelectionChanged="mx_resolution_SelectionChanged">
+							<ComboBoxItem>480 x 270</ComboBoxItem>
+							<ComboBoxItem>800 x 600</ComboBoxItem>
+							<ComboBoxItem>960 x 540</ComboBoxItem>
+							<ComboBoxItem>1024 x 768</ComboBoxItem>
+							<ComboBoxItem>1134 x 640</ComboBoxItem>
+							<ComboBoxItem>1440 x 900</ComboBoxItem>
+							<ComboBoxItem>1680 x 1050</ComboBoxItem>
+						</ComboBox>
+						<CheckBox Name="mx_isMoba"
+								  VerticalAlignment="Center"
+								  Checked="mx_isMoba_Checked"
+								  Unchecked="mx_isMoba_Unchecked">
+							延展屏幕
+						</CheckBox>
+						<TextBlock Name="mx_rslBasicName"
+								   Padding="5,0,0,0"
+								   VerticalAlignment="Center"
+								   Visibility="{Binding ElementName=mx_resolutionBasic, Path=Visibility}">
+							延展基准分辨率：
+						</TextBlock>
+						<ComboBox Name="mx_resolutionBasic"
+								  Margin="5"
+								  SelectedIndex="2"
+								  Visibility="Collapsed"
+								  SelectionChanged="mx_resolutionBasic_SelectionChanged">
+							<ComboBoxItem>480 x 270</ComboBoxItem>
+							<ComboBoxItem>800 x 600</ComboBoxItem>
+							<ComboBoxItem>960 x 540</ComboBoxItem>
+							<ComboBoxItem>1024 x 768</ComboBoxItem>
+							<ComboBoxItem>1134 x 640</ComboBoxItem>
+							<ComboBoxItem>1440 x 900</ComboBoxItem>
+							<ComboBoxItem>1680 x 1050</ComboBoxItem>
+						</ComboBox>
 						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
 								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
 								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
@@ -565,7 +596,13 @@
 						<RowDefinition Height="auto"/>
 						<RowDefinition Height="*"/>
 					</Grid.RowDefinitions>
-					<Button Grid.Row="0" Margin="2" Height="20" Width="50" HorizontalAlignment="Left">
+					<Button Name="mx_clearResult"
+							Grid.Row="0"
+							Margin="2"
+							Height="20"
+							Width="50"
+							HorizontalAlignment="Left"
+							Click="mx_clearResult_Click">
 						清空
 					</Button>
 					<RichTextBox Name="mx_resultFrame"

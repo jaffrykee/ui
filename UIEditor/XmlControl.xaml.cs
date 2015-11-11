@@ -28,6 +28,7 @@ namespace UIEditor
 		//以baseID为索引的UI们
 		public Dictionary<string, BoloUI.Basic> m_mapCtrlUI;
 		public Dictionary<string, string> m_mapSkinLink;
+		public Dictionary<string, long> m_mapImageSize;
 		public Dictionary<string, BoloUI.ResBasic> m_mapSkin;
 		public Dictionary<XmlElement, XmlItem> m_mapXeItem;
 		public Dictionary<Run, XmlItem> m_mapRunItem;
@@ -339,6 +340,25 @@ namespace UIEditor
 									}
 								}
 							}
+							else if (xeSkin.Name == "resource" || xeSkin.Name == "publicresource")
+							{
+								if (xeSkin.GetAttribute("name") != "")
+								{
+									string imgName = xeSkin.GetAttribute("name");
+									string imgPath = MainWindow.s_pW.m_imagePath + "\\" + imgName + ".tga";
+									long imgSize;
+
+									if (!m_mapImageSize.TryGetValue(imgPath, out imgSize))
+									{
+										if (File.Exists(imgPath))
+										{
+											FileInfo fiImage = new FileInfo(imgPath);
+
+											m_mapImageSize.Add(imgPath, fiImage.Length);
+										}
+									}
+								}
+							}
 						}
 					}
 				}
@@ -362,6 +382,7 @@ namespace UIEditor
 		public void refreshSkinDicForAll()
 		{
 			m_mapSkinLink.Clear();
+			m_mapImageSize.Clear();
 			if (m_xeRoot != null && m_xeRoot.Name == "BoloUI")
 			{
 				foreach (XmlNode xnf in m_xeRoot.ChildNodes)
@@ -378,6 +399,13 @@ namespace UIEditor
 				}
 				refreshSkinDicByGroupName("publicskin");
 			}
+			long szSum = 0;
+			foreach(KeyValuePair<string, long> pairImageSize in m_mapImageSize.ToList())
+			{
+				szSum += pairImageSize.Value;
+			}
+			double szMb = (double)szSum / 1024 / 1024;
+			MainWindow.s_pW.mb_status2 = "占用内存: " + szMb.ToString() + " MB";
 		}
 		void mx_newRun_MouseDown(object sender, MouseButtonEventArgs e)
 		{
@@ -730,6 +758,7 @@ namespace UIEditor
 		{
 			m_mapCtrlUI = new Dictionary<string, BoloUI.Basic>();
 			m_mapSkinLink = new Dictionary<string, string>();
+			m_mapImageSize = new Dictionary<string, long>();
 			m_mapSkin = new Dictionary<string, BoloUI.ResBasic>();
 			m_mapXeItem = new Dictionary<XmlElement, XmlItem>();
 			m_isOnlySkin = true;
@@ -841,6 +870,7 @@ namespace UIEditor
 				MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_ERROR,
 					"xml文件格式错误。\r\n"));
 			}
+			refreshSkinDicForAll();
 		}
 
 		static public void addEventNodeByTemplateXmlElement(Dictionary<string, string> mapEvent, XmlElement xeTmpl)

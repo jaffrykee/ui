@@ -5,7 +5,9 @@
 			  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			  mc:Ignorable="d"
 			  Name="mx_root"
-			  Style="{StaticResource WinFormsTreeViewStyle}">
+			  Style="{StaticResource WinFormsTreeViewStyle}"
+			  GotFocus="mx_root_GotFocus"
+			  LostFocus="mx_root_LostFocus">
 	<TreeViewItem.Header>
 		<Grid>
 			<RadioButton Name="mx_radio"

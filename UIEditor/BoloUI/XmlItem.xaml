@@ -22,7 +22,8 @@
 		<ContextMenu Name="mx_menu" Loaded="mx_menu_Loaded" Unloaded="mx_menu_Unloaded">
 			<MenuItem Name="mx_addNode" Header="添加节点" Loaded="mx_addNode_Loaded"/>
 			<MenuItem Name="mx_addTmpl" Header="将该控件作为模板..." Click="mx_addTmpl_Click"/>
-			<MenuItem Name="mx_batchUpdate" Header="批量修改" Click="mx_batchUpdate_Click" Visibility="Collapsed"/>
+			<MenuItem Name="mx_batchUpdate" Header="批量修改" Click="mx_batchUpdate_Click" IsEnabled="False"/>
+			<MenuItem Name="mx_checkOverflow" Header="检测溢出" Click="mx_checkOverflow_Click" IsEnabled="False"/>
 			<Separator/>
 			<MenuItem Name="mx_cut" Header="剪切" InputGestureText="Ctrl+X" Click="mx_cut_Click"/>
 			<MenuItem Name="mx_copy" Header="复制" InputGestureText="Ctrl+C" Click="mx_copy_Click"/>

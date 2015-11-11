@@ -55,7 +55,8 @@ namespace UIEditor
 
 		private void refreshWinStatus()
 		{
-			MainWindow.s_pW.mb_status = "( " + m_poiX + " , " + m_poiY + " )" + m_namePng;
+			MainWindow.s_pW.mb_status1 = "( " + m_poiX + " , " + m_poiY + " )";
+			MainWindow.s_pW.mb_status2 = m_namePng;
 		}
 		static private void getMapImgRect(
 			XmlDocument docXml,

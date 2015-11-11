@@ -89,6 +89,11 @@ namespace UIEditor
 
 		public MsgManager m_msgMng;
 
+		private void refreshScreenStatus()
+		{
+			updateGL(m_screenWidth.ToString() + ":" + m_screenHeight.ToString() + ":" + m_isMoba.ToString() + ":" +
+				m_screenWidthBasic.ToString() + ":" + m_screenHeightBasic.ToString(), W2GTag.W2G_VIEWSIZE);
+		}
 		private int mt_screenWidth;
 		public int m_screenWidth
 		{
@@ -99,7 +104,7 @@ namespace UIEditor
 				if(mx_scrollGrid != null)
 				{
 					mx_scrollGrid.Width = value;
-					updateGL(mt_screenWidth.ToString() + ":" + mt_screenHeight.ToString(), W2GTag.W2G_VIEWSIZE);
+					refreshScreenStatus();
 				}
 			}
 		}
@@ -113,8 +118,38 @@ namespace UIEditor
 				if(mx_scrollGrid != null)
 				{
 					mx_scrollGrid.Height = value;
-					updateGL(mt_screenWidth.ToString() + ":" + mt_screenHeight.ToString(), W2GTag.W2G_VIEWSIZE);
+					refreshScreenStatus();
 				}
+			}
+		}
+		private bool mt_isMoba;
+		public bool m_isMoba
+		{
+			get { return mt_isMoba; }
+			set
+			{
+				mt_isMoba = value;
+				refreshScreenStatus();
+			}
+		}
+		private int mt_screenWidthBasic;
+		public int m_screenWidthBasic
+		{
+			get { return mt_screenWidthBasic; }
+			set
+			{
+				mt_screenWidthBasic = value;
+				refreshScreenStatus();
+			}
+		}
+		private int mt_screenHeightBasic;
+		public int m_screenHeightBasic
+		{
+			get { return mt_screenHeightBasic; }
+			set
+			{
+				mt_screenHeightBasic = value;
+				refreshScreenStatus();
 			}
 		}
 
@@ -143,16 +178,33 @@ namespace UIEditor
 		public bool m_isDebug;
 		public string m_pathGlApp;
 
-		private string mt_status;
-		public string mb_status{
+		private void refreshStatusBar()
+		{
+			mx_status.Text = mb_status1 + "\t" + mb_status2;
+		}
+		private string mt_status1;
+		public string mb_status1{
 			get
 			{
-				return mt_status;
+				return mt_status1;
 			}
 			set
 			{
-				mt_status = value;
-				mx_status.Text = value;
+				mt_status1 = value;
+				refreshStatusBar();
+			}
+		}
+		private string mt_status2;
+		public string mb_status2
+		{
+			get
+			{
+				return mt_status2;
+			}
+			set
+			{
+				mt_status2 = value;
+				refreshStatusBar();
 			}
 		}
 
@@ -169,13 +221,18 @@ namespace UIEditor
 			m_tLast = 0;
 			m_hitCount = 0;
 			mx_skinEditor = new SkinEditor();
+			mt_status1 = "";
+			mt_status2 = "";
 
 			InitializeComponent();
 			this.DataContext = this;
 
-			mb_status = "就绪";
+			mb_status1 = "就绪";
 			m_screenWidth = 960;
 			m_screenHeight = 540;
+			m_isMoba = false;
+			m_screenWidthBasic = 960;
+			m_screenHeightBasic = 540;
 			m_mapSkinAllDef = new Dictionary<string, SkinDef_T>();
 			m_dpiSysX = 96.0f;
 			m_dpiSysY = 96.0f;
@@ -891,7 +948,7 @@ namespace UIEditor
 						int pX = (int)lParam & 0xFFFF;
 						int pY = ((int)lParam >> 16) & 0xFFFF;
 
-						mb_status = "( " + pX + " , " + pY + " )";
+						mb_status1 = "( " + pX + " , " + pY + " )";
 						if(mx_isViewMode.IsChecked == true)
 						{
 							break;
@@ -1054,6 +1111,16 @@ namespace UIEditor
 				case WM_RBUTTONDOWN:
 					break;
 				case WM_RBUTTONUP:
+					{
+						XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
+
+						if (curXmlCtrl != null && curXmlCtrl.m_curItem != null)
+						{
+							curXmlCtrl.m_curItem.mx_menu.PlacementTarget = mx_GLCtrl;
+							curXmlCtrl.m_curItem.mx_menu.Placement = System.Windows.Controls.Primitives.PlacementMode.MousePoint;
+							curXmlCtrl.m_curItem.mx_menu.IsOpen = true;
+						}
+					}
 					break;
 				case WM_RBUTTONDBLCLK:
 					break;
@@ -2016,18 +2083,56 @@ namespace UIEditor
 			s_y = mx_scrollFrame.VerticalOffset;
 			MoveWindow(m_msgMng.m_hwndGL, (int)-s_x, (int)-s_y, m_screenWidth, m_screenHeight, true);
 		}
-		private void mx_screenSize_TextChanged(object sender, TextChangedEventArgs e)
+		private void getSizeByResolutionString(string strScreen, out int w, out int h)
 		{
-			if (mx_screenWidth != null && mx_screenHeight != null && mx_screenWidth.Text != "" && mx_screenHeight.Text != "")
-			{
-				int tw, th;
+			string[] sArray = Regex.Split(strScreen, " x ", RegexOptions.IgnoreCase);
 
-				if(int.TryParse(mx_screenWidth.Text, out tw) && int.TryParse(mx_screenHeight.Text, out th))
-				{
-					m_screenWidth = tw;
-					m_screenHeight = th;
-				}
+			if(sArray.Count() >= 2)
+			{
+				int.TryParse(sArray[0], out w);
+				int.TryParse(sArray[1], out h);
 			}
+			else
+			{
+				w = 960;
+				h = 540;
+			}
+		}
+		private void mx_resolution_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (mx_resolution.SelectedItem != null && mx_resolution.SelectedItem is ComboBoxItem)
+			{
+				ComboBoxItem cbiSel = (ComboBoxItem)mx_resolution.SelectedItem;
+				string strScreen = cbiSel.Content.ToString();
+				int w, h;
+
+				getSizeByResolutionString(strScreen, out w, out h);
+				m_screenWidth = w;
+				m_screenHeight = h;
+			}
+		}
+		private void mx_resolutionBasic_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (mx_resolutionBasic.SelectedItem != null && mx_resolutionBasic.SelectedItem is ComboBoxItem)
+			{
+				ComboBoxItem cbiSel = (ComboBoxItem)mx_resolutionBasic.SelectedItem;
+				string strScreen = cbiSel.Content.ToString();
+				int w, h;
+
+				getSizeByResolutionString(strScreen, out w, out h);
+				m_screenWidthBasic = w;
+				m_screenHeightBasic = h;
+			}
+		}
+		private void mx_isMoba_Checked(object sender, RoutedEventArgs e)
+		{
+			m_isMoba = true;
+			mx_resolutionBasic.Visibility = System.Windows.Visibility.Visible;
+		}
+		private void mx_isMoba_Unchecked(object sender, RoutedEventArgs e)
+		{
+			m_isMoba = false;
+			mx_resolutionBasic.Visibility = System.Windows.Visibility.Collapsed;
 		}
 		public void refreshCurFile()
 		{
@@ -2484,6 +2589,15 @@ namespace UIEditor
 					curXmlCtrl.m_curItem.gotoSelectXe();
 				}
 			}
+		}
+		private void mx_clearResult_Click(object sender, RoutedEventArgs e)
+		{
+			mx_result.Inlines.Clear();
+		}
+
+		private void mx_resolutionBasic_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+		{
+
 		}
 	}
 

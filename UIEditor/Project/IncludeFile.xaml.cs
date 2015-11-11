@@ -497,5 +497,13 @@ namespace UIEditor.Project
 
 			return null;
 		}
+		private void mx_root_GotFocus(object sender, RoutedEventArgs e)
+		{
+			mx_radio.IsChecked = true;
+		}
+		private void mx_root_LostFocus(object sender, RoutedEventArgs e)
+		{
+			mx_radio.IsChecked = false;
+		}
 	}
 }

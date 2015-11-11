@@ -52,19 +52,60 @@ namespace UIEditor.BoloUI
 							{
 								foreach(KeyValuePair<string, string> pairPrefix in ctrlDef.m_mapApprPrefix.ToList())
 								{
-									ComboBoxItem cbItem = new ComboBoxItem();
-
-									cbItem.Content = pairPrefix.Value;
-									if (pairPrefix.Key == "_def")
+									if (ctrlName == "tabPanel" && pairPrefix.Key == "t")
 									{
-										cbItem.ToolTip = "";
+										int childCount = m_curCtrl.m_xe.ChildNodes.Count;
+
+										if (childCount > 0)
+										{
+											for (int i = 0; i < childCount; i++)
+											{
+												ComboBoxItem cbItem = new ComboBoxItem();
+
+												cbItem.Content = pairPrefix.Value + i.ToString();
+												cbItem.ToolTip = pairPrefix.Key + i.ToString();
+												cbItem.Selected += mx_cbItemPrefix_Selected;
+												mx_skinApprPre.Items.Add(cbItem);
+											}
+										}
+									}
+									else if (ctrlName == "progress" && pairPrefix.Key == "step")
+									{
+										string strNum = m_curCtrl.m_xe.GetAttribute("valueStepNum");
+										int num;
+
+										if(strNum != "" && int.TryParse(strNum, out num))
+										{
+											if (num > 0)
+											{
+												for (int i = 0; i < num; i++)
+												{
+													ComboBoxItem cbItem = new ComboBoxItem();
+
+													cbItem.Content = pairPrefix.Value + i.ToString();
+													cbItem.ToolTip = pairPrefix.Key + i.ToString();
+													cbItem.Selected += mx_cbItemPrefix_Selected;
+													mx_skinApprPre.Items.Add(cbItem);
+												}
+											}
+										}
 									}
 									else
 									{
-										cbItem.ToolTip = pairPrefix.Key;
+										ComboBoxItem cbItem = new ComboBoxItem();
+
+										cbItem.Content = pairPrefix.Value;
+										if (pairPrefix.Key == "_def")
+										{
+											cbItem.ToolTip = "";
+										}
+										else
+										{
+											cbItem.ToolTip = pairPrefix.Key;
+										}
+										cbItem.Selected += mx_cbItemPrefix_Selected;
+										mx_skinApprPre.Items.Add(cbItem);
 									}
-									cbItem.Selected += mx_cbItemPrefix_Selected;
-									mx_skinApprPre.Items.Add(cbItem);
 								}
 								foreach (KeyValuePair<string, string> pairSuffix in ctrlDef.m_mapApprSuffix.ToList())
 								{

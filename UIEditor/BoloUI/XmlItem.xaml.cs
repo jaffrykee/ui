@@ -143,7 +143,6 @@ namespace UIEditor.BoloUI
 						#region
 						if (m_xe.Name == "BoloUI")
 						{
-							CtrlDef_T panelCtrlDef;
 
 							mx_cut.IsEnabled = false;
 							mx_copy.IsEnabled = false;
@@ -152,6 +151,8 @@ namespace UIEditor.BoloUI
 							mx_moveDown.IsEnabled = false;
 							if (MainWindow.s_pW.m_xePaste != null)
 							{
+								CtrlDef_T panelCtrlDef;
+
 								if (MainWindow.s_pW.m_mapPanelCtrlDef.TryGetValue(MainWindow.s_pW.m_xePaste.Name, out panelCtrlDef))
 								{
 									mx_paste.IsEnabled = true;
@@ -180,6 +181,14 @@ namespace UIEditor.BoloUI
 							else
 							{
 								mx_paste.IsEnabled = false;
+							}
+
+							CtrlDef_T panelCtrlDef;
+
+							if (MainWindow.s_pW.m_mapPanelCtrlDef.TryGetValue(m_xe.Name, out panelCtrlDef))
+							{
+								mx_checkOverflow.IsEnabled = true;
+								mx_batchUpdate.IsEnabled = true;
 							}
 						}
 						#endregion
@@ -750,7 +759,6 @@ namespace UIEditor.BoloUI
 					{
 						showTmplGroup(pairCtrlDef.Key);
 					}
-					mx_batchUpdate.Visibility = System.Windows.Visibility.Visible;
 				}
 				else
 				{
@@ -892,6 +900,50 @@ namespace UIEditor.BoloUI
 		{
 			MenuWin.BatchUpdate winBatchUpdate = new MenuWin.BatchUpdate(this);
 			winBatchUpdate.ShowDialog();
+		}
+		private void checkOverflow(Basic ctrlFrame)
+		{
+			CtrlDef_T ctrlDef;
+			System.Drawing.Rectangle rectFrame = new System.Drawing.Rectangle(
+				ctrlFrame.m_selX, ctrlFrame.m_selY, ctrlFrame.m_selW, ctrlFrame.m_selH);
+
+			if (ctrlFrame != null && ctrlFrame.m_xe != null && ctrlFrame.m_xe.Name != "" &&
+				MainWindow.s_pW.m_mapPanelCtrlDef.TryGetValue(ctrlFrame.m_xe.Name, out ctrlDef))
+			{
+				foreach(object item in ctrlFrame.Items)
+				{
+					if(item is Basic)
+					{
+						Basic ctrlItem = (Basic)item;
+
+						if (ctrlItem.m_xe.GetAttribute("visible") != "false")
+						{
+							System.Drawing.Rectangle rectItem = new System.Drawing.Rectangle(
+								ctrlItem.m_selX, ctrlItem.m_selY, ctrlItem.m_selW, ctrlItem.m_selH);
+
+							if(!rectFrame.Contains(rectItem))
+							{
+								MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_INFO,
+									"[" + ctrlItem.mx_radio.Content.ToString() + "]", ctrlItem));
+								MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_INFO,
+									" 超出了 "));
+								MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_INFO,
+									"[" + ctrlFrame.mx_radio.Content.ToString() + "]", ctrlFrame));
+								MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_INFO,
+									" 的范围。\r\n"));
+							}
+							checkOverflow(ctrlItem);
+						}
+					}
+				}
+			}
+		}
+		private void mx_checkOverflow_Click(object sender, RoutedEventArgs e)
+		{
+			if (this is Basic)
+			{
+				checkOverflow((Basic)this);
+			}
 		}
 	}
 }
