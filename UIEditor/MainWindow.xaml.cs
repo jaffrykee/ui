@@ -123,25 +123,8 @@ namespace UIEditor
 			}
 		}
 		private bool mt_isMoba;
-		public bool m_isMoba
-		{
-			get { return mt_isMoba; }
-			set
-			{
-				mt_isMoba = value;
-				refreshScreenStatus();
-			}
-		}
-		private int mt_screenWidthBasic;
-		public int m_screenWidthBasic
-		{
-			get { return mt_screenWidthBasic; }
-			set
-			{
-				mt_screenWidthBasic = value;
-				refreshScreenStatus();
-			}
-		}
+		public bool m_isMoba;
+		public int m_screenWidthBasic;
 		private int mt_screenHeightBasic;
 		public int m_screenHeightBasic
 		{
@@ -180,7 +163,7 @@ namespace UIEditor
 
 		private void refreshStatusBar()
 		{
-			mx_status.Text = mb_status1 + "\t" + mb_status2;
+			mx_status.Text = mb_status1 + "\t" + mb_status2 + "\t" + mb_status3;
 		}
 		private string mt_status1;
 		public string mb_status1{
@@ -207,6 +190,19 @@ namespace UIEditor
 				refreshStatusBar();
 			}
 		}
+		private string mt_status3;
+		public string mb_status3
+		{
+			get
+			{
+				return mt_status3;
+			}
+			set
+			{
+				mt_status3 = value;
+				refreshStatusBar();
+			}
+		}
 
 		public MainWindow()
 		{
@@ -223,8 +219,10 @@ namespace UIEditor
 			mx_skinEditor = new SkinEditor();
 			mt_status1 = "";
 			mt_status2 = "";
+			mt_status3 = "";
 
 			InitializeComponent();
+			m_isLoadOver = true;
 			this.DataContext = this;
 
 			mb_status1 = "就绪";
@@ -1145,9 +1143,34 @@ namespace UIEditor
 						case G2WTag.G2W_HWND:
 							m_msgMng.m_hwndGL = wParam;
 							break;
+						case G2WTag.G2W_DRAW_COUNT:
+							{
+								string[] sArray = Regex.Split(strData, ":", RegexOptions.IgnoreCase);
+								
+								if (sArray.Length >= 2)
+								{
+									int imageCount = 0;
+									int textCount = 0;
+									int sumCount = 0;
+
+
+									if(int.TryParse(sArray[0], out imageCount))
+									{
+										sumCount += imageCount;
+									}
+									if (int.TryParse(sArray[1], out textCount))
+									{
+										sumCount += textCount;
+									}
+									mb_status3 = "图片绘制次数：" + imageCount.ToString() + "\t文字绘制次数：" + textCount.ToString()
+										+ "\t绘制次数总计：" + sumCount.ToString();
+								}
+							}
+							break;
 						case G2WTag.G2W_EVENT:
 							{
 								string[] sArray = Regex.Split(strData, ":", RegexOptions.IgnoreCase);
+
 								if (sArray.Length >= 2)
 								{
 									string id = sArray[0];
@@ -2098,8 +2121,13 @@ namespace UIEditor
 				h = 540;
 			}
 		}
-		private void mx_resolution_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		public bool m_isLoadOver;
+		public void refreshResolution()
 		{
+			if (m_isLoadOver != true)
+			{
+				return;
+			}
 			if (mx_resolution.SelectedItem != null && mx_resolution.SelectedItem is ComboBoxItem)
 			{
 				ComboBoxItem cbiSel = (ComboBoxItem)mx_resolution.SelectedItem;
@@ -2110,9 +2138,6 @@ namespace UIEditor
 				m_screenWidth = w;
 				m_screenHeight = h;
 			}
-		}
-		private void mx_resolutionBasic_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
 			if (mx_resolutionBasic.SelectedItem != null && mx_resolutionBasic.SelectedItem is ComboBoxItem)
 			{
 				ComboBoxItem cbiSel = (ComboBoxItem)mx_resolutionBasic.SelectedItem;
@@ -2123,16 +2148,34 @@ namespace UIEditor
 				m_screenWidthBasic = w;
 				m_screenHeightBasic = h;
 			}
+			if(mx_isMoba.IsChecked == true)
+			{
+				m_isMoba = true;
+				mx_resolutionBasic.Visibility = System.Windows.Visibility.Visible;
+			}
+			else
+			{
+				m_isMoba = false;
+				mx_resolutionBasic.Visibility = System.Windows.Visibility.Collapsed;
+			}
+
+			refreshScreenStatus();
+		}
+		private void mx_resolution_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			refreshResolution();
+		}
+		private void mx_resolutionBasic_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			refreshResolution();
 		}
 		private void mx_isMoba_Checked(object sender, RoutedEventArgs e)
 		{
-			m_isMoba = true;
-			mx_resolutionBasic.Visibility = System.Windows.Visibility.Visible;
+			refreshResolution();
 		}
 		private void mx_isMoba_Unchecked(object sender, RoutedEventArgs e)
 		{
-			m_isMoba = false;
-			mx_resolutionBasic.Visibility = System.Windows.Visibility.Collapsed;
+			refreshResolution();
 		}
 		public void refreshCurFile()
 		{

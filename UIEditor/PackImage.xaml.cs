@@ -21,6 +21,8 @@ namespace UIEditor
 	{
 		public Dictionary<string, System.Drawing.Rectangle> m_mapImgRect;
 		public XmlControl m_xmlDef;
+		public int m_imageWidth;
+		public int m_imageHeight;
 
 		private int mt_poiX;
 		public int m_poiX
@@ -55,8 +57,15 @@ namespace UIEditor
 
 		private void refreshWinStatus()
 		{
-			MainWindow.s_pW.mb_status1 = "( " + m_poiX + " , " + m_poiY + " )";
-			MainWindow.s_pW.mb_status2 = m_namePng;
+			MainWindow.s_pW.mb_status1 = "( " + m_poiX + " , " + m_poiY + " )\t图片总尺寸： " + m_imageWidth + " x " + m_imageHeight;
+			string pngPath = MainWindow.s_pW.m_imagePath + "\\" + System.IO.Path.GetFileNameWithoutExtension(m_xmlDef.m_openedFile.m_path)
+				+ "\\" + m_namePng + ".png";
+
+			if(System.IO.File.Exists(pngPath))
+			{
+				System.IO.FileInfo fi = new System.IO.FileInfo(pngPath);
+			}
+			MainWindow.s_pW.mb_status2 = pngPath;
 		}
 		static private void getMapImgRect(
 			XmlDocument docXml,
@@ -210,20 +219,18 @@ namespace UIEditor
 
 			System.Drawing.Bitmap tgaImg;
 			BitmapSource imgSource;
-			int imgWidth;
-			int imgHeight;
 
-			refreshImagePack(parent.m_openedFile.m_path, isRePack, out m_mapImgRect, out tgaImg, out imgWidth, out imgHeight);
+			refreshImagePack(parent.m_openedFile.m_path, isRePack, out m_mapImgRect, out tgaImg, out m_imageWidth, out m_imageHeight);
 
 			if (parent.m_parent != null)
 			{
-				parent.m_parent.itemFrame.Width = imgWidth;
-				parent.m_parent.itemFrame.Height = imgHeight;
+				parent.m_parent.itemFrame.Width = m_imageWidth;
+				parent.m_parent.itemFrame.Height = m_imageHeight;
 			}
-			mx_canvas.Width = imgWidth;
-			mx_canvas.Height = imgHeight;
+			mx_canvas.Width = m_imageWidth;
+			mx_canvas.Height = m_imageHeight;
 
-			if (imgHeight > 4096)
+			if (m_imageHeight > 4096)
 			{
 				MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_WARNING,
 					"图片尺寸过大，不提供预览功能\r\n"));
@@ -313,6 +320,8 @@ namespace UIEditor
 						}
 					}
 					m_namePng = pairImgRect.Key;
+					MainWindow.s_pW.mb_status3 = ("png图片显示范围：( " + pairImgRect.Value.X.ToString() + " , " + pairImgRect.Value.Y.ToString() + " ) " +
+						pairImgRect.Value.Width.ToString() + " x " + pairImgRect.Value.Height.ToString());
 
 					return;
 				}

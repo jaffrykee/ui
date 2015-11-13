@@ -184,6 +184,7 @@ namespace UIEditor.XmlOperation.XmlAttr
 							if(m_value != "")
 							{
 								m_parent.m_xmlCtrl.findSkinAndSelect(mx_value.Text, (BoloUI.Basic)m_parent.m_basic);
+								MainWindow.s_pW.mx_showTextTab.IsChecked = true;
 							}
 							else
 							{
@@ -191,7 +192,6 @@ namespace UIEditor.XmlOperation.XmlAttr
 
 								winNewSkin.ShowDialog();
 							}
-							MainWindow.s_pW.mx_showTextTab.IsChecked = true;
 						}
 						break;
 					case "image":

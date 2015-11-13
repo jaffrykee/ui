@@ -405,7 +405,7 @@ namespace UIEditor
 				szSum += pairImageSize.Value;
 			}
 			double szMb = (double)szSum / 1024 / 1024;
-			MainWindow.s_pW.mb_status2 = "占用内存: " + szMb.ToString() + " MB";
+			MainWindow.s_pW.mb_status2 = "占用内存: " + Math.Round(szMb, 2).ToString() + " MB";
 		}
 		void mx_newRun_MouseDown(object sender, MouseButtonEventArgs e)
 		{
@@ -1040,6 +1040,90 @@ namespace UIEditor
 					return 1;
 				}
 			}
+		}
+		static public void refreshShape(string path)
+		{
+			if (path != null && path != "")
+			{
+				if (Directory.Exists(path))
+				{
+					DirectoryInfo di = new DirectoryInfo(path);
+
+					foreach (FileInfo fi in di.GetFiles())
+					{
+						if (fi.Extension == ".xml")
+						{
+							XmlDocument docSkin = new XmlDocument();
+							bool isChange = false;
+
+							try
+							{
+								docSkin.Load(fi.FullName);
+							}
+							catch
+							{
+								continue;
+							}
+
+							if (docSkin.DocumentElement.Name != "BoloUI")
+							{
+								continue;
+							}
+							foreach (XmlNode xnSkin in docSkin.DocumentElement.ChildNodes)
+							{
+								if (xnSkin is XmlElement && (xnSkin.Name == "skin" || xnSkin.Name == "publicskin"))
+								{
+									foreach (XmlNode xnAppr in xnSkin.ChildNodes)
+									{
+										if (xnAppr is XmlElement && (xnAppr.Name == "apperance"))
+										{
+											//用于多个textShape的情况
+											//List<XmlElement> lstShape = new List<XmlElement>();
+											for (int i = 0; i < xnAppr.ChildNodes.Count; i++)
+											{
+												XmlNode xnShape = xnAppr.ChildNodes[i];
+
+												if (xnShape is XmlElement && xnShape.Name == "textShape")
+												{
+													if (i == xnAppr.ChildNodes.Count - 1)
+													{
+														break;
+													}
+													else
+													{
+														XmlOperation.HistoryNode.deleteXmlNode(
+															MainWindow.s_pW,
+															null,
+															(XmlElement)xnShape);
+														XmlOperation.HistoryNode.insertXmlNode(
+															MainWindow.s_pW,
+															null,
+															(XmlElement)xnShape,
+															(XmlElement)xnAppr,
+															xnAppr.ChildNodes.Count);
+														isChange = true;
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+
+							if (isChange)
+							{
+								docSkin.Save(fi.FullName);
+								MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_INFO, fi.Name + "\r\n"));
+							}
+						}
+					}
+				}
+			}
+		}
+		static public void refreshAllShape()
+		{
+			refreshShape(MainWindow.s_pW.m_projPath);
+			refreshShape(MainWindow.s_pW.m_skinPath);
 		}
 	}
 }

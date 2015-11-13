@@ -921,7 +921,7 @@ namespace UIEditor.BoloUI
 							System.Drawing.Rectangle rectItem = new System.Drawing.Rectangle(
 								ctrlItem.m_selX, ctrlItem.m_selY, ctrlItem.m_selW, ctrlItem.m_selH);
 
-							if(!rectFrame.Contains(rectItem))
+							if (ctrlItem.m_xe.Name != "event" && !rectFrame.Contains(rectItem))
 							{
 								MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_INFO,
 									"[" + ctrlItem.mx_radio.Content.ToString() + "]", ctrlItem));
@@ -940,10 +940,13 @@ namespace UIEditor.BoloUI
 		}
 		private void mx_checkOverflow_Click(object sender, RoutedEventArgs e)
 		{
+			ResultLink.showResult("开始检测溢出的控件\r\n");
 			if (this is Basic)
 			{
+				m_xmlCtrl.refreshVRect();
 				checkOverflow((Basic)this);
 			}
+			ResultLink.showResult("检测结束\r\n");
 		}
 	}
 }

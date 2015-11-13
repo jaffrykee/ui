@@ -25,6 +25,7 @@ namespace UIEditor
 	public enum G2WTag
 	{
 		G2W_HWND = 0x0000,
+		G2W_DRAW_COUNT = 0x0011,
 		G2W_EVENT = 0x0003,
 		G2W_UI_VRECT = 0x0004,
 	};

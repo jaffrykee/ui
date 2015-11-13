@@ -56,6 +56,10 @@ namespace UIEditor.Public
 		public string m_text;
 		public object m_link;
 
+		static public void showResult(string text, ResultType rt = ResultType.RT_NONE, object link = null)
+		{
+			MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(rt, text, link));
+		}
 		public ResultLink(ResultType rt, string text, object link = null)
 		{
 			m_rt = rt;

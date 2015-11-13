@@ -176,15 +176,17 @@ namespace UIEditor.BoloUI
 								newXe.SetAttribute("Name", m_skinName);
 								xmlCtrl.m_treeSkin.addResItem(newXe);
 
-								if (m_iAttrRow != null && m_iAttrRow.m_parent != null && m_iAttrRow.m_parent.m_basic != null &&
-									m_iAttrRow.m_parent.m_basic is Basic)
-								{
-									xmlCtrl.findSkinAndSelect(m_skinName, (BoloUI.Basic)m_iAttrRow.m_parent.m_basic);
-								}
-								else
-								{
-									xmlCtrl.findSkinAndSelect(m_skinName);
-								}
+								m_iAttrRow.m_parent.m_basic.changeSelectItem();
+								MainWindow.s_pW.mx_treeFrame.SelectedItem = MainWindow.s_pW.mx_skinEditor;
+// 								if (m_iAttrRow != null && m_iAttrRow.m_parent != null && m_iAttrRow.m_parent.m_basic != null &&
+// 									m_iAttrRow.m_parent.m_basic is Basic)
+// 								{
+// 									xmlCtrl.findSkinAndSelect(m_skinName, (BoloUI.Basic)m_iAttrRow.m_parent.m_basic);
+// 								}
+// 								else
+// 								{
+// 									xmlCtrl.findSkinAndSelect(m_skinName);
+// 								}
 							}
 						}
 					}
