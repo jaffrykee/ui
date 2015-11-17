@@ -44,7 +44,7 @@
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="55"/>
 			<RowDefinition Height="*" MinHeight="20"/>
-			<RowDefinition Height="325"/>
+			<RowDefinition Height="300"/>
 			<RowDefinition Height="23"/>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
@@ -165,7 +165,7 @@
 				</MenuItem>
 			</MenuItem>
 			<MenuItem Header="项目">
-				<MenuItem Name="mx_projSetting" Header="项目选项..." IsEnabled="False"/>
+				<MenuItem Name="mx_projSetting" Header="属性..." Click="mx_projSetting_Click"/>
 			</MenuItem>
 			<MenuItem Header="工具">
 				<MenuItem Header="图片打包"
@@ -199,7 +199,7 @@
 					<RowDefinition Height="Auto"/>
 					<RowDefinition Height="Auto"/>
 				</Grid.RowDefinitions>
-				<WrapPanel Name="mx_wpTools" Grid.Row="0" Height="30" Margin="3" Background="{StaticResource Background}">
+				<WrapPanel Name="mx_wpTools" Grid.Row="0" Height="auto" Margin="3" Background="{StaticResource Background}">
 					<WrapPanel HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0" Background="{Binding ElementName=mx_wpTools, Path=Background}">
 						<Button Name="mx_toolNew"
 								IsEnabled="False"
@@ -341,14 +341,7 @@
 								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
 								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
 						<TextBlock Padding="5,0,0,0" VerticalAlignment="Center">分辨率：</TextBlock>
-						<ComboBox Name="mx_resolution" Margin="5" SelectedIndex="2" SelectionChanged="mx_resolution_SelectionChanged">
-							<ComboBoxItem>480 x 270</ComboBoxItem>
-							<ComboBoxItem>800 x 600</ComboBoxItem>
-							<ComboBoxItem>960 x 540</ComboBoxItem>
-							<ComboBoxItem>1024 x 768</ComboBoxItem>
-							<ComboBoxItem>1134 x 640</ComboBoxItem>
-							<ComboBoxItem>1440 x 900</ComboBoxItem>
-							<ComboBoxItem>1680 x 1050</ComboBoxItem>
+						<ComboBox Name="mx_resolution" Margin="5" SelectedIndex="0" SelectionChanged="mx_resolution_SelectionChanged">
 						</ComboBox>
 						<CheckBox Name="mx_isMoba"
 								  VerticalAlignment="Center"
@@ -364,16 +357,16 @@
 						</TextBlock>
 						<ComboBox Name="mx_resolutionBasic"
 								  Margin="5"
-								  SelectedIndex="2"
+								  SelectedIndex="0"
 								  Visibility="Collapsed"
 								  SelectionChanged="mx_resolutionBasic_SelectionChanged">
-							<ComboBoxItem>480 x 270</ComboBoxItem>
-							<ComboBoxItem>800 x 600</ComboBoxItem>
 							<ComboBoxItem>960 x 540</ComboBoxItem>
 							<ComboBoxItem>1024 x 768</ComboBoxItem>
 							<ComboBoxItem>1134 x 640</ComboBoxItem>
-							<ComboBoxItem>1440 x 900</ComboBoxItem>
-							<ComboBoxItem>1680 x 1050</ComboBoxItem>
+							<ComboBoxItem>1280 x 720</ComboBoxItem>
+							<ComboBoxItem>1334 x 750</ComboBoxItem>
+							<ComboBoxItem>1920 x 1080</ComboBoxItem>
+							<ComboBoxItem>2560 x 1440</ComboBoxItem>
 						</ComboBox>
 						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
 								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
@@ -430,6 +423,31 @@
 							文字置顶
 						</Button>
 					</ToolBar>
+					<WrapPanel Name="mx_ctrlNormal"
+							 Height="auto"
+							 Background="{Binding ElementName=mx_wpTools, Path=Background}"
+							 IsEnabled="True"
+							 HorizontalAlignment="Left"
+							 VerticalAlignment="Center">
+						<Label Name="mx_ctrlNormalTitle"
+							   Width="40"
+							   Height="25"
+							   Margin="{Binding ElementName=mx_toolNew, Path=Margin}">
+							控件
+						</Label>
+					</WrapPanel>
+					<WrapPanel Name="mx_ctrlFrame"
+							   Height="auto"
+							   Background="{Binding ElementName=mx_wpTools, Path=Background}"
+							   IsEnabled="{Binding ElementName=mx_ctrlNormal, Path=IsEnabled}"
+							   HorizontalAlignment="Left"
+							   VerticalAlignment="Center">
+						<Label Width="40"
+							   Height="{Binding ElementName=mx_ctrlNormalTitle, Path=Height}"
+							   Margin="{Binding ElementName=mx_ctrlNormalTitle, Path=Margin}">
+							容器
+						</Label>
+					</WrapPanel>
 				</WrapPanel>
 			</Grid>
 		</DockPanel>

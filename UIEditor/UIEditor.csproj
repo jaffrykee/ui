@@ -149,9 +149,12 @@
     <Compile Include="PackImage.xaml.cs">
       <DependentUpon>PackImage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Project\Project.cs" />
+    <Compile Include="Project\Setting.cs" />
     <Compile Include="Project\IncludeFile.xaml.cs">
       <DependentUpon>IncludeFile.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Project\ProjectSettingWin.xaml.cs">
+      <DependentUpon>ProjectSettingWin.xaml</DependentUpon>
     </Compile>
     <Compile Include="Project\ReloadConfirm.xaml.cs">
       <DependentUpon>ReloadConfirm.xaml</DependentUpon>
@@ -272,6 +275,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Project\IncludeFile.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Project\ProjectSettingWin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

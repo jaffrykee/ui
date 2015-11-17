@@ -752,7 +752,18 @@ namespace UIEditor.BoloUI
 				{
 					foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in MainWindow.s_pW.m_mapEnInsertCtrlDef.ToList())
 					{
-						showTmplGroup(pairCtrlDef.Key);
+						if (!pairCtrlDef.Value.m_isFrame)
+						{
+							showTmplGroup(pairCtrlDef.Key);
+						}
+					}
+					mx_addNode.Items.Add(new Separator());
+					foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in MainWindow.s_pW.m_mapEnInsertCtrlDef.ToList())
+					{
+						if (pairCtrlDef.Value.m_isFrame)
+						{
+							showTmplGroup(pairCtrlDef.Key);
+						}
 					}
 					mx_addNode.Items.Add(new Separator());
 					foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in MainWindow.s_pW.m_mapEnInsertAllCtrlDef.ToList())

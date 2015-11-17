@@ -31,7 +31,6 @@ namespace UIEditor.Project
 	}
 	public partial class IncludeFile : TreeViewItem
 	{
-		public Project m_parent;
 		public string m_path;
 		public FileType m_fileType;
 

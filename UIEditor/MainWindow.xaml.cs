@@ -248,64 +248,7 @@ namespace UIEditor
 			m_xdTest.LoadXml(m_strTestXml);
 			m_xeTest = m_xdTest.DocumentElement;
 
-			m_docConf = new XmlDocument();
-			if(!File.Exists(conf_pathConf))
-			{
-				string initConfXml = "<Config><runMode>release</runMode><ProjHistory>E:\\mmo2015001\\artist\\ui\\free</ProjHistory></Config>";
-
-				m_docConf.LoadXml(initConfXml);
-				m_docConf.Save(conf_pathConf);
-			}
-			else
-			{
-				m_docConf.Load(conf_pathConf);
-			}
-
-			if (m_docConf.SelectSingleNode("Config").SelectSingleNode("runMode") != null)
-			{
-				switch(m_docConf.SelectSingleNode("Config").SelectSingleNode("runMode").InnerXml)
-				{
-					case "debug":
-						{
-							m_isDebug = true;
-							m_pathGlApp = conf_pathGlApp_New;
-						}
-						break;
-					case "release":
-						{
-							m_isDebug = false;
-							m_pathGlApp = conf_pathGlApp_New;
-						}
-						break;
-					case "debug_old":
-						{
-							m_isDebug = true;
-							m_pathGlApp = conf_pathGlApp;
-						}
-						break;
-					case "release_old":
-						{
-							m_isDebug = false;
-							m_pathGlApp = conf_pathGlApp;
-						}
-						break;
-					default:
-						m_isDebug = false;
-						m_pathGlApp = conf_pathGlApp_New;
-						break;
-				}
-			}
-			else
-			{
-				XmlElement xe = m_docConf.CreateElement("runMode");
-
-				xe.InnerXml = "release";
-				m_docConf.SelectSingleNode("Config").AppendChild(xe);
-				m_docConf.Save(conf_pathConf);
-
-				m_isDebug = false;
-				m_pathGlApp = conf_pathGlApp_New;
-			}
+			checkAndInitToolConfig();
 
 			// hook keyboard
 			IntPtr hModule = GetModuleHandle(IntPtr.Zero);
@@ -315,6 +258,82 @@ namespace UIEditor
 			{
 				MessageBox.Show("Failed to set hook, error = " + Marshal.GetLastWin32Error());
 			}
+		}
+		public void checkAndInitToolConfig()
+		{
+			m_docConf = new XmlDocument();
+			if (!File.Exists(conf_pathConf))
+			{
+				string initConfXml = "<Config><runMode>release</runMode><ProjHistory>E:\\mmo2015001\\artist\\ui\\free</ProjHistory></Config>";
+
+				m_docConf.LoadXml(initConfXml);
+			}
+			else
+			{
+				m_docConf.Load(conf_pathConf);
+			}
+
+			XmlNode xnConfig = m_docConf.SelectSingleNode("Config");
+
+			if (xnConfig != null)
+			{
+				XmlNode xnRunMode = xnConfig.SelectSingleNode("runMode");
+
+				if (xnRunMode != null)
+				{
+					switch (xnRunMode.InnerXml)
+					{
+						case "debug":
+							{
+								m_isDebug = true;
+								m_pathGlApp = conf_pathGlApp_New;
+							}
+							break;
+						case "release":
+							{
+								m_isDebug = false;
+								m_pathGlApp = conf_pathGlApp_New;
+							}
+							break;
+						case "debug_old":
+							{
+								m_isDebug = true;
+								m_pathGlApp = conf_pathGlApp;
+							}
+							break;
+						case "release_old":
+							{
+								m_isDebug = false;
+								m_pathGlApp = conf_pathGlApp;
+							}
+							break;
+						default:
+							m_isDebug = false;
+							m_pathGlApp = conf_pathGlApp_New;
+							break;
+					}
+				}
+				else
+				{
+					XmlElement xe = m_docConf.CreateElement("runMode");
+
+					xe.InnerXml = "release";
+					xnConfig.AppendChild(xe);
+
+					m_isDebug = false;
+					m_pathGlApp = conf_pathGlApp_New;
+				}
+
+				XmlNode xnResolutionSetting = xnConfig.SelectSingleNode("ResolutionSetting");
+
+				if (xnResolutionSetting == null)
+				{
+					xnResolutionSetting = Setting.initResolutionSetting(xnConfig);
+				}
+				Setting.refreshResolutionBoxByConfigNode(xnResolutionSetting);
+			}
+
+			m_docConf.Save(conf_pathConf);
 		}
 		private void mx_root_Loaded(object sender, RoutedEventArgs e)
 		{
@@ -347,6 +366,81 @@ namespace UIEditor
 			m_fileChangeTimer.Interval = new TimeSpan(0, 0, 0, 0, 1000);
 			m_fileChangeTimer.Tick += new EventHandler(m_fileChangeTimer_Tick);
 			m_fileChangeTimer.Start();
+
+			foreach(KeyValuePair<string, CtrlDef_T> pairCtrlDef in m_mapEnInsertCtrlDef.ToList())
+			{
+				string ctrlKey = pairCtrlDef.Key;
+				string ctrlName = MainWindow.s_pW.m_strDic.getWordByKey(ctrlKey);
+
+				if(ctrlName == null || ctrlName == "")
+				{
+					ctrlName = ctrlKey;
+				}
+				Button btnCtrl = new Button();
+
+				btnCtrl.Content = ctrlName;
+				btnCtrl.ToolTip = ctrlKey;
+				btnCtrl.Width = 60;
+				btnCtrl.Height = mx_ctrlNormalTitle.Height;
+				btnCtrl.Margin = mx_ctrlNormalTitle.Margin;
+				btnCtrl.Click += mx_addCtrl_Click;
+				if (pairCtrlDef.Value.m_isFrame)
+				{
+					mx_ctrlFrame.Children.Add(btnCtrl);
+				}
+				else
+				{
+					mx_ctrlNormal.Children.Add(btnCtrl);
+				}
+			}
+		}
+		void mx_addCtrl_Click(object sender, RoutedEventArgs e)
+		{
+			if(sender is Button)
+			{
+				Button btnCtrl = (Button)sender;
+				string ctrlName = btnCtrl.ToolTip.ToString();
+				CtrlDef_T ctrlDef;
+
+				if(ctrlName != null && ctrlName != "" && m_mapCtrlDef.TryGetValue(ctrlName, out ctrlDef))
+				{
+					XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
+
+					if(curXmlCtrl != null && curXmlCtrl.m_curItem != null && curXmlCtrl.m_curItem is Basic)
+					{
+						string dstCtrlName = curXmlCtrl.m_curItem.m_xe.Name;
+
+						if(dstCtrlName != "event")
+						{
+							CtrlDef_T dstCtrlDef;
+
+							if(m_mapEnInsertCtrlDef.TryGetValue(dstCtrlName, out dstCtrlDef))
+							{
+								if (m_mapPanelCtrlDef.TryGetValue(dstCtrlName, out dstCtrlDef))
+								{
+									XmlElement newXe = curXmlCtrl.m_curItem.m_xe.OwnerDocument.CreateElement(ctrlName);
+									BoloUI.Basic treeChild = new BoloUI.Basic(newXe, curXmlCtrl);
+
+									curXmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
+										XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, curXmlCtrl.m_curItem.m_xe));
+								}
+								else
+								{
+									if(curXmlCtrl.m_curItem.Parent is Basic)
+									{
+										Basic curCtrlItem = (Basic)curXmlCtrl.m_curItem.Parent;
+										XmlElement newXe = curCtrlItem.m_xe.OwnerDocument.CreateElement(ctrlName);
+										BoloUI.Basic treeChild = new BoloUI.Basic(newXe, curXmlCtrl);
+
+										curXmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
+											XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, curCtrlItem.m_xe));
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 		private void mx_closeWin_Click(object sender, RoutedEventArgs e)
 		{
@@ -385,20 +479,24 @@ namespace UIEditor
 				return;
 			}
 
-			m_docConf.SelectSingleNode("Config").SelectSingleNode("ProjHistory").InnerXml = m_projPath;
+			if (m_docConf.DocumentElement == null || m_docConf.DocumentElement.Name != "Config")
+			{
+				return;
+			}
+			m_docConf.DocumentElement.SelectSingleNode("ProjHistory").InnerXml = m_projPath;
 			XmlElement xeBup = null;
-			if (m_docConf.SelectSingleNode("Config").SelectSingleNode("bupHistory") == null)
+			if (m_docConf.DocumentElement.SelectSingleNode("bupHistory") == null)
 			{
 				xeBup = m_docConf.CreateElement("bupHistory");
-				m_docConf.SelectSingleNode("Config").InsertAfter(
+				m_docConf.DocumentElement.InsertAfter(
 					xeBup,
-					m_docConf.SelectSingleNode("Config").SelectSingleNode("ProjHistory"));
+					m_docConf.DocumentElement.SelectSingleNode("ProjHistory"));
 			}
 			else
 			{
-				if(m_docConf.SelectSingleNode("Config").SelectSingleNode("bupHistory").NodeType == XmlNodeType.Element)
+				if (m_docConf.DocumentElement.SelectSingleNode("bupHistory").NodeType == XmlNodeType.Element)
 				{
-					xeBup = (XmlElement)m_docConf.SelectSingleNode("Config").SelectSingleNode("bupHistory");
+					xeBup = (XmlElement)m_docConf.DocumentElement.SelectSingleNode("bupHistory");
 				}
 			}
 			if (xeBup != null)
@@ -436,6 +534,9 @@ namespace UIEditor
 					xeBup.InsertBefore(xeTop, xeBup.SelectSingleNode("row"));
 				}
 			}
+			XmlNode xnResolutionSetting = m_docConf.DocumentElement.SelectSingleNode("resolutionSetting");
+
+			Setting.refreshResolutionBoxByConfigNode(xnResolutionSetting);
 			m_docConf.Save(conf_pathConf);
 
 			sendPathToGL(m_projPath);
@@ -2641,6 +2742,16 @@ namespace UIEditor
 		private void mx_resolutionBasic_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
 		{
 
+		}
+
+		private void mx_projSetting_Click(object sender, RoutedEventArgs e)
+		{
+			if(m_docProj != null)
+			{
+				ProjectSettingWin winPs = new ProjectSettingWin(m_docProj);
+
+				winPs.ShowDialog();
+			}
 		}
 	}
 

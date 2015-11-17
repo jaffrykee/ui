@@ -21,11 +21,11 @@ namespace UIEditor.Project
 		public string m_tmplPath;
 		public FileTypeRadio m_curFileType;
 		public bool m_isProj;
-		static public NewFileWin m_pW;
+		static public NewFileWin s_pW;
 
 		public NewFileWin(string path, bool isProj = false)
 		{
-			m_pW = this;
+			s_pW = this;
 			m_curFileType = null;
 			m_isProj = isProj;
 			InitializeComponent();
@@ -52,7 +52,7 @@ namespace UIEditor.Project
 		}
 		private void mx_root_Unloaded(object sender, RoutedEventArgs e)
 		{
-			m_pW = null;
+			s_pW = null;
 		}
 
 		static public void refreshFolder(
