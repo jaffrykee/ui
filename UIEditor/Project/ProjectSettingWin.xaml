@@ -63,8 +63,18 @@
 		</TabControl>
 		<Grid Grid.Row="2">
 			<WrapPanel HorizontalAlignment="Right" Margin="5,20,5,5">
-				<Button Width="70" Height="25">确定</Button>
-				<Button Width="70" Height="25">取消</Button>
+				<Button Name="mx_ok"
+						Width="70"
+						Height="25"
+						Click="mx_ok_Click">
+					确定
+				</Button>
+				<Button Name="mx_cancel"
+						Width="70"
+						Height="25"
+						Click="mx_cancel_Click">
+					取消
+				</Button>
 			</WrapPanel>
 		</Grid>
 	</Grid>

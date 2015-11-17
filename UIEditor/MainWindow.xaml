@@ -423,6 +423,8 @@
 							文字置顶
 						</Button>
 					</ToolBar>
+				</WrapPanel>
+				<WrapPanel Grid.Row="1" Margin="3">
 					<WrapPanel Name="mx_ctrlNormal"
 							 Height="auto"
 							 Background="{Binding ElementName=mx_wpTools, Path=Background}"

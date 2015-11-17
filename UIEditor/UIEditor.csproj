@@ -149,6 +149,9 @@
     <Compile Include="PackImage.xaml.cs">
       <DependentUpon>PackImage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Project\SetResolutionWin.xaml.cs">
+      <DependentUpon>SetResolutionWin.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Project\Setting.cs" />
     <Compile Include="Project\IncludeFile.xaml.cs">
       <DependentUpon>IncludeFile.xaml</DependentUpon>
@@ -283,6 +286,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Project\ReloadConfirm.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Project\SetResolutionWin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

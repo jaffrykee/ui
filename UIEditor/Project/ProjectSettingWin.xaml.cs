@@ -25,11 +25,11 @@ namespace UIEditor.Project
 		public XmlElement m_xeDef;
 		public Dictionary<ListBoxItem, XmlElement> m_mapLbiRow;
 
-		public ProjectSettingWin(XmlDocument docXml)
+		public ProjectSettingWin()
 		{
 			s_pW = this;
 			m_docXml = new XmlDocument();
-			m_docXml.LoadXml(docXml.OuterXml);
+			m_docXml.LoadXml(MainWindow.s_pW.m_docProj.OuterXml);
 			m_mapLbiRow = new Dictionary<ListBoxItem, XmlElement>();
 
 			InitializeComponent();
@@ -102,21 +102,49 @@ namespace UIEditor.Project
 		}
 		private void mx_addRow_Click(object sender, RoutedEventArgs e)
 		{
+			XmlNode xnRst = m_docXml.DocumentElement.SelectSingleNode("ResolutionSetting");
 
+			if(xnRst != null)
+			{
+				XmlElement xeRow = m_docXml.CreateElement("row");
+
+				xnRst.AppendChild(xeRow);
+				if(m_mapLbiRow != null)
+				{
+					ListBoxItem lbiRow = new ListBoxItem();
+					SetResolutionWin winSetRlt;
+
+					m_mapLbiRow.Add(lbiRow, xeRow);
+					mx_lbResolution.Items.Add(lbiRow);
+					winSetRlt = new SetResolutionWin(lbiRow);
+					winSetRlt.ShowDialog();
+
+					if(lbiRow != null && (lbiRow.Content == null || lbiRow.Content.ToString() == ""))
+					{
+						delRow(lbiRow);
+					}
+				}
+			}
+		}
+		static public void delRow(ListBoxItem lbiRow)
+		{
+			XmlElement xe;
+
+			if (lbiRow != null && ProjectSettingWin.s_pW.m_mapLbiRow.TryGetValue(lbiRow, out xe) && xe != null)
+			{
+				xe.ParentNode.RemoveChild(xe);
+				if (lbiRow.Parent == ProjectSettingWin.s_pW.mx_lbResolution)
+				{
+					ProjectSettingWin.s_pW.mx_lbResolution.Items.Remove(lbiRow);
+				}
+				ProjectSettingWin.s_pW.m_mapLbiRow.Remove(lbiRow);
+			}
 		}
 		private void mx_delRow_Click(object sender, RoutedEventArgs e)
 		{
 			if (mx_lbResolution.SelectedItem != null && mx_lbResolution.SelectedItem is ListBoxItem)
 			{
-				ListBoxItem lbi = (ListBoxItem)mx_lbResolution.SelectedItem;
-				XmlElement xe;
-
-				if(m_mapLbiRow.TryGetValue(lbi, out xe))
-				{
-					xe.ParentNode.RemoveChild(xe);
-					mx_lbResolution.Items.Remove(lbi);
-					m_mapLbiRow.Remove(lbi);
-				}
+				delRow((ListBoxItem)mx_lbResolution.SelectedItem);
 			}
 		}
 		private void mx_updRow_Click(object sender, RoutedEventArgs e)
@@ -124,6 +152,9 @@ namespace UIEditor.Project
 			if (mx_lbResolution.SelectedItem != null && mx_lbResolution.SelectedItem is ListBoxItem)
 			{
 				ListBoxItem lbi = (ListBoxItem)mx_lbResolution.SelectedItem;
+				SetResolutionWin winSetRlt = new SetResolutionWin(lbi, false);
+
+				winSetRlt.ShowDialog();
 			}
 		}
 		private void mx_setDefault_Click(object sender, RoutedEventArgs e)
@@ -141,6 +172,19 @@ namespace UIEditor.Project
 					refreshResolution();
 				}
 			}
+		}
+
+		private void mx_ok_Click(object sender, RoutedEventArgs e)
+		{
+			m_docXml.Save(MainWindow.s_pW.m_projPath + "\\" + MainWindow.s_pW.m_projName);
+			MainWindow.s_pW.m_docProj = m_docXml;
+			Setting.refreshResolutionBoxByConfigNode(MainWindow.s_pW.m_docProj.DocumentElement.SelectSingleNode("ResolutionSetting"));
+
+			this.Close();
+		}
+		private void mx_cancel_Click(object sender, RoutedEventArgs e)
+		{
+			this.Close();
 		}
 	}
 }

@@ -260,14 +260,22 @@ namespace UIEditor.BoloUI
 
 			if (msgTag == W2GTag.W2G_PATH)
 			{
-				charArr = Encoding.Default.GetBytes(buffer);
-				len = charArr.Length;
+				string resPath = MainWindow.getResPath(buffer);
+
+				if (resPath != "")
+				{
+					charArr = Encoding.Default.GetBytes(resPath);
+				}
+				else
+				{
+					charArr = Encoding.Default.GetBytes(buffer);
+				}
 			}
 			else
 			{
 				charArr = Encoding.UTF8.GetBytes(buffer);
-				len = charArr.Length;
 			}
+			len = charArr.Length;
 			unsafe
 			{
 				fixed (byte* tmpBuff = charArr)

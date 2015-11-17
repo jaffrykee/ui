@@ -67,6 +67,7 @@ namespace UIEditor.Project
 			{
 				bool isDefault = true;
 
+				MainWindow.s_pW.mx_resolution.Items.Clear();
 				foreach (XmlNode xnRow in xnResolutionSetting.ChildNodes)
 				{
 					if (xnRow.Name == "row" && xnRow is XmlElement)

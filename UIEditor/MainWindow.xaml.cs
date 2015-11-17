@@ -461,7 +461,6 @@ namespace UIEditor
 
 					m_docProj = new XmlDocument();
 					m_docProj.LoadXml(initProjXml);
-					m_docProj.Save(m_projPath + "\\" + m_projName);
 				}
 				else
 				{
@@ -479,7 +478,8 @@ namespace UIEditor
 				return;
 			}
 
-			if (m_docConf.DocumentElement == null || m_docConf.DocumentElement.Name != "Config")
+			if (m_docProj.DocumentElement == null || m_docProj.DocumentElement.Name != "BoloUIProj" ||
+				m_docConf.DocumentElement == null || m_docConf.DocumentElement.Name != "Config")
 			{
 				return;
 			}
@@ -499,6 +499,7 @@ namespace UIEditor
 					xeBup = (XmlElement)m_docConf.DocumentElement.SelectSingleNode("bupHistory");
 				}
 			}
+
 			if (xeBup != null)
 			{
 				string newPath = m_projPath + "\\" + m_projName;
@@ -534,12 +535,14 @@ namespace UIEditor
 					xeBup.InsertBefore(xeTop, xeBup.SelectSingleNode("row"));
 				}
 			}
-			XmlNode xnResolutionSetting = m_docConf.DocumentElement.SelectSingleNode("resolutionSetting");
+			XmlNode xnResolutionSetting = m_docProj.DocumentElement.SelectSingleNode("ResolutionSetting");
 
 			Setting.refreshResolutionBoxByConfigNode(xnResolutionSetting);
 			m_docConf.Save(conf_pathConf);
+			m_docProj.Save(m_projPath + "\\" + m_projName);
 
-			sendPathToGL(m_projPath);
+
+			updateGL(m_projPath, W2GTag.W2G_PATH);
 			//refreshImage(path + "\\images");
 			m_skinPath = m_projPath + "\\skin";
 			m_imagePath = m_projPath + "\\images";
@@ -596,10 +599,6 @@ namespace UIEditor
 		private void openProj(object sender, RoutedEventArgs e)//打开工程
 		{
 			openProjSelectBox();
-		}
-		private void sendPathToGL(string path)//告知GL端工程根目录
-		{
-			updateGL(path, W2GTag.W2G_PATH);
 		}
 		private void refreshSkin(string path)
 		{
@@ -985,6 +984,24 @@ namespace UIEditor
 		LowLevelKeyboardProcDelegate hookProc; // prevent gc
 		const int WH_KEYBOARD_LL = 13;
 
+		static public string getResPath(string freePath)
+		{
+			string resPath = "";
+
+			if(freePath != null && freePath != "" && Directory.Exists(freePath))
+			{
+				DirectoryInfo dri = new DirectoryInfo(freePath);
+
+				if(dri != null && dri.Parent != null && dri.Parent.Parent != null)
+				{
+					DirectoryInfo driRes = dri.Parent.Parent;
+
+					resPath = driRes.FullName;
+				}
+			}
+
+			return resPath;
+		}
 		public void updateGL(string buffer, W2GTag msgTag = W2GTag.W2G_NORMAL_DATA)
 		{
 			if (mx_hwndDebug.Text != "")
@@ -997,7 +1014,16 @@ namespace UIEditor
 
 			if (msgTag == W2GTag.W2G_PATH)
 			{
-				charArr = Encoding.Default.GetBytes(buffer);
+				string resPath = getResPath(buffer);
+
+				if (resPath != "")
+				{
+					charArr = Encoding.Default.GetBytes(resPath);
+				}
+				else
+				{
+					charArr = Encoding.Default.GetBytes(buffer);
+				}
 			}
 			else
 			{
@@ -2748,7 +2774,7 @@ namespace UIEditor
 		{
 			if(m_docProj != null)
 			{
-				ProjectSettingWin winPs = new ProjectSettingWin(m_docProj);
+				ProjectSettingWin winPs = new ProjectSettingWin();
 
 				winPs.ShowDialog();
 			}
