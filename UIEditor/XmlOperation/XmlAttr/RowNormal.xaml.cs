@@ -83,6 +83,10 @@ namespace UIEditor.XmlOperation.XmlAttr
 						mx_skinFrame.Visibility = Visibility.Visible;
 						mx_link.Visibility = Visibility.Collapsed;
 						break;
+					case "particleName":
+						mx_skinFrame.Visibility = Visibility.Visible;
+						mx_link.Visibility = Visibility.Collapsed;
+						break;
 					default:
 						mx_skinFrame.Visibility = Visibility.Collapsed;
 						mx_link.Visibility = Visibility.Collapsed;
@@ -202,6 +206,10 @@ namespace UIEditor.XmlOperation.XmlAttr
 						{
 						}
 						break;
+					case "particleName":
+						{
+						}
+						break;
 					default:
 						break;
 				}
@@ -246,6 +254,13 @@ namespace UIEditor.XmlOperation.XmlAttr
 							BoloUI.SelImage winImage = new BoloUI.SelImage(this);
 
 							winImage.ShowDialog();
+						}
+						break;
+					case "particleName":
+						{
+							BoloUI.SelParticle winParticle = new BoloUI.SelParticle(this);
+
+							winParticle.ShowDialog();
 						}
 						break;
 					default:

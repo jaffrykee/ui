@@ -122,6 +122,9 @@
     <Compile Include="BoloUI\SelImage.xaml.cs">
       <DependentUpon>SelImage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="BoloUI\SelParticle.xaml.cs">
+      <DependentUpon>SelParticle.xaml</DependentUpon>
+    </Compile>
     <Compile Include="BoloUI\SelSkin.xaml.cs">
       <DependentUpon>SelSkin.xaml</DependentUpon>
     </Compile>
@@ -244,6 +247,10 @@
     <Page Include="BoloUI\SelImage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="BoloUI\SelParticle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="BoloUI\SelSkin.xaml">
       <SubType>Designer</SubType>

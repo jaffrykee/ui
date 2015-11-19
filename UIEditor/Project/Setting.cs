@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.Windows.Controls;
+using System.IO;
 
 namespace UIEditor.Project
 {
@@ -91,6 +93,44 @@ namespace UIEditor.Project
 						}
 					}
 				}
+			}
+		}
+
+		static public void refreshPrefabCombox(Dictionary<string, ComboBoxItem> mapEnum, ComboBox cbEnum)
+		{
+			string prefabPath = MainWindow.s_pW.m_projPath;
+
+			if (prefabPath != null && prefabPath != "" && mapEnum != null && cbEnum != null)
+			{
+				cbEnum.Items.Clear();
+				mapEnum.Clear();
+
+				ComboBoxItem cbiDefault = new ComboBoxItem();
+
+				cbiDefault.Content = "[默认值]";
+				cbiDefault.ToolTip = "";
+				cbEnum.Items.Add(cbiDefault);
+
+				prefabPath += "\\..\\..\\texiao\\";
+
+				if(Directory.Exists(prefabPath))
+				{
+					DirectoryInfo driPrefab = new DirectoryInfo(prefabPath);
+
+					foreach(FileInfo fi in driPrefab.GetFiles())
+					{
+						if(fi.Extension == ".prefab")
+						{
+							ComboBoxItem cbiPrefab = new ComboBoxItem();
+
+							cbiPrefab.Content = Path.GetFileNameWithoutExtension(fi.FullName);
+							cbiPrefab.ToolTip = Path.GetFileNameWithoutExtension(fi.FullName);
+							mapEnum.Add(Path.GetFileNameWithoutExtension(fi.FullName), cbiPrefab);
+							cbEnum.Items.Add(cbiPrefab);
+						}
+					}
+				}
+				cbEnum.IsEditable = true;
 			}
 		}
 	}
