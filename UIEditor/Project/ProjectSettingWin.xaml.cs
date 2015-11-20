@@ -15,7 +15,7 @@ using System.Xml;
 namespace UIEditor.Project
 {
 	/// <summary>
-	/// ProjectSetting.xaml 的交互逻辑
+	/// ProjectProject.Setting.xaml 的交互逻辑
 	/// </summary>
 	public partial class ProjectSettingWin
 	{
@@ -29,14 +29,21 @@ namespace UIEditor.Project
 		{
 			s_pW = this;
 			m_docXml = new XmlDocument();
-			m_docXml.LoadXml(MainWindow.s_pW.m_docProj.OuterXml);
+			m_docXml.LoadXml(Project.Setting.s_docProj.OuterXml);
 			m_mapLbiRow = new Dictionary<ListBoxItem, XmlElement>();
 
 			InitializeComponent();
 			this.Owner = MainWindow.s_pW;
 			refreshResolution();
+			refreshPathTextBox();
 		}
 
+		void refreshPathTextBox()
+		{
+			mx_tbPackUI.Text = Setting.s_uiPackPath;
+			mx_tbPackScript.Text = Setting.s_scriptPackPath;
+			mx_tbGame.Text = Setting.s_gamePath;
+		}
 		void refreshResolution()
 		{
 			if (m_docXml != null && m_docXml.DocumentElement != null)
@@ -45,7 +52,7 @@ namespace UIEditor.Project
 
 				if (xnResolutionSetting == null)
 				{
-					xnResolutionSetting = Setting.initResolutionSetting(m_docXml.DocumentElement);
+					xnResolutionSetting = Project.Setting.initResolutionSetting(m_docXml.DocumentElement);
 				}
 
 				if(xnResolutionSetting != null)
@@ -174,17 +181,65 @@ namespace UIEditor.Project
 			}
 		}
 
+		private void setPathSetting()
+		{
+			if(m_docXml != null)
+			{
+				XmlNode xnPathSetting = m_docXml.DocumentElement.SelectSingleNode("PathSetting");
+				XmlElement xePathSetting;
+
+				if(xnPathSetting != null && xnPathSetting is XmlElement)
+				{
+					xePathSetting = (XmlElement)xnPathSetting;
+				}
+				else
+				{
+					xePathSetting = m_docXml.CreateElement("PathSetting");
+				}
+				xePathSetting.SetAttribute("uiPackPath", mx_tbPackUI.Text);
+				xePathSetting.SetAttribute("scriptPackPath", mx_tbPackScript.Text);
+				xePathSetting.SetAttribute("gamePath", mx_tbGame.Text);
+			}
+		}
 		private void mx_ok_Click(object sender, RoutedEventArgs e)
 		{
-			m_docXml.Save(MainWindow.s_pW.m_projPath + "\\" + MainWindow.s_pW.m_projName);
-			MainWindow.s_pW.m_docProj = m_docXml;
-			Setting.refreshResolutionBoxByConfigNode(MainWindow.s_pW.m_docProj.DocumentElement.SelectSingleNode("ResolutionSetting"));
+			setPathSetting();
+			Project.Setting.s_docProj = m_docXml;
+			Setting.refreshAllProjectSetting();
 
 			this.Close();
 		}
 		private void mx_cancel_Click(object sender, RoutedEventArgs e)
 		{
 			this.Close();
+		}
+
+		private void mx_btnPackUI_Click(object sender, RoutedEventArgs e)
+		{
+			string path = Setting.openSelectFileBox();
+
+			if (path != null)
+			{
+				mx_tbPackUI.Text = path;
+			}
+		}
+		private void mx_btnPackScript_Click(object sender, RoutedEventArgs e)
+		{
+			string path = Setting.openSelectFileBox();
+
+			if (path != null)
+			{
+				mx_tbPackScript.Text = path;
+			}
+		}
+		private void mx_btnGame_Click(object sender, RoutedEventArgs e)
+		{
+			string path = Setting.openSelectFileBox();
+
+			if (path != null)
+			{
+				mx_tbGame.Text = path;
+			}
 		}
 	}
 }

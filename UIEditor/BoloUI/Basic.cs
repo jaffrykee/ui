@@ -317,7 +317,7 @@ namespace UIEditor.BoloUI
 
 				if (m_xmlCtrl.m_mapSkinLink.TryGetValue(skinName, out groupName))
 				{
-					string path = MainWindow.s_pW.m_skinPath + "\\" + groupName + ".xml";
+					string path = Project.Setting.s_skinPath + "\\" + groupName + ".xml";
 
 					if (System.IO.File.Exists(path))
 					{

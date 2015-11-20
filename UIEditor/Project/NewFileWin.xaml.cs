@@ -222,7 +222,7 @@ namespace UIEditor.Project
 			if(!m_isProj)
 			{
 				string type = System.IO.Path.GetExtension(m_curFileType.ToolTip.ToString());
-				string path = MainWindow.s_pW.m_projPath;
+				string path = Project.Setting.s_projPath;
 
 				if (type == ".bur")
 				{
@@ -237,7 +237,7 @@ namespace UIEditor.Project
 				else
 				{
 					File.Copy(tmplPath, path, false);
-					MainWindow.s_pW.refreshProjTree(MainWindow.s_pW.m_projPath, MainWindow.s_pW.mx_treePro, true);
+					MainWindow.s_pW.refreshProjTree(Project.Setting.s_projPath, MainWindow.s_pW.mx_treePro, true);
 					this.Close();
 				}
 			}

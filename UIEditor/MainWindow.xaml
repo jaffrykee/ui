@@ -423,6 +423,41 @@
 							文字置顶
 						</Button>
 					</ToolBar>
+					<WrapPanel HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0" Background="{Binding ElementName=mx_wpTools, Path=Background}">
+						<Button Name="mx_toolPackUi"
+								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
+								Width="{Binding ElementName=mx_toolNew, Path=Width}"
+								Height="{Binding ElementName=mx_toolNew, Path=Height}"
+								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
+								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
+								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								ToolTip="打包UI"
+								Click="mx_toolPackUi_Click">
+							<Image Width="16" Source="pack://application:,,,/data/image/packUi.png"/>
+						</Button>
+						<Button Name="mx_toolPackScript"
+								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
+								Width="{Binding ElementName=mx_toolNew, Path=Width}"
+								Height="{Binding ElementName=mx_toolNew, Path=Height}"
+								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
+								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
+								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								ToolTip="打包脚本"
+								Click="mx_toolPackScript_Click">
+							<Image Width="16" Source="pack://application:,,,/data/image/packScript.png"/>
+						</Button>
+						<Button Name="mx_toolRunGame"
+								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
+								Width="{Binding ElementName=mx_toolNew, Path=Width}"
+								Height="{Binding ElementName=mx_toolNew, Path=Height}"
+								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
+								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
+								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								ToolTip="运行游戏"
+								Click="mx_toolRunGame_Click">
+							<Image Width="16" Source="pack://application:,,,/data/image/runGame.png"/>
+						</Button>
+					</WrapPanel>
 				</WrapPanel>
 				<WrapPanel Grid.Row="1" Margin="3">
 					<WrapPanel Name="mx_ctrlNormal"

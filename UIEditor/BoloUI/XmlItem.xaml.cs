@@ -645,10 +645,10 @@ namespace UIEditor.BoloUI
 				retItemFrame = showTmpl(itemFrame, xeTmpls, addStr, rehClick, rowId);
 			}
 
-			if (MainWindow.s_pW.m_docProj.SelectSingleNode("BoloUIProj").SelectSingleNode("template") != null &&
-				MainWindow.s_pW.m_docProj.SelectSingleNode("BoloUIProj").SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls") != null)
+			if (Project.Setting.s_docProj.SelectSingleNode("BoloUIProj").SelectSingleNode("template") != null &&
+				Project.Setting.s_docProj.SelectSingleNode("BoloUIProj").SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls") != null)
 			{
-				XmlElement xeTmpls = (XmlElement)MainWindow.s_pW.m_docProj.SelectSingleNode("BoloUIProj").
+				XmlElement xeTmpls = (XmlElement)Project.Setting.s_docProj.SelectSingleNode("BoloUIProj").
 					SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls");
 				object ret = showTmpl(itemFrame, xeTmpls, addStr, rehClick, rowId);
 
@@ -720,8 +720,8 @@ namespace UIEditor.BoloUI
 				}
 			}
 
-			if (MainWindow.s_pW.m_docProj.SelectSingleNode("BoloUIProj").SelectSingleNode("template") != null &&
-				MainWindow.s_pW.m_docProj.SelectSingleNode("BoloUIProj").SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls") != null)
+			if (Project.Setting.s_docProj.SelectSingleNode("BoloUIProj").SelectSingleNode("template") != null &&
+				Project.Setting.s_docProj.SelectSingleNode("BoloUIProj").SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls") != null)
 			{
 				if (!isNull)
 				{
@@ -729,7 +729,7 @@ namespace UIEditor.BoloUI
 				}
 				isNull = false;
 
-				XmlElement xeTmpls = (XmlElement)MainWindow.s_pW.m_docProj.SelectSingleNode("BoloUIProj").SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls");
+				XmlElement xeTmpls = (XmlElement)Project.Setting.s_docProj.SelectSingleNode("BoloUIProj").SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls");
 
 				showTmpl(ctrlMenuItem, xeTmpls, addStr, insertCtrlItem_Click);
 			}
@@ -887,19 +887,19 @@ namespace UIEditor.BoloUI
 			{
 				case "skingroup":
 					{
-						string path = MainWindow.s_pW.m_skinPath + "\\" + m_xe.GetAttribute("Name") + ".xml";
+						string path = Project.Setting.s_skinPath + "\\" + m_xe.GetAttribute("Name") + ".xml";
 						MainWindow.s_pW.openFileByPath(path);
 					}
 					break;
 				case "resource":
 					{
-						string path = MainWindow.s_pW.m_imagePath + "\\" + m_xe.GetAttribute("name") + ".xml";
+						string path = Project.Setting.s_imagePath + "\\" + m_xe.GetAttribute("name") + ".xml";
 						MainWindow.s_pW.openFileByPath(path);
 					}
 					break;
 				case "publicresource":
 					{
-						string path = MainWindow.s_pW.m_imagePath + "\\" + m_xe.GetAttribute("name") + ".xml";
+						string path = Project.Setting.s_imagePath + "\\" + m_xe.GetAttribute("name") + ".xml";
 						MainWindow.s_pW.openFileByPath(path);
 					}
 					break;
@@ -958,6 +958,21 @@ namespace UIEditor.BoloUI
 				checkOverflow((Basic)this);
 			}
 			ResultLink.showResult("检测结束\r\n");
+		}
+
+		private void mx_shrinkChildren_Click(object sender, RoutedEventArgs e)
+		{
+			this.IsExpanded = true;
+
+			foreach(object obj in this.Items)
+			{
+				if(obj is TreeViewItem)
+				{
+					TreeViewItem item = (TreeViewItem)obj;
+
+					item.IsExpanded = false;
+				}
+			}
 		}
 	}
 }

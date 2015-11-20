@@ -136,7 +136,7 @@ namespace UIEditor.BoloUI
 						}
 
 						#region 未包含的皮肤组
-						DirectoryInfo di = new DirectoryInfo(MainWindow.s_pW.m_projPath + "\\skin\\");
+						DirectoryInfo di = new DirectoryInfo(Project.Setting.s_projPath + "\\skin\\");
 						FileInfo[] arrFi = di.GetFiles("*.xml");
 
 						foreach(FileInfo fi in arrFi)
@@ -187,7 +187,7 @@ namespace UIEditor.BoloUI
 			{
 				string buffer = m_docView.InnerXml;
 
-				updateGL(MainWindow.s_pW.m_projPath, W2GTag.W2G_PATH);
+				updateGL(Project.Setting.s_projPath, W2GTag.W2G_PATH);
 				updateGL("960:540:False:960:540", W2GTag.W2G_VIEWSIZE);
 				m_isInitPath = true;
 				updateGL("selSkinTest.xml", W2GTag.W2G_NORMAL_NAME);
@@ -209,10 +209,16 @@ namespace UIEditor.BoloUI
 				case MainWindow.WM_COPYDATA:
 					break;
 				case MainWindow.WM_QUIT:
-					MainWindow.SendMessage(m_msgMng.m_hwndGL, MainWindow.WM_QUIT, m_msgMng.m_hwndGLParent, IntPtr.Zero);
+					if (!m_msgMng.m_GLHost.m_process.HasExited)
+					{
+						m_msgMng.m_GLHost.m_process.Kill();
+					}
 					break;
 				case MainWindow.WM_DESTROY:
-					MainWindow.SendMessage(m_msgMng.m_hwndGL, MainWindow.WM_QUIT, m_msgMng.m_hwndGLParent, IntPtr.Zero);
+					if (!m_msgMng.m_GLHost.m_process.HasExited)
+					{
+						m_msgMng.m_GLHost.m_process.Kill();
+					}
 					break;
 				default:
 					break;
@@ -292,7 +298,7 @@ namespace UIEditor.BoloUI
 		{
 			if (groupName != "")
 			{
-				string skinGroupPath = MainWindow.s_pW.m_projPath + "\\skin\\" + groupName + ".xml";
+				string skinGroupPath = Project.Setting.s_projPath + "\\skin\\" + groupName + ".xml";
 
 				if (File.Exists(skinGroupPath))
 				{

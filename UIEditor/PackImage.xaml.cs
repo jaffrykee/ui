@@ -58,7 +58,7 @@ namespace UIEditor
 		private void refreshWinStatus()
 		{
 			MainWindow.s_pW.mb_status1 = "( " + m_poiX + " , " + m_poiY + " )\t图片总尺寸： " + m_imageWidth + " x " + m_imageHeight;
-			string pngPath = MainWindow.s_pW.m_imagePath + "\\" + System.IO.Path.GetFileNameWithoutExtension(m_xmlDef.m_openedFile.m_path)
+			string pngPath = Project.Setting.s_imagePath + "\\" + System.IO.Path.GetFileNameWithoutExtension(m_xmlDef.m_openedFile.m_path)
 				+ "\\" + m_namePng + ".png";
 
 			if(System.IO.File.Exists(pngPath))

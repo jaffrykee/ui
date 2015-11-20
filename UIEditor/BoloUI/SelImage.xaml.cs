@@ -69,8 +69,8 @@ namespace UIEditor.BoloUI
 
 		public void refreshImageItem(TreeViewItem viewItem, string resName)
 		{
-			string resPath = MainWindow.s_pW.m_imagePath + "\\" + resName + ".xml";
-			string tgaPath = MainWindow.s_pW.m_imagePath + "\\" + resName + ".tga";
+			string resPath = Project.Setting.s_imagePath + "\\" + resName + ".xml";
+			string tgaPath = Project.Setting.s_imagePath + "\\" + resName + ".tga";
 
 			viewItem.ToolTip = resPath;
 			if(System.IO.File.Exists(resPath) && System.IO.File.Exists(tgaPath))
@@ -173,7 +173,7 @@ namespace UIEditor.BoloUI
 				if(imgItem.Parent is TreeViewItem)
 				{
 					TreeViewItem resItem = (TreeViewItem)imgItem.Parent;
-					string pngPath = MainWindow.s_pW.m_imagePath + "\\" + resItem.Header.ToString() +
+					string pngPath = Project.Setting.s_imagePath + "\\" + resItem.Header.ToString() +
 						"\\" + imgItem.Header.ToString() + ".png";
 					m_curPngCtrl = new PngControl(pngPath);
 

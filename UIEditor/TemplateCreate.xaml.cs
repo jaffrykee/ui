@@ -80,12 +80,12 @@ namespace UIEditor
 				}
 				else if (mx_pathProj.IsChecked == true)
 				{
-					if (MainWindow.s_pW.m_docProj.SelectSingleNode("BoloUIProj").NodeType == XmlNodeType.Element)
+					if (Project.Setting.s_docProj.SelectSingleNode("BoloUIProj").NodeType == XmlNodeType.Element)
 					{
-						XmlElement xeConfig = (XmlElement)MainWindow.s_pW.m_docProj.SelectSingleNode("BoloUIProj");
+						XmlElement xeConfig = (XmlElement)Project.Setting.s_docProj.SelectSingleNode("BoloUIProj");
 
 						createTmpl(xeConfig);
-						xeConfig.OwnerDocument.Save(MainWindow.s_pW.m_projPath + "\\" + MainWindow.s_pW.m_projName);
+						xeConfig.OwnerDocument.Save(Project.Setting.s_projPath + "\\" + Project.Setting.s_projName);
 					}
 				}
 				this.Close();

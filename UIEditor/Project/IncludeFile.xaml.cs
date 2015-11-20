@@ -190,7 +190,7 @@ namespace UIEditor.Project
 						if (m_fileType == FileType.Image_Png)
 						{
 							FileInfo fi = new FileInfo(m_path);
-							string oldResPath = MainWindow.s_pW.m_projPath + "\\images\\" + System.IO.Path.GetFileName(fi.DirectoryName) + ".xml";
+							string oldResPath = Project.Setting.s_projPath + "\\images\\" + System.IO.Path.GetFileName(fi.DirectoryName) + ".xml";
 
 							//重新打包
 							ImageTools.ImageNesting.pngToTgaRectNesting(fi.DirectoryName);
@@ -256,7 +256,7 @@ namespace UIEditor.Project
 													{
 														newFolderDef.AddChild(new IncludeFile(newPath));
 													}
-													string newResPath = MainWindow.s_pW.m_projPath + "\\images\\" + System.IO.Path.GetFileName(newFolder) + ".xml";
+													string newResPath = Project.Setting.s_projPath + "\\images\\" + System.IO.Path.GetFileName(newFolder) + ".xml";
 
 													//重新打包
 													ImageTools.ImageNesting.pngToTgaRectNesting(newFolder);
@@ -347,7 +347,7 @@ namespace UIEditor.Project
 				try
 				{
 					if (fi.Directory.Parent.Name == "images" &&
-						fi.Directory.Parent.Parent.FullName == MainWindow.s_pW.m_projPath)
+						fi.Directory.Parent.Parent.FullName == Project.Setting.s_projPath)
 					{
 						refreshMenuItem(FileType.Image_Png);
 						addResFolderToMenu(fi.Directory.Parent, mx_moveTo, mx_moveToChild_Click);
@@ -355,7 +355,7 @@ namespace UIEditor.Project
 
 						return;
 					}
-					else if (fi.Directory.FullName == MainWindow.s_pW.m_projPath)
+					else if (fi.Directory.FullName == Project.Setting.s_projPath)
 					{
 						if(fi.Extension == ".xml")
 						{
@@ -370,7 +370,7 @@ namespace UIEditor.Project
 						}
 					}
 					else if (fi.Directory.Name == "skin" &&
-						fi.Directory.Parent.FullName == MainWindow.s_pW.m_projPath)
+						fi.Directory.Parent.FullName == Project.Setting.s_projPath)
 					{
 						if (fi.Extension == ".xml")
 						{
@@ -397,7 +397,7 @@ namespace UIEditor.Project
 				try
 				{
 					if(dri.Parent.Name == "images" &&
-						dri.Parent.Parent.FullName == MainWindow.s_pW.m_projPath)
+						dri.Parent.Parent.FullName == Project.Setting.s_projPath)
 					{
 						refreshMenuItem(FileType.Image_Folder);
 						return;
@@ -463,7 +463,7 @@ namespace UIEditor.Project
 
 			if (imageRootFolder != null)
 			{
-				string newPath = MainWindow.s_pW.m_projPath + "\\images\\newFolder";
+				string newPath = Project.Setting.s_projPath + "\\images\\newFolder";
 				try
 				{
 					Directory.CreateDirectory(newPath);
@@ -488,8 +488,8 @@ namespace UIEditor.Project
 		{
 			IncludeFile imageRootFolder;
 
-			if (MainWindow.s_pW.m_mapIncludeFiles != null && MainWindow.s_pW.m_projPath != null && MainWindow.s_pW.m_projPath != "" &&
-				MainWindow.s_pW.m_mapIncludeFiles.TryGetValue(MainWindow.s_pW.m_projPath + "\\images", out imageRootFolder))
+			if (MainWindow.s_pW.m_mapIncludeFiles != null && Project.Setting.s_projPath != null && Project.Setting.s_projPath != "" &&
+				MainWindow.s_pW.m_mapIncludeFiles.TryGetValue(Project.Setting.s_projPath + "\\images", out imageRootFolder))
 			{
 				return imageRootFolder;
 			}

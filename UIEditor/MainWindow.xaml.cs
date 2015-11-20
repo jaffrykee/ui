@@ -56,12 +56,6 @@ namespace UIEditor
 	public partial class MainWindow
 	{
 		public static MainWindow s_pW;
-
-		public string m_skinPath;
-		public string m_imagePath;
-		public string m_projPath;
-		public string m_projName;
-		public XmlDocument m_docProj;
 		public Dictionary<string, OpenedFile> m_mapOpenedFiles;
 		public Dictionary<string, IncludeFile> m_mapIncludeFiles;
 		//public Dictionary<string, SkinIndex> m_mapSkinIndex;
@@ -207,8 +201,8 @@ namespace UIEditor
 		public MainWindow()
 		{
 			s_pW = this;
-			m_skinPath = "";
-			m_projPath = "";
+			Project.Setting.s_skinPath = "";
+			Project.Setting.s_projPath = "";
 			m_msgMng = new MsgManager(true);
 			m_mapIncludeFiles = new Dictionary<string, IncludeFile>();
 			m_mapOpenedFiles = new Dictionary<string, OpenedFile>();
@@ -328,9 +322,9 @@ namespace UIEditor
 
 				if (xnResolutionSetting == null)
 				{
-					xnResolutionSetting = Setting.initResolutionSetting(xnConfig);
+					xnResolutionSetting = Project.Setting.initResolutionSetting(xnConfig);
 				}
-				Setting.refreshResolutionBoxByConfigNode(xnResolutionSetting);
+				Project.Setting.refreshResolutionBoxByConfigNode(xnResolutionSetting);
 			}
 
 			m_docConf.Save(conf_pathConf);
@@ -449,41 +443,41 @@ namespace UIEditor
 
 		public void openProjByPath(string projPath, string projName)
 		{
-			m_projPath = projPath;
-			m_projName = projName;
+			Project.Setting.s_projPath = projPath;
+			Project.Setting.s_projName = projName;
 
-			if (System.IO.Path.GetExtension(m_projName) == ".ryrp")
+			if (System.IO.Path.GetExtension(Project.Setting.s_projName) == ".ryrp")
 			{
-				m_projName = System.IO.Path.ChangeExtension(m_projName, ".bup");
-				if (!File.Exists(m_projPath + "\\" + m_projName))
+				Project.Setting.s_projName = System.IO.Path.ChangeExtension(Project.Setting.s_projName, ".bup");
+				if (!File.Exists(Project.Setting.s_projPath + "\\" + Project.Setting.s_projName))
 				{
 					string initProjXml = "<BoloUIProj><template></template></BoloUIProj>";
 
-					m_docProj = new XmlDocument();
-					m_docProj.LoadXml(initProjXml);
+					Project.Setting.s_docProj = new XmlDocument();
+					Project.Setting.s_docProj.LoadXml(initProjXml);
 				}
 				else
 				{
-					m_docProj = new XmlDocument();
-					m_docProj.Load(m_projPath + "\\" + m_projName);
+					Project.Setting.s_docProj = new XmlDocument();
+					Project.Setting.s_docProj.Load(Project.Setting.s_projPath + "\\" + Project.Setting.s_projName);
 				}
 			}
-			else if (System.IO.Path.GetExtension(m_projName) == ".bup")
+			else if (System.IO.Path.GetExtension(Project.Setting.s_projName) == ".bup")
 			{
-				m_docProj = new XmlDocument();
-				m_docProj.Load(m_projPath + "\\" + m_projName);
+				Project.Setting.s_docProj = new XmlDocument();
+				Project.Setting.s_docProj.Load(Project.Setting.s_projPath + "\\" + Project.Setting.s_projName);
 			}
 			else
 			{
 				return;
 			}
 
-			if (m_docProj.DocumentElement == null || m_docProj.DocumentElement.Name != "BoloUIProj" ||
+			if (Project.Setting.s_docProj.DocumentElement == null || Project.Setting.s_docProj.DocumentElement.Name != "BoloUIProj" ||
 				m_docConf.DocumentElement == null || m_docConf.DocumentElement.Name != "Config")
 			{
 				return;
 			}
-			m_docConf.DocumentElement.SelectSingleNode("ProjHistory").InnerXml = m_projPath;
+			m_docConf.DocumentElement.SelectSingleNode("ProjHistory").InnerXml = Project.Setting.s_projPath;
 			XmlElement xeBup = null;
 			if (m_docConf.DocumentElement.SelectSingleNode("bupHistory") == null)
 			{
@@ -502,7 +496,7 @@ namespace UIEditor
 
 			if (xeBup != null)
 			{
-				string newPath = m_projPath + "\\" + m_projName;
+				string newPath = Project.Setting.s_projPath + "\\" + Project.Setting.s_projName;
 				int delCount = xeBup.SelectNodes("row").Count - 9;
 				XmlElement xeTop = null;
 
@@ -535,35 +529,19 @@ namespace UIEditor
 					xeBup.InsertBefore(xeTop, xeBup.SelectSingleNode("row"));
 				}
 			}
-			XmlNode xnResolutionSetting = m_docProj.DocumentElement.SelectSingleNode("ResolutionSetting");
+			MainWindow.s_pW.m_docConf.Save(MainWindow.conf_pathConf);
+			updateGL(Project.Setting.s_projPath, W2GTag.W2G_PATH);
 
-			Setting.refreshResolutionBoxByConfigNode(xnResolutionSetting);
-			m_docConf.Save(conf_pathConf);
-			m_docProj.Save(m_projPath + "\\" + m_projName);
-
-
-			updateGL(m_projPath, W2GTag.W2G_PATH);
-			//refreshImage(path + "\\images");
-			m_skinPath = m_projPath + "\\skin";
-			m_imagePath = m_projPath + "\\images";
-			if (Directory.Exists(m_skinPath))
+			Project.Setting.refreshAllProjectSetting();
+			if (Directory.Exists(Project.Setting.s_skinPath))
 			{
-				if (File.Exists(m_skinPath + "\\publicskin.xml"))
+				if (File.Exists(Project.Setting.s_skinPath + "\\publicskin.xml"))
 				{
-					refreshSkin(m_skinPath);
+					refreshSkin(Project.Setting.s_skinPath);
 				}
 			}
-			else
-			{
-// 				MessageBox.Show(
-// 					"没有找到皮肤目录：" + m_skinPath + "，请检查项目路径。",
-// 					m_projPath + "\\" + m_projName + " - UI编辑器",
-// 					MessageBoxButton.OK,
-// 					MessageBoxImage.Warning
-// 				);
-			}
-			refreshProjTree(m_projPath, this.mx_treePro, true);
-			mx_root.Title = m_projPath + "\\" + m_projName + " - UI编辑器";
+			refreshProjTree(Project.Setting.s_projPath, this.mx_treePro, true);
+			mx_root.Title = Project.Setting.s_projPath + "\\" + Project.Setting.s_projName + " - UI编辑器";
 			mx_toolNew.IsEnabled = true;
 		}
 		public void refreshImageTree()
@@ -2204,13 +2182,13 @@ namespace UIEditor
 		}
 		private void mx_btnNesting_Click(object sender, RoutedEventArgs e)
 		{
-			if(m_projPath != null && m_projPath != "")
+			if(Project.Setting.s_projPath != null && Project.Setting.s_projPath != "")
 			{
-				if (!System.IO.Directory.Exists(m_projPath + "\\images\\"))
+				if (!System.IO.Directory.Exists(Project.Setting.s_projPath + "\\images\\"))
 				{
-					Directory.CreateDirectory(m_projPath + "\\images\\");
+					Directory.CreateDirectory(Project.Setting.s_projPath + "\\images\\");
 				}
-				ImageTools.ImageNesting winNesting = new ImageTools.ImageNesting(m_projPath + "\\images\\", "*.png", 1);
+				ImageTools.ImageNesting winNesting = new ImageTools.ImageNesting(Project.Setting.s_projPath + "\\images\\", "*.png", 1);
 				winNesting.ShowDialog();
 			}
 		}
@@ -2666,11 +2644,11 @@ namespace UIEditor
 		{
 			MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_INFO,
 				"开始shape的重排\r\n"));
-			if(m_skinPath != null && m_skinPath != "")
+			if(Project.Setting.s_skinPath != null && Project.Setting.s_skinPath != "")
 			{
-				if(Directory.Exists(m_skinPath))
+				if(Directory.Exists(Project.Setting.s_skinPath))
 				{
-					DirectoryInfo di = new DirectoryInfo(m_skinPath);
+					DirectoryInfo di = new DirectoryInfo(Project.Setting.s_skinPath);
 
 					foreach(FileInfo fi in di.GetFiles())
 					{
@@ -2772,12 +2750,25 @@ namespace UIEditor
 
 		private void mx_projSetting_Click(object sender, RoutedEventArgs e)
 		{
-			if(m_docProj != null)
+			if(Project.Setting.s_docProj != null)
 			{
 				ProjectSettingWin winPs = new ProjectSettingWin();
 
 				winPs.ShowDialog();
 			}
+		}
+		private void mx_toolPackUi_Click(object sender, RoutedEventArgs e)
+		{
+			Setting.packUiMod();
+		}
+		private void mx_toolPackScript_Click(object sender, RoutedEventArgs e)
+		{
+			Setting.packScriptMod();
+		}
+
+		private void mx_toolRunGame_Click(object sender, RoutedEventArgs e)
+		{
+			Setting.openGame();
 		}
 	}
 

@@ -63,8 +63,8 @@ namespace UIEditor.BoloUI
 // 		}
 // 		public static void refreshSkinIndex()
 // 		{
-// 			string proPath = MainWindow.s_pW.m_projPath;
-// 			string skinPath = MainWindow.s_pW.m_skinPath;
+// 			string proPath = Project.Setting.s_projPath;
+// 			string skinPath = Project.Setting.s_skinPath;
 // 
 // 			if(proPath != null && skinPath != null && proPath != "" && skinPath != "" &&
 // 				Directory.Exists(proPath) && Directory.Exists(skinPath))

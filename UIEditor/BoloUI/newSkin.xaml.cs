@@ -35,10 +35,10 @@ namespace UIEditor.BoloUI
 			m_skinName = null;
 			InitializeComponent();
 			this.Owner = MainWindow.s_pW;
-			if (MainWindow.s_pW.m_skinPath != null && MainWindow.s_pW.m_skinPath != "" &&
-				Directory.Exists(MainWindow.s_pW.m_skinPath))
+			if (Project.Setting.s_skinPath != null && Project.Setting.s_skinPath != "" &&
+				Directory.Exists(Project.Setting.s_skinPath))
 			{
-				DirectoryInfo skinDi = new DirectoryInfo(MainWindow.s_pW.m_skinPath);
+				DirectoryInfo skinDi = new DirectoryInfo(Project.Setting.s_skinPath);
 
 				foreach(FileInfo fi in skinDi.GetFiles())
 				{

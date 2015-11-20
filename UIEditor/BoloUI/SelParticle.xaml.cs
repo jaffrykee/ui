@@ -75,9 +75,9 @@ namespace UIEditor.BoloUI
 		{
 			mx_rootItem.Items.Clear();
 
-			if(MainWindow.s_pW != null && Directory.Exists(MainWindow.s_pW.m_projPath + "\\..\\..\\texiao"))
+			if(MainWindow.s_pW != null && Directory.Exists(Project.Setting.s_projPath + "\\..\\..\\texiao"))
 			{
-				DirectoryInfo driParticle = new DirectoryInfo(MainWindow.s_pW.m_projPath + "\\..\\..\\texiao");
+				DirectoryInfo driParticle = new DirectoryInfo(Project.Setting.s_projPath + "\\..\\..\\texiao");
 
 				m_pathTexiao = driParticle.FullName;
 				foreach(FileInfo fiParticle in driParticle.GetFiles())
@@ -97,7 +97,7 @@ namespace UIEditor.BoloUI
 
 		void mx_itemParticle_Selected(object sender, RoutedEventArgs e)
 		{
-			updateGL(MainWindow.s_pW.m_projPath, W2GTag.W2G_PATH);
+			updateGL(Project.Setting.s_projPath, W2GTag.W2G_PATH);
 			updateGL("960:540:False:960:540", W2GTag.W2G_VIEWSIZE);
 			if(sender is TreeViewItem)
 			{
@@ -135,10 +135,16 @@ namespace UIEditor.BoloUI
 				case MainWindow.WM_COPYDATA:
 					break;
 				case MainWindow.WM_QUIT:
-					MainWindow.SendMessage(m_msgMng.m_hwndGL, MainWindow.WM_QUIT, m_msgMng.m_hwndGLParent, IntPtr.Zero);
+					if (!m_msgMng.m_GLHost.m_process.HasExited)
+					{
+						m_msgMng.m_GLHost.m_process.Kill();
+					}
 					break;
 				case MainWindow.WM_DESTROY:
-					MainWindow.SendMessage(m_msgMng.m_hwndGL, MainWindow.WM_QUIT, m_msgMng.m_hwndGLParent, IntPtr.Zero);
+					if (!m_msgMng.m_GLHost.m_process.HasExited)
+					{
+						m_msgMng.m_GLHost.m_process.Kill();
+					}
 					break;
 				default:
 					break;

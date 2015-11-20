@@ -202,7 +202,7 @@ namespace UIEditor
 			}
 			else if (m_mapSkinLink.TryGetValue(skinName, out groupName) && groupName != null && groupName != "")
 			{
-				string path = MainWindow.s_pW.m_skinPath + "\\" + groupName + ".xml";
+				string path = Project.Setting.s_skinPath + "\\" + groupName + ".xml";
 
 				if(File.Exists(path))
 				{
@@ -250,7 +250,7 @@ namespace UIEditor
 			}
 			else if (m_mapSkinLink.TryGetValue(skinName, out groupName))
 			{
-				string path = MainWindow.s_pW.m_skinPath + "\\" + groupName + ".xml";
+				string path = Project.Setting.s_skinPath + "\\" + groupName + ".xml";
 
 				changeSelectSkinAndFile(path, skinName, ctrlUI);
 			}
@@ -273,7 +273,7 @@ namespace UIEditor
 			}
 			else if (m_mapSkinLink.TryGetValue(skinName, out groupName))
 			{
-				string path = MainWindow.s_pW.m_skinPath + "\\" + groupName + ".xml";
+				string path = Project.Setting.s_skinPath + "\\" + groupName + ".xml";
 
 				return path;
 			}
@@ -326,8 +326,8 @@ namespace UIEditor
 									}
 									else
 									{
-										string oldSkinPath = MainWindow.s_pW.m_skinPath + "\\" + skinName + ".xml";
-										string newSkinPath = MainWindow.s_pW.m_skinPath + "\\" + skinGroupName + ".xml";
+										string oldSkinPath = Project.Setting.s_skinPath + "\\" + skinName + ".xml";
+										string newSkinPath = Project.Setting.s_skinPath + "\\" + skinGroupName + ".xml";
 
 										m_mapSkinLink[xeSkin.GetAttribute("Name")] = skinGroupName;
 
@@ -345,7 +345,7 @@ namespace UIEditor
 								if (xeSkin.GetAttribute("name") != "")
 								{
 									string imgName = xeSkin.GetAttribute("name");
-									string imgPath = MainWindow.s_pW.m_imagePath + "\\" + imgName + ".tga";
+									string imgPath = Project.Setting.s_imagePath + "\\" + imgName + ".tga";
 									long imgSize;
 
 									if (!m_mapImageSize.TryGetValue(imgPath, out imgSize))
@@ -375,7 +375,7 @@ namespace UIEditor
 		}
 		public void refreshSkinDicByGroupName(string skinGroupName)
 		{
-			string path = MainWindow.s_pW.m_skinPath + "\\" + skinGroupName + ".xml";
+			string path = Project.Setting.s_skinPath + "\\" + skinGroupName + ".xml";
 
 			refreshSkinDicByPath(path, skinGroupName);
 		}
@@ -1122,8 +1122,8 @@ namespace UIEditor
 		}
 		static public void refreshAllShape()
 		{
-			refreshShape(MainWindow.s_pW.m_projPath);
-			refreshShape(MainWindow.s_pW.m_skinPath);
+			refreshShape(Project.Setting.s_projPath);
+			refreshShape(Project.Setting.s_skinPath);
 		}
 	}
 }

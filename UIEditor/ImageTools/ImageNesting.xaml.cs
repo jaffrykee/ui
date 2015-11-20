@@ -500,7 +500,7 @@ namespace UIEditor.ImageTools
 		public static void pngToTgaRectNesting(string path, string filter = "*.png", int deep = 0, bool isPreset = false)
 		{
 			Dictionary<string, RectNode> mapRectNode = new Dictionary<string, RectNode>();
-			string projPath = MainWindow.s_pW.m_projPath;
+			string projPath = Project.Setting.s_projPath;
 			int presetCount = 0;
 			int fileCount = 0;
 
@@ -828,8 +828,8 @@ namespace UIEditor.ImageTools
 		}
 		public static void moveImageLink(string oldName, string newName, string oldFolder, string newFolder)
 		{
-			updateResLink(MainWindow.s_pW.m_projPath + "\\skin", oldName, newName, oldFolder, newFolder);
-			updateResLink(MainWindow.s_pW.m_projPath, oldName, newName, oldFolder, newFolder);
+			updateResLink(Project.Setting.s_projPath + "\\skin", oldName, newName, oldFolder, newFolder);
+			updateResLink(Project.Setting.s_projPath, oldName, newName, oldFolder, newFolder);
 		}
 		private static bool refreshRes(XmlElement xeRoot, Dictionary<string, string> mapNameDir, Dictionary<string, int> mapResDir, string dirHead = "")
 		{
@@ -949,9 +949,9 @@ namespace UIEditor.ImageTools
 			Dictionary<string, string> mapNameDir = new Dictionary<string, string>();
 
 			printString("========开始重定向皮肤资源========\r\n");
-			addFileToDirMap(MainWindow.s_pW.m_projPath + "\\images", mapNameDir);
-			refreshAllSkinRes(MainWindow.s_pW.m_projPath + "\\skin", mapNameDir);
-			refreshAllSkinRes(MainWindow.s_pW.m_projPath, mapNameDir);
+			addFileToDirMap(Project.Setting.s_projPath + "\\images", mapNameDir);
+			refreshAllSkinRes(Project.Setting.s_projPath + "\\skin", mapNameDir);
+			refreshAllSkinRes(Project.Setting.s_projPath, mapNameDir);
 		}
 
 		private void mx_start_Click(object sender, RoutedEventArgs e)
@@ -959,7 +959,7 @@ namespace UIEditor.ImageTools
 			mx_start.IsEnabled = false;
 			DoEvents();
 
-			string path = MainWindow.s_pW.m_projPath;
+			string path = Project.Setting.s_projPath;
 			if(mx_rPreset.IsChecked == true)
 			{
 				mx_imgDebug.Text = "";
@@ -991,7 +991,7 @@ namespace UIEditor.ImageTools
 					xeResRoot.AppendChild(xeRes);
 				}
 				docRes.AppendChild(xeResRoot);
-				docRes.Save(MainWindow.s_pW.m_projPath + "\\images\\resource.xml");
+				docRes.Save(Project.Setting.s_projPath + "\\images\\resource.xml");
 			}
 			else if(mx_rRefreshRes.IsChecked == true)
 			{
@@ -1003,10 +1003,10 @@ namespace UIEditor.ImageTools
 
 				if (retInit == MessageBoxResult.OK)
 				{
-					if(Directory.Exists(MainWindow.s_pW.m_projPath + "\\preset\\"))
+					if(Directory.Exists(Project.Setting.s_projPath + "\\preset\\"))
 					{
 						reLinkSkin();
-						Directory.Delete(MainWindow.s_pW.m_projPath + "\\preset\\", true);
+						Directory.Delete(Project.Setting.s_projPath + "\\preset\\", true);
 					}
 					else
 					{

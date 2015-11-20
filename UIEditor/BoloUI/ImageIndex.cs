@@ -66,7 +66,7 @@ namespace UIEditor.BoloUI
 		}
 		public static void refreshImageIndex()
 		{
-			string imgPath = MainWindow.s_pW.m_imagePath;
+			string imgPath = Project.Setting.s_imagePath;
 
 			if(imgPath != null && imgPath != "" && Directory.Exists(imgPath))
 			{
