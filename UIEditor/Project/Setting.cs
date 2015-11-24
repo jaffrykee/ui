@@ -176,7 +176,7 @@ namespace UIEditor.Project
 			}
 		}
 
-		static private void openLinkFile(string pathPack)
+		static private void openLinkFile(string pathPack, bool isBlock = true)
 		{
 			if (File.Exists(pathPack))
 			{

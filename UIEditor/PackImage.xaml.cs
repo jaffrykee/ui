@@ -57,7 +57,8 @@ namespace UIEditor
 
 		private void refreshWinStatus()
 		{
-			MainWindow.s_pW.mb_status1 = "( " + m_poiX + " , " + m_poiY + " )\t图片总尺寸： " + m_imageWidth + " x " + m_imageHeight;
+			MainWindow.s_pW.mb_status0 = "( " + m_poiX + " , " + m_poiY + " )\t图片总尺寸： " + m_imageWidth + " x " + m_imageHeight;
+			MainWindow.s_pW.mb_status1 = "";
 			string pngPath = Project.Setting.s_imagePath + "\\" + System.IO.Path.GetFileNameWithoutExtension(m_xmlDef.m_openedFile.m_path)
 				+ "\\" + m_namePng + ".png";
 
@@ -232,8 +233,7 @@ namespace UIEditor
 
 			if (m_imageHeight > 4096)
 			{
-				MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_WARNING,
-					"图片尺寸过大，不提供预览功能\r\n"));
+				Public.ResultLink.showResult("\r\n图片尺寸过大，不提供预览功能", Public.ResultType.RT_WARNING);
 
 				return;
 			}

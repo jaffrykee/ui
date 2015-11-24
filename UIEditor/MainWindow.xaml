@@ -165,17 +165,27 @@
 				</MenuItem>
 			</MenuItem>
 			<MenuItem Header="项目">
-				<MenuItem Name="mx_projSetting" Header="属性..." Click="mx_projSetting_Click"/>
-			</MenuItem>
-			<MenuItem Header="工具">
-				<MenuItem Header="图片打包"
+				<MenuItem Name="mx_menuNesting"
+						  Header="图片打包"
+						  IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 						  Click="mx_btnNesting_Click">
 					<MenuItem.Icon>
 						<Image Width="16" Source="pack://application:,,,/data/image/nesting.png"/>
 					</MenuItem.Icon>
 				</MenuItem>
-				<MenuItem Header="分析..."/>
+				<MenuItem Name="mx_statistics"
+						  Header="统计"
+						  IsEnabled="False">
+					<MenuItem Name="mx_statisticsSkin"
+							  Header="统计未被引用的皮肤"/>
+				</MenuItem>
 				<Separator/>
+				<MenuItem Name="mx_projSetting"
+						  Header="属性..."
+						  IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
+						  Click="mx_projSetting_Click"/>
+			</MenuItem>
+			<MenuItem Header="工具">
 				<MenuItem Name="mx_setting" Header="选项..." IsEnabled="False"/>
 			</MenuItem>
 			<MenuItem Header="视图">
@@ -340,6 +350,42 @@
 						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
 								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
 								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
+						<Button Name="mx_toolPackUi"
+								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
+								Width="{Binding ElementName=mx_toolNew, Path=Width}"
+								Height="{Binding ElementName=mx_toolNew, Path=Height}"
+								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
+								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
+								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								ToolTip="打包UI"
+								Click="mx_toolPackUi_Click">
+							<Image Width="16" Source="pack://application:,,,/data/image/packUi.png"/>
+						</Button>
+						<Button Name="mx_toolPackScript"
+								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
+								Width="{Binding ElementName=mx_toolNew, Path=Width}"
+								Height="{Binding ElementName=mx_toolNew, Path=Height}"
+								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
+								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
+								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								ToolTip="打包脚本"
+								Click="mx_toolPackScript_Click">
+							<Image Width="16" Source="pack://application:,,,/data/image/packScript.png"/>
+						</Button>
+						<Button Name="mx_toolRunGame"
+								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
+								Width="{Binding ElementName=mx_toolNew, Path=Width}"
+								Height="{Binding ElementName=mx_toolNew, Path=Height}"
+								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
+								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
+								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								ToolTip="运行游戏"
+								Click="mx_toolRunGame_Click">
+							<Image Width="16" Source="pack://application:,,,/data/image/runGame.png"/>
+						</Button>
+						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
+								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
+								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
 						<TextBlock Padding="5,0,0,0" VerticalAlignment="Center">分辨率：</TextBlock>
 						<ComboBox Name="mx_resolution" Margin="5" SelectedIndex="0" SelectionChanged="mx_resolution_SelectionChanged">
 						</ComboBox>
@@ -416,6 +462,13 @@
 								  Unchecked="mx_isViewMode_Unchecked">
 							<Image Width="16" Source="pack://application:,,,/data/image/viewMode.png"/>
 						</CheckBox>
+						<CheckBox Name="mx_showBorder"
+								  ToolTip="显示所有可见控件的边框"
+								  Foreground="{StaticResource Foreground}"
+								  Checked="mx_showBorder_Checked"
+								  Unchecked="mx_showBorder_Unchecked">
+							显示边框
+						</CheckBox>
 						<Button Name="mx_refreshShape"
 								ToolTip="自动将所有公共皮肤（skin目录下）的textShape置于imageShape之上"
 								Foreground="{StaticResource Foreground}"
@@ -423,41 +476,6 @@
 							文字置顶
 						</Button>
 					</ToolBar>
-					<WrapPanel HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0" Background="{Binding ElementName=mx_wpTools, Path=Background}">
-						<Button Name="mx_toolPackUi"
-								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
-								Width="{Binding ElementName=mx_toolNew, Path=Width}"
-								Height="{Binding ElementName=mx_toolNew, Path=Height}"
-								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
-								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
-								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
-								ToolTip="打包UI"
-								Click="mx_toolPackUi_Click">
-							<Image Width="16" Source="pack://application:,,,/data/image/packUi.png"/>
-						</Button>
-						<Button Name="mx_toolPackScript"
-								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
-								Width="{Binding ElementName=mx_toolNew, Path=Width}"
-								Height="{Binding ElementName=mx_toolNew, Path=Height}"
-								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
-								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
-								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
-								ToolTip="打包脚本"
-								Click="mx_toolPackScript_Click">
-							<Image Width="16" Source="pack://application:,,,/data/image/packScript.png"/>
-						</Button>
-						<Button Name="mx_toolRunGame"
-								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
-								Width="{Binding ElementName=mx_toolNew, Path=Width}"
-								Height="{Binding ElementName=mx_toolNew, Path=Height}"
-								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
-								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
-								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
-								ToolTip="运行游戏"
-								Click="mx_toolRunGame_Click">
-							<Image Width="16" Source="pack://application:,,,/data/image/runGame.png"/>
-						</Button>
-					</WrapPanel>
 				</WrapPanel>
 				<WrapPanel Grid.Row="1" Margin="3">
 					<WrapPanel Name="mx_ctrlNormal"

@@ -359,20 +359,20 @@ namespace UIEditor.BoloUI
 							if (m_xe.Name == "BoloUI" && MainWindow.s_pW.m_mapPanelCtrlDef.TryGetValue(treeChild.m_xe.Name, out panelCtrlDef))
 							{
 								m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
-									new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe)
-									);
+									new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT,
+										treeChild.m_xe, m_xe, m_xe.ChildNodes.Count));
 							}
 							else if (MainWindow.s_pW.m_mapPanelCtrlDef.TryGetValue(m_xe.Name, out panelCtrlDef))
 							{
 								m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
-									new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe)
-									);
+									new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT,
+										treeChild.m_xe, m_xe, m_xe.ChildNodes.Count));
 							}
 							else if (m_xe.ParentNode != null && m_xe.ParentNode.ParentNode != null && m_xe.ParentNode.ParentNode.NodeType == XmlNodeType.Element)
 							{
 								m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
-									new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, (XmlElement)m_xe.ParentNode)
-									);
+									new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT,
+										treeChild.m_xe, (XmlElement)m_xe.ParentNode, XmlOperation.HistoryNode.getXeIndex(m_xe) + 1));
 							}
 						}
 						else if (m_type == "Skin")
@@ -385,7 +385,8 @@ namespace UIEditor.BoloUI
 									&& skinDef.m_mapEnChild.TryGetValue(treeChild.m_xe.Name, out skinChildDef))
 								{
 									m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
-										new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe)
+										new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT,
+											treeChild.m_xe, m_xe, m_xe.ChildNodes.Count)
 										);
 								}
 								else
@@ -396,7 +397,8 @@ namespace UIEditor.BoloUI
 											MainWindow.s_pW.m_mapSkinTreeDef.TryGetValue(treeChild.m_xe.Name, out skinChildDef))
 										{
 											m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
-												new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, ((XmlElement)m_xe.ParentNode))
+												new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT,
+													treeChild.m_xe, (XmlElement)m_xe.ParentNode, XmlOperation.HistoryNode.getXeIndex(m_xe) + 1)
 												);
 										}
 										else if (MainWindow.s_pW.m_mapSkinAllDef.TryGetValue(((XmlElement)m_xe.ParentNode).Name, out skinDef))
@@ -404,7 +406,8 @@ namespace UIEditor.BoloUI
 											if (skinDef.m_mapEnChild.TryGetValue(treeChild.m_xe.Name, out skinChildDef))
 											{
 												m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
-													new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, ((XmlElement)m_xe.ParentNode))
+													new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT,
+														treeChild.m_xe, (XmlElement)m_xe.ParentNode, XmlOperation.HistoryNode.getXeIndex(m_xe) + 1)
 													);
 											}
 										}
@@ -853,7 +856,8 @@ namespace UIEditor.BoloUI
 						XmlElement newXe = m_xe.OwnerDocument.CreateElement(ctrlItem.ToolTip.ToString());
 						BoloUI.Basic treeChild = new BoloUI.Basic(newXe, m_xmlCtrl);
 
-						m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe));
+						m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
+							XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe, m_xe.ChildNodes.Count));
 					}
 					break;
 				case "UIEditor.BoloUI.CtrlTemplate":
@@ -868,7 +872,8 @@ namespace UIEditor.BoloUI
 							if (newXe.FirstChild.NodeType == XmlNodeType.Element)
 							{
 								BoloUI.Basic treeChild = new BoloUI.Basic((XmlElement)newXe.FirstChild, m_xmlCtrl);
-								m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe));
+								m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
+									XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe, m_xe.ChildNodes.Count));
 							}
 						}
 					}
@@ -934,14 +939,12 @@ namespace UIEditor.BoloUI
 
 							if (ctrlItem.m_xe.Name != "event" && !rectFrame.Contains(rectItem))
 							{
-								MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_INFO,
-									"[" + ctrlItem.mx_radio.Content.ToString() + "]", ctrlItem));
-								MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_INFO,
-									" 超出了 "));
-								MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_INFO,
-									"[" + ctrlFrame.mx_radio.Content.ToString() + "]", ctrlFrame));
-								MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_INFO,
-									" 的范围。\r\n"));
+								Public.ResultLink.showResult("\r\n[" + ctrlItem.mx_radio.Content.ToString() + "]",
+									Public.ResultType.RT_INFO, ctrlItem);
+								Public.ResultLink.showResult(" 超出了 ", Public.ResultType.RT_INFO);
+								Public.ResultLink.showResult("[" + ctrlFrame.mx_radio.Content.ToString() + "]",
+									Public.ResultType.RT_INFO, ctrlFrame);
+								Public.ResultLink.showResult(" 的范围。", Public.ResultType.RT_INFO, ctrlItem);
 							}
 							checkOverflow(ctrlItem);
 						}
@@ -951,13 +954,13 @@ namespace UIEditor.BoloUI
 		}
 		private void mx_checkOverflow_Click(object sender, RoutedEventArgs e)
 		{
-			ResultLink.showResult("开始检测溢出的控件\r\n");
+			ResultLink.showResult("\r\n开始检测溢出的控件");
 			if (this is Basic)
 			{
 				m_xmlCtrl.refreshVRect();
 				checkOverflow((Basic)this);
 			}
-			ResultLink.showResult("检测结束\r\n");
+			ResultLink.showResult("\r\n检测结束");
 		}
 
 		private void mx_shrinkChildren_Click(object sender, RoutedEventArgs e)

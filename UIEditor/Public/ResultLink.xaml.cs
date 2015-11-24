@@ -58,9 +58,9 @@ namespace UIEditor.Public
 
 		static public void showResult(string text, ResultType rt = ResultType.RT_NONE, object link = null)
 		{
-			MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(rt, text, link));
+			MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(text, rt, link));
 		}
-		public ResultLink(ResultType rt, string text, object link = null)
+		public ResultLink(string text, ResultType rt = ResultType.RT_NONE, object link = null)
 		{
 			m_rt = rt;
 			m_text = text;

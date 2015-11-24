@@ -45,15 +45,12 @@ namespace UIEditor.BoloUI
 
 					if (m_xmlCtrl.m_mapSkin.TryGetValue(m_xe.GetAttribute("Name"), out resItem))
 					{
-						string errorInfo = m_xmlCtrl.m_openedFile.m_path + " - 存在重名皮肤(" +
+						string errorInfo = "\r\n" + m_xmlCtrl.m_openedFile.m_path + " - 存在重名皮肤(" +
 							m_xe.GetAttribute("Name") + ")，前一个同名的皮肤将不能被正确引用。";
 
-						MainWindow.s_pW.mx_result.Inlines.Add(
-							new Public.ResultLink(Public.ResultType.RT_ERROR, errorInfo));
-						MainWindow.s_pW.mx_result.Inlines.Add(
-							new Public.ResultLink(Public.ResultType.RT_ERROR, "<重名皮肤1> ", resItem));
-						MainWindow.s_pW.mx_result.Inlines.Add(
-							new Public.ResultLink(Public.ResultType.RT_ERROR, "<重名皮肤2>\r\n", this));
+						Public.ResultLink.showResult(errorInfo, Public.ResultType.RT_ERROR);
+						Public.ResultLink.showResult("<重名皮肤1> ", Public.ResultType.RT_ERROR, resItem);
+						Public.ResultLink.showResult("<重名皮肤2>", Public.ResultType.RT_ERROR, this);
 						//Public.ErrorInfo.addToErrorInfo(errorInfo);
 					}
 					m_xmlCtrl.m_mapSkin[m_xe.GetAttribute("Name")] = this;
@@ -254,6 +251,7 @@ namespace UIEditor.BoloUI
 				m_selLock.addLock(out stackLock);
 			}
 
+			MainWindow.s_pW.openFileByDef(m_xmlCtrl.m_openedFile);
 			if (m_isSkinEditor == false)
 			{
 				MainWindow.s_pW.mx_treeFrame.SelectedItem = MainWindow.s_pW.mx_treeFrameSkin;

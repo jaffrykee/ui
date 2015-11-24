@@ -120,11 +120,11 @@ namespace UIEditor.BoloUI
 
 							this.Visibility = Visibility.Visible;
 						}
-						else
-						{
-							MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_ERROR,
-								"无法找到皮肤：\"" + skinName + "\"\r\n"));
-						}
+// 						else
+// 						{
+// 							MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_ERROR,
+// 								"无法找到皮肤：\"" + skinName + "\"\r\n"));
+// 						}
 					}
 				}
 			}

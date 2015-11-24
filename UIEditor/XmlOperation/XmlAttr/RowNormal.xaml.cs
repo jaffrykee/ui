@@ -23,6 +23,9 @@ namespace UIEditor.XmlOperation.XmlAttr
 		private string mt_value;
 		private string mt_type;
 		private bool m_eventLock;
+		private Button mx_link;
+		private Button mx_sel;
+		private CustomWPFColorPicker.ColorPickerControlView mx_viewColor;
 		private void setValue(bool isPre, string value)
 		{
 			if (mt_value != value && m_eventLock == false)
@@ -72,27 +75,49 @@ namespace UIEditor.XmlOperation.XmlAttr
 				switch(m_name)
 				{
 					case "skin":
-						mx_skinFrame.Visibility = Visibility.Visible;
-						mx_link.Visibility = Visibility.Visible;
+						{
+							createSelButton();
+							createLinkButton();
+						}
 						break;
 					case "image":
-						mx_skinFrame.Visibility = Visibility.Visible;
-						mx_link.Visibility = Visibility.Collapsed;
+						{
+							createSelButton();
+						}
 						break;
 					case "ImageName":
-						mx_skinFrame.Visibility = Visibility.Visible;
-						mx_link.Visibility = Visibility.Collapsed;
+						{
+							createSelButton();
+						}
 						break;
 					case "particleName":
-						mx_skinFrame.Visibility = Visibility.Visible;
-						mx_link.Visibility = Visibility.Collapsed;
+						{
+							createSelButton();
+						}
 						break;
 					default:
-						mx_skinFrame.Visibility = Visibility.Collapsed;
-						mx_link.Visibility = Visibility.Collapsed;
+						{
+
+						}
 						break;
 				}
 			}
+		}
+		private void createSelButton()
+		{
+			mx_sel = new Button();
+
+			mx_sel.Content = "更改";
+			mx_sel.Click += mx_sel_Click;
+			mx_exFrame.Children.Add(mx_sel);
+		}
+		private void createLinkButton()
+		{
+			mx_link = new Button();
+
+			mx_link.Content = "新建";
+			mx_link.Click += mx_link_Click;
+			mx_exFrame.Children.Add(mx_link);
 		}
 		public string m_preValue
 		{
@@ -151,6 +176,12 @@ namespace UIEditor.XmlOperation.XmlAttr
 						break;
 				}
 			}
+			if(m_type == "Color")
+			{
+				mx_viewColor = new CustomWPFColorPicker.ColorPickerControlView();
+
+				mx_exFrame.Children.Add(mx_viewColor);
+			}
 		}
 
 		private void mx_value_KeyDown(object sender, KeyEventArgs e)
@@ -166,15 +197,18 @@ namespace UIEditor.XmlOperation.XmlAttr
 		}
 		private void mx_value_TextChanged(object sender, TextChangedEventArgs e)
 		{
-			if (mx_value.Text == "")
+			if (mx_link != null)
 			{
-				mx_valueDef.Visibility = Visibility.Visible;
-				mx_link.Content = "新建";
-			}
-			else
-			{
-				mx_valueDef.Visibility = Visibility.Hidden;
-				mx_link.Content = "跳转";
+				if (mx_value.Text == "")
+				{
+					mx_valueDef.Visibility = Visibility.Visible;
+					mx_link.Content = "新建";
+				}
+				else
+				{
+					mx_valueDef.Visibility = Visibility.Hidden;
+					mx_link.Content = "跳转";
+				}
 			}
 		}
 		private void mx_link_Click(object sender, RoutedEventArgs e)

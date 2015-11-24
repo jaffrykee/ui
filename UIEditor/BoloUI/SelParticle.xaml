@@ -9,8 +9,8 @@
 		Foreground="{StaticResource Foreground}"
 		Background="{StaticResource BackgroundNormal}"
 		ShowInTaskbar="False"
-		Height="auto"
-		Width="auto"
+		Width="1185"
+		Height="655"
 		Loaded="mx_root_Loaded"
 		Unloaded="mx_root_Unloaded">
     <Grid Background="{StaticResource Background}">

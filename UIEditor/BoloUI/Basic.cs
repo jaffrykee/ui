@@ -61,6 +61,23 @@ namespace UIEditor.BoloUI
 				IsExpanded = true;
 			}
 			initHeader();
+			if(m_isCtrl)
+			{
+				string skinName = m_xe.GetAttribute("skin");
+
+				if (skinName != "")
+				{
+					string xmlPath = null;
+					object retSkin = m_xmlCtrl.findSkin(skinName, out xmlPath);
+
+					if (retSkin == null)
+					{
+						Public.ResultLink.showResult(
+							"\r\n" + m_xmlCtrl.m_openedFile.m_path + " - [" + this.mx_radio.Content.ToString() + "] 无法找到皮肤：\"" + skinName + "\"",
+							Public.ResultType.RT_ERROR, this);
+					}
+				}
+			}
 		}
 
 		override protected void addChild()
@@ -167,6 +184,7 @@ namespace UIEditor.BoloUI
 					StringDic.getFileNameWithoutPath(m_xmlCtrl.m_openedFile.m_path) + ":" + m_vId,
 					W2GTag.W2G_SELECT_UI
 				);
+				MainWindow.s_pW.mb_status1 = "当前控件范围：( " + m_selX + " , " + m_selY + " ) " + m_selW + " x " + m_selH;
 
 				return true;
 			}
@@ -184,8 +202,7 @@ namespace UIEditor.BoloUI
 			{
 				m_selLock.addLock(out stackLock);
 			}
-			MainWindow.s_pW.m_curFile = m_xmlCtrl.m_openedFile.m_path;
-			MainWindow.s_pW.mx_workTabs.SelectedItem = m_xmlCtrl.m_openedFile.m_tab;
+			MainWindow.s_pW.openFileByDef(m_xmlCtrl.m_openedFile);
 			MainWindow.s_pW.mx_treeFrame.SelectedItem = MainWindow.s_pW.mx_treeFrameUI;
 
 			showBlueRect();
@@ -381,7 +398,7 @@ namespace UIEditor.BoloUI
 			}
 		}
 */
-		private bool checkXeIsVisible(XmlElement xe)
+		static public bool checkXeIsVisible(XmlElement xe)
 		{
 			for(XmlNode xn = xe; xn != null && xn.NodeType == XmlNodeType.Element; xn = xn.ParentNode)
 			{

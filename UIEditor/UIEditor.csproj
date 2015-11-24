@@ -502,6 +502,10 @@
     <Resource Include="data\image\refresh.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CustomWPFColorPicker\CustomWPFColorPicker.csproj">
+      <Project>{434b1e02-e16e-4190-9b0a-c5f652a6deed}</Project>
+      <Name>CustomWPFColorPicker</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Selen.Wpf.Core\Selen.Wpf.Core.csproj">
       <Project>{c94c1bdd-11f9-4a3f-8929-86b1b67ae1d5}</Project>
       <Name>Selen.Wpf.Core</Name>

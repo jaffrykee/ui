@@ -186,7 +186,8 @@ namespace UIEditor.XmlOperation
 							m_pW,
 							m_xmlCtrl,
 							m_curNode.Value.m_dstXe,
-							m_curNode.Value.m_srcXe);
+							m_curNode.Value.m_srcXe,
+							m_curNode.Value.m_newIndex);
 					}
 					break;
 				case XmlOptType.NODE_DELETE:
