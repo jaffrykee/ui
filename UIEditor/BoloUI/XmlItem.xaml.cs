@@ -136,19 +136,38 @@ namespace UIEditor.BoloUI
 
 		public void refreshItemMenu()
 		{
+			if(m_xe == m_xe.OwnerDocument.DocumentElement)
+			{
+				mx_cut.IsEnabled = false;
+				mx_copy.IsEnabled = false;
+				mx_delete.IsEnabled = false;
+				mx_moveUp.IsEnabled = false;
+				mx_moveDown.IsEnabled = false;
+				mx_moveToParent.IsEnabled = false;
+			}
+			else
+			{
+				mx_cut.IsEnabled = true;
+				mx_copy.IsEnabled = true;
+				mx_delete.IsEnabled = true;
+				mx_moveUp.IsEnabled = true;
+				mx_moveDown.IsEnabled = true;
+				if (m_xe.ParentNode == m_xe.OwnerDocument.DocumentElement)
+				{
+					mx_moveToParent.IsEnabled = false;
+				}
+				else
+				{
+					mx_moveToParent.IsEnabled = true;
+				}
+			}
 			switch (m_type)
 			{
 				case "CtrlUI":
 					{
 						#region
-						if (m_xe.Name == "BoloUI")
+						if (m_xe == m_xe.OwnerDocument.DocumentElement)
 						{
-
-							mx_cut.IsEnabled = false;
-							mx_copy.IsEnabled = false;
-							mx_delete.IsEnabled = false;
-							mx_moveUp.IsEnabled = false;
-							mx_moveDown.IsEnabled = false;
 							if (MainWindow.s_pW.m_xePaste != null)
 							{
 								CtrlDef_T panelCtrlDef;
@@ -169,11 +188,6 @@ namespace UIEditor.BoloUI
 						}
 						else
 						{
-							mx_cut.IsEnabled = true;
-							mx_copy.IsEnabled = true;
-							mx_delete.IsEnabled = true;
-							mx_moveUp.IsEnabled = true;
-							mx_moveDown.IsEnabled = true;
 							if (MainWindow.s_pW.m_xePaste != null)
 							{
 								mx_paste.IsEnabled = true;
@@ -197,22 +211,7 @@ namespace UIEditor.BoloUI
 				case "Skin":
 					{
 						#region
-						if (m_xe.Name == "BoloUI")
-						{
-							mx_delete.IsEnabled = false;
-							mx_moveUp.IsEnabled = false;
-							mx_moveDown.IsEnabled = false;
-							mx_cut.IsEnabled = false;
-							mx_copy.IsEnabled = false;
-						}
-						else
-						{
-							mx_delete.IsEnabled = true;
-							mx_moveUp.IsEnabled = true;
-							mx_moveDown.IsEnabled = true;
-							mx_cut.IsEnabled = true;
-							mx_copy.IsEnabled = true;
-						}
+						mx_moveToParent.IsEnabled = false;
 						if (MainWindow.s_pW.m_xePaste != null)
 						{
 							mx_paste.IsEnabled = true;
@@ -236,10 +235,9 @@ namespace UIEditor.BoloUI
 		{
 		}
 
-		public bool canCut()
+		private bool checkMenuItemActive(MenuItem item)
 		{
-			refreshItemMenu();
-			if (mx_cut.IsEnabled == true && mx_cut.Visibility == System.Windows.Visibility.Visible)
+			if(item != null && item.IsEnabled == true && item.Visibility == System.Windows.Visibility.Visible)
 			{
 				return true;
 			}
@@ -247,66 +245,48 @@ namespace UIEditor.BoloUI
 			{
 				return false;
 			}
+		}
+		public bool canCut()
+		{
+			refreshItemMenu();
+
+			return checkMenuItemActive(mx_cut);
 		}
 		public bool canCopy()
 		{
 			refreshItemMenu();
-			if (mx_copy.IsEnabled == true && mx_copy.Visibility == System.Windows.Visibility.Visible)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+
+			return checkMenuItemActive(mx_copy);
 		}
 		public bool canPaste()
 		{
 			refreshItemMenu();
-			if (mx_paste.IsEnabled == true && mx_paste.Visibility == System.Windows.Visibility.Visible)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+
+			return checkMenuItemActive(mx_paste);
 		}
 		public bool canDelete()
 		{
 			refreshItemMenu();
-			if (mx_delete.IsEnabled == true && mx_delete.Visibility == System.Windows.Visibility.Visible)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+
+			return checkMenuItemActive(mx_delete);
 		}
 		public bool canMoveUp()
 		{
 			refreshItemMenu();
-			if (mx_moveUp.IsEnabled == true && mx_delete.Visibility == System.Windows.Visibility.Visible)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+
+			return checkMenuItemActive(mx_moveUp);
 		}
 		public bool canMoveDown()
 		{
 			refreshItemMenu();
-			if (mx_moveDown.IsEnabled == true && mx_delete.Visibility == System.Windows.Visibility.Visible)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+
+			return checkMenuItemActive(mx_moveDown);
+		}
+		public bool canMoveToParent()
+		{
+			refreshItemMenu();
+
+			return checkMenuItemActive(mx_moveToParent);
 		}
 
 		public void cutItem()
@@ -453,6 +433,21 @@ namespace UIEditor.BoloUI
 				);
 			}
 		}
+		public void moveToParent()
+		{
+			if (m_xe.ParentNode != null && m_xe.ParentNode.ParentNode != null && m_xe.ParentNode is XmlElement &&
+				m_xe.ParentNode.ParentNode is XmlElement && m_xe.ParentNode != m_xe.OwnerDocument.DocumentElement)
+			{
+				m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
+					new XmlOperation.HistoryNode(
+						XmlOperation.XmlOptType.NODE_MOVE,
+						m_xe,
+						(XmlElement)m_xe.ParentNode.ParentNode,
+						XmlOperation.HistoryNode.getXeIndex(m_xe) + 1
+					)
+				);
+			}
+		}
 
 		private void mx_cut_Click(object sender, RoutedEventArgs e)
 		{
@@ -470,13 +465,17 @@ namespace UIEditor.BoloUI
 		{
 			deleteItem();
 		}
+		private void mx_moveUp_Click(object sender, RoutedEventArgs e)
+		{
+			moveUpItem();
+		}
 		private void mx_moveDown_Click(object sender, RoutedEventArgs e)
 		{
 			moveDownItem();
 		}
-		private void mx_moveUp_Click(object sender, RoutedEventArgs e)
+		private void mx_moveToParent_Click(object sender, RoutedEventArgs e)
 		{
-			moveUpItem();
+			moveToParent();
 		}
 
 		static private void showTmpl(MenuItem ctrlMenuItem, XmlElement xeTmpls, string addStr, RoutedEventHandler rehClick)
@@ -962,7 +961,6 @@ namespace UIEditor.BoloUI
 			}
 			ResultLink.showResult("\r\n检测结束");
 		}
-
 		private void mx_shrinkChildren_Click(object sender, RoutedEventArgs e)
 		{
 			this.IsExpanded = true;

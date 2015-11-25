@@ -163,6 +163,14 @@
 						<Image Width="16" Source="pack://application:,,,/data/image/moveDown.png"/>
 					</MenuItem.Icon>
 				</MenuItem>
+				<MenuItem Header="移动到上一级"
+						  InputGestureText="Ctrl+←"
+						  IsEnabled="{Binding ElementName=mx_toolMoveToParent, Path=IsEnabled}"
+						  Click="mx_toolMoveToParent_Click">
+					<MenuItem.Icon>
+						<Image Width="16" Source="pack://application:,,,/data/image/moveDown.png"/>
+					</MenuItem.Icon>
+				</MenuItem>
 			</MenuItem>
 			<MenuItem Header="项目">
 				<MenuItem Name="mx_menuNesting"
@@ -201,6 +209,7 @@
 			<WrapPanel Name="mx_debugTools">
 				<TextBlock VerticalAlignment="Center">调试句柄：</TextBlock>
 				<TextBox MinWidth="100" Name="mx_hwndDebug"></TextBox>
+				<Button Name="mx_getHwnd" Click="mx_getHwnd_Click">获取</Button>
 			</WrapPanel>
 		</Menu>
 		<DockPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
@@ -346,6 +355,17 @@
 								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
 								ToolTip="下移 (Ctrl + ↓)">
 							<Image Source="pack://application:,,,/data/image/moveDown.png"/>
+						</Button>
+						<Button Name="mx_toolMoveToParent"
+								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
+								Width="{Binding ElementName=mx_toolNew, Path=Width}"
+								Height="{Binding ElementName=mx_toolNew, Path=Height}"
+								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
+								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
+								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								ToolTip="移动到上一级 (Ctrl + ←)"
+								Click="mx_toolMoveToParent_Click">
+							<Image Source="pack://application:,,,/data/image/moveLeft.png"/>
 						</Button>
 						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
 								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
@@ -685,9 +705,7 @@
 								 HorizontalScrollBarVisibility="Visible"
 								 VerticalScrollBarVisibility="Visible"
 								 TextChanged="mx_resultFrame_TextChanged">
-						<FlowDocument PageWidth="1000">
-							<Paragraph Name="mx_result">
-							</Paragraph>
+						<FlowDocument Name="mx_docResult" PageWidth="1000">
 						</FlowDocument>
 					</RichTextBox>
 				</Grid>

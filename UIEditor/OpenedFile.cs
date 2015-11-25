@@ -37,6 +37,7 @@ namespace UIEditor
 		public BoloUI.Basic m_prePlusCtrlUI;
 
 		public DateTime m_lastWriteTime;
+		public Paragraph m_paraResult;
 
 		public OpenedFile(string path, string skinName = "", bool isShowTabItem = true)
 		{
@@ -44,6 +45,8 @@ namespace UIEditor
 			MainWindow pW = MainWindow.s_pW;
 
 			m_path = path;
+			m_paraResult = new Paragraph();
+			Public.ResultLink.s_curResultFrame = m_paraResult;
 			if(File.Exists(m_path))
 			{
 				FileInfo fi = new FileInfo(m_path);

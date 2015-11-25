@@ -641,7 +641,7 @@ namespace UIEditor
 			}
 		}
 
-		public void showGLCtrl(bool isShow = true)
+		public void showGLCtrl(bool isShow = true, bool isShowText = false)
 		{
 			if(isShow)
 			{
@@ -663,7 +663,14 @@ namespace UIEditor
 				mx_drawFrame.Visibility = System.Windows.Visibility.Collapsed;
 				mx_scrollFrame.Visibility = System.Windows.Visibility.Collapsed;
 				mx_GLCtrl.Visibility = System.Windows.Visibility.Collapsed;
-				mx_textFrame.Visibility = System.Windows.Visibility.Collapsed;
+				if (mx_showTextTab.IsChecked == true && (m_mapOpenedFiles.Count > 0 || isShowText == true))
+				{
+					mx_textFrame.Visibility = System.Windows.Visibility.Visible;
+				}
+				else
+				{
+					mx_textFrame.Visibility = System.Windows.Visibility.Collapsed;
+				}
 				foreach (object attrList in mx_toolArea.Items)
 				{
 					if (attrList is AttrList)
@@ -718,10 +725,10 @@ namespace UIEditor
 			OpenedFile openedFile;
 			string fileType = StringDic.getFileType(path);
 
-			mx_result.Inlines.Clear();
 			if (m_mapOpenedFiles.TryGetValue(path, out openedFile))
 			{
 				mx_workTabs.SelectedItem = openedFile.m_tab;
+				Public.ResultLink.s_curResultFrame = openedFile.m_paraResult;
 			}
 			else
 			{
@@ -763,6 +770,7 @@ namespace UIEditor
 						OpenedFile openFile;
 						if (m_mapOpenedFiles.TryGetValue(tabPath, out openFile))
 						{
+							Public.ResultLink.s_curResultFrame = openFile.m_paraResult;
 							if(openFile.m_frame is XmlControl)
 							{
 								//updateGL(fileName, W2GTag.W2G_NORMAL_TURN);
@@ -1427,21 +1435,21 @@ namespace UIEditor
 											viewNextFile(s_pW);
 											return 1;
 										case VK_UP:
-											if (XmlItem.getCurItem() != null)
+											if (XmlItem.getCurItem() != null && XmlItem.getCurItem().canMoveUp())
 											{
-												if (XmlItem.getCurItem().canMoveUp())
-												{
-													XmlItem.getCurItem().moveUpItem();
-												}
+												XmlItem.getCurItem().moveUpItem();
 											}
 											return 1;
 										case VK_DOWN:
-											if (XmlItem.getCurItem() != null)
+											if (XmlItem.getCurItem() != null && XmlItem.getCurItem().canMoveDown())
 											{
-												if (XmlItem.getCurItem().canMoveDown())
-												{
-													XmlItem.getCurItem().moveDownItem();
-												}
+												XmlItem.getCurItem().moveDownItem();
+											}
+											return 1;
+										case VK_LEFT:
+											if (XmlItem.getCurItem() != null && XmlItem.getCurItem().canMoveToParent())
+											{
+												XmlItem.getCurItem().moveToParent();
 											}
 											return 1;
 										case VK_Y:
@@ -1934,22 +1942,16 @@ namespace UIEditor
 
 		private void mx_toolCut_Click(object sender, RoutedEventArgs e)
 		{
-			if (XmlItem.getCurItem() != null)
+			if (XmlItem.getCurItem() != null && XmlItem.getCurItem().canCut())
 			{
-				if (XmlItem.getCurItem().canCut())
-				{
-					XmlItem.getCurItem().cutItem();
-				}
+				XmlItem.getCurItem().cutItem();
 			}
 		}
 		private void mx_toolCopy_Click(object sender, RoutedEventArgs e)
 		{
-			if (XmlItem.getCurItem() != null)
+			if (XmlItem.getCurItem() != null && XmlItem.getCurItem().canCopy())
 			{
-				if (XmlItem.getCurItem().canCopy())
-				{
-					XmlItem.getCurItem().copyItem();
-				}
+				XmlItem.getCurItem().copyItem();
 			}
 		}
 		private void mx_toolPaste_Click(object sender, RoutedEventArgs e)
@@ -1965,32 +1967,30 @@ namespace UIEditor
 		}
 		private void mx_toolDelete_Click(object sender, RoutedEventArgs e)
 		{
-			if (XmlItem.getCurItem() != null)
+			if (XmlItem.getCurItem() != null && XmlItem.getCurItem().canDelete())
 			{
-				if (XmlItem.getCurItem().canDelete())
-				{
-					XmlItem.getCurItem().deleteItem();
-				}
+				XmlItem.getCurItem().deleteItem();
 			}
 		}
 		private void mx_toolMoveUp_Click(object sender, RoutedEventArgs e)
 		{
-			if (XmlItem.getCurItem() != null)
+			if (XmlItem.getCurItem() != null && XmlItem.getCurItem().canMoveUp())
 			{
-				if (XmlItem.getCurItem().canMoveUp())
-				{
-					XmlItem.getCurItem().moveUpItem();
-				}
+				XmlItem.getCurItem().moveUpItem();
 			}
 		}
 		private void mx_toolMoveDown_Click(object sender, RoutedEventArgs e)
 		{
-			if (XmlItem.getCurItem() != null)
+			if (XmlItem.getCurItem() != null && XmlItem.getCurItem().canMoveDown())
 			{
-				if (XmlItem.getCurItem().canMoveDown())
-				{
-					XmlItem.getCurItem().moveDownItem();
-				}
+				XmlItem.getCurItem().moveDownItem();
+			}
+		}
+		private void mx_toolMoveToParent_Click(object sender, RoutedEventArgs e)
+		{
+			if (XmlItem.getCurItem() != null && XmlItem.getCurItem().canMoveToParent())
+			{
+				XmlItem.getCurItem().moveToParent();
 			}
 		}
 
@@ -2674,7 +2674,14 @@ namespace UIEditor
 		{
 			if (mx_drawFrame != null && mx_textFrame != null)
 			{
-				mx_textFrame.Visibility = System.Windows.Visibility.Visible;
+				if (m_mapOpenedFiles.Count > 0)
+				{
+					mx_textFrame.Visibility = System.Windows.Visibility.Visible;
+				}
+				else
+				{
+					mx_textFrame.Visibility = System.Windows.Visibility.Collapsed;
+				}
 				mx_drawFrame.Visibility = System.Windows.Visibility.Collapsed;
 			}
 		}
@@ -2809,7 +2816,7 @@ namespace UIEditor
 		}
 		private void mx_clearResult_Click(object sender, RoutedEventArgs e)
 		{
-			mx_result.Inlines.Clear();
+			Public.ResultLink.s_curResultFrame.Inlines.Clear();
 		}
 
 		private void mx_resolutionBasic_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -2842,6 +2849,13 @@ namespace UIEditor
 		private void mx_toolRunGame_Click(object sender, RoutedEventArgs e)
 		{
 			Setting.openGame();
+		}
+		private void mx_getHwnd_Click(object sender, RoutedEventArgs e)
+		{
+			if (System.Diagnostics.Process.GetProcessesByName("SSUIEditor").Count() > 0)
+			{
+				mx_hwndDebug.Text = System.Diagnostics.Process.GetProcessesByName("SSUIEditor")[0].MainWindowHandle.ToString();
+			}
 		}
 	}
 

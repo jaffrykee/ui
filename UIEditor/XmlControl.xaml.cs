@@ -328,12 +328,11 @@ namespace UIEditor
 
 										m_mapSkinLink[xeSkin.GetAttribute("Name")] = skinGroupName;
 
-// 										MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_WARNING,
-// 											"<" + oldSkinPath + ">和", new Public.SkinLinkDef_T(oldSkinPath, xeSkin.GetAttribute("Name"))));
-// 										MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_WARNING,
-// 											"<" + path + "> - ", new Public.SkinLinkDef_T(newSkinPath, xeSkin.GetAttribute("Name"))));
-// 										MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(Public.ResultType.RT_WARNING,
-// 											"存在同名皮肤引用：" + xeSkin.GetAttribute("Name") + "。\r\n"));
+										Public.ResultLink.showResult("\r\n<" + oldSkinPath + ">和", Public.ResultType.RT_WARNING,
+											new Public.SkinLinkDef_T(oldSkinPath, xeSkin.GetAttribute("Name")));
+										Public.ResultLink.showResult("<" + path + "> - ", Public.ResultType.RT_WARNING,
+											new Public.SkinLinkDef_T(newSkinPath, xeSkin.GetAttribute("Name")));
+										Public.ResultLink.showResult("存在同名皮肤引用：" + xeSkin.GetAttribute("Name") + "。", Public.ResultType.RT_WARNING);
 									}
 								}
 							}
@@ -854,11 +853,11 @@ namespace UIEditor
 				}
 				if(m_showGL)
 				{
-					MainWindow.s_pW.showGLCtrl(true);
+					MainWindow.s_pW.showGLCtrl(true, true);
 				}
 				else
 				{
-					MainWindow.s_pW.showGLCtrl(false);
+					MainWindow.s_pW.showGLCtrl(false, true);
 				}
 			}
 			else

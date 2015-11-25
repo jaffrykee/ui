@@ -488,6 +488,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="data\a.txt" />
+    <Resource Include="data\image\error.png" />
+    <Resource Include="data\image\warning.png" />
+    <Resource Include="data\image\moveLeft.png" />
     <Resource Include="data\image\runGame.png" />
     <Resource Include="data\image\packScript.png" />
     <Resource Include="data\image\packUi.png" />

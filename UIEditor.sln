@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Selen.Wpf.GenericAppTree.Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomWPFColorPicker", "CustomWPFColorPicker\CustomWPFColorPicker.csproj", "{434B1E02-E16E-4190-9B0A-C5F652A6DEED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplication", "TestApplication\TestApplication.csproj", "{2890D60F-53EC-4D91-9CB7-48D39A07122F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,10 +51,6 @@ Global
 		{434B1E02-E16E-4190-9B0A-C5F652A6DEED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{434B1E02-E16E-4190-9B0A-C5F652A6DEED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{434B1E02-E16E-4190-9B0A-C5F652A6DEED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2890D60F-53EC-4D91-9CB7-48D39A07122F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2890D60F-53EC-4D91-9CB7-48D39A07122F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2890D60F-53EC-4D91-9CB7-48D39A07122F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2890D60F-53EC-4D91-9CB7-48D39A07122F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

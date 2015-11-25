@@ -176,7 +176,7 @@ namespace UIEditor.Project
 			}
 		}
 
-		static private void openLinkFile(string pathPack, bool isBlock = true)
+		static private void openLinkFile(string pathPack, bool isBlock = false)
 		{
 			if (File.Exists(pathPack))
 			{
@@ -187,7 +187,10 @@ namespace UIEditor.Project
 				prcPack.StartInfo.FileName = fiPack.FullName;
 				prcPack.StartInfo.CreateNoWindow = false;
 				prcPack.Start();
-				prcPack.WaitForExit();
+				if (isBlock)
+				{
+					prcPack.WaitForExit();
+				}
 			}
 		}
 		static public string getUiPackPath()

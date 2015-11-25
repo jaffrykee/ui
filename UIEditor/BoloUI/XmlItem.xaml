@@ -33,6 +33,7 @@
 			<Separator/>
 			<MenuItem Name="mx_moveUp" Header="上移" InputGestureText="Ctrl+↑" Click="mx_moveUp_Click"/>
 			<MenuItem Name="mx_moveDown" Header="下移" InputGestureText="Ctrl+↓" Click="mx_moveDown_Click"/>
+			<MenuItem Name="mx_moveToParent" Header="移动到上一级" InputGestureText="Ctrl+←" Click="mx_moveToParent_Click"/>
 			<Separator/>
 			<MenuItem Name="mx_attr" Header="属性"/>
 		</ContextMenu>

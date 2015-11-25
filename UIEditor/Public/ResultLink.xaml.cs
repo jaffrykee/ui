@@ -35,6 +35,17 @@ namespace UIEditor.Public
 	}
 	public partial class ResultLink : Run
 	{
+		static private Paragraph st_curResultFrame;
+		static public Paragraph s_curResultFrame
+		{
+			get { return st_curResultFrame; }
+			set
+			{
+				st_curResultFrame = value;
+				MainWindow.s_pW.mx_docResult.Blocks.Clear();
+				MainWindow.s_pW.mx_docResult.Blocks.Add(value);
+			}
+		}
 		static private Brush s_lastBrush;
 		static private Run st_curRun;
 		static public Run s_curRun
@@ -51,6 +62,8 @@ namespace UIEditor.Public
 				st_curRun = value;
 			}
 		}
+		public static BitmapImage s_bmpError = new BitmapImage(new Uri(@".\data\image\error.png", UriKind.Relative));
+		public static BitmapImage s_bmpWarning = new BitmapImage(new Uri(@".\data\image\warning.png", UriKind.Relative));
 
 		public ResultType m_rt;
 		public string m_text;
@@ -58,7 +71,40 @@ namespace UIEditor.Public
 
 		static public void showResult(string text, ResultType rt = ResultType.RT_NONE, object link = null)
 		{
-			MainWindow.s_pW.mx_result.Inlines.Add(new Public.ResultLink(text, rt, link));
+			if (text[0] == '\r' && text[1] == '\n')
+			{
+				text = text.Substring(2);
+				if (s_curResultFrame.Inlines.Count > 0)
+				{
+					s_curResultFrame.Inlines.Add(new Public.ResultLink("\r\n", rt, link));
+				}
+				if (rt == ResultType.RT_WARNING || rt == ResultType.RT_ERROR)
+				{
+					Image imgResult = new Image();
+					InlineUIContainer uiResult = new InlineUIContainer();
+
+					switch (rt)
+					{
+						case ResultType.RT_WARNING:
+							{
+								imgResult.Source = s_bmpWarning;
+							}
+							break;
+						case ResultType.RT_ERROR:
+							{
+								imgResult.Source = s_bmpError;
+							}
+							break;
+						default:
+							break;
+					}
+					imgResult.Height = 16;
+					imgResult.Width = 16;
+					uiResult.Child = imgResult;
+					s_curResultFrame.Inlines.Add(uiResult);
+				}
+			}
+			s_curResultFrame.Inlines.Add(new Public.ResultLink(text, rt, link));
 		}
 		public ResultLink(string text, ResultType rt = ResultType.RT_NONE, object link = null)
 		{
@@ -74,17 +120,17 @@ namespace UIEditor.Public
 			{
 				case ResultType.RT_ERROR:
 					{
-						this.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0x66, 0xff, 0x00, 0x00));
+						//this.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0x66, 0xff, 0x00, 0x00));
 					}
 					break;
 				case ResultType.RT_WARNING:
 					{
-						this.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0x22, 0xff, 0xff, 0x00));
+						//this.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0x22, 0xff, 0xff, 0x00));
 					}
 					break;
 				case ResultType.RT_INFO:
 					{
-						this.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0x33, 0x00, 0x00, 0xff));
+						//this.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0x33, 0x00, 0x00, 0xff));
 					}
 					break;
 				default:
