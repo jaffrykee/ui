@@ -59,7 +59,7 @@ namespace UIEditor.BoloUI
 				}
 				catch
 				{
-					Public.ResultLink.showResult(
+					Public.ResultLink.createResult(
 						"\r\n图片资源文件：\"" + fi.FullName + "\"文件的Xml格式错误，有可能是由于svn冲突造成的。",
 						Public.ResultType.RT_ERROR);
 				}

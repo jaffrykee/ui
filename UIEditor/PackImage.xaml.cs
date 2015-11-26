@@ -233,7 +233,7 @@ namespace UIEditor
 
 			if (m_imageHeight > 4096)
 			{
-				Public.ResultLink.showResult("\r\n图片尺寸过大，不提供预览功能", Public.ResultType.RT_WARNING);
+				Public.ResultLink.createResult("\r\n图片尺寸过大，不提供预览功能", Public.ResultType.RT_WARNING);
 
 				return;
 			}

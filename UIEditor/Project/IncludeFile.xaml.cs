@@ -113,7 +113,7 @@ namespace UIEditor.Project
 				}
 				catch
 				{
-					Public.ResultLink.showResult("\r\n移动(从" + oldPath + "，到" + newPath + ")失败。", Public.ResultType.RT_ERROR);
+					Public.ResultLink.createResult("\r\n移动(从" + oldPath + "，到" + newPath + ")失败。", Public.ResultType.RT_ERROR);
 
 					return;
 				}
@@ -163,7 +163,7 @@ namespace UIEditor.Project
 				}
 				catch
 				{
-					Public.ResultLink.showResult("\r\n移动(从" + oldPath + "，到" + newPath + ")失败。", Public.ResultType.RT_ERROR);
+					Public.ResultLink.createResult("\r\n移动(从" + oldPath + "，到" + newPath + ")失败。", Public.ResultType.RT_ERROR);
 
 					return;
 				}
@@ -242,7 +242,7 @@ namespace UIEditor.Project
 													}
 													catch
 													{
-														Public.ResultLink.showResult("\r\n拷贝(从" + m_path + "，到" + newPath + ")失败。",
+														Public.ResultLink.createResult("\r\n拷贝(从" + m_path + "，到" + newPath + ")失败。",
 															Public.ResultType.RT_ERROR);
 
 														return;
@@ -468,7 +468,7 @@ namespace UIEditor.Project
 				}
 				catch
 				{
-					Public.ResultLink.showResult("\r\n图片包(" + newPath + ")创建失败，可能是由于文件名重复或没有写权限。",
+					Public.ResultLink.createResult("\r\n图片包(" + newPath + ")创建失败，可能是由于文件名重复或没有写权限。",
 						Public.ResultType.RT_ERROR);
 
 					return;

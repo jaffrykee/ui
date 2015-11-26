@@ -17,13 +17,14 @@ using System.Xml;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using System.Text.RegularExpressions;
-using UIEditor.BoloUI;
-using UIEditor.BoloUI.DefConfig;
-using UIEditor.Project;
 using System.Threading;
 using System.Windows.Threading;
 using System.Collections;
+using UIEditor.BoloUI;
+using UIEditor.BoloUI.DefConfig;
+using UIEditor.Project;
 using UIEditor.XmlOperation.XmlAttr;
+using UIEditor.Public;
 
 namespace UIEditor
 {
@@ -735,11 +736,11 @@ namespace UIEditor
 				if (File.Exists(path))
 				{
 					m_curFile = path;
-					m_mapOpenedFiles[path] = new OpenedFile(path, skinName);
+					new OpenedFile(path, skinName);
 				}
 				else
 				{
-					Public.ResultLink.showResult("\r\n文件：\"" + path + "\"不存在，请检查路径。", Public.ResultType.RT_ERROR);
+					Public.ResultLink.createResult("\r\n文件：\"" + path + "\"不存在，请检查路径。", Public.ResultType.RT_ERROR);
 				}
 			}
 		}
@@ -1387,7 +1388,7 @@ namespace UIEditor
 										}
 										else
 										{
-											Public.ResultLink.showResult("\r\n<G2W_UI_VRECT>没有找到控件，vId:" + baseId, Public.ResultType.RT_ERROR);
+											Public.ResultLink.createResult("\r\n<G2W_UI_VRECT>没有找到控件，vId:" + baseId, Public.ResultType.RT_ERROR);
 										}
 									}
 									else
@@ -2205,7 +2206,7 @@ namespace UIEditor
 			}
 			else
 			{
-				Public.ResultLink.showResult("\r\n没有找到文件：" + path + "。", Public.ResultType.RT_ERROR);
+				Public.ResultLink.createResult("\r\n没有找到文件：" + path + "。", Public.ResultType.RT_ERROR);
 			}
 		}
 		private void mx_version_Click(object sender, RoutedEventArgs e)
@@ -2218,7 +2219,7 @@ namespace UIEditor
 			}
 			else
 			{
-				Public.ResultLink.showResult("\r\n没有找到文件：" + path + "。", Public.ResultType.RT_ERROR);
+				Public.ResultLink.createResult("\r\n没有找到文件：" + path + "。", Public.ResultType.RT_ERROR);
 			}
 		}
 
@@ -2486,6 +2487,7 @@ namespace UIEditor
 					}
 				}
 			}
+			ResultLink.refreshResultVisibility();
 		}
 		private void m_textTimer_Tick(object send, EventArgs e)
 		{
@@ -2719,7 +2721,7 @@ namespace UIEditor
 		}
 		private void mx_refreshShape_Click(object sender, RoutedEventArgs e)
 		{
-			Public.ResultLink.showResult("\r\n开始shape的重排", Public.ResultType.RT_INFO);
+			Public.ResultLink.createResult("\r\n开始shape的重排", Public.ResultType.RT_INFO);
 			if(Project.Setting.s_skinPath != null && Project.Setting.s_skinPath != "")
 			{
 				if(Directory.Exists(Project.Setting.s_skinPath))
@@ -2790,17 +2792,13 @@ namespace UIEditor
 							if(isChange)
 							{
 								docSkin.Save(fi.FullName);
-								Public.ResultLink.showResult("\r\n" + fi.Name, Public.ResultType.RT_INFO);
+								Public.ResultLink.createResult("\r\n" + fi.Name, Public.ResultType.RT_INFO);
 							}
 						}
 					}
 				}
 			}
-			Public.ResultLink.showResult("\r\n重排完成", Public.ResultType.RT_INFO);
-		}
-		private void mx_resultFrame_TextChanged(object sender, TextChangedEventArgs e)
-		{
-			mx_resultFrame.ScrollToEnd();
+			Public.ResultLink.createResult("\r\n重排完成", Public.ResultType.RT_INFO);
 		}
 		private void mx_textFrame_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
 		{
@@ -2856,6 +2854,31 @@ namespace UIEditor
 			{
 				mx_hwndDebug.Text = System.Diagnostics.Process.GetProcessesByName("SSUIEditor")[0].MainWindowHandle.ToString();
 			}
+		}
+
+		private void mx_showErrorResult_Checked(object sender, RoutedEventArgs e)
+		{
+			ResultLink.refreshResultVisibility();
+		}
+		private void mx_showErrorResult_Unchecked(object sender, RoutedEventArgs e)
+		{
+			ResultLink.refreshResultVisibility();
+		}
+		private void mx_showWarningResult_Checked(object sender, RoutedEventArgs e)
+		{
+			ResultLink.refreshResultVisibility();
+		}
+		private void mx_showWarningResult_Unchecked(object sender, RoutedEventArgs e)
+		{
+			ResultLink.refreshResultVisibility();
+		}
+		private void mx_showOtherResult_Checked(object sender, RoutedEventArgs e)
+		{
+			ResultLink.refreshResultVisibility();
+		}
+		private void mx_showOtherResult_Unchecked(object sender, RoutedEventArgs e)
+		{
+			ResultLink.refreshResultVisibility();
 		}
 	}
 

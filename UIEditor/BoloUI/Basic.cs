@@ -72,7 +72,7 @@ namespace UIEditor.BoloUI
 
 					if (retSkin == null)
 					{
-						Public.ResultLink.showResult(
+						Public.ResultLink.createResult(
 							"\r\n" + m_xmlCtrl.m_openedFile.m_path + " - [" + this.mx_radio.Content.ToString() + "] 无法找到皮肤：\"" + skinName + "\"",
 							Public.ResultType.RT_ERROR, this);
 					}

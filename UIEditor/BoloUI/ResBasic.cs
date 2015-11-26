@@ -48,9 +48,9 @@ namespace UIEditor.BoloUI
 						string errorInfo = "\r\n" + m_xmlCtrl.m_openedFile.m_path + " - 存在重名皮肤(" +
 							m_xe.GetAttribute("Name") + ")，前一个同名的皮肤将不能被正确引用。";
 
-						Public.ResultLink.showResult(errorInfo, Public.ResultType.RT_ERROR);
-						Public.ResultLink.showResult("<重名皮肤1> ", Public.ResultType.RT_ERROR, resItem);
-						Public.ResultLink.showResult("<重名皮肤2>", Public.ResultType.RT_ERROR, this);
+						Public.ResultLink.createResult(errorInfo, Public.ResultType.RT_ERROR);
+						Public.ResultLink.createResult("<重名皮肤1> ", Public.ResultType.RT_ERROR, resItem);
+						Public.ResultLink.createResult("<重名皮肤2>", Public.ResultType.RT_ERROR, this);
 						//Public.ErrorInfo.addToErrorInfo(errorInfo);
 					}
 					m_xmlCtrl.m_mapSkin[m_xe.GetAttribute("Name")] = this;

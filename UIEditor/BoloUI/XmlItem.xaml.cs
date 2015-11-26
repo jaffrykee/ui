@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml;
 using System.IO;
+using System.Text.RegularExpressions;
 using UIEditor.BoloUI;
 using UIEditor.BoloUI.DefConfig;
 using UIEditor.Public;
@@ -907,6 +908,18 @@ namespace UIEditor.BoloUI
 						MainWindow.s_pW.openFileByPath(path);
 					}
 					break;
+				case "event":
+					{
+						string funcValue = m_xe.GetAttribute("function");
+						string[] scriptName = Regex.Split(funcValue, " ", RegexOptions.IgnoreCase);
+
+						if(scriptName != null && scriptName[0] != "")
+						{
+							string scriptPath = Project.Setting.s_projPath + "\\..\\..\\scripts\\dev\\source\\" + scriptName[0] + ".bolos";
+							MainWindow.s_pW.openFileByPath(scriptPath);
+						}
+					}
+					break;
 				default:
 					break;
 			}
@@ -938,12 +951,12 @@ namespace UIEditor.BoloUI
 
 							if (ctrlItem.m_xe.Name != "event" && !rectFrame.Contains(rectItem))
 							{
-								Public.ResultLink.showResult("\r\n[" + ctrlItem.mx_radio.Content.ToString() + "]",
+								Public.ResultLink.createResult("\r\n[" + ctrlItem.mx_radio.Content.ToString() + "]",
 									Public.ResultType.RT_INFO, ctrlItem);
-								Public.ResultLink.showResult(" 超出了 ", Public.ResultType.RT_INFO);
-								Public.ResultLink.showResult("[" + ctrlFrame.mx_radio.Content.ToString() + "]",
+								Public.ResultLink.createResult(" 超出了 ", Public.ResultType.RT_INFO);
+								Public.ResultLink.createResult("[" + ctrlFrame.mx_radio.Content.ToString() + "]",
 									Public.ResultType.RT_INFO, ctrlFrame);
-								Public.ResultLink.showResult(" 的范围。", Public.ResultType.RT_INFO, ctrlItem);
+								Public.ResultLink.createResult(" 的范围。", Public.ResultType.RT_INFO, ctrlItem);
 							}
 							checkOverflow(ctrlItem);
 						}
@@ -953,13 +966,13 @@ namespace UIEditor.BoloUI
 		}
 		private void mx_checkOverflow_Click(object sender, RoutedEventArgs e)
 		{
-			ResultLink.showResult("\r\n开始检测溢出的控件");
+			ResultLink.createResult("\r\n开始检测溢出的控件");
 			if (this is Basic)
 			{
 				m_xmlCtrl.refreshVRect();
 				checkOverflow((Basic)this);
 			}
-			ResultLink.showResult("\r\n检测结束");
+			ResultLink.createResult("\r\n检测结束");
 		}
 		private void mx_shrinkChildren_Click(object sender, RoutedEventArgs e)
 		{

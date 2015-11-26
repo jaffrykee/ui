@@ -19,6 +19,7 @@ using System.Windows.Interop;
 using System.Text.RegularExpressions;
 using UIEditor.XmlOperation;
 using System.Collections;
+using UIEditor.Public;
 
 namespace UIEditor
 {
@@ -38,14 +39,17 @@ namespace UIEditor
 
 		public DateTime m_lastWriteTime;
 		public Paragraph m_paraResult;
+		public List<ResultLink> m_lstResult;
 
 		public OpenedFile(string path, string skinName = "", bool isShowTabItem = true)
 		{
 			Public.ErrorInfo.clearErrorInfo();
 			MainWindow pW = MainWindow.s_pW;
+			MainWindow.s_pW.m_mapOpenedFiles[path] = this;
 
 			m_path = path;
 			m_paraResult = new Paragraph();
+			m_lstResult = new List<ResultLink>();
 			Public.ResultLink.s_curResultFrame = m_paraResult;
 			if(File.Exists(m_path))
 			{
@@ -164,6 +168,21 @@ namespace UIEditor
 			}
 
 			return arrFileChanged;
+		}
+		static public OpenedFile getCurFileDef()
+		{
+			OpenedFile fileDef;
+
+			if (MainWindow.s_pW != null &&
+				MainWindow.s_pW.m_curFile != null &&
+				MainWindow.s_pW.m_curFile != "" &&
+				MainWindow.s_pW.m_mapOpenedFiles.TryGetValue(MainWindow.s_pW.m_curFile, out fileDef) &&
+				fileDef != null)
+			{
+				return fileDef;
+			}
+
+			return null;
 		}
 	}
 }
