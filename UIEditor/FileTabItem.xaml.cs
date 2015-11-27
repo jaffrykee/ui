@@ -87,31 +87,15 @@ namespace UIEditor
 					case "bolos":
 					case "txt":
 						{
-							MainWindow.s_pW.mx_xmlText.Document = new FlowDocument();
-							Paragraph para = new Paragraph();
-							Run run = new Run();
-
-							try
-							{
-								FileStream aFile = new FileStream(m_fileDef.m_path, FileMode.Open);
-								StreamReader reader = new StreamReader(aFile);
-
-								run.Text = reader.ReadToEnd();
-								para.Inlines.Add(run);
-								MainWindow.s_pW.mx_xmlText.Document.Blocks.Add(para);
-								MainWindow.s_pW.mx_showTextTab.IsChecked = true;
-							}
-							catch (IOException ex)
-							{
-								Public.ResultLink.createResult("\r\n打开文件失败。(" + ex + ")", Public.ResultType.RT_ERROR);
-							}
-							tabContent = new UnknownControl(this, fileDef);
+							tabContent = new BoloScript.TextControl(this, fileDef);
 							MainWindow.s_pW.showGLCtrl(false);
 						}
 						break;
 					default:
-						tabContent = new UnknownControl(this, fileDef);
-						MainWindow.s_pW.showGLCtrl(false);
+						{
+							tabContent = new UnknownControl(this, fileDef);
+							MainWindow.s_pW.showGLCtrl(false);
+						}
 						break;
 				}
 				this.itemFrame.Children.Clear();

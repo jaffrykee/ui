@@ -104,6 +104,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BoloScript\TextControl.xaml.cs">
+      <DependentUpon>TextControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="BoloUI\DefConfig\AttrDef_T.cs" />
     <Compile Include="BoloUI\DefConfig\CtrlDef_T.cs" />
     <Compile Include="BoloUI\DefConfig\DefConfig.cs" />
@@ -229,6 +232,10 @@
     <Page Include="ani.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="BoloScript\TextControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="BoloUI\CtrlTemplate.xaml">
       <SubType>Designer</SubType>
