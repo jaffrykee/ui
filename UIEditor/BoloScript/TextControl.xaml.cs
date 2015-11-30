@@ -26,6 +26,8 @@ namespace UIEditor.BoloScript
 			m_parent = parent;
 			m_openedFile = fileDef;
 			m_openedFile.m_frame = this;
+			TextBox tb = new TextBox();
+			RichTextBox rtb = new RichTextBox();
 
 			if (System.IO.File.Exists(m_parent.m_filePath))
 			{

@@ -73,12 +73,6 @@ namespace UIEditor.XmlOperation
 								break;
 							case "baseID":
 								break;
-							case "visible":
-								break;
-							case "enable":
-								break;
-							case "canFocus":
-								break;
 							case "skin":
 								break;
 							case "angle":

@@ -232,8 +232,8 @@ namespace UIEditor.BoloUI
 			xeView.RemoveAttribute("dock");
 			xeView.RemoveAttribute("anchor");
 			xeView.RemoveAttribute("anchorSelf");
-			xeView.SetAttribute("x", uiView.m_selX.ToString());
-			xeView.SetAttribute("y", uiView.m_selY.ToString());
+			xeView.SetAttribute("x", uiView.m_selScreenX.ToString());
+			xeView.SetAttribute("y", uiView.m_selScreenY.ToString());
 			xeView.SetAttribute("w", uiView.m_selW.ToString());
 			xeView.SetAttribute("h", uiView.m_selH.ToString());
 			xeView.SetAttribute("baseID", "selSkinTestCtrl");

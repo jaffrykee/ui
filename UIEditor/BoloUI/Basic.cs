@@ -21,8 +21,10 @@ namespace UIEditor.BoloUI
 {
 	public class Basic : UIEditor.BoloUI.XmlItem
 	{
-		public int m_selX;
-		public int m_selY;
+		public int m_selScreenX;
+		public int m_selScreenY;
+		public int m_selRelativeX;
+		public int m_selRelativeY;
 		public int m_selW;
 		public int m_selH;
 		public string m_vId;
@@ -184,7 +186,8 @@ namespace UIEditor.BoloUI
 					StringDic.getFileNameWithoutPath(m_xmlCtrl.m_openedFile.m_path) + ":" + m_vId,
 					W2GTag.W2G_SELECT_UI
 				);
-				MainWindow.s_pW.mb_status1 = "当前控件范围：( " + m_selX + " , " + m_selY + " ) " + m_selW + " x " + m_selH;
+				MainWindow.s_pW.mb_status1 = "当前控件屏幕坐标： (" + m_selScreenX + ", " + m_selScreenY +
+					")    相对坐标： (" + m_selRelativeX + ", " + m_selRelativeY + ")    大小： " + m_selW + "x" + m_selH;
 
 				return true;
 			}
@@ -425,9 +428,9 @@ namespace UIEditor.BoloUI
 					return false;
 				}
 			}
-			if (x >= m_selX && y >= m_selY)
+			if (x >= m_selScreenX && y >= m_selScreenY)
 			{
-				if (x <= m_selX + m_selW && y <= m_selY + m_selH)
+				if (x <= m_selScreenX + m_selW && y <= m_selScreenY + m_selH)
 				{
 					return true;
 				}

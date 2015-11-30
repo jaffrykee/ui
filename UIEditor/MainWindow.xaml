@@ -675,7 +675,7 @@
 					<RowDefinition Height="*"/>
 					<RowDefinition Height="2*"/>
 				</Grid.RowDefinitions>
-				<WrapPanel Grid.Row="0" Background="{StaticResource BackgroundNormal}">
+				<WrapPanel Name="mx_selModeFrame" Grid.Row="0" Background="{StaticResource BackgroundNormal}">
 					<RadioButton Name="mx_showUITab" Padding="10,2,10,2" Margin="4,0,0,7" IsChecked="True" Checked="mx_showUITab_Checked">界面设计</RadioButton>
 					<RadioButton Name="mx_showTextTab" Padding="10,2,10,2" Margin="4,0,0,7" Checked="mx_showTextTab_Checked">文本内容</RadioButton>
 				</WrapPanel>
@@ -767,10 +767,12 @@
 			  IsVisibleChanged="mx_textFrame_IsVisibleChanged">
 			<RichTextBox Name="mx_xmlText"
 						 AcceptsReturn="True"
+						 AcceptsTab="True"
 						 VerticalScrollBarVisibility="Visible"
 						 HorizontalScrollBarVisibility="Visible"
 						 HorizontalAlignment="Stretch"
 						 FontFamily="Consolas"
+						 Background="{StaticResource Background}"
 						 TextChanged="mx_xmlText_TextChanged">
 			</RichTextBox>
 			<TextBox Name="mx_xmlTextSearch"

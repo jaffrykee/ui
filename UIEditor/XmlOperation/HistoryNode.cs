@@ -169,7 +169,7 @@ namespace UIEditor.XmlOperation
 
 			return ret;
 		}
-		static public bool insertItemByXe(MainWindow pW, XmlControl xmlCtrl, XmlElement dstXe, XmlElement srcXe, int index = 0)
+		static public bool insertItemByXe(MainWindow pW, XmlControl xmlCtrl, XmlElement dstXe, XmlElement srcXe,ref int index)
 		{
 			CtrlDef_T nullCtrlDef;
 
@@ -206,6 +206,11 @@ namespace UIEditor.XmlOperation
 				else
 				{
 					return false;
+				}
+
+				if (srcItem != null && index > srcItem.Items.Count)
+				{
+					index = srcItem.Items.Count;
 				}
 
 				if (srcXe.Name != "BoloUI")
@@ -284,7 +289,7 @@ namespace UIEditor.XmlOperation
 			}
 			if (xmlCtrl != null)
 			{
-				insertItemByXe(pW, xmlCtrl, dstXe, srcXe, index);
+				insertItemByXe(pW, xmlCtrl, dstXe, srcXe, ref index);
 			}
 
 			return false;

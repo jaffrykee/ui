@@ -158,7 +158,7 @@ namespace UIEditor
 
 		private void refreshStatusBar()
 		{
-			mx_status.Text = mb_status0 + "\t" + mb_status1 + "\t" + mb_status2 + "\t" + mb_status3;
+			mx_status.Text = mb_status0 + "\t\t" + mb_status1 + "\t\t" + mb_status2 + "\t\t" + mb_status3;
 		}
 		private string mt_status0;
 		public string mb_status0{
@@ -646,6 +646,7 @@ namespace UIEditor
 		{
 			if(isShow)
 			{
+				mx_selModeFrame.Visibility = System.Windows.Visibility.Visible;
 				mx_scrollFrame.Visibility = System.Windows.Visibility.Visible;
 				mx_GLCtrl.Visibility = System.Windows.Visibility.Visible;
 				if (mx_showTextTab.IsChecked == true)
@@ -661,12 +662,25 @@ namespace UIEditor
 			}
 			else
 			{
+				mx_selModeFrame.Visibility = System.Windows.Visibility.Collapsed;
 				mx_drawFrame.Visibility = System.Windows.Visibility.Collapsed;
 				mx_scrollFrame.Visibility = System.Windows.Visibility.Collapsed;
 				mx_GLCtrl.Visibility = System.Windows.Visibility.Collapsed;
-				if (mx_showTextTab.IsChecked == true && (m_mapOpenedFiles.Count > 0 || isShowText == true))
+
+				if (isShowText)
 				{
-					mx_textFrame.Visibility = System.Windows.Visibility.Visible;
+					mx_showTextTab.IsChecked = true;
+				}
+				if (OpenedFile.getCurFileDef() != null && OpenedFile.getCurFileDef().m_fileType == "xml")
+				{
+					if (mx_showTextTab.IsChecked == true && (m_mapOpenedFiles.Count > 0 || isShowText == true))
+					{
+						mx_textFrame.Visibility = System.Windows.Visibility.Visible;
+					}
+					else
+					{
+						mx_textFrame.Visibility = System.Windows.Visibility.Collapsed;
+					}
 				}
 				else
 				{
@@ -786,7 +800,7 @@ namespace UIEditor
 								}
 								else
 								{
-									MainWindow.s_pW.showGLCtrl(false);
+									MainWindow.s_pW.showGLCtrl(false, true);
 								}
 								xmlCtrl.refreshXmlText();
 								xmlCtrl.refreshSkinDicForAll();
@@ -1138,7 +1152,7 @@ namespace UIEditor
 										BoloUI.Basic selItem = (BoloUI.Basic)curItem;
 										string msgData;
 
-										msgData = (selItem.m_selX + (pX - m_downX)).ToString() + ":" + (selItem.m_selY + (pY - m_downY)).ToString() + ":" +
+										msgData = (selItem.m_selScreenX + (pX - m_downX)).ToString() + ":" + (selItem.m_selScreenY + (pY - m_downY)).ToString() + ":" +
 											selItem.m_selW.ToString() + ":" + selItem.m_selH.ToString() + ":";
 										updateGL(msgData, W2GTag.W2G_DRAWRECT);
 									}
@@ -1369,10 +1383,11 @@ namespace UIEditor
 						case G2WTag.G2W_UI_VRECT:
 							{
 								string[] sArray = Regex.Split(strData, ":", RegexOptions.IgnoreCase);
+								const int iVRectMaxNum = 7;
 
-								for(int i = 5; i < sArray.Length; i+=5)
+								for (int i = iVRectMaxNum; i < sArray.Length; i += iVRectMaxNum)
 								{
-									string baseId = sArray[i - 5];
+									string baseId = sArray[i - iVRectMaxNum];
 									XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
 
 									if (curXmlCtrl != null)
@@ -1381,10 +1396,12 @@ namespace UIEditor
 
 										if (curXmlCtrl.m_mapCtrlUI.TryGetValue(baseId, out curCtrl))
 										{
-											curCtrl.m_selX = int.Parse(sArray[i - 4]);
-											curCtrl.m_selY = int.Parse(sArray[i - 3]);
-											curCtrl.m_selW = int.Parse(sArray[i - 2]);
-											curCtrl.m_selH = int.Parse(sArray[i - 1]);
+											curCtrl.m_selRelativeX = int.Parse(sArray[i - iVRectMaxNum + 1]);
+											curCtrl.m_selRelativeY = int.Parse(sArray[i - iVRectMaxNum + 2]);
+											curCtrl.m_selScreenX = int.Parse(sArray[i - iVRectMaxNum + 3]);
+											curCtrl.m_selScreenY = int.Parse(sArray[i - iVRectMaxNum + 4]);
+											curCtrl.m_selW = int.Parse(sArray[i - iVRectMaxNum + 5]);
+											curCtrl.m_selH = int.Parse(sArray[i - iVRectMaxNum + 6]);
 										}
 										else
 										{
@@ -2611,10 +2628,10 @@ namespace UIEditor
 
 					if (curXmlCtrl.m_curSearchRun != null)
 					{
-						curXmlCtrl.m_curSearchRun.Background = new SolidColorBrush(Colors.White);
+						curXmlCtrl.m_curSearchRun.Background = null;
 					}
 					curXmlCtrl.m_curSearchRun = runSel;
-					runSel.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0xaa, 0xaa, 0xaa, 0x33));
+					runSel.Background = new SolidColorBrush(XmlControl.s_arrTextColor[(int)XmlControl.XmlTextColorType.BCK_SEARCH]);
 				}
 			}
 		}

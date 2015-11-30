@@ -86,11 +86,11 @@ namespace UIEditor.BoloUI
 			if (MainWindow.s_pW.m_lastSelRun != null)
 			{
 				//<text>
-				MainWindow.s_pW.m_lastSelRun.Background = new SolidColorBrush(System.Windows.Media.Colors.White);
+				MainWindow.s_pW.m_lastSelRun.Background = null;
 			}
 			MainWindow.s_pW.m_lastSelRun = runLight;
 			//<text>
-			runLight.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0x88, 0x33, 0x99, 0xff));
+			runLight.Background = new SolidColorBrush(XmlControl.s_arrTextColor[(int)XmlControl.XmlTextColorType.BCK_CURSEL]);
 			if (isLocked == false)
 			{
 				MainWindow.s_pW.m_isCanEdit = true;
@@ -933,7 +933,7 @@ namespace UIEditor.BoloUI
 		{
 			CtrlDef_T ctrlDef;
 			System.Drawing.Rectangle rectFrame = new System.Drawing.Rectangle(
-				ctrlFrame.m_selX, ctrlFrame.m_selY, ctrlFrame.m_selW, ctrlFrame.m_selH);
+				ctrlFrame.m_selScreenX, ctrlFrame.m_selScreenY, ctrlFrame.m_selW, ctrlFrame.m_selH);
 
 			if (ctrlFrame != null && ctrlFrame.m_xe != null && ctrlFrame.m_xe.Name != "" &&
 				MainWindow.s_pW.m_mapPanelCtrlDef.TryGetValue(ctrlFrame.m_xe.Name, out ctrlDef))
@@ -947,7 +947,7 @@ namespace UIEditor.BoloUI
 						if (ctrlItem.m_xe.GetAttribute("visible") != "false")
 						{
 							System.Drawing.Rectangle rectItem = new System.Drawing.Rectangle(
-								ctrlItem.m_selX, ctrlItem.m_selY, ctrlItem.m_selW, ctrlItem.m_selH);
+								ctrlItem.m_selScreenX, ctrlItem.m_selScreenY, ctrlItem.m_selW, ctrlItem.m_selH);
 
 							if (ctrlItem.m_xe.Name != "event" && !rectFrame.Contains(rectItem))
 							{
