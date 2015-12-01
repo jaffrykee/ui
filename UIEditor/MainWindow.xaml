@@ -44,7 +44,7 @@
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="55"/>
 			<RowDefinition Height="*" MinHeight="20"/>
-			<RowDefinition Height="300"/>
+			<RowDefinition Height="285"/>
 			<RowDefinition Height="23"/>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
@@ -223,43 +223,27 @@
 						<Button Name="mx_toolNew"
 								IsEnabled="False"
 								Click="mx_newFile_Click"
-								Width="30"
-								Height="30"
-								Margin="0"
-								BorderThickness="0"
-								BorderBrush="{StaticResource BackgroundNormal}"
+								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="新建 (Ctrl + N)">
 							<Image Width="16" Source="pack://application:,,,/data/image/new.png"/>
 						</Button>
 						<Button Name="mx_toolOpen"
 								Click="openProj"
-								Width="{Binding ElementName=mx_toolNew, Path=Width}"
-								Height="{Binding ElementName=mx_toolNew, Path=Height}"
-								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
-								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
-								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="打开项目 (Ctrl + O)">
 							<Image Width="16" Source="pack://application:,,,/data/image/open.png"/>
 						</Button>
 						<Button Name="mx_toolSave"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolSave_Click"
-								Width="{Binding ElementName=mx_toolNew, Path=Width}"
-								Height="{Binding ElementName=mx_toolNew, Path=Height}"
-								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
-								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
-								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="保存 (Ctrl + S)">
 							<Image Width="16" Source="pack://application:,,,/data/image/save.png"/>
 						</Button>
 						<Button Name="mx_toolSaveAll"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolSaveAll_Click"
-								Width="{Binding ElementName=mx_toolNew, Path=Width}"
-								Height="{Binding ElementName=mx_toolNew, Path=Height}"
-								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
-								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
-								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="全部保存 (Ctrl + Shift + S)">
 							<Image Width="16" Source="pack://application:,,,/data/image/saveAll.png"/>
 						</Button>
@@ -267,22 +251,14 @@
 						<Button Name="mx_toolUndo"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolUndo_Click"
-								Width="{Binding ElementName=mx_toolNew, Path=Width}"
-								Height="{Binding ElementName=mx_toolNew, Path=Height}"
-								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
-								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
-								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="撤销 (Ctrl + Z)">
 							<Image Width="16" Source="pack://application:,,,/data/image/undo.png"/>
 						</Button>
 						<Button Name="mx_toolRedo"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolRedo_Click"
-								Width="{Binding ElementName=mx_toolNew, Path=Width}"
-								Height="{Binding ElementName=mx_toolNew, Path=Height}"
-								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
-								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
-								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="重复 (Ctrl + Y)">
 							<Image Width="16" Source="pack://application:,,,/data/image/redo.png"/>
 						</Button>
@@ -290,44 +266,28 @@
 						<Button Name="mx_toolCut"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolCut_Click"
-								Width="{Binding ElementName=mx_toolNew, Path=Width}"
-								Height="{Binding ElementName=mx_toolNew, Path=Height}"
-								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
-								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
-								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="剪切 (Ctrl + X)">
 							<Image Width="16" Source="pack://application:,,,/data/image/cut.png"/>
 						</Button>
 						<Button Name="mx_toolCopy"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolCopy_Click"
-								Width="{Binding ElementName=mx_toolNew, Path=Width}"
-								Height="{Binding ElementName=mx_toolNew, Path=Height}"
-								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
-								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
-								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="复制 (Ctrl + C)">
 							<Image Width="16" Source="pack://application:,,,/data/image/copy.png"/>
 						</Button>
 						<Button Name="mx_toolPaste"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolPaste_Click"
-								Width="{Binding ElementName=mx_toolNew, Path=Width}"
-								Height="{Binding ElementName=mx_toolNew, Path=Height}"
-								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
-								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
-								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="粘贴 (Ctrl + V)">
 							<Image Width="16" Source="pack://application:,,,/data/image/paste.png"/>
 						</Button>
 						<Button Name="mx_toolDelete"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolDelete_Click"
-								Width="{Binding ElementName=mx_toolNew, Path=Width}"
-								Height="{Binding ElementName=mx_toolNew, Path=Height}"
-								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
-								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
-								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="删除 (Delete)">
 							<Image Width="16" Source="pack://application:,,,/data/image/delete.png"/>
 						</Button>
@@ -337,32 +297,20 @@
 						<Button Name="mx_toolMoveUp"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolMoveUp_Click"
-								Width="{Binding ElementName=mx_toolNew, Path=Width}"
-								Height="{Binding ElementName=mx_toolNew, Path=Height}"
-								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
-								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
-								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="上移 (Ctrl + ↑)">
 							<Image Width="16" Source="pack://application:,,,/data/image/moveUp.png"/>
 						</Button>
 						<Button Name="mx_toolMoveDown"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolMoveDown_Click"
-								Width="{Binding ElementName=mx_toolNew, Path=Width}"
-								Height="{Binding ElementName=mx_toolNew, Path=Height}"
-								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
-								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
-								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="下移 (Ctrl + ↓)">
 							<Image Width="16" Source="pack://application:,,,/data/image/moveDown.png"/>
 						</Button>
 						<Button Name="mx_toolMoveToParent"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
-								Width="{Binding ElementName=mx_toolNew, Path=Width}"
-								Height="{Binding ElementName=mx_toolNew, Path=Height}"
-								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
-								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
-								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="移动到上一级 (Ctrl + ←)"
 								Click="mx_toolMoveToParent_Click">
 							<Image Width="16" Source="pack://application:,,,/data/image/moveLeft.png"/>
@@ -372,36 +320,45 @@
 								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
 						<Button Name="mx_toolPackUi"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
-								Width="{Binding ElementName=mx_toolNew, Path=Width}"
-								Height="{Binding ElementName=mx_toolNew, Path=Height}"
-								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
-								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
-								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="打包UI"
 								Click="mx_toolPackUi_Click">
 							<Image Width="16" Source="pack://application:,,,/data/image/packUi.png"/>
 						</Button>
 						<Button Name="mx_toolPackScript"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
-								Width="{Binding ElementName=mx_toolNew, Path=Width}"
-								Height="{Binding ElementName=mx_toolNew, Path=Height}"
-								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
-								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
-								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="打包脚本"
 								Click="mx_toolPackScript_Click">
 							<Image Width="16" Source="pack://application:,,,/data/image/packScript.png"/>
 						</Button>
 						<Button Name="mx_toolRunGame"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
-								Width="{Binding ElementName=mx_toolNew, Path=Width}"
-								Height="{Binding ElementName=mx_toolNew, Path=Height}"
-								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
-								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
-								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="运行游戏"
 								Click="mx_toolRunGame_Click">
 							<Image Width="16" Source="pack://application:,,,/data/image/runGame.png"/>
+						</Button>
+						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
+								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
+								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
+						<Button Name="mx_btnNesting"
+								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
+								Style="{StaticResource BtnStyle_Tools}"
+								ToolTip="图片打包"
+								Click="mx_btnNesting_Click">
+							<Image Width="16" Source="pack://application:,,,/data/image/nesting.png"/>
+						</Button>
+						<Button Name="mx_refreshShape"
+								ToolTip="自动将所有公共皮肤（skin目录下）的textShape置于imageShape之上"
+								Height="30"
+								Width="60"
+								Margin="0"
+								Foreground="{StaticResource Foreground}"
+								BorderBrush="{StaticResource BackgroundNormal}"
+								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
+								Click="mx_refreshShape_Click">
+							文字置顶
 						</Button>
 						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
 								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
@@ -410,7 +367,9 @@
 						<ComboBox Name="mx_resolution" Margin="5" SelectedIndex="0" SelectionChanged="mx_resolution_SelectionChanged">
 						</ComboBox>
 						<CheckBox Name="mx_isMoba"
-								  VerticalAlignment="Center"
+								  Width="auto"
+								  Padding="7"
+								  Style="{StaticResource ToggleButtonTeml_Tools}"
 								  Checked="mx_isMoba_Checked"
 								  Unchecked="mx_isMoba_Unchecked">
 							延展屏幕
@@ -437,65 +396,46 @@
 						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
 								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
 								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
-						<Button Name="mx_btnNesting"
-								Width="{Binding ElementName=mx_toolNew, Path=Width}"
-								Height="{Binding ElementName=mx_toolNew, Path=Height}"
-								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
-								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
-								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
-								ToolTip="图片打包"
-								Click="mx_btnNesting_Click">
-							<Image Width="16" Source="pack://application:,,,/data/image/nesting.png"/>
-						</Button>
 						<Button Name="mx_refresh"
-								Width="{Binding ElementName=mx_toolNew, Path=Width}"
-								Height="{Binding ElementName=mx_toolNew, Path=Height}"
-								Margin="{Binding ElementName=mx_toolNew, Path=Margin}"
-								BorderThickness="{Binding ElementName=mx_toolNew, Path=BorderThickness}"
-								BorderBrush="{Binding ElementName=mx_toolNew, Path=BorderBrush}"
+								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
+								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="刷新"
 								Click="mx_isShowAll_CheckChanged">
 							<Image Width="16" Source="pack://application:,,,/data/image/refresh.png"/>
 						</Button>
-					</WrapPanel>
-					<ToolBar Name="mx_viewModeTools"
-							 Height="{Binding ElementName=mx_toolNew, Path=Height}"
-							 Background="{Binding ElementName=mx_wpTools, Path=Background}"
-							 HorizontalAlignment="Left"
-							 VerticalAlignment="Center" Template="{DynamicResource ToolBar_Template_UIEditor}">
+						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
+								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
+								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
 						<CheckBox Name="mx_isShowAll"
-								  Width="{Binding ElementName=mx_toolNew, Path=Width}"
-								  Height="{Binding ElementName=mx_toolNew, Path=Height}"
-								  VerticalAlignment="Center"
+								  IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								  IsChecked="False"
 								  ToolTip="显示隐藏"
+								  Padding="7"
+								  Style="{StaticResource ToggleButtonTeml_Tools}"
 								  Checked="mx_isShowAll_CheckChanged"
 								  Unchecked="mx_isShowAll_CheckChanged">
 							<Image Width="16" Source="pack://application:,,,/data/image/showAll.png"/>
 						</CheckBox>
 						<CheckBox Name="mx_isViewMode"
-								  Width="{Binding ElementName=mx_toolNew, Path=Width}"
-								  Height="{Binding ElementName=mx_toolNew, Path=Height}"
-								  VerticalAlignment="Center"
+								  IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								  ToolTip="预览模式"
+								  Padding="7"
+								  Style="{StaticResource ToggleButtonTeml_Tools}"
 								  Checked="mx_isViewMode_Checked"
 								  Unchecked="mx_isViewMode_Unchecked">
 							<Image Width="16" Source="pack://application:,,,/data/image/viewMode.png"/>
 						</CheckBox>
 						<CheckBox Name="mx_showBorder"
+								  Width="auto"
+								  Padding="7"
+								  IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								  ToolTip="显示所有可见控件的边框"
-								  Foreground="{StaticResource Foreground}"
+								  Style="{StaticResource ToggleButtonTeml_Tools}"
 								  Checked="mx_showBorder_Checked"
 								  Unchecked="mx_showBorder_Unchecked">
 							显示边框
 						</CheckBox>
-						<Button Name="mx_refreshShape"
-								ToolTip="自动将所有公共皮肤（skin目录下）的textShape置于imageShape之上"
-								Foreground="{StaticResource Foreground}"
-								Click="mx_refreshShape_Click">
-							文字置顶
-						</Button>
-					</ToolBar>
+					</WrapPanel>
 				</WrapPanel>
 				<WrapPanel Grid.Row="1" Margin="3">
 					<WrapPanel Name="mx_ctrlNormal"
@@ -762,10 +702,11 @@
 		<Grid Name="mx_textFrame"
 			  Grid.Row="3"
 			  Grid.Column="1"
-			  Margin="0,0,5,0"
+			  Margin="0"
 			  Visibility="Collapsed"
 			  IsVisibleChanged="mx_textFrame_IsVisibleChanged">
 			<RichTextBox Name="mx_xmlText"
+						 BorderBrush="#00000000"
 						 AcceptsReturn="True"
 						 AcceptsTab="True"
 						 VerticalScrollBarVisibility="Visible"

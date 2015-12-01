@@ -24,6 +24,6 @@
     <Style TargetType="ScrollBar" BasedOn="{StaticResource StandardScrollBar}"/>
     <Style TargetType="TextBox" BasedOn="{StaticResource StandardTextBox}"/>
     <Style TargetType="DataGrid" BasedOn="{StaticResource StandardDataGrid}"/>
-    <Style TargetType="ComboBox" BasedOn="{StaticResource StandardComboBox}"/>
-    <Style TargetType="GroupBox" BasedOn="{StaticResource StandardGroupBox}"/>
+	<Style TargetType="ComboBox" BasedOn="{StaticResource StandardComboBox}"/>
+	<Style TargetType="GroupBox" BasedOn="{StaticResource StandardGroupBox}"/>
 </ResourceDictionary>

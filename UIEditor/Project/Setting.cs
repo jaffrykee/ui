@@ -113,20 +113,25 @@ namespace UIEditor.Project
 				bool isDefault = true;
 
 				MainWindow.s_pW.mx_resolution.Items.Clear();
+				MainWindow.s_pW.mx_resolutionBasic.Items.Clear();
 				foreach (XmlNode xnRow in xnResolutionSetting.ChildNodes)
 				{
 					if (xnRow.Name == "row" && xnRow is XmlElement)
 					{
 						System.Windows.Controls.ComboBoxItem cbiRow = new System.Windows.Controls.ComboBoxItem();
+						System.Windows.Controls.ComboBoxItem cbiRowBasic = new System.Windows.Controls.ComboBoxItem();
 
 						cbiRow.Content = xnRow.InnerXml;
+						cbiRowBasic.Content = xnRow.InnerXml;
 						MainWindow.s_pW.mx_resolution.Items.Add(cbiRow);
+						MainWindow.s_pW.mx_resolutionBasic.Items.Add(cbiRowBasic);
 						if (((XmlElement)xnRow).GetAttribute("isDefault") == "true")
 						{
 							if (isDefault)
 							{
 								//cbiRow.Content += " <默认>";
 								MainWindow.s_pW.mx_resolution.SelectedItem = cbiRow;
+								MainWindow.s_pW.mx_resolutionBasic.SelectedItem = cbiRowBasic;
 								isDefault = false;
 							}
 							else

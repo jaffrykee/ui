@@ -206,14 +206,11 @@
 			</Setter.Value>
 		</Setter>
 	</Style>
-	<Style x:Key="RadioTeml_Mt" TargetType="{x:Type RadioButton}">
-		<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-		<Setter Property="Background" Value="#F4F4F4"/>
-		<Setter Property="BorderBrush" Value="{StaticResource CheckBoxStroke}"/>
-		<Setter Property="BorderThickness" Value="1"/>
+	<Style x:Key="ToggleButtonTeml_Tools" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource StandardToggleButton}">
+		<Setter Property="VerticalAlignment" Value="Center"/>
 		<Setter Property="Template">
 			<Setter.Value>
-				<ControlTemplate TargetType="{x:Type RadioButton}">
+				<ControlTemplate TargetType="{x:Type ToggleButton}">
 					<ControlTemplate.Resources>
 						<Storyboard x:Key="Storyboard1"/>
 					</ControlTemplate.Resources>
@@ -296,7 +293,7 @@
 		<Setter Property="Background" Value="{StaticResource Background}"/>
 		-->
 	</Style>
-	<Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource RadioTeml_Mt}">
+	<Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource ToggleButtonTeml_Tools}">
 		<Setter Property="Background" Value="{StaticResource Background}"/>
 		<Setter Property="Foreground" Value="{StaticResource Foreground}"/>
 	</Style>
@@ -636,4 +633,11 @@
 		</Setter>
 	</Style>
 	<Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource WinFormsTreeViewStyle}"/>
+	<Style x:Key="BtnStyle_Tools" TargetType="{x:Type Button}" BasedOn="{StaticResource StandardButton}">
+		<Setter Property="Width" Value="30"/>
+		<Setter Property="Height" Value="30"/>
+		<Setter Property="Margin" Value="0"/>
+		<Setter Property="BorderThickness" Value="0"/>
+		<Setter Property="BorderBrush" Value="{StaticResource BackgroundNormal}"/>
+	</Style>
 </ResourceDictionary>

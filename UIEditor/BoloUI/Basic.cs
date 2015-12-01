@@ -428,12 +428,20 @@ namespace UIEditor.BoloUI
 					return false;
 				}
 			}
-			if (x >= m_selScreenX && y >= m_selScreenY)
+			double perScale = 1.0f;
+
+			if(MainWindow.s_pW.m_isMoba)
 			{
-				if (x <= m_selScreenX + m_selW && y <= m_selScreenY + m_selH)
-				{
-					return true;
-				}
+				double perScaleX = (double)MainWindow.s_pW.m_screenWidthBasic / (double)MainWindow.s_pW.m_screenWidth;
+				double perScaleY = (double)MainWindow.s_pW.m_screenHeightBasic / (double)MainWindow.s_pW.m_screenHeight;
+
+				perScale = perScaleX > perScaleY ? perScaleX : perScaleY;
+			}
+
+			if (x * perScale >= m_selScreenX && y * perScale >= m_selScreenY &&
+				x * perScale <= m_selScreenX + m_selW && y * perScale <= m_selScreenY + m_selH)
+			{
+				return true;
 			}
 
 			return false;

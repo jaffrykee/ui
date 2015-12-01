@@ -24,6 +24,7 @@ namespace UIEditor.XmlOperation.XmlAttr
 		private string mt_type;
 		private bool m_eventLock;
 		private Button mx_link;
+		private Button mx_new;
 		private Button mx_sel;
 		private CustomWPFColorPicker.ColorPickerControlView mx_viewColor;
 		private void setValue(bool isPre, string value)
@@ -78,6 +79,7 @@ namespace UIEditor.XmlOperation.XmlAttr
 						{
 							createSelButton();
 							createLinkButton();
+							mx_c2.Width = new GridLength(200);
 						}
 						break;
 					case "image":
@@ -114,8 +116,12 @@ namespace UIEditor.XmlOperation.XmlAttr
 		private void createLinkButton()
 		{
 			mx_link = new Button();
+			mx_new = new Button();
 
-			mx_link.Content = "新建";
+			mx_new.Content = "新建";
+			mx_new.Click += mx_new_Click;
+			mx_exFrame.Children.Add(mx_new);
+			mx_link.Content = "跳转";
 			mx_link.Click += mx_link_Click;
 			mx_exFrame.Children.Add(mx_link);
 		}
@@ -202,12 +208,40 @@ namespace UIEditor.XmlOperation.XmlAttr
 				if (mx_value.Text == "")
 				{
 					mx_valueDef.Visibility = Visibility.Visible;
-					mx_link.Content = "新建";
 				}
 				else
 				{
 					mx_valueDef.Visibility = Visibility.Hidden;
-					mx_link.Content = "跳转";
+				}
+			}
+		}
+		private void mx_new_Click(object sender, RoutedEventArgs e)
+		{
+			if (m_parent.m_basic != null && m_parent.m_basic is Basic)
+			{
+				switch (m_name)
+				{
+					case "skin":
+						{
+							newSkin winNewSkin = new newSkin(this);
+
+							winNewSkin.ShowDialog();
+						}
+						break;
+					case "image":
+						{
+						}
+						break;
+					case "ImageName":
+						{
+						}
+						break;
+					case "particleName":
+						{
+						}
+						break;
+					default:
+						break;
 				}
 			}
 		}
@@ -219,17 +253,8 @@ namespace UIEditor.XmlOperation.XmlAttr
 				{
 					case "skin":
 						{
-							if(m_value != "")
-							{
-								m_parent.m_xmlCtrl.findSkinAndSelect(mx_value.Text, (BoloUI.Basic)m_parent.m_basic);
-								MainWindow.s_pW.mx_showTextTab.IsChecked = true;
-							}
-							else
-							{
-								newSkin winNewSkin = new newSkin(this);
-
-								winNewSkin.ShowDialog();
-							}
+							m_parent.m_xmlCtrl.findSkinAndSelect(mx_value.Text, (BoloUI.Basic)m_parent.m_basic);
+							MainWindow.s_pW.mx_showTextTab.IsChecked = true;
 						}
 						break;
 					case "image":

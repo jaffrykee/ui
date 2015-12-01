@@ -662,15 +662,10 @@ namespace UIEditor
 			}
 			else
 			{
-				mx_selModeFrame.Visibility = System.Windows.Visibility.Collapsed;
 				mx_drawFrame.Visibility = System.Windows.Visibility.Collapsed;
 				mx_scrollFrame.Visibility = System.Windows.Visibility.Collapsed;
 				mx_GLCtrl.Visibility = System.Windows.Visibility.Collapsed;
 
-				if (isShowText)
-				{
-					mx_showTextTab.IsChecked = true;
-				}
 				if (OpenedFile.getCurFileDef() != null && OpenedFile.getCurFileDef().m_fileType == "xml")
 				{
 					if (mx_showTextTab.IsChecked == true && (m_mapOpenedFiles.Count > 0 || isShowText == true))
@@ -681,9 +676,11 @@ namespace UIEditor
 					{
 						mx_textFrame.Visibility = System.Windows.Visibility.Collapsed;
 					}
+					mx_selModeFrame.Visibility = System.Windows.Visibility.Visible;
 				}
 				else
 				{
+					mx_selModeFrame.Visibility = System.Windows.Visibility.Collapsed;
 					mx_textFrame.Visibility = System.Windows.Visibility.Collapsed;
 				}
 				foreach (object attrList in mx_toolArea.Items)

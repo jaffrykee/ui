@@ -8,7 +8,9 @@
 		<RichTextBox AcceptsReturn="True"
 					 AcceptsTab="True"
 					 HorizontalAlignment="Stretch"
-					 FontFamily="Consolas">
+					 FontFamily="Consolas"
+					 Background="{StaticResource Background}"
+					 Foreground="{StaticResource Foreground}">
 			<FlowDocument LineHeight="1" PageWidth="2000">
 				<Paragraph Name="mx_textPara">
 				</Paragraph>
