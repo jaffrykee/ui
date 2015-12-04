@@ -856,8 +856,16 @@ namespace UIEditor.BoloUI
 						XmlElement newXe = m_xe.OwnerDocument.CreateElement(ctrlItem.ToolTip.ToString());
 						BoloUI.Basic treeChild = new BoloUI.Basic(newXe, m_xmlCtrl);
 
-						m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
-							XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe, m_xe.ChildNodes.Count));
+						if (treeChild.m_xe.Name == "event")
+						{
+							m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
+								XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe, 0));
+						}
+						else
+						{
+							m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
+								XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe, m_xe.ChildNodes.Count));
+						}
 					}
 					break;
 				case "UIEditor.BoloUI.CtrlTemplate":
@@ -872,8 +880,17 @@ namespace UIEditor.BoloUI
 							if (newXe.FirstChild.NodeType == XmlNodeType.Element)
 							{
 								BoloUI.Basic treeChild = new BoloUI.Basic((XmlElement)newXe.FirstChild, m_xmlCtrl);
-								m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
-									XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe, m_xe.ChildNodes.Count));
+
+								if (treeChild.m_xe.Name == "event")
+								{
+									m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
+										XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe, 0));
+								}
+								else
+								{
+									m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
+										XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe, m_xe.ChildNodes.Count));
+								}
 							}
 						}
 					}
@@ -987,6 +1004,10 @@ namespace UIEditor.BoloUI
 					item.IsExpanded = false;
 				}
 			}
+		}
+		private void mx_radio_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			mx_radio.IsChecked = true;
 		}
 	}
 }

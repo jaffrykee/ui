@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="UIEditor.BoloUI.AnimationKeyFrame"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d">
+	<RadioButton Name="mx_rbKeyFrame"
+				 Height="10"
+				 Margin="0"
+				 Padding="0"
+				 BorderThickness="0"
+				 Width="10"
+				 HorizontalAlignment="Left"
+				 Background="Blue"
+				 GroupName="KeyFrame"
+				 Checked="mx_rbKeyFrame_Checked"
+				 Unchecked="mx_rbKeyFrame_Unchecked"/>
+</UserControl>

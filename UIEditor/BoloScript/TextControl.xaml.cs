@@ -19,6 +19,7 @@ namespace UIEditor.BoloScript
 	{
 		public FileTabItem m_parent;
 		public OpenedFile m_openedFile;
+		public string m_lastText;
 
 		public TextControl(FileTabItem parent, OpenedFile fileDef)
 		{
@@ -44,6 +45,60 @@ namespace UIEditor.BoloScript
 				catch (IOException ex)
 				{
 					Public.ResultLink.createResult("\r\n打开文件失败。(" + ex + ")", Public.ResultType.RT_ERROR);
+				}
+			}
+		}
+
+		private void mx_rtbText_PreviewKeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.Tab && sender is RichTextBox)
+			{
+				RichTextBox rtb = (RichTextBox)sender;
+				String tab = new String(' ', 4);
+				TextPointer caretPosition = rtb.CaretPosition;
+				TextRange a = new TextRange(rtb.Document.ContentStart, rtb.Document.ContentEnd); 
+				
+				caretPosition.InsertTextInRun(tab);
+				//base.CaretIndex = caretPosition + TabSize + 1;
+				e.Handled = true;
+			}
+		}
+		static public void findDiffArea(TextPointer poiStart, TextPointer poiEnd, string text, int areaLen = 1)
+		{
+			int i = 0;
+			int tpCount = poiStart.GetOffsetToPosition(poiEnd);
+			TextPointer tStart = poiStart;
+			TextPointer tEnd = tStart.GetPositionAtOffset(areaLen);
+
+			for (; tEnd != poiEnd && i < text.Length;)
+			{
+				TextRange trCheck = new TextRange(tStart, tEnd);
+				string strCheck = trCheck.Text;
+				string curSubStr = text.Substring(i, strCheck.Length);
+
+				if(curSubStr != strCheck)
+				{
+					break;
+				}
+				else
+				{
+					i += strCheck.Length;
+					tStart = tEnd;
+					tEnd = tStart.GetPositionAtOffset(areaLen);
+				}
+			}
+		}
+		private void mx_rtbText_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			if(sender is RichTextBox)
+			{
+				RichTextBox rtb = (RichTextBox)sender;
+
+				if(m_lastText != null)
+				{
+					TextPointer poiStart = rtb.Document.ContentStart;
+					TextPointer poiEnd = rtb.Document.ContentEnd;
+					findDiffArea(poiStart, poiEnd, m_lastText);
 				}
 			}
 		}

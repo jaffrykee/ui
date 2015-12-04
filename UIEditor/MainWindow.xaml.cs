@@ -1325,10 +1325,12 @@ namespace UIEditor
 							{
 								string[] sArray = Regex.Split(strData, ":", RegexOptions.IgnoreCase);
 								
-								if (sArray.Length >= 2)
+								if (sArray.Length >= 4)
 								{
 									int imageCount = 0;
 									int textCount = 0;
+									int particleCount = 0;
+									int particleSize = 0;
 									int sumCount = 0;
 
 
@@ -1340,8 +1342,18 @@ namespace UIEditor
 									{
 										sumCount += textCount;
 									}
-									mb_status3 = "图片绘制次数：" + imageCount.ToString() + "\t文字绘制次数：" + textCount.ToString()
-										+ "\t绘制次数总计：" + sumCount.ToString();
+									if (int.TryParse(sArray[2], out particleCount))
+									{
+										sumCount += particleCount;
+									}
+									if (int.TryParse(sArray[3], out particleSize))
+									{
+									}
+
+									double szMb = (double)particleSize / 1024 / 1024;
+									mb_status3 = "特效：" + Math.Round(szMb, 2).ToString() + " MB" + "\t\t绘制次数：  图片：" + imageCount.ToString() +
+										"  文字：" + textCount.ToString() + "  特效：" + particleCount.ToString() +
+										"  总计：" + sumCount.ToString();
 								}
 							}
 							break;

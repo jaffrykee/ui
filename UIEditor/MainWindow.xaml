@@ -5,6 +5,7 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
 	xmlns:local="clr-namespace:UIEditor"
+	xmlns:BoloUI="clr-namespace:UIEditor.BoloUI"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d"
 	xmlns:userView="clr-namespace:UIEditor"
@@ -40,7 +41,7 @@
 	</Window.CommandBindings>
 	<Grid Background="{StaticResource Background}">
 		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="20"/>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="55"/>
 			<RowDefinition Height="*" MinHeight="20"/>
@@ -53,7 +54,7 @@
 			<ColumnDefinition Width="345" MinWidth="10"/>
 		</Grid.ColumnDefinitions>
 		<Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Top">
-			<MenuItem Name="mx_miFile" Header="文件" Padding="10,0,10,0">
+			<MenuItem Name="mx_miFile" Header="文件(_F)" Padding="10,0,10,0">
 				<MenuItem Header="新建">
 					<MenuItem Name="mx_menuNewProj" Header="项目..." Click="mx_newProj_Click"/>
 					<MenuItem Name="mx_menuNewFile"
@@ -96,7 +97,7 @@
 				<Separator/>
 				<MenuItem Name="mx_closeWin" Header="退出" InputGestureText="Alt+F4" Click="mx_closeWin_Click"/>
 			</MenuItem>
-			<MenuItem Header="编辑" Padding="{Binding ElementName=mx_miFile, Path=Padding}">
+			<MenuItem Header="编辑(_E)" Padding="{Binding ElementName=mx_miFile, Path=Padding}">
 				<MenuItem Header="撤销"
 						  InputGestureText="Ctrl+Z"
 						  IsEnabled="{Binding ElementName=mx_toolUndo, Path=IsEnabled}"
@@ -172,7 +173,7 @@
 					</MenuItem.Icon>
 				</MenuItem>
 			</MenuItem>
-			<MenuItem Header="项目" Padding="{Binding ElementName=mx_miFile, Path=Padding}">
+			<MenuItem Header="项目(_P)" Padding="{Binding ElementName=mx_miFile, Path=Padding}">
 				<MenuItem Name="mx_menuNesting"
 						  Header="图片打包"
 						  IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
@@ -193,23 +194,23 @@
 						  IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 						  Click="mx_projSetting_Click"/>
 			</MenuItem>
-			<MenuItem Header="工具" Padding="{Binding ElementName=mx_miFile, Path=Padding}">
+			<MenuItem Header="工具(_T)" Padding="{Binding ElementName=mx_miFile, Path=Padding}">
 				<MenuItem Name="mx_setting" Header="选项..." IsEnabled="False"/>
 			</MenuItem>
-			<MenuItem Header="视图" Padding="{Binding ElementName=mx_miFile, Path=Padding}">
+			<MenuItem Header="视图(_V)" Padding="{Binding ElementName=mx_miFile, Path=Padding}">
 				<MenuItem Name="mx_viewPrevFile" Header="上一窗口" InputGestureText="Ctrl+PageUp" Click="mx_viewPrevFile_Click"/>
 				<MenuItem Name="mx_viewNextFile" Header="下一窗口" InputGestureText="Ctrl+PageDown" Click="mx_viewNextFile_Click"/>
 				<Separator/>
 				<MenuItem Name="mx_viewCloseFile" Header="关闭窗口" InputGestureText="Ctrl+W" Click="mx_viewCloseFile_Click"/>
 			</MenuItem>
-			<MenuItem Header="帮助" Padding="{Binding ElementName=mx_miFile, Path=Padding}">
+			<MenuItem Header="帮助(_H)" Padding="{Binding ElementName=mx_miFile, Path=Padding}">
 				<MenuItem Name="mx_help" Header="查看帮助" Click="mx_help_Click"/>
 				<MenuItem Name="mx_version" Header="关于UI编辑器" Click="mx_version_Click"/>
 			</MenuItem>
-			<WrapPanel Name="mx_debugTools">
+			<WrapPanel Name="mx_debugTools" Margin="0">
 				<TextBlock VerticalAlignment="Center">调试句柄：</TextBlock>
 				<TextBox MinWidth="100" Name="mx_hwndDebug"></TextBox>
-				<Button Name="mx_getHwnd" Click="mx_getHwnd_Click">获取</Button>
+				<Button Name="mx_getHwnd" Padding="0" BorderThickness="0" Margin="0" VerticalAlignment="Center" Click="mx_getHwnd_Click">获取</Button>
 			</WrapPanel>
 		</Menu>
 		<DockPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
@@ -613,65 +614,72 @@
 				<Grid.RowDefinitions>
 					<RowDefinition Height="auto"/>
 					<RowDefinition Height="*"/>
-					<RowDefinition Height="2*"/>
 				</Grid.RowDefinitions>
 				<WrapPanel Name="mx_selModeFrame" Grid.Row="0" Background="{StaticResource BackgroundNormal}">
 					<RadioButton Name="mx_showUITab" Padding="10,2,10,2" Margin="4,0,0,7" IsChecked="True" Checked="mx_showUITab_Checked">界面设计</RadioButton>
 					<RadioButton Name="mx_showTextTab" Padding="10,2,10,2" Margin="4,0,0,7" Checked="mx_showTextTab_Checked">文本内容</RadioButton>
 				</WrapPanel>
-				<ScrollViewer Grid.Row="1" Margin="0,0,0,5">
-					<WrapPanel Name="mx_selCtrlLstFrame" Orientation="Horizontal"/>
-				</ScrollViewer>
-				<GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
-				<Grid Grid.Row="2"
-					  Background="{StaticResource Background}">
-					<Grid.RowDefinitions>
-						<RowDefinition Height="auto"/>
-						<RowDefinition Height="*"/>
-					</Grid.RowDefinitions>
-					<WrapPanel Grid.Row="0" Margin="5">
-						<Button Name="mx_clearResult"
+				<Grid Grid.Row="1" Margin="0,0,0,5">
+					<TabControl>
+						<TabItem Header="错误列表">
+							<Grid Background="{StaticResource Background}">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="auto"/>
+									<RowDefinition Height="*"/>
+								</Grid.RowDefinitions>
+								<WrapPanel Grid.Row="0" Margin="5">
+									<Button Name="mx_clearResult"
 								Height="20"
 								Width="50"
 								HorizontalAlignment="Left"
 								Visibility="Collapsed"
 								Click="mx_clearResult_Click">
-							清空
-						</Button>
-						<CheckBox Name="mx_showErrorResult"
+										清空
+									</Button>
+									<CheckBox Name="mx_showErrorResult"
 								  Margin="10,0,10,0"
 								  VerticalAlignment="Center"
 								  IsChecked="True"
 								  Checked="mx_showErrorResult_Checked"
 								  Unchecked="mx_showErrorResult_Unchecked">
-							显示错误
-						</CheckBox>
-						<CheckBox Name="mx_showWarningResult"
+										显示错误
+									</CheckBox>
+									<CheckBox Name="mx_showWarningResult"
 								  Margin="10,0,10,0"
 								  VerticalAlignment="Center"
 								  Checked="mx_showWarningResult_Checked"
 								  Unchecked="mx_showWarningResult_Unchecked">
-							显示警告
-						</CheckBox>
-						<CheckBox Name="mx_showOtherResult"
+										显示警告
+									</CheckBox>
+									<CheckBox Name="mx_showOtherResult"
 								  IsChecked="True"
 								  Margin="10,0,10,0"
 								  VerticalAlignment="Center"
 								  Checked="mx_showOtherResult_Checked"
 								  Unchecked="mx_showOtherResult_Unchecked">
-							显示其它
-						</CheckBox>
-					</WrapPanel>
-					<RichTextBox Name="mx_resultFrame"
+										显示其它
+									</CheckBox>
+								</WrapPanel>
+								<RichTextBox Name="mx_resultFrame"
 								 Grid.Row="1"
 								 Background="{StaticResource Background}"
 								 Foreground="{StaticResource Foreground}"
 								 IsReadOnly="True"
 								 HorizontalScrollBarVisibility="Visible"
 								 VerticalScrollBarVisibility="Visible">
-						<FlowDocument Name="mx_docResult" PageWidth="1000">
-						</FlowDocument>
-					</RichTextBox>
+									<FlowDocument Name="mx_docResult" PageWidth="1000">
+									</FlowDocument>
+								</RichTextBox>
+							</Grid>
+						</TabItem>
+						<TabItem Header="当前点击备选控件">
+							<WrapPanel Name="mx_selCtrlLstFrame" Orientation="Horizontal">
+							</WrapPanel>
+						</TabItem>
+						<TabItem Header="动画设置">
+							<BoloUI:AnimationTools x:Name="mx_aniTools"/>
+						</TabItem>
+					</TabControl>
 				</Grid>
 			</Grid>
 		</DockPanel>

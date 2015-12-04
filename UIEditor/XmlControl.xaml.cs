@@ -401,7 +401,7 @@ namespace UIEditor
 				szSum += pairImageSize.Value;
 			}
 			double szMb = (double)szSum / 1024 / 1024;
-			MainWindow.s_pW.mb_status2 = "占用内存: " + Math.Round(szMb, 2).ToString() + " MB";
+			MainWindow.s_pW.mb_status2 = "占用内存:   图片：" + Math.Round(szMb, 2).ToString() + " MB";
 		}
 		void mx_newRun_MouseDown(object sender, MouseButtonEventArgs e)
 		{

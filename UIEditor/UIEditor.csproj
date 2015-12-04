@@ -107,6 +107,15 @@
     <Compile Include="BoloScript\TextControl.xaml.cs">
       <DependentUpon>TextControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="BoloUI\AnimationTimeScaleTips.xaml.cs">
+      <DependentUpon>AnimationTimeScaleTips.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="BoloUI\AnimationKeyFrame.xaml.cs">
+      <DependentUpon>AnimationKeyFrame.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="BoloUI\AnimationTools.xaml.cs">
+      <DependentUpon>AnimationTools.xaml</DependentUpon>
+    </Compile>
     <Compile Include="BoloUI\DefConfig\AttrDef_T.cs" />
     <Compile Include="BoloUI\DefConfig\CtrlDef_T.cs" />
     <Compile Include="BoloUI\DefConfig\DefConfig.cs" />
@@ -234,6 +243,18 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="BoloScript\TextControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="BoloUI\AnimationTimeScaleTips.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="BoloUI\AnimationKeyFrame.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="BoloUI\AnimationTools.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -448,6 +469,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="data\image\timeScaleThumb.png" />
+    <Resource Include="data\image\timeScaleThumbForeground.png" />
+    <Resource Include="data\image\timeScaleThumbIsDragging.png" />
+    <Resource Include="data\image\timeScaleThumbIsMouseOver.png" />
     <Resource Include="Public\sceneInfo.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -489,6 +514,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="data\a.txt" />
+    <Resource Include="data\image\timeScale.png" />
     <Resource Include="data\image\error.png" />
     <Resource Include="data\image\warning.png" />
     <Resource Include="data\image\moveLeft.png" />

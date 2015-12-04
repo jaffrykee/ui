@@ -11,9 +11,10 @@
 	<TreeViewItem.Header>
 		<Grid>
 			<RadioButton Name="mx_radio"
-					 GroupName="fileTree"
-					 Padding="0,2,0,2"
-					 MouseDoubleClick="mx_radio_MouseDoubleClick"/>
+						 GroupName="fileTree"
+						 Padding="0,2,0,2"
+						 MouseRightButtonDown="mx_radio_MouseRightButtonDown"
+						 MouseDoubleClick="mx_radio_MouseDoubleClick"/>
 			<TextBox Name="mx_tbRename"
 					 Visibility="Collapsed"
 					 KeyDown="mx_tbRename_KeyDown"
@@ -27,6 +28,7 @@
 				<MenuItem Name="mx_newFile" Header="文件..." Click="mx_newFile_Click"/>
 				<MenuItem Name="mx_newImageFolder" Header="图片包" Click="mx_newImageFolder_Click"/>
 			</MenuItem>
+			<MenuItem Name="mx_openFolder" Header="打开所在文件夹" Click="mx_openFolder_Click"/>
 			<Separator Name="mx_spImg" Visibility="Collapsed"/>
 			<MenuItem Name="mx_repackImage" Header="重新打包" Visibility="Collapsed" Click="mx_repackImage_Click"/>
 			<MenuItem Name="mx_moveTo" Header="移动到" Visibility="Collapsed"/>

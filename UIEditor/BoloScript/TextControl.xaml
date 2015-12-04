@@ -5,12 +5,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d">
 	<Grid Name="mx_textFrame" MinWidth="2000" MinHeight="1000">
-		<RichTextBox AcceptsReturn="True"
+		<RichTextBox Name="mx_rtbText"
+					 AcceptsReturn="True"
 					 AcceptsTab="True"
 					 HorizontalAlignment="Stretch"
 					 FontFamily="Consolas"
 					 Background="{StaticResource Background}"
-					 Foreground="{StaticResource Foreground}">
+					 Foreground="{StaticResource Foreground}"
+					 TextChanged="mx_rtbText_TextChanged"
+					 PreviewKeyDown="mx_rtbText_PreviewKeyDown">
 			<FlowDocument LineHeight="1" PageWidth="2000">
 				<Paragraph Name="mx_textPara">
 				</Paragraph>
