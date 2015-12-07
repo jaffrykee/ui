@@ -554,6 +554,7 @@ namespace UIEditor
 					refreshSkin(Project.Setting.s_skinPath);
 				}
 			}
+			Project.Setting.refreshSkinIndex();
 			refreshProjTree(Project.Setting.s_projPath, this.mx_treePro, true);
 			mx_root.Title = Project.Setting.s_projPath + "\\" + Project.Setting.s_projName + " - UI编辑器";
 			mx_toolNew.IsEnabled = true;
@@ -1237,6 +1238,7 @@ namespace UIEditor
 										selCtrl.changeSelectItem();
 									}
 								}
+								mx_bFrameCtrl.IsSelected = true;
 							}
 							else
 							{

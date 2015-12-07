@@ -621,7 +621,7 @@
 				</WrapPanel>
 				<Grid Grid.Row="1" Margin="0,0,0,5">
 					<TabControl>
-						<TabItem Header="错误列表">
+						<TabItem Name="mx_bFrameError" Header="错误列表">
 							<Grid Background="{StaticResource Background}">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="auto"/>
@@ -629,54 +629,54 @@
 								</Grid.RowDefinitions>
 								<WrapPanel Grid.Row="0" Margin="5">
 									<Button Name="mx_clearResult"
-								Height="20"
-								Width="50"
-								HorizontalAlignment="Left"
-								Visibility="Collapsed"
-								Click="mx_clearResult_Click">
+											Height="20"
+											Width="50"
+											HorizontalAlignment="Left"
+											Visibility="Collapsed"
+											Click="mx_clearResult_Click">
 										清空
 									</Button>
 									<CheckBox Name="mx_showErrorResult"
-								  Margin="10,0,10,0"
-								  VerticalAlignment="Center"
-								  IsChecked="True"
-								  Checked="mx_showErrorResult_Checked"
-								  Unchecked="mx_showErrorResult_Unchecked">
+											  Margin="10,0,10,0"
+											  VerticalAlignment="Center"
+											  IsChecked="True"
+											  Checked="mx_showErrorResult_Checked"
+											  Unchecked="mx_showErrorResult_Unchecked">
 										显示错误
 									</CheckBox>
 									<CheckBox Name="mx_showWarningResult"
-								  Margin="10,0,10,0"
-								  VerticalAlignment="Center"
-								  Checked="mx_showWarningResult_Checked"
-								  Unchecked="mx_showWarningResult_Unchecked">
+											  Margin="10,0,10,0"
+											  VerticalAlignment="Center"
+											  Checked="mx_showWarningResult_Checked"
+											  Unchecked="mx_showWarningResult_Unchecked">
 										显示警告
 									</CheckBox>
 									<CheckBox Name="mx_showOtherResult"
-								  IsChecked="True"
-								  Margin="10,0,10,0"
-								  VerticalAlignment="Center"
-								  Checked="mx_showOtherResult_Checked"
-								  Unchecked="mx_showOtherResult_Unchecked">
+											  IsChecked="True"
+											  Margin="10,0,10,0"
+											  VerticalAlignment="Center"
+											  Checked="mx_showOtherResult_Checked"
+											  Unchecked="mx_showOtherResult_Unchecked">
 										显示其它
 									</CheckBox>
 								</WrapPanel>
 								<RichTextBox Name="mx_resultFrame"
-								 Grid.Row="1"
-								 Background="{StaticResource Background}"
-								 Foreground="{StaticResource Foreground}"
-								 IsReadOnly="True"
-								 HorizontalScrollBarVisibility="Visible"
-								 VerticalScrollBarVisibility="Visible">
+											 Grid.Row="1"
+											 Background="{StaticResource Background}"
+											 Foreground="{StaticResource Foreground}"
+											 IsReadOnly="True"
+											 HorizontalScrollBarVisibility="Visible"
+											 VerticalScrollBarVisibility="Visible">
 									<FlowDocument Name="mx_docResult" PageWidth="1000">
 									</FlowDocument>
 								</RichTextBox>
 							</Grid>
 						</TabItem>
-						<TabItem Header="当前点击备选控件">
+						<TabItem Name="mx_bFrameCtrl" Header="当前点击备选控件" IsSelected="True">
 							<WrapPanel Name="mx_selCtrlLstFrame" Orientation="Horizontal">
 							</WrapPanel>
 						</TabItem>
-						<TabItem Header="动画设置">
+						<TabItem Name="mx_bFrameAnimation" Header="动画设置">
 							<BoloUI:AnimationTools x:Name="mx_aniTools"/>
 						</TabItem>
 					</TabControl>

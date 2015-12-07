@@ -18,6 +18,7 @@ namespace UIEditor.Project
 		static public string s_imagePath;
 		static public string s_projPath;
 		static public string s_projName;
+		static public Dictionary<string, List<string>> s_mapSkinIndex;
 
 		static public void refreshAllProjectSetting()
 		{
@@ -304,6 +305,56 @@ namespace UIEditor.Project
 				return null;
 			}
 			return openFileDialog.FileName;
+		}
+
+		static public void refreshSkinIndex()
+		{
+			if (s_mapSkinIndex != null)
+			{
+				s_mapSkinIndex.Clear();
+			}
+			else
+			{
+				s_mapSkinIndex = new Dictionary<string, List<string>>();
+			}
+
+			if (Directory.Exists(Project.Setting.s_skinPath))
+			{
+				DirectoryInfo dri = new DirectoryInfo(Project.Setting.s_skinPath);
+
+				foreach (FileInfo fi in dri.GetFiles("*.xml"))
+				{
+					XmlDocument docXml = new XmlDocument();
+
+					docXml.Load(fi.FullName);
+					if (docXml.DocumentElement.Name == "BoloUI")
+					{
+						foreach (XmlNode xnSkin in docXml.DocumentElement.SelectNodes("skin"))
+						{
+							if (xnSkin is XmlElement)
+							{
+								XmlElement xeSkin = (XmlElement)xnSkin;
+								string skinName = xeSkin.GetAttribute("Name");
+
+								if (skinName != "")
+								{
+									List<string> lstGroupName;
+
+									if (s_mapSkinIndex.TryGetValue(skinName, out lstGroupName) && lstGroupName != null)
+									{
+										lstGroupName.Add(System.IO.Path.GetFileNameWithoutExtension(fi.Name));
+									}
+									else
+									{
+										s_mapSkinIndex[skinName] = new List<string>();
+										s_mapSkinIndex[skinName].Add(System.IO.Path.GetFileNameWithoutExtension(fi.Name));
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 }

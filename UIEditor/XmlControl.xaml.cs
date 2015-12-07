@@ -27,7 +27,6 @@ namespace UIEditor
 		public bool m_showGL;
 		//以baseID为索引的UI们
 		public Dictionary<string, BoloUI.Basic> m_mapCtrlUI;
-		public Dictionary<string, string> m_mapSkinLink;
 		public Dictionary<string, long> m_mapImageSize;
 		public Dictionary<string, BoloUI.ResBasic> m_mapSkin;
 		public Dictionary<XmlElement, XmlItem> m_mapXeItem;
@@ -316,14 +315,14 @@ namespace UIEditor
 							{
 								if (xeSkin.GetAttribute("Name") != "")
 								{
-									string skinName;
-									if (!m_mapSkinLink.TryGetValue(xeSkin.GetAttribute("Name"), out skinName))
+									string oldSkinGroupName;
+									if (!m_mapSkinLink.TryGetValue(xeSkin.GetAttribute("Name"), out oldSkinGroupName))
 									{
 										m_mapSkinLink.Add(xeSkin.GetAttribute("Name"), skinGroupName);
 									}
 									else
 									{
-										string oldSkinPath = Project.Setting.s_skinPath + "\\" + skinName + ".xml";
+										string oldSkinPath = Project.Setting.s_skinPath + "\\" + oldSkinGroupName + ".xml";
 										string newSkinPath = Project.Setting.s_skinPath + "\\" + skinGroupName + ".xml";
 
 										m_mapSkinLink[xeSkin.GetAttribute("Name")] = skinGroupName;

@@ -133,6 +133,7 @@ namespace UIEditor.Public
 			ResultLink rTextLink = new Public.ResultLink(text, rt, link);
 
 			addLineToCurResultFrame(rTextLink);
+			MainWindow.s_pW.mx_bFrameError.IsSelected = true;
 		}
 
 		public ResultType m_rt;

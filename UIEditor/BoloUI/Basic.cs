@@ -325,42 +325,90 @@ namespace UIEditor.BoloUI
 				expandAllTreeItemParent(newChild);
 			}
 		}
+		public bool isIncludeSkinGroup(string groupName)
+		{
+			if (groupName == null || groupName == "")
+			{
+				return false;
+			}
+			foreach(XmlNode xnGroup in m_xe.OwnerDocument.SelectNodes("skingroup"))
+			{
+				if(xnGroup is XmlElement && ((XmlElement)xnGroup).GetAttribute("Name") == groupName)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+		public List<string> getIncludeSkinGroupList(List<string> lstGroupName)
+		{
+			List<string> lstIncludeGroupName = new List<string>();
+
+			if (lstGroupName == null || lstGroupName.Count == 0)
+			{
+				return lstIncludeGroupName;
+			}
+			foreach (XmlNode xnGroup in m_xe.OwnerDocument.SelectNodes("skingroup"))
+			{
+				if (xnGroup is XmlElement)
+				{
+					XmlElement xeGroup = (XmlElement)xnGroup;
+
+					foreach(string groupName in lstGroupName)
+					{
+						if(xeGroup.GetAttribute("Name") == groupName)
+						{
+							lstIncludeGroupName.Add(groupName);
+							break;
+						}
+					}
+				}
+			}
+
+			return lstIncludeGroupName;
+		}
 		public XmlElement getLinkSkinXe()
 		{
 			XmlElement xeRet = null;
 
-			m_xmlCtrl.refreshSkinDicForAll();
+			//m_xmlCtrl.refreshSkinDicForAll();
 			if (m_xe != null && m_xe.GetAttribute("skin") != "")
 			{
 				string skinName = m_xe.GetAttribute("skin");
-				string groupName;
+				List<string> lstGroupName;
 
-				if (m_xmlCtrl.m_mapSkinLink.TryGetValue(skinName, out groupName))
+				if(Project.Setting.s_mapSkinIndex.TryGetValue(skinName, out lstGroupName))
 				{
-					string path = Project.Setting.s_skinPath + "\\" + groupName + ".xml";
-
-					if (System.IO.File.Exists(path))
+					List<string> lstIncludeGroupName = getIncludeSkinGroupList(lstIncludeGroupName);
+					if(lstIncludeGroupName.Count >= 0)
 					{
-						XmlDocument docSkin = new XmlDocument();
+						string groupName = lstIncludeGroupName[0];
+						string path = Project.Setting.s_skinPath + "\\" + groupName + ".xml";
 
-						docSkin.Load(path);
-						foreach (XmlNode xn in docSkin.DocumentElement.ChildNodes)
+						if (System.IO.File.Exists(path))
 						{
-							if (xn.NodeType == XmlNodeType.Element)
-							{
-								XmlElement xeSkin = (XmlElement)xn;
+							XmlDocument docSkin = new XmlDocument();
 
-								if (xeSkin.Name == "skin" || xeSkin.Name == "publicskin")
+							docSkin.Load(path);
+							foreach (XmlNode xn in docSkin.DocumentElement.ChildNodes)
+							{
+								if (xn.NodeType == XmlNodeType.Element)
 								{
-									if (xeSkin.GetAttribute("Name") == skinName)
+									XmlElement xeSkin = (XmlElement)xn;
+
+									if (xeSkin.Name == "skin" || xeSkin.Name == "publicskin")
 									{
-										xeRet = xeSkin;
+										if (xeSkin.GetAttribute("Name") == skinName)
+										{
+											xeRet = xeSkin;
+										}
 									}
 								}
 							}
-						}
 
-						return xeRet;
+							return xeRet;
+						}
 					}
 				}
 			}
