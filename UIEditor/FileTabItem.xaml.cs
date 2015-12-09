@@ -119,9 +119,7 @@ namespace UIEditor
 				{
 					case MessageBoxResult.Yes:
 						{
-							xmlCtrl.m_xmlDoc.Save(m_filePath);
-							pW.m_mapOpenedFiles[m_filePath].m_lstOpt.m_saveNode = pW.m_mapOpenedFiles[m_filePath].m_lstOpt.m_curNode;
-							pW.m_mapOpenedFiles[m_filePath].updateSaveStatus();
+							xmlCtrl.saveCurStatus();
 						}
 						break;
 					case MessageBoxResult.No:

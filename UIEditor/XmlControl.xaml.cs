@@ -185,9 +185,50 @@ namespace UIEditor
 
 			return mapXeGroup;
 		}
+
+		public List<string> getIncludeSkinGroupList(string skinName)
+		{
+			List<string> lstGroupName;
+
+			if (Project.Setting.s_mapSkinIndex.TryGetValue(skinName, out lstGroupName))
+			{
+				return getIncludeSkinGroupList(lstGroupName);
+			}
+			else
+			{
+				return null;
+			}
+		}
+		public List<string> getIncludeSkinGroupList(List<string> lstGroupName)
+		{
+			List<string> lstIncludeGroupName = new List<string>();
+
+			if (lstGroupName == null || lstGroupName.Count == 0)
+			{
+				return lstIncludeGroupName;
+			}
+			foreach (XmlNode xnGroup in m_xmlDoc.DocumentElement.SelectNodes("skingroup"))
+			{
+				if (xnGroup is XmlElement)
+				{
+					XmlElement xeGroup = (XmlElement)xnGroup;
+
+					foreach (string groupName in lstGroupName)
+					{
+						if (xeGroup.GetAttribute("Name") == groupName)
+						{
+							lstIncludeGroupName.Add(groupName);
+							break;
+						}
+					}
+				}
+			}
+
+			return lstIncludeGroupName;
+		}
+
 		public object findSkin(string skinName, out string xmlPath)
 		{
-			string groupName;
 			ResBasic retSkinCtrl = null;
 			xmlPath = null;
 
@@ -196,35 +237,40 @@ namespace UIEditor
 				return retSkinCtrl.m_xe;
 				//return retSkinCtrl;
 			}
-			else if (m_mapSkinLink.TryGetValue(skinName, out groupName) && groupName != null && groupName != "")
+			else
 			{
-				string path = Project.Setting.s_skinPath + "\\" + groupName + ".xml";
+				List<string> lstGroupName = getIncludeSkinGroupList(skinName);
 
-				if(File.Exists(path))
+				if (lstGroupName != null && lstGroupName.Count > 0)
 				{
-					XmlDocument docSkin = new XmlDocument();
+					string path = Project.Setting.s_skinPath + "\\" + lstGroupName[0] + ".xml";
 
-					try
+					if (File.Exists(path))
 					{
-						docSkin.Load(path);
-					}
-					catch
-					{
-						return null;
-					}
-					if (docSkin.DocumentElement != null && docSkin.DocumentElement.Name == "BoloUI")
-					{
-						foreach(XmlNode xnSkin in docSkin.DocumentElement.ChildNodes)
+						XmlDocument docSkin = new XmlDocument();
+
+						try
 						{
-							if(xnSkin.NodeType == XmlNodeType.Element)
+							docSkin.Load(path);
+						}
+						catch
+						{
+							return null;
+						}
+						if (docSkin.DocumentElement != null && docSkin.DocumentElement.Name == "BoloUI")
+						{
+							foreach (XmlNode xnSkin in docSkin.DocumentElement.ChildNodes)
 							{
-								XmlElement xeSkin = (XmlElement)xnSkin;
-
-								if ((xeSkin.Name == "skin" || xeSkin.Name == "publicskin") && xeSkin.GetAttribute("Name") == skinName)
+								if (xnSkin.NodeType == XmlNodeType.Element)
 								{
-									xmlPath = path;
+									XmlElement xeSkin = (XmlElement)xnSkin;
 
-									return xeSkin;
+									if ((xeSkin.Name == "skin" || xeSkin.Name == "publicskin") && xeSkin.GetAttribute("Name") == skinName)
+									{
+										xmlPath = path;
+
+										return xeSkin;
+									}
 								}
 							}
 						}
@@ -244,38 +290,44 @@ namespace UIEditor
 				skinBasic.changeSelectItem(ctrlUI);
 				setAllChildExpand(skinBasic);
 			}
-			else if (m_mapSkinLink.TryGetValue(skinName, out groupName))
-			{
-				string path = Project.Setting.s_skinPath + "\\" + groupName + ".xml";
-
-				changeSelectSkinAndFile(path, skinName, ctrlUI);
-			}
 			else
 			{
-				Public.ResultLink.createResult("\r\n没有找到该皮肤。(" + skinName + ")", Public.ResultType.RT_WARNING);
+				List<string> lstGroupName = getIncludeSkinGroupList(skinName);
+				if(lstGroupName != null && lstGroupName.Count > 0)
+				{
+					string path = Project.Setting.s_skinPath + "\\" + lstGroupName[0] + ".xml";
+
+					changeSelectSkinAndFile(path, skinName, ctrlUI);
+				}
+				else
+				{
+					Public.ResultLink.createResult("\r\n没有找到该皮肤。(" + skinName + ")", Public.ResultType.RT_WARNING);
+				}
 			}
 
 			return false;
 		}
 		public string tryFindSkin(string skinName)
 		{
-			string groupName;
 			BoloUI.ResBasic skinBasic;
 
 			if (m_mapSkin.TryGetValue(skinName, out skinBasic))
 			{
 				return m_openedFile.m_path;
 			}
-			else if (m_mapSkinLink.TryGetValue(skinName, out groupName))
-			{
-				string path = Project.Setting.s_skinPath + "\\" + groupName + ".xml";
-
-				return path;
-			}
 			else
 			{
-				return "";
+				List<string> lstGroupName = getIncludeSkinGroupList(skinName);
+
+				if(lstGroupName != null && lstGroupName.Count > 0)
+				{
+					string path = Project.Setting.s_skinPath + "\\" + lstGroupName[0] + ".xml";
+
+					return path;
+				}
 			}
+
+			return "";
 		}
 		public void refreshVRect()
 		{
@@ -311,31 +363,31 @@ namespace UIEditor
 						{
 							XmlElement xeSkin = (XmlElement)xnfSkin;
 
-							if (xeSkin.Name == "skin" || xeSkin.Name == "publicskin")
-							{
-								if (xeSkin.GetAttribute("Name") != "")
-								{
-									string oldSkinGroupName;
-									if (!m_mapSkinLink.TryGetValue(xeSkin.GetAttribute("Name"), out oldSkinGroupName))
-									{
-										m_mapSkinLink.Add(xeSkin.GetAttribute("Name"), skinGroupName);
-									}
-									else
-									{
-										string oldSkinPath = Project.Setting.s_skinPath + "\\" + oldSkinGroupName + ".xml";
-										string newSkinPath = Project.Setting.s_skinPath + "\\" + skinGroupName + ".xml";
-
-										m_mapSkinLink[xeSkin.GetAttribute("Name")] = skinGroupName;
-
-										Public.ResultLink.createResult("\r\n<" + oldSkinPath + ">和", Public.ResultType.RT_WARNING,
-											new Public.SkinLinkDef_T(oldSkinPath, xeSkin.GetAttribute("Name")));
-										Public.ResultLink.createResult("<" + path + "> - ", Public.ResultType.RT_WARNING,
-											new Public.SkinLinkDef_T(newSkinPath, xeSkin.GetAttribute("Name")));
-										Public.ResultLink.createResult("存在同名皮肤引用：" + xeSkin.GetAttribute("Name") + "。", Public.ResultType.RT_WARNING);
-									}
-								}
-							}
-							else if (xeSkin.Name == "resource" || xeSkin.Name == "publicresource")
+// 							if (xeSkin.Name == "skin" || xeSkin.Name == "publicskin")
+// 							{
+// 								if (xeSkin.GetAttribute("Name") != "")
+// 								{
+// 									string oldSkinGroupName;
+// 									if (!m_mapSkinLink.TryGetValue(xeSkin.GetAttribute("Name"), out oldSkinGroupName))
+// 									{
+// 										m_mapSkinLink.Add(xeSkin.GetAttribute("Name"), skinGroupName);
+// 									}
+// 									else
+// 									{
+// 										string oldSkinPath = Project.Setting.s_skinPath + "\\" + oldSkinGroupName + ".xml";
+// 										string newSkinPath = Project.Setting.s_skinPath + "\\" + skinGroupName + ".xml";
+// 
+// 										m_mapSkinLink[xeSkin.GetAttribute("Name")] = skinGroupName;
+// 
+// 										Public.ResultLink.createResult("\r\n<" + oldSkinPath + ">和", Public.ResultType.RT_WARNING,
+// 											new Public.SkinLinkDef_T(oldSkinPath, xeSkin.GetAttribute("Name")));
+// 										Public.ResultLink.createResult("<" + path + "> - ", Public.ResultType.RT_WARNING,
+// 											new Public.SkinLinkDef_T(newSkinPath, xeSkin.GetAttribute("Name")));
+// 										Public.ResultLink.createResult("存在同名皮肤引用：" + xeSkin.GetAttribute("Name") + "。", Public.ResultType.RT_WARNING);
+// 									}
+// 								}
+// 							}
+							if (xeSkin.Name == "resource" || xeSkin.Name == "publicresource")
 							{
 								if (xeSkin.GetAttribute("name") != "")
 								{
@@ -376,7 +428,6 @@ namespace UIEditor
 		}
 		public void refreshSkinDicForAll()
 		{
-			m_mapSkinLink.Clear();
 			m_mapImageSize.Clear();
 			if (m_xeRoot != null && m_xeRoot.Name == "BoloUI")
 			{
@@ -772,7 +823,6 @@ namespace UIEditor
 		public void refreshControl(string skinName = "")
 		{
 			m_mapCtrlUI = new Dictionary<string, BoloUI.Basic>();
-			m_mapSkinLink = new Dictionary<string, string>();
 			m_mapImageSize = new Dictionary<string, long>();
 			m_mapSkin = new Dictionary<string, BoloUI.ResBasic>();
 			m_mapXeItem = new Dictionary<XmlElement, XmlItem>();
@@ -1137,6 +1187,27 @@ namespace UIEditor
 		{
 			refreshShape(Project.Setting.s_projPath);
 			refreshShape(Project.Setting.s_skinPath);
+		}
+
+		public bool isSkinXmlControl()
+		{
+			if(File.Exists(m_parent.m_fileDef.m_path))
+			{
+				FileInfo fi = new FileInfo(m_parent.m_fileDef.m_path);
+
+				if(fi.DirectoryName == Project.Setting.s_skinPath)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+		public void saveCurStatus()
+		{
+			m_xmlDoc.Save(m_openedFile.m_path);
+			m_openedFile.m_lstOpt.m_saveNode = MainWindow.s_pW.m_mapOpenedFiles[m_openedFile.m_path].m_lstOpt.m_curNode;
+			m_openedFile.updateSaveStatus();
 		}
 	}
 }

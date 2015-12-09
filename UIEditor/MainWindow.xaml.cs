@@ -554,7 +554,6 @@ namespace UIEditor
 					refreshSkin(Project.Setting.s_skinPath);
 				}
 			}
-			Project.Setting.refreshSkinIndex();
 			refreshProjTree(Project.Setting.s_projPath, this.mx_treePro, true);
 			mx_root.Title = Project.Setting.s_projPath + "\\" + Project.Setting.s_projName + " - UI编辑器";
 			mx_toolNew.IsEnabled = true;
@@ -637,9 +636,7 @@ namespace UIEditor
 				rootItem.ToolTip = rootTip;
 				rootItem.IsExpanded = true;
 				rootItem.Header = "UI工程目录(" + i + "个目录和" + j + "个项目)";
-
-				//<SkinIndex>
-				//SkinIndex.refreshSkinIndex();
+				Project.Setting.refreshSkinIndex();
 			}
 		}
 
@@ -840,9 +837,7 @@ namespace UIEditor
 						{
 							foreach (OpenedFile fileDef in lstChangedFiles)
 							{
-								((XmlControl)fileDef.m_frame).m_xmlDoc.Save(fileDef.m_path);
-								fileDef.m_lstOpt.m_saveNode = fileDef.m_lstOpt.m_curNode;
-								fileDef.updateSaveStatus();
+								((XmlControl)fileDef.m_frame).saveCurStatus();
 							}
 						}
 						break;
@@ -1903,9 +1898,7 @@ namespace UIEditor
 
 			if (curXmlCtrl != null)
 			{
-				curXmlCtrl.m_xmlDoc.Save(m_curFile);
-				curXmlCtrl.m_openedFile.m_lstOpt.m_saveNode = m_mapOpenedFiles[m_curFile].m_lstOpt.m_curNode;
-				curXmlCtrl.m_openedFile.updateSaveStatus();
+				curXmlCtrl.saveCurStatus();
 			}
 		}
 		private void mx_toolSaveAll_Click(object sender, RoutedEventArgs e)
@@ -1914,9 +1907,7 @@ namespace UIEditor
 			{
 				if(pairFile.Value.frameIsXmlCtrl())
 				{
-					((XmlControl)pairFile.Value.m_frame).m_xmlDoc.Save(pairFile.Key);
-					pairFile.Value.m_lstOpt.m_saveNode = pairFile.Value.m_lstOpt.m_curNode;
-					pairFile.Value.updateSaveStatus();
+					((XmlControl)pairFile.Value.m_frame).saveCurStatus();
 				}
 			}
 		}
@@ -2400,6 +2391,7 @@ namespace UIEditor
 		}
 		private void mx_isShowAll_CheckChanged(object sender, RoutedEventArgs e)
 		{
+			Setting.refreshSkinIndex();
 			refreshCurFile();
 		}
 

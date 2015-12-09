@@ -18,6 +18,7 @@ namespace UIEditor.Project
 		static public string s_imagePath;
 		static public string s_projPath;
 		static public string s_projName;
+		static public string s_effectPath;
 		static public Dictionary<string, List<string>> s_mapSkinIndex;
 
 		static public void refreshAllProjectSetting()
@@ -356,5 +357,6 @@ namespace UIEditor.Project
 				}
 			}
 		}
+
 	}
 }

@@ -7,7 +7,6 @@ using System.Xml;
 using UIEditor.BoloUI;
 using UIEditor.BoloUI.DefConfig;
 
-
 namespace UIEditor.XmlOperation
 {
 	public enum XmlOptType
@@ -27,9 +26,21 @@ namespace UIEditor.XmlOperation
 		public LinkedList<HistoryNode> m_lstOpt;
 		public LinkedListNode<HistoryNode> m_curNode;
 		public LinkedListNode<HistoryNode> m_headNode;
-		public LinkedListNode<HistoryNode> m_saveNode;
+		private LinkedListNode<HistoryNode> mt_saveNode;
+		public LinkedListNode<HistoryNode> m_saveNode
+		{
+			get { return mt_saveNode; }
+			set
+			{
+				mt_saveNode = value;
+				if (m_xmlCtrl.isSkinXmlControl())
+				{
+					Project.Setting.refreshSkinIndex();
+				}
+			}
+		}
 
-		public HistoryList(MainWindow pW, XmlControl xmlCtrl, int maxSize = 255)
+		public HistoryList(MainWindow pW, XmlControl xmlCtrl, int maxSize = 65535)
 		{
 			m_pW = pW;
 			m_xmlCtrl = xmlCtrl;

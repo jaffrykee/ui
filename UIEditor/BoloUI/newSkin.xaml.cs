@@ -19,7 +19,7 @@ namespace UIEditor.BoloUI
 	public partial class newSkin
 	{
 		public IAttrRow m_iAttrRow;
-		public string m_skinGroup;
+		public string m_pathSkinGroup;
 		public string m_skinGroupShortName;
 		public string m_skinName;
 		public string m_skinContent;
@@ -30,7 +30,7 @@ namespace UIEditor.BoloUI
 		{
 			s_pW = this;
 			m_iAttrRow = iAttrRow;
-			m_skinGroup = m_iAttrRow.m_parent.m_xmlCtrl.m_openedFile.m_path;
+			m_pathSkinGroup = m_iAttrRow.m_parent.m_xmlCtrl.m_openedFile.m_path;
 			m_skinGroupShortName = "";
 			m_skinName = null;
 			InitializeComponent();
@@ -87,13 +87,13 @@ namespace UIEditor.BoloUI
 			{
 				ComboBoxItem cbiGroup = (ComboBoxItem)sender;
 
-				m_skinGroup = cbiGroup.ToolTip.ToString();
+				m_pathSkinGroup = cbiGroup.ToolTip.ToString();
 				m_skinGroupShortName = cbiGroup.Content.ToString();
 			}
 		}
 		private void mx_localCbi_Selected(object sender, RoutedEventArgs e)
 		{
-			m_skinGroup = m_iAttrRow.m_parent.m_xmlCtrl.m_openedFile.m_path;
+			m_pathSkinGroup = m_iAttrRow.m_parent.m_xmlCtrl.m_openedFile.m_path;
 			m_skinGroupShortName = "";
 		}
 		private void mx_skinName_TextChanged(object sender, TextChangedEventArgs e)
@@ -102,7 +102,7 @@ namespace UIEditor.BoloUI
 		}
 		private void mx_ok_Click(object sender, RoutedEventArgs e)
 		{
-			if(m_skinGroup == null)
+			if(m_pathSkinGroup == null)
 			{
 				mx_errorInfo.Content = "请选择一个皮肤组";
 			}
@@ -117,7 +117,7 @@ namespace UIEditor.BoloUI
 					OpenedFile fileDef;
 
 					m_iAttrRow.m_value = m_skinName;
-					if (System.IO.File.Exists(m_skinGroup))
+					if (System.IO.File.Exists(m_pathSkinGroup))
 					{
 						XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
 
@@ -145,8 +145,8 @@ namespace UIEditor.BoloUI
 							}
 						}
 
-						MainWindow.s_pW.openFileByPath(m_skinGroup);
-						if (MainWindow.s_pW.m_mapOpenedFiles.TryGetValue(m_skinGroup, out fileDef))
+						//MainWindow.s_pW.openFileByPath(m_pathSkinGroup);
+						if (MainWindow.s_pW.m_mapOpenedFiles.TryGetValue(m_pathSkinGroup, out fileDef))
 						{
 							if (fileDef.m_frame is XmlControl)
 							{
@@ -178,15 +178,59 @@ namespace UIEditor.BoloUI
 
 								m_iAttrRow.m_parent.m_basic.changeSelectItem();
 								MainWindow.s_pW.mx_treeFrame.SelectedItem = MainWindow.s_pW.mx_skinEditor;
-// 								if (m_iAttrRow != null && m_iAttrRow.m_parent != null && m_iAttrRow.m_parent.m_basic != null &&
-// 									m_iAttrRow.m_parent.m_basic is Basic)
-// 								{
-// 									xmlCtrl.findSkinAndSelect(m_skinName, (BoloUI.Basic)m_iAttrRow.m_parent.m_basic);
-// 								}
-// 								else
-// 								{
-// 									xmlCtrl.findSkinAndSelect(m_skinName);
-// 								}
+
+								xmlCtrl.saveCurStatus();
+							}
+						}
+						else
+						{
+							if (File.Exists(m_pathSkinGroup))
+							{
+								XmlDocument docSkinGroup = new XmlDocument();
+
+								try
+								{
+									docSkinGroup.Load(m_pathSkinGroup);
+									if(docSkinGroup.DocumentElement.Name == "BoloUI")
+									{
+										XmlElement xeSkin = docSkinGroup.CreateElement("skin");
+
+										if (m_skinContent != null && m_skinContent != "")
+										{
+											XmlDocument docTmpl = new XmlDocument();
+
+											try
+											{
+												docTmpl.LoadXml(m_skinContent);
+												if (docTmpl.DocumentElement != null &&
+													docTmpl.DocumentElement.InnerXml != null &&
+													docTmpl.DocumentElement.InnerXml != "")
+												{
+													xeSkin.InnerXml = docTmpl.DocumentElement.InnerXml;
+												}
+											}
+											catch
+											{
+
+											}
+										}
+										xeSkin.SetAttribute("Name", m_skinName);
+										docSkinGroup.DocumentElement.AppendChild(xeSkin);
+
+										this.Close();
+
+										docSkinGroup.Save(m_pathSkinGroup);
+										Project.Setting.refreshSkinIndex();
+
+										m_iAttrRow.m_parent.m_basic.changeSelectItem();
+										MainWindow.s_pW.mx_treeFrame.SelectedItem = MainWindow.s_pW.mx_skinEditor;
+
+									}
+								}
+								catch
+								{
+
+								}
 							}
 						}
 					}
