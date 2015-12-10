@@ -188,6 +188,7 @@ namespace UIEditor.BoloUI
 				string buffer = m_docView.InnerXml;
 
 				updateGL(Project.Setting.s_projPath, W2GTag.W2G_PATH);
+				updateGL(Project.Setting.getParticlePath(), W2GTag.W2G_PATH_PARTICLE);
 				updateGL("960:540:False:960:540", W2GTag.W2G_VIEWSIZE);
 				m_isInitPath = true;
 				updateGL("selSkinTest.xml", W2GTag.W2G_NORMAL_NAME);

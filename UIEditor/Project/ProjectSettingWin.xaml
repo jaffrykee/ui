@@ -68,6 +68,9 @@
 								<RowDefinition Height="auto"/>
 								<RowDefinition Height="auto"/>
 								<RowDefinition Height="auto"/>
+								<RowDefinition Height="auto"/>
+								<RowDefinition Height="auto"/>
+								<RowDefinition Height="auto"/>
 							</Grid.RowDefinitions>
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="auto"/>
@@ -102,6 +105,36 @@
 									Width="50"
 									Height="25"
 									Click="mx_btnGame_Click">
+								浏览
+							</Button>
+							<Label Name="mx_lbParticle" Grid.Row="3" Grid.Column="0">特效路径：</Label>
+							<TextBox Name="mx_tbParticle" Grid.Row="3" Grid.Column="1" Margin="5"/>
+							<Button Name="mx_btnParticle"
+									Grid.Row="3"
+									Grid.Column="2"
+									Width="50"
+									Height="25"
+									Click="mx_btnParticle_Click">
+								浏览
+							</Button>
+							<Label Name="mx_lbLang" Grid.Row="4" Grid.Column="0">language路径：</Label>
+							<TextBox Name="mx_tbLang" Grid.Row="4" Grid.Column="1" Margin="5"/>
+							<Button Name="mx_btnLang"
+									Grid.Row="4"
+									Grid.Column="2"
+									Width="50"
+									Height="25"
+									Click="mx_btnLang_Click">
+								浏览
+							</Button>
+							<Label Name="mx_lbBackground" Grid.Row="5" Grid.Column="0">背景图路径：</Label>
+							<TextBox Name="mx_tbBackground" Grid.Row="5" Grid.Column="1" Margin="5"/>
+							<Button Name="mx_btnBackground"
+									Grid.Row="5"
+									Grid.Column="2"
+									Width="50"
+									Height="25"
+									Click="mx_btnBackground_Click">
 								浏览
 							</Button>
 						</Grid>

@@ -75,7 +75,7 @@ namespace UIEditor.BoloUI
 					if (retSkin == null)
 					{
 						Public.ResultLink.createResult(
-							"\r\n" + m_xmlCtrl.m_openedFile.m_path + " - [" + this.mx_radio.Content.ToString() + "] 无法找到皮肤：\"" + skinName + "\"",
+							"\r\n" + m_xmlCtrl.m_openedFile.m_path + " - [" + this.mx_text.Text + "] 无法找到皮肤：\"" + skinName + "\"",
 							Public.ResultType.RT_ERROR, this);
 					}
 				}
@@ -128,11 +128,11 @@ namespace UIEditor.BoloUI
 
 				if (ctrlTip != "")
 				{
-					mx_radio.ToolTip = m_xe.Name + "\r\n" + ctrlTip;
+					this.ToolTip = m_xe.Name + "\r\n" + ctrlTip;
 				}
 				else
 				{
-					mx_radio.ToolTip = m_xe.Name;
+					this.ToolTip = m_xe.Name;
 				}
 
 				if (m_isCtrl && m_xe.Name != "event")
@@ -171,7 +171,7 @@ namespace UIEditor.BoloUI
 					tmpCon += id;
 				}
 
-				mx_radio.Content = "_" + tmpCon;
+				mx_text.Text = tmpCon;
 			}
 		}
 		public bool showBlueRect()
@@ -309,7 +309,7 @@ namespace UIEditor.BoloUI
 			{
 				MainWindow.s_pW.mx_skinEditor.refreshSkinEditor(this);
 			}
-			mx_radio.IsChecked = true;
+			this.IsSelected = true;
 
 			m_selLock.delLock(ref stackLock);
 		}

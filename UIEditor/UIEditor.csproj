@@ -145,6 +145,9 @@
       <DependentUpon>SkinEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="BoloUI\SkinIndex.cs" />
+    <Compile Include="BoloUI\XmlItemContextMenu.xaml.cs">
+      <DependentUpon>XmlItemContextMenu.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FileMenu.xaml.cs">
       <DependentUpon>FileMenu.xaml</DependentUpon>
     </Compile>
@@ -283,6 +286,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="BoloUI\SkinEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="BoloUI\XmlItemContextMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -514,6 +521,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="data\a.txt" />
+    <Resource Include="data\image\linkInfo.png" />
+    <Resource Include="data\image\moveRight.png" />
     <Resource Include="data\image\timeScale.png" />
     <Resource Include="data\image\error.png" />
     <Resource Include="data\image\warning.png" />

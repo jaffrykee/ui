@@ -35,9 +35,29 @@ namespace UIEditor.BoloUI
 		public Run m_runXeName;
 		public EventLock m_selLock;
 
+		static private XmlItemContextMenu st_menu;
+		static public XmlItemContextMenu s_menu
+		{
+			get
+			{
+				if(st_menu == null)
+				{
+					st_menu = new XmlItemContextMenu();
+				}
+
+				if (XmlItem.getCurItem() == null)
+				{
+					return null;
+				}
+				else
+				{
+					return st_menu;
+				}
+			}
+		}
+
 		public XmlItem()
 		{
-
 		}
 		public XmlItem(XmlElement xe, XmlControl rootControl)
 		{
@@ -130,164 +150,59 @@ namespace UIEditor.BoloUI
 		{
 		}
 
-		private void mx_radio_Checked(object sender, RoutedEventArgs e)
+		private void mx_root_MouseUp(object sender, MouseButtonEventArgs e)
 		{
 			changeSelectItem();
+			e.Handled = true;
 		}
-
-		public void refreshItemMenu()
+		private void mx_root_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
 		{
-			if(m_xe == m_xe.OwnerDocument.DocumentElement)
+			changeSelectItem();
+			if (XmlItem.s_menu != null)
 			{
-				mx_cut.IsEnabled = false;
-				mx_copy.IsEnabled = false;
-				mx_delete.IsEnabled = false;
-				mx_moveUp.IsEnabled = false;
-				mx_moveDown.IsEnabled = false;
-				mx_moveToParent.IsEnabled = false;
+				XmlItem.s_menu.mx_menu.PlacementTarget = this;
+				XmlItem.s_menu.mx_menu.Placement = System.Windows.Controls.Primitives.PlacementMode.MousePoint;
+				XmlItem.s_menu.mx_menu.IsOpen = true;
 			}
-			else
+			e.Handled = true;
+		}
+		private void mx_root_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+		{
+			switch (m_xe.Name)
 			{
-				mx_cut.IsEnabled = true;
-				mx_copy.IsEnabled = true;
-				mx_delete.IsEnabled = true;
-				mx_moveUp.IsEnabled = true;
-				mx_moveDown.IsEnabled = true;
-				if (m_xe.ParentNode == m_xe.OwnerDocument.DocumentElement)
-				{
-					mx_moveToParent.IsEnabled = false;
-				}
-				else
-				{
-					mx_moveToParent.IsEnabled = true;
-				}
-			}
-			switch (m_type)
-			{
-				case "CtrlUI":
+				case "skingroup":
 					{
-						#region
-						if (m_xe == m_xe.OwnerDocument.DocumentElement)
-						{
-							if (MainWindow.s_pW.m_xePaste != null)
-							{
-								CtrlDef_T panelCtrlDef;
-
-								if (MainWindow.s_pW.m_mapPanelCtrlDef.TryGetValue(MainWindow.s_pW.m_xePaste.Name, out panelCtrlDef))
-								{
-									mx_paste.IsEnabled = true;
-								}
-								else
-								{
-									mx_paste.IsEnabled = false;
-								}
-							}
-							else
-							{
-								mx_paste.IsEnabled = false;
-							}
-						}
-						else
-						{
-							if (MainWindow.s_pW.m_xePaste != null)
-							{
-								mx_paste.IsEnabled = true;
-							}
-							else
-							{
-								mx_paste.IsEnabled = false;
-							}
-
-							CtrlDef_T panelCtrlDef;
-
-							if (MainWindow.s_pW.m_mapPanelCtrlDef.TryGetValue(m_xe.Name, out panelCtrlDef))
-							{
-								mx_checkOverflow.IsEnabled = true;
-								mx_batchUpdate.IsEnabled = true;
-							}
-						}
-						#endregion
+						string path = Project.Setting.s_skinPath + "\\" + m_xe.GetAttribute("Name") + ".xml";
+						MainWindow.s_pW.openFileByPath(path);
 					}
 					break;
-				case "Skin":
+				case "resource":
 					{
-						#region
-						mx_moveToParent.IsEnabled = false;
-						if (MainWindow.s_pW.m_xePaste != null)
+						string path = Project.Setting.s_imagePath + "\\" + m_xe.GetAttribute("name") + ".xml";
+						MainWindow.s_pW.openFileByPath(path);
+					}
+					break;
+				case "publicresource":
+					{
+						string path = Project.Setting.s_imagePath + "\\" + m_xe.GetAttribute("name") + ".xml";
+						MainWindow.s_pW.openFileByPath(path);
+					}
+					break;
+				case "event":
+					{
+						string funcValue = m_xe.GetAttribute("function");
+						string[] scriptName = Regex.Split(funcValue, " ", RegexOptions.IgnoreCase);
+
+						if (scriptName != null && scriptName[0] != "")
 						{
-							mx_paste.IsEnabled = true;
+							string scriptPath = Project.Setting.s_projPath + "\\..\\..\\scripts\\dev\\source\\" + scriptName[0] + ".bolos";
+							MainWindow.s_pW.openFileByPath(scriptPath);
 						}
-						else
-						{
-							mx_paste.IsEnabled = false;
-						}
-						#endregion
 					}
 					break;
 				default:
 					break;
 			}
-		}
-		private void mx_menu_Loaded(object sender, RoutedEventArgs e)
-		{
-			refreshItemMenu();
-		}
-		private void mx_menu_Unloaded(object sender, RoutedEventArgs e)
-		{
-		}
-
-		private bool checkMenuItemActive(MenuItem item)
-		{
-			if(item != null && item.IsEnabled == true && item.Visibility == System.Windows.Visibility.Visible)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-		public bool canCut()
-		{
-			refreshItemMenu();
-
-			return checkMenuItemActive(mx_cut);
-		}
-		public bool canCopy()
-		{
-			refreshItemMenu();
-
-			return checkMenuItemActive(mx_copy);
-		}
-		public bool canPaste()
-		{
-			refreshItemMenu();
-
-			return checkMenuItemActive(mx_paste);
-		}
-		public bool canDelete()
-		{
-			refreshItemMenu();
-
-			return checkMenuItemActive(mx_delete);
-		}
-		public bool canMoveUp()
-		{
-			refreshItemMenu();
-
-			return checkMenuItemActive(mx_moveUp);
-		}
-		public bool canMoveDown()
-		{
-			refreshItemMenu();
-
-			return checkMenuItemActive(mx_moveDown);
-		}
-		public bool canMoveToParent()
-		{
-			refreshItemMenu();
-
-			return checkMenuItemActive(mx_moveToParent);
 		}
 
 		public void cutItem()
@@ -444,570 +359,25 @@ namespace UIEditor.BoloUI
 						XmlOperation.XmlOptType.NODE_MOVE,
 						m_xe,
 						(XmlElement)m_xe.ParentNode.ParentNode,
-						XmlOperation.HistoryNode.getXeIndex(m_xe) + 1
+						XmlOperation.HistoryNode.getXeIndex((XmlElement)m_xe.ParentNode) + 1
 					)
 				);
 			}
 		}
-
-		private void mx_cut_Click(object sender, RoutedEventArgs e)
-		{
-			cutItem();
-		}
-		private void mx_copy_Click(object sender, RoutedEventArgs e)
-		{
-			copyItem();
-		}
-		private void mx_paste_Click(object sender, RoutedEventArgs e)
-		{
-			pasteItem();
-		}
-		private void mx_delete_Click(object sender, RoutedEventArgs e)
-		{
-			deleteItem();
-		}
-		private void mx_moveUp_Click(object sender, RoutedEventArgs e)
-		{
-			moveUpItem();
-		}
-		private void mx_moveDown_Click(object sender, RoutedEventArgs e)
-		{
-			moveDownItem();
-		}
-		private void mx_moveToParent_Click(object sender, RoutedEventArgs e)
-		{
-			moveToParent();
-		}
-
-		static private void showTmpl(MenuItem ctrlMenuItem, XmlElement xeTmpls, string addStr, RoutedEventHandler rehClick)
-		{
-			if (ctrlMenuItem.Items.Count == 0)
-			{
-				MenuItem emptyCtrl = new MenuItem();
-
-				emptyCtrl.Header = "空节点";
-				emptyCtrl.ToolTip = addStr;
-				emptyCtrl.Click += rehClick;
-				ctrlMenuItem.Items.Add(emptyCtrl);
-				ctrlMenuItem.Items.Add(new Separator());
-			}
-
-			XmlNodeList xlstTmpl = xeTmpls.SelectNodes("row");
-			if (xlstTmpl.Count == 0)
-			{
-				MenuItem disTmpl = new MenuItem();
-
-				disTmpl.Header = "<没有模板>";
-				disTmpl.IsEnabled = false;
-				ctrlMenuItem.Items.Add(disTmpl);
-			}
-			else
-			{
-				foreach (XmlNode xn in xlstTmpl)
-				{
-					if (xn.NodeType == XmlNodeType.Element)
-					{
-						XmlElement xeRow = (XmlElement)xn;
-						BoloUI.CtrlTemplate rowTmpl = new BoloUI.CtrlTemplate();
-						XmlDocument docXml = new XmlDocument();
-
-						try
-						{
-							docXml.LoadXml(xeRow.InnerXml);
-						}
-						catch
-						{
-							rowTmpl.ToolTip = xeRow.InnerXml;
-							rowTmpl.Header = xeRow.GetAttribute("name");
-							ctrlMenuItem.Items.Add(rowTmpl);
-							rowTmpl.Click += rehClick;
-
-							continue;
-						}
-
-						StringBuilder strb = new StringBuilder();
-						using (StringWriter sw = new StringWriter(strb))
-						{
-							XmlWriterSettings settings = new XmlWriterSettings();
-
-							settings.Indent = true;
-							settings.IndentChars = "    ";
-							settings.NewLineOnAttributes = false;
-							XmlWriter xmlWriter = XmlWriter.Create(sw, settings);
-							docXml.Save(xmlWriter);
-							xmlWriter.Close();
-						}
-						string outStr = strb.ToString();
-
-						outStr = outStr.Substring(outStr.IndexOf("\n") + 1, outStr.Length - (outStr.IndexOf("\n") + 1));
-						rowTmpl.ToolTip = outStr;
-						rowTmpl.Header = xeRow.GetAttribute("name");
-						ctrlMenuItem.Items.Add(rowTmpl);
-						rowTmpl.Click += rehClick;
-					}
-				}
-			}
-		}
-		static private ComboBoxItem showTmpl(ComboBox cbItem, XmlElement xeTmpls, string addStr, RoutedEventHandler rehClick, string rowId = "")
-		{
-			ComboBoxItem retItemFrame = null;
-
-			if (cbItem.Items.Count == 0)
-			{
-				ComboBoxItem emptyCtrl = new ComboBoxItem();
-
-				emptyCtrl.Content = "空节点";
-				emptyCtrl.ToolTip = addStr;
-				emptyCtrl.Selected += rehClick;
-				cbItem.Items.Add(emptyCtrl);
-				cbItem.Items.Add(new Separator());
-			}
-
-			XmlNodeList xlstTmpl = xeTmpls.SelectNodes("row");
-			if (xlstTmpl.Count != 0)
-			{
-				foreach (XmlNode xn in xlstTmpl)
-				{
-					if (xn.NodeType == XmlNodeType.Element)
-					{
-						XmlElement xeRow = (XmlElement)xn;
-						ComboBoxItem rowTmpl = new ComboBoxItem();
-						XmlDocument docXml = new XmlDocument();
-
-						try
-						{
-							docXml.LoadXml(xeRow.InnerXml);
-						}
-						catch
-						{
-							rowTmpl.ToolTip = xeRow.InnerXml;
-							rowTmpl.Content = xeRow.GetAttribute("name");
-							cbItem.Items.Add(rowTmpl);
-							rowTmpl.Selected += rehClick;
-							if (rowTmpl.Content.ToString() == rowId)
-							{
-								retItemFrame = rowTmpl;
-							}
-
-							continue;
-						}
-
-						StringBuilder strb = new StringBuilder();
-						using (StringWriter sw = new StringWriter(strb))
-						{
-							XmlWriterSettings settings = new XmlWriterSettings();
-
-							settings.Indent = true;
-							settings.IndentChars = "    ";
-							settings.NewLineOnAttributes = false;
-							XmlWriter xmlWriter = XmlWriter.Create(sw, settings);
-							docXml.Save(xmlWriter);
-							xmlWriter.Close();
-						}
-						string outStr = strb.ToString();
-
-						outStr = outStr.Substring(outStr.IndexOf("\n") + 1, outStr.Length - (outStr.IndexOf("\n") + 1));
-						rowTmpl.ToolTip = outStr;
-						rowTmpl.Content = xeRow.GetAttribute("name");
-						cbItem.Items.Add(rowTmpl);
-						rowTmpl.Selected += rehClick;
-						if(rowTmpl.Content.ToString() == rowId)
-						{
-							retItemFrame = rowTmpl;
-						}
-					}
-				}
-			}
-
-			return retItemFrame;
-		}
-		static private object showTmpl(ItemsControl itemFrame, XmlElement xeTmpls, string addStr, RoutedEventHandler rehClick, string rowId = "")
-		{
-			if(itemFrame is MenuItem)
-			{
-				showTmpl((MenuItem)itemFrame, xeTmpls, addStr, rehClick);
-
-				return null;
-			}
-			else if(itemFrame is ComboBox)
-			{
-				return showTmpl((ComboBox)itemFrame, xeTmpls, addStr, rehClick, rowId);
-			}
-
-			return null;
-		}
-		static public object showTmplGroup(string addStr, ItemsControl itemFrame, RoutedEventHandler rehClick, string rowId = "")
-		{
-			object retItemFrame = null;
-
-			if (MainWindow.s_pW.m_docConf.SelectSingleNode("Config").SelectSingleNode("template") != null &&
-				MainWindow.s_pW.m_docConf.SelectSingleNode("Config").SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls") != null)
-			{
-				XmlElement xeTmpls = (XmlElement)MainWindow.s_pW.m_docConf.SelectSingleNode("Config").
-					SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls");
-				retItemFrame = showTmpl(itemFrame, xeTmpls, addStr, rehClick, rowId);
-			}
-
-			if (Project.Setting.s_docProj.SelectSingleNode("BoloUIProj").SelectSingleNode("template") != null &&
-				Project.Setting.s_docProj.SelectSingleNode("BoloUIProj").SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls") != null)
-			{
-				XmlElement xeTmpls = (XmlElement)Project.Setting.s_docProj.SelectSingleNode("BoloUIProj").
-					SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls");
-				object ret = showTmpl(itemFrame, xeTmpls, addStr, rehClick, rowId);
-
-				if(ret != null)
-				{
-					retItemFrame = ret;
-				}
-			}
-
-			return retItemFrame;
-		}
-		public void showTmplGroup(string addStr)
-		{
-			MenuItem ctrlMenuItem = new MenuItem();
-			bool isNull = true;
-
-			MainWindow.s_pW.m_strDic.getNameAndTip(ctrlMenuItem, StringDic.conf_ctrlTipDic, addStr);
-			if (MainWindow.s_pW.m_docConf.SelectSingleNode("Config").SelectSingleNode("template") != null &&
-				MainWindow.s_pW.m_docConf.SelectSingleNode("Config").SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls") != null)
-			{
-				isNull = false;
-				XmlElement xeTmpls = (XmlElement)MainWindow.s_pW.m_docConf.SelectSingleNode("Config").SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls");
-
-				showTmpl(ctrlMenuItem, xeTmpls, addStr, insertCtrlItem_Click);
-			}
-
-			if (addStr == "event")
-			{
-				CtrlDef_T ctrlDef;
-				XmlNode xnTmpls = MainWindow.s_pW.m_docConf.SelectSingleNode("Config").SelectSingleNode("template");
-
-				if (xnTmpls != null)
-				{
-					if (MainWindow.s_pW.m_mapCtrlDef.TryGetValue(m_xe.Name, out ctrlDef) && ctrlDef != null)
-					{
-						//控件节点的事件模板
-						if(ctrlDef.m_hasPointerEvent)
-						{
-							XmlNode xnPoi = xnTmpls.SelectSingleNode("eventTmpls_pointer");
-
-							if (xnPoi != null && xnPoi.NodeType == XmlNodeType.Element)
-							{
-								isNull = false;
-								XmlElement xePoi = (XmlElement)xnPoi;
-
-								showTmpl(ctrlMenuItem, xePoi, addStr, insertCtrlItem_Click);
-							}
-						}
-						XmlNode xnBasic = xnTmpls.SelectSingleNode("eventTmpls_basic");
-
-						if (xnBasic != null && xnBasic.NodeType == XmlNodeType.Element)
-						{
-							isNull = false;
-							XmlElement xeBasic = (XmlElement)xnBasic;
-
-							showTmpl(ctrlMenuItem, xeBasic, addStr, insertCtrlItem_Click);
-						}
-					}
-					//所有节点的事件模板
-					XmlNode xnCtrl = xnTmpls.SelectSingleNode("eventTmpls_" + m_xe.Name);
-
-					if (xnCtrl != null && xnCtrl.NodeType == XmlNodeType.Element)
-					{
-						isNull = false;
-						XmlElement xeCtrl = (XmlElement)xnCtrl;
-
-						showTmpl(ctrlMenuItem, xeCtrl, addStr, insertCtrlItem_Click);
-					}
-				}
-			}
-
-			if (Project.Setting.s_docProj.SelectSingleNode("BoloUIProj").SelectSingleNode("template") != null &&
-				Project.Setting.s_docProj.SelectSingleNode("BoloUIProj").SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls") != null)
-			{
-				if (!isNull)
-				{
-					ctrlMenuItem.Items.Add(new Separator());
-				}
-				isNull = false;
-
-				XmlElement xeTmpls = (XmlElement)Project.Setting.s_docProj.SelectSingleNode("BoloUIProj").SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls");
-
-				showTmpl(ctrlMenuItem, xeTmpls, addStr, insertCtrlItem_Click);
-			}
-
-			if (isNull)
-			{
-				ctrlMenuItem.Click += insertCtrlItem_Click;
-			}
-			mx_addNode.Items.Add(ctrlMenuItem);
-		}
-
-		private void mx_addNode_Loaded(object sender, RoutedEventArgs e)
-		{
-			if (m_type == "CtrlUI")
-			{
-				CtrlDef_T panelCtrlDef;
-
-				mx_addNode.Items.Clear();
-				if (MainWindow.s_pW.m_mapPanelCtrlDef.TryGetValue(m_xe.Name, out panelCtrlDef))
-				{
-					foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in MainWindow.s_pW.m_mapEnInsertCtrlDef.ToList())
-					{
-						if (!pairCtrlDef.Value.m_isFrame)
-						{
-							showTmplGroup(pairCtrlDef.Key);
-						}
-					}
-					mx_addNode.Items.Add(new Separator());
-					foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in MainWindow.s_pW.m_mapEnInsertCtrlDef.ToList())
-					{
-						if (pairCtrlDef.Value.m_isFrame)
-						{
-							showTmplGroup(pairCtrlDef.Key);
-						}
-					}
-					mx_addNode.Items.Add(new Separator());
-					foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in MainWindow.s_pW.m_mapEnInsertAllCtrlDef.ToList())
-					{
-						showTmplGroup(pairCtrlDef.Key);
-					}
-				}
-				else
-				{
-					if (m_xe.Name == "BoloUI")
-					{
-						//<inc>showTmplGroup(pairCtrlDef.Key);
-						foreach (KeyValuePair<string, CtrlDef_T> pairCtrl in MainWindow.s_pW.m_mapPanelCtrlDef.ToList())
-						{
-							MenuItem ctrlItem = new MenuItem();
-							string name = MainWindow.s_pW.m_strDic.getWordByKey(pairCtrl.Key);
-							string tip = MainWindow.s_pW.m_strDic.getWordByKey(pairCtrl.Key, StringDic.conf_ctrlTipDic);
-
-							if (tip != "")
-							{
-								ctrlItem.ToolTip = tip;
-							}
-							else
-							{
-								ctrlItem.ToolTip = pairCtrl.Key;
-							}
-							if (name != "")
-							{
-								ctrlItem.Header = name;
-							}
-							else
-							{
-								ctrlItem.Header = pairCtrl.Key;
-							}
-							ctrlItem.Click += insertCtrlItem_Click;
-							mx_addNode.Items.Add(ctrlItem);
-						}
-					}
-					else if (m_xe.Name != "event")
-					{
-						showTmplGroup("event");
-						/*
-							正则替换："E:\clientlib\DsBoloUIEditor\src\boloUI\BoloEvent.java" 到 "E:\clienttools\UIEditor2\conf.xml" -->
-							[\t a-z_=]*("[a-zA-Z]*")[; \t\/\/]*([\/\u4e00-\u9fa5 a-zA-Z（）]*)
-							\t<row name=$1 tip="$2">\r\n\t\t<event type=$1/>\r\n\t</row>
-						*/
-					}
-					else
-					{
-						mx_addNode.IsEnabled = false;
-					}
-				}
-			}
-			else
-			{
-				Dictionary<string, SkinDef_T> mapSkinDef;
-				mx_addNode.Items.Clear();
-				if (m_xe.Name == "BoloUI")
-				{
-					mapSkinDef = MainWindow.s_pW.m_mapSkinTreeDef;
-				}
-				else
-				{
-					mapSkinDef = ((ResBasic)this).m_curDeepDef.m_mapEnChild;
-				}
-				if (mapSkinDef != null)
-				{
-					foreach (KeyValuePair<string, SkinDef_T> pairSkinDef in mapSkinDef.ToList())
-					{
-						showTmplGroup(pairSkinDef.Key);
-					}
-					mx_addNode.IsEnabled = true;
-				}
-				else
-				{
-					mx_addNode.IsEnabled = false;
-				}
-			}
-		}
-		private void insertCtrlItem_Click(object sender, RoutedEventArgs e)
-		{
-			switch (sender.GetType().ToString())
-			{
-				case "System.Windows.Controls.MenuItem":
-					{
-						MenuItem ctrlItem = (MenuItem)sender;
-						XmlElement newXe = m_xe.OwnerDocument.CreateElement(ctrlItem.ToolTip.ToString());
-						BoloUI.Basic treeChild = new BoloUI.Basic(newXe, m_xmlCtrl);
-
-						if (treeChild.m_xe.Name == "event")
-						{
-							m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
-								XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe, 0));
-						}
-						else
-						{
-							m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
-								XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe, m_xe.ChildNodes.Count));
-						}
-					}
-					break;
-				case "UIEditor.BoloUI.CtrlTemplate":
-					{
-						BoloUI.CtrlTemplate ctrlItem = (BoloUI.CtrlTemplate)sender;
-						XmlDocument newDoc = new XmlDocument();
-						XmlElement newXe = m_xe.OwnerDocument.CreateElement("tmp");
-
-						if (ctrlItem.ToolTip.ToString() != "")
-						{
-							newXe.InnerXml = ctrlItem.ToolTip.ToString();
-							if (newXe.FirstChild.NodeType == XmlNodeType.Element)
-							{
-								BoloUI.Basic treeChild = new BoloUI.Basic((XmlElement)newXe.FirstChild, m_xmlCtrl);
-
-								if (treeChild.m_xe.Name == "event")
-								{
-									m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
-										XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe, 0));
-								}
-								else
-								{
-									m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
-										XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe, m_xe.ChildNodes.Count));
-								}
-							}
-						}
-					}
-					break;
-			}
-		}
-		private void mx_addTmpl_Click(object sender, RoutedEventArgs e)
-		{
-			TemplateCreate winAddtmpl = new TemplateCreate(m_xe);
-			winAddtmpl.ShowDialog();
-		}
-		private void mx_radio_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-		{
-			mx_root.IsExpanded = !(mx_root.IsExpanded);
-			switch(m_xe.Name)
-			{
-				case "skingroup":
-					{
-						string path = Project.Setting.s_skinPath + "\\" + m_xe.GetAttribute("Name") + ".xml";
-						MainWindow.s_pW.openFileByPath(path);
-					}
-					break;
-				case "resource":
-					{
-						string path = Project.Setting.s_imagePath + "\\" + m_xe.GetAttribute("name") + ".xml";
-						MainWindow.s_pW.openFileByPath(path);
-					}
-					break;
-				case "publicresource":
-					{
-						string path = Project.Setting.s_imagePath + "\\" + m_xe.GetAttribute("name") + ".xml";
-						MainWindow.s_pW.openFileByPath(path);
-					}
-					break;
-				case "event":
-					{
-						string funcValue = m_xe.GetAttribute("function");
-						string[] scriptName = Regex.Split(funcValue, " ", RegexOptions.IgnoreCase);
-
-						if(scriptName != null && scriptName[0] != "")
-						{
-							string scriptPath = Project.Setting.s_projPath + "\\..\\..\\scripts\\dev\\source\\" + scriptName[0] + ".bolos";
-							MainWindow.s_pW.openFileByPath(scriptPath);
-						}
-					}
-					break;
-				default:
-					break;
-			}
-		}
-		private void mx_batchUpdate_Click(object sender, RoutedEventArgs e)
-		{
-			MenuWin.BatchUpdate winBatchUpdate = new MenuWin.BatchUpdate(this);
-			winBatchUpdate.ShowDialog();
-		}
-		private void checkOverflow(Basic ctrlFrame)
+		public void moveToChild()
 		{
 			CtrlDef_T ctrlDef;
-			System.Drawing.Rectangle rectFrame = new System.Drawing.Rectangle(
-				ctrlFrame.m_selScreenX, ctrlFrame.m_selScreenY, ctrlFrame.m_selW, ctrlFrame.m_selH);
-
-			if (ctrlFrame != null && ctrlFrame.m_xe != null && ctrlFrame.m_xe.Name != "" &&
-				MainWindow.s_pW.m_mapPanelCtrlDef.TryGetValue(ctrlFrame.m_xe.Name, out ctrlDef))
+			if (m_xe.NextSibling != null && MainWindow.s_pW.m_mapPanelCtrlDef.TryGetValue(m_xe.NextSibling.Name, out ctrlDef))
 			{
-				foreach(object item in ctrlFrame.Items)
-				{
-					if(item is Basic)
-					{
-						Basic ctrlItem = (Basic)item;
-
-						if (ctrlItem.m_xe.GetAttribute("visible") != "false")
-						{
-							System.Drawing.Rectangle rectItem = new System.Drawing.Rectangle(
-								ctrlItem.m_selScreenX, ctrlItem.m_selScreenY, ctrlItem.m_selW, ctrlItem.m_selH);
-
-							if (ctrlItem.m_xe.Name != "event" && !rectFrame.Contains(rectItem))
-							{
-								Public.ResultLink.createResult("\r\n[" + ctrlItem.mx_radio.Content.ToString() + "]",
-									Public.ResultType.RT_INFO, ctrlItem);
-								Public.ResultLink.createResult(" 超出了 ", Public.ResultType.RT_INFO);
-								Public.ResultLink.createResult("[" + ctrlFrame.mx_radio.Content.ToString() + "]",
-									Public.ResultType.RT_INFO, ctrlFrame);
-								Public.ResultLink.createResult(" 的范围。", Public.ResultType.RT_INFO, ctrlItem);
-							}
-							checkOverflow(ctrlItem);
-						}
-					}
-				}
+				m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
+					new XmlOperation.HistoryNode(
+						XmlOperation.XmlOptType.NODE_MOVE,
+						m_xe,
+						(XmlElement)m_xe.NextSibling,
+						m_xe.NextSibling.ChildNodes.Count
+						)
+					);
 			}
-		}
-		private void mx_checkOverflow_Click(object sender, RoutedEventArgs e)
-		{
-			ResultLink.createResult("\r\n开始检测溢出的控件");
-			if (this is Basic)
-			{
-				m_xmlCtrl.refreshVRect();
-				checkOverflow((Basic)this);
-			}
-			ResultLink.createResult("\r\n检测结束");
-		}
-		private void mx_shrinkChildren_Click(object sender, RoutedEventArgs e)
-		{
-			this.IsExpanded = true;
-
-			foreach(object obj in this.Items)
-			{
-				if(obj is TreeViewItem)
-				{
-					TreeViewItem item = (TreeViewItem)obj;
-
-					item.IsExpanded = false;
-				}
-			}
-		}
-		private void mx_radio_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-		{
-			mx_radio.IsChecked = true;
 		}
 	}
 }

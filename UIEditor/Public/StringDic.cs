@@ -213,5 +213,23 @@ namespace UIEditor
 
 			return minLen;
 		}
+
+		static public string getRealPath(string path)
+		{
+			if(File.Exists(path))
+			{
+				FileInfo fi = new FileInfo(path);
+
+				return fi.FullName;
+			}
+			else if(Directory.Exists(path))
+			{
+				DirectoryInfo dri = new DirectoryInfo(path);
+
+				return dri.FullName;
+			}
+
+			return path;
+		}
 	}
 }

@@ -253,8 +253,10 @@ namespace UIEditor.XmlOperation.XmlAttr
 				{
 					case "skin":
 						{
-							m_parent.m_xmlCtrl.findSkinAndSelect(mx_value.Text, (BoloUI.Basic)m_parent.m_basic);
-							MainWindow.s_pW.mx_showTextTab.IsChecked = true;
+							if(m_parent.m_xmlCtrl.findSkinAndSelect(mx_value.Text, (BoloUI.Basic)m_parent.m_basic))
+							{
+								MainWindow.s_pW.mx_showTextTab.IsChecked = true;
+							}
 						}
 						break;
 					case "image":

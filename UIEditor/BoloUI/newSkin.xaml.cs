@@ -51,7 +51,7 @@ namespace UIEditor.BoloUI
 				}
 			}
 
-			object ret = XmlItem.showTmplGroup("skin", mx_tmplCbBox, mx_tmplCbi_Selected, m_iAttrRow.m_parent.m_xe.Name + "_skinTmpl");
+			object ret = XmlItemContextMenu.showTmplGroup("skin", mx_tmplCbBox, mx_tmplCbi_Selected, m_iAttrRow.m_parent.m_xe.Name + "_skinTmpl");
 
 			if (mx_tmplCbBox.Items.Count > 0)
 			{

@@ -64,6 +64,7 @@ namespace UIEditor.Public
 		}
 		static public BitmapImage s_bmpError = new BitmapImage(new Uri(@".\data\image\error.png", UriKind.Relative));
 		static public BitmapImage s_bmpWarning = new BitmapImage(new Uri(@".\data\image\warning.png", UriKind.Relative));
+		static public BitmapImage s_bmpLinkInfo = new BitmapImage(new Uri(@".\data\image\linkInfo.png", UriKind.Relative));
 
 		static public void refreshResultVisibility()
 		{

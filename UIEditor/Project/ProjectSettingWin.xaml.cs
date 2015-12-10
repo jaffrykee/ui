@@ -43,6 +43,9 @@ namespace UIEditor.Project
 			mx_tbPackUI.Text = Setting.s_uiPackPath;
 			mx_tbPackScript.Text = Setting.s_scriptPackPath;
 			mx_tbGame.Text = Setting.s_gamePath;
+			mx_tbParticle.Text = Setting.s_particlePath;
+			mx_tbLang.Text = Setting.s_langPath;
+			mx_tbBackground.Text = Setting.s_backgroundPath;
 		}
 		void refreshResolution()
 		{
@@ -199,6 +202,9 @@ namespace UIEditor.Project
 				xePathSetting.SetAttribute("uiPackPath", mx_tbPackUI.Text);
 				xePathSetting.SetAttribute("scriptPackPath", mx_tbPackScript.Text);
 				xePathSetting.SetAttribute("gamePath", mx_tbGame.Text);
+				xePathSetting.SetAttribute("particlePath", mx_tbParticle.Text);
+				xePathSetting.SetAttribute("langPath", mx_tbLang.Text);
+				xePathSetting.SetAttribute("backgroundPath", mx_tbBackground.Text);
 			}
 		}
 		private void mx_ok_Click(object sender, RoutedEventArgs e)
@@ -214,32 +220,47 @@ namespace UIEditor.Project
 			this.Close();
 		}
 
-		private void mx_btnPackUI_Click(object sender, RoutedEventArgs e)
+		private void openFileBoxAndSetTextBox(TextBox tb, string filter = null, string defPath = null)
 		{
-			string path = Setting.openSelectFileBox();
+			string path = Setting.openSelectFileBox(filter, defPath);
 
 			if (path != null)
 			{
-				mx_tbPackUI.Text = path;
+				tb.Text = path;
 			}
+		}
+		private void openFolderBoxAndSetTextBox(TextBox tb)
+		{
+			string path = Setting.openSelectFolderBox();
+
+			if (path != null)
+			{
+				tb.Text = path;
+			}
+		}
+		private void mx_btnPackUI_Click(object sender, RoutedEventArgs e)
+		{
+			openFileBoxAndSetTextBox(mx_tbPackUI);
 		}
 		private void mx_btnPackScript_Click(object sender, RoutedEventArgs e)
 		{
-			string path = Setting.openSelectFileBox();
-
-			if (path != null)
-			{
-				mx_tbPackScript.Text = path;
-			}
+			openFileBoxAndSetTextBox(mx_tbPackScript);
 		}
 		private void mx_btnGame_Click(object sender, RoutedEventArgs e)
 		{
-			string path = Setting.openSelectFileBox();
-
-			if (path != null)
-			{
-				mx_tbGame.Text = path;
-			}
+			openFileBoxAndSetTextBox(mx_tbGame);
+		}
+		private void mx_btnParticle_Click(object sender, RoutedEventArgs e)
+		{
+			openFolderBoxAndSetTextBox(mx_tbParticle);
+		}
+		private void mx_btnLang_Click(object sender, RoutedEventArgs e)
+		{
+			openFileBoxAndSetTextBox(mx_tbLang);
+		}
+		private void mx_btnBackground_Click(object sender, RoutedEventArgs e)
+		{
+			openFileBoxAndSetTextBox(mx_tbBackground, "tga文件|*.tga|bmp文件|*.bmp");
 		}
 	}
 }

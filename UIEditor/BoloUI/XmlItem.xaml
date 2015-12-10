@@ -7,64 +7,24 @@
 			  Name="mx_root"
 			  IsExpanded="False"
 			  Padding="0"
-			  Style="{StaticResource WinFormsTreeViewStyle}">
+			  Style="{StaticResource WinFormsTreeViewStyle}"
+			  MouseUp="mx_root_MouseUp"
+			  MouseRightButtonUp="mx_root_MouseRightButtonUp"
+			  MouseDoubleClick="mx_root_MouseDoubleClick">
 	<TreeViewItem.Header>
-		<WrapPanel>
-			<Image Name="mx_imgFolder" Width="16" Source="pack://application:,,,/data/image/folder.png" Visibility="Collapsed"/>
-			<RadioButton Name="mx_radio"
-						 GroupName="fileTree"
-						 Padding="0,2,0,2"
-						 Checked="mx_radio_Checked"
-						 MouseRightButtonDown="mx_radio_MouseRightButtonDown"
-						 MouseDoubleClick="mx_radio_MouseDoubleClick"/>
-		</WrapPanel>
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="auto"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+			<Image Name="mx_imgFolder"
+				   Grid.Column="0"
+				   Width="16"
+				   Source="pack://application:,,,/data/image/folder.png"
+				   Visibility="Collapsed"/>
+			<TextBlock Name="mx_text"
+					   Grid.Column="1"
+					   Padding="0,2,0,2"/>
+		</Grid>
 	</TreeViewItem.Header>
-	<TreeViewItem.ContextMenu>
-		<ContextMenu Name="mx_menu" Loaded="mx_menu_Loaded" Unloaded="mx_menu_Unloaded">
-			<MenuItem Name="mx_addNode" Header="添加节点或事件" Loaded="mx_addNode_Loaded"/>
-			<MenuItem Name="mx_addTmpl" Header="将该控件作为模板..." Click="mx_addTmpl_Click"/>
-			<MenuItem Name="mx_shrinkChildren" Header="显示并折叠子节点" Click="mx_shrinkChildren_Click"/>
-			<MenuItem Name="mx_batchUpdate" Header="批量修改" Click="mx_batchUpdate_Click" IsEnabled="False"/>
-			<MenuItem Name="mx_checkOverflow" Header="检测溢出" Click="mx_checkOverflow_Click" IsEnabled="False"/>
-			<Separator/>
-			<MenuItem Name="mx_cut" Header="剪切" InputGestureText="Ctrl+X" Click="mx_cut_Click">
-				<MenuItem.Icon>
-					<Image Width="16" Source="pack://application:,,,/data/image/cut.png"/>
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Name="mx_copy" Header="复制" InputGestureText="Ctrl+C" Click="mx_copy_Click">
-				<MenuItem.Icon>
-					<Image Width="16" Source="pack://application:,,,/data/image/copy.png"/>
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Name="mx_paste" Header="粘贴" InputGestureText="Ctrl+V" Click="mx_paste_Click">
-				<MenuItem.Icon>
-					<Image Width="16" Source="pack://application:,,,/data/image/paste.png"/>
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Name="mx_delete" Header="删除" InputGestureText="Delete" Click="mx_delete_Click">
-				<MenuItem.Icon>
-					<Image Width="16" Source="pack://application:,,,/data/image/delete.png"/>
-				</MenuItem.Icon>
-			</MenuItem>
-			<Separator/>
-			<MenuItem Name="mx_moveUp" Header="上移" InputGestureText="Ctrl+↑" Click="mx_moveUp_Click">
-				<MenuItem.Icon>
-					<Image Width="16" Source="pack://application:,,,/data/image/moveUp.png"/>
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Name="mx_moveDown" Header="下移" InputGestureText="Ctrl+↓" Click="mx_moveDown_Click">
-				<MenuItem.Icon>
-					<Image Width="16" Source="pack://application:,,,/data/image/moveDown.png"/>
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Name="mx_moveToParent" Header="移动到上一级" InputGestureText="Ctrl+←" Click="mx_moveToParent_Click">
-				<MenuItem.Icon>
-					<Image Width="16" Source="pack://application:,,,/data/image/moveLeft.png"/>
-				</MenuItem.Icon>
-			</MenuItem>
-			<Separator/>
-			<MenuItem Name="mx_attr" Header="属性"/>
-		</ContextMenu>
-	</TreeViewItem.ContextMenu>
 </TreeViewItem>

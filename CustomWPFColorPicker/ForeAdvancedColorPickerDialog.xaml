@@ -607,16 +607,8 @@
                   Softness="0.5"
                   Opacity="0.5"/>
             </Border.BitmapEffect>
-            <StackPanel>
-                <Border Height="25" Margin="0,0,0,0" CornerRadius="7 7 0 0" Visibility="{Binding TitleBarVisibility}" Background="{DynamicResource DialogTitleBarBGBrush}">                    
-                    <Grid x:Name="titlePanel">
-                        <TextBlock Text="Advanced Color Palette" VerticalAlignment="Center" Margin="5,0,0,0" />
-                        <Thumb x:Name="moveThumb" BorderThickness="0" HorizontalAlignment="Stretch" Tag="{Binding Title}" Cursor="ScrollAll" DragDelta="moveThumb_DragDelta"/>
-                        <Button Style="{DynamicResource DialogCloseButtonStyle}" Click="Cancel_Click" HorizontalAlignment="Right" VerticalAlignment="Center" BorderThickness="0" Margin="5,0" Background="Transparent" Cursor="Hand">
-                        </Button>
-                    </Grid>
-                </Border>
-                <Rectangle Fill="#ffffff" StrokeThickness="0"  Margin="0,0,0,0" VerticalAlignment="Top" Height="1" Visibility="{Binding TitleBarVisibility}"/>
+			<StackPanel>
+				<Rectangle Fill="#ffffff" StrokeThickness="0"  Margin="0,0,0,0" VerticalAlignment="Top" Height="1" Visibility="{Binding TitleBarVisibility}"/>
                 <Rectangle Fill="#cfd8da" StrokeThickness="0"  Margin="0,0,0,0" VerticalAlignment="Top" Height="1" Visibility="{Binding TitleBarVisibility}"/>
                 <Border Padding="0,0">
                     <Border Style="{DynamicResource  FrameBKPanel}" >

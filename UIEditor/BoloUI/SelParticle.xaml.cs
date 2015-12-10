@@ -75,9 +75,9 @@ namespace UIEditor.BoloUI
 		{
 			mx_rootItem.Items.Clear();
 
-			if(MainWindow.s_pW != null && Directory.Exists(Project.Setting.s_projPath + "\\..\\..\\texiao"))
+			if (MainWindow.s_pW != null && Directory.Exists(Project.Setting.getParticlePath()))
 			{
-				DirectoryInfo driParticle = new DirectoryInfo(Project.Setting.s_projPath + "\\..\\..\\texiao");
+				DirectoryInfo driParticle = new DirectoryInfo(Project.Setting.getParticlePath());
 
 				m_pathTexiao = driParticle.FullName;
 				foreach(FileInfo fiParticle in driParticle.GetFiles())
@@ -98,6 +98,7 @@ namespace UIEditor.BoloUI
 		void mx_itemParticle_Selected(object sender, RoutedEventArgs e)
 		{
 			updateGL(Project.Setting.s_projPath, W2GTag.W2G_PATH);
+			updateGL(Project.Setting.getParticlePath(), W2GTag.W2G_PATH_PARTICLE);
 			updateGL("960:540:False:960:540", W2GTag.W2G_VIEWSIZE);
 			if(sender is TreeViewItem)
 			{

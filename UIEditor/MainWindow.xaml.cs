@@ -150,6 +150,7 @@ namespace UIEditor
 		public const string conf_pathGlApp = @".\dsuieditor.exe";
 		public const string conf_pathGlApp_New = @".\SSUIEditor.exe";
 		public const string conf_pathConf = @".\conf.xml";
+		public const string conf_pathConfDefault = @".\data\conf.xml";
 		public const string conf_pathPlugInBoloUI = @".\data\PlugIn\BoloUI\";
 		public const string conf_pathStringDic = @".\data\Lang\";
 		public XmlDocument m_docConf;
@@ -273,9 +274,16 @@ namespace UIEditor
 			m_docConf = new XmlDocument();
 			if (!File.Exists(conf_pathConf))
 			{
-				string initConfXml = "<Config><runMode>release</runMode><ProjHistory>E:\\mmo2015001\\artist\\ui\\free</ProjHistory></Config>";
+				if(!File.Exists(conf_pathConfDefault))
+				{
+					string initConfXml = "<Config><runMode>release</runMode><ProjHistory>E:\\mmo2015001\\artist\\ui\\free</ProjHistory></Config>";
 
-				m_docConf.LoadXml(initConfXml);
+					m_docConf.LoadXml(initConfXml);
+				}
+				else
+				{
+					m_docConf.Load(conf_pathConfDefault);
+				}
 			}
 			else
 			{
@@ -1218,7 +1226,7 @@ namespace UIEditor
 												lastCtrl = pairCtrlDef.Value;
 
 												selCtrlButton = new BoloUI.SelButton(this, pairCtrlDef.Value);
-												selCtrlButton.mx_radio.Content = pairCtrlDef.Value.mx_radio.Content;
+												selCtrlButton.mx_radio.Content = pairCtrlDef.Value.mx_text.Text;
 												mx_selCtrlLstFrame.Children.Add(selCtrlButton);
 												m_mapXeSel.Add(pairCtrlDef.Value.m_xe, selCtrlButton);
 											}
@@ -1285,13 +1293,11 @@ namespace UIEditor
 					break;
 				case WM_RBUTTONUP:
 					{
-						XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
-
-						if (curXmlCtrl != null && curXmlCtrl.m_curItem != null)
+						if (XmlItem.s_menu != null)
 						{
-							curXmlCtrl.m_curItem.mx_menu.PlacementTarget = mx_GLCtrl;
-							curXmlCtrl.m_curItem.mx_menu.Placement = System.Windows.Controls.Primitives.PlacementMode.MousePoint;
-							curXmlCtrl.m_curItem.mx_menu.IsOpen = true;
+							XmlItem.s_menu.mx_menu.PlacementTarget = mx_GLCtrl;
+							XmlItem.s_menu.mx_menu.Placement = System.Windows.Controls.Primitives.PlacementMode.MousePoint;
+							XmlItem.s_menu.mx_menu.IsOpen = true;
 						}
 					}
 					break;
@@ -1459,21 +1465,27 @@ namespace UIEditor
 											viewNextFile(s_pW);
 											return 1;
 										case VK_UP:
-											if (XmlItem.getCurItem() != null && XmlItem.getCurItem().canMoveUp())
+											if (XmlItem.s_menu != null && XmlItem.s_menu.canMoveUp())
 											{
 												XmlItem.getCurItem().moveUpItem();
 											}
 											return 1;
 										case VK_DOWN:
-											if (XmlItem.getCurItem() != null && XmlItem.getCurItem().canMoveDown())
+											if (XmlItem.s_menu != null && XmlItem.s_menu.canMoveDown())
 											{
 												XmlItem.getCurItem().moveDownItem();
 											}
 											return 1;
 										case VK_LEFT:
-											if (XmlItem.getCurItem() != null && XmlItem.getCurItem().canMoveToParent())
+											if (XmlItem.s_menu != null && XmlItem.s_menu.canMoveToParent())
 											{
 												XmlItem.getCurItem().moveToParent();
+											}
+											return 1;
+										case VK_RIGHT:
+											if (XmlItem.s_menu != null && XmlItem.s_menu.canMoveToChild())
+											{
+												XmlItem.getCurItem().moveToChild();
 											}
 											return 1;
 										case VK_Y:
@@ -1533,14 +1545,14 @@ namespace UIEditor
 					break;
 				case WM_KEYDOWN:
 					#region WM_KEYDOWN
-					if (XmlItem.getCurItem() != null)
+					if (XmlItem.s_menu != null)
 					{
 						if ((System.Windows.Forms.Control.ModifierKeys & System.Windows.Forms.Keys.Control) == System.Windows.Forms.Keys.Control)
 						{
 							switch ((int)wParam)
 							{
 								case VK_X:
-									if (XmlItem.getCurItem().canCut())
+									if (XmlItem.s_menu.canCut())
 									{
 										XmlItem.getCurItem().cutItem();
 									}
@@ -1573,7 +1585,7 @@ namespace UIEditor
 									}
 									else
 									{
-										if (XmlItem.getCurItem().canCopy())
+										if (XmlItem.s_menu.canCopy())
 										{
 											XmlItem.getCurItem().copyItem();
 										}
@@ -1614,7 +1626,7 @@ namespace UIEditor
 									}
 									break;
 								case VK_DELETE:
-									if (XmlItem.getCurItem().canDelete())
+									if (XmlItem.s_menu.canDelete())
 									{
 										XmlItem.getCurItem().deleteItem();
 									}
@@ -1626,7 +1638,7 @@ namespace UIEditor
 						switch ((int)wParam)
 						{
 							case VK_DELETE:
-								if (XmlItem.getCurItem().canDelete())
+								if (XmlItem.s_menu.canDelete())
 								{
 									XmlItem.getCurItem().deleteItem();
 								}
@@ -1962,14 +1974,14 @@ namespace UIEditor
 
 		private void mx_toolCut_Click(object sender, RoutedEventArgs e)
 		{
-			if (XmlItem.getCurItem() != null && XmlItem.getCurItem().canCut())
+			if (XmlItem.s_menu != null && XmlItem.s_menu.canCut())
 			{
 				XmlItem.getCurItem().cutItem();
 			}
 		}
 		private void mx_toolCopy_Click(object sender, RoutedEventArgs e)
 		{
-			if (XmlItem.getCurItem() != null && XmlItem.getCurItem().canCopy())
+			if (XmlItem.s_menu != null && XmlItem.s_menu.canCopy())
 			{
 				XmlItem.getCurItem().copyItem();
 			}
@@ -1987,30 +1999,37 @@ namespace UIEditor
 		}
 		private void mx_toolDelete_Click(object sender, RoutedEventArgs e)
 		{
-			if (XmlItem.getCurItem() != null && XmlItem.getCurItem().canDelete())
+			if (XmlItem.s_menu != null && XmlItem.s_menu.canDelete())
 			{
 				XmlItem.getCurItem().deleteItem();
 			}
 		}
 		private void mx_toolMoveUp_Click(object sender, RoutedEventArgs e)
 		{
-			if (XmlItem.getCurItem() != null && XmlItem.getCurItem().canMoveUp())
+			if (XmlItem.s_menu != null && XmlItem.s_menu.canMoveUp())
 			{
 				XmlItem.getCurItem().moveUpItem();
 			}
 		}
 		private void mx_toolMoveDown_Click(object sender, RoutedEventArgs e)
 		{
-			if (XmlItem.getCurItem() != null && XmlItem.getCurItem().canMoveDown())
+			if (XmlItem.s_menu != null && XmlItem.s_menu.canMoveDown())
 			{
 				XmlItem.getCurItem().moveDownItem();
 			}
 		}
 		private void mx_toolMoveToParent_Click(object sender, RoutedEventArgs e)
 		{
-			if (XmlItem.getCurItem() != null && XmlItem.getCurItem().canMoveToParent())
+			if (XmlItem.s_menu != null && XmlItem.s_menu.canMoveToParent())
 			{
 				XmlItem.getCurItem().moveToParent();
+			}
+		}
+		private void mx_toolMoveToChild_Click(object sender, RoutedEventArgs e)
+		{
+			if (XmlItem.s_menu != null && XmlItem.s_menu.canMoveToChild())
+			{
+				XmlItem.getCurItem().moveToChild();
 			}
 		}
 
@@ -2078,7 +2097,7 @@ namespace UIEditor
 					{
 						XmlItem itemCtrl = (XmlItem)header;
 
-						return itemCtrl.mx_radio.Content.ToString();
+						return itemCtrl.mx_text.Text;
 					}
 					break;
 				default:
@@ -2270,6 +2289,14 @@ namespace UIEditor
 			}
 			updateGL("false", W2GTag.W2G_SHOWBORDER);
 		}
+		private void mx_showBack_Checked(object sender, RoutedEventArgs e)
+		{
+			MainWindow.s_pW.updateGL(Setting.getBackgroundPath(), W2GTag.W2G_PATH_BACKGROUND);
+		}
+		private void mx_showBack_Unchecked(object sender, RoutedEventArgs e)
+		{
+			MainWindow.s_pW.updateGL("", W2GTag.W2G_PATH_BACKGROUND);
+		}
 		private void mx_btnNesting_Click(object sender, RoutedEventArgs e)
 		{
 			if(Project.Setting.s_projPath != null && Project.Setting.s_projPath != "")
@@ -2281,6 +2308,10 @@ namespace UIEditor
 				ImageTools.ImageNesting winNesting = new ImageTools.ImageNesting(Project.Setting.s_projPath + "\\images\\", "*.png", 1);
 				winNesting.ShowDialog();
 			}
+		}
+		private void mx_exportLang_Click(object sender, RoutedEventArgs e)
+		{
+			Setting.exportLanguageSettingLog();
 		}
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto)]

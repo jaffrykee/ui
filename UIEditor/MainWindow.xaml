@@ -188,6 +188,10 @@
 					<MenuItem Name="mx_statisticsSkin"
 							  Header="统计未被引用的皮肤"/>
 				</MenuItem>
+				<MenuItem Name="mx_exportLang"
+						  Header="导出lang"
+						  IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
+						  Click="mx_exportLang_Click"/>
 				<Separator/>
 				<MenuItem Name="mx_projSetting"
 						  Header="属性..."
@@ -316,6 +320,13 @@
 								Click="mx_toolMoveToParent_Click">
 							<Image Width="16" Source="pack://application:,,,/data/image/moveLeft.png"/>
 						</Button>
+						<Button Name="mx_toolMoveToChild"
+								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
+								Style="{StaticResource BtnStyle_Tools}"
+								ToolTip="移动到下一个的下一级 (Ctrl + →)"
+								Click="mx_toolMoveToChild_Click">
+							<Image Width="16" Source="pack://application:,,,/data/image/moveRight.png"/>
+						</Button>
 						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
 								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
 								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
@@ -435,6 +446,16 @@
 								  Checked="mx_showBorder_Checked"
 								  Unchecked="mx_showBorder_Unchecked">
 							显示边框
+						</CheckBox>
+						<CheckBox Name="mx_showBack"
+								  Width="auto"
+								  Padding="7"
+								  IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
+								  ToolTip="显示背景图，只能是tga格式的。"
+								  Style="{StaticResource ToggleButtonTeml_Tools}"
+								  Checked="mx_showBack_Checked"
+								  Unchecked="mx_showBack_Unchecked">
+							显示背景
 						</CheckBox>
 					</WrapPanel>
 				</WrapPanel>

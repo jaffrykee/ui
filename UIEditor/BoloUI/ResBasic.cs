@@ -58,6 +58,7 @@ namespace UIEditor.BoloUI
 				}
 				else
 				{
+					//显示或隐藏皮肤节点
 					addChild();
 				}
 			}
@@ -198,11 +199,11 @@ namespace UIEditor.BoloUI
 
 				if (ctrlTip != "")
 				{
-					mx_radio.ToolTip = m_xe.Name + "\r\n" + ctrlTip;
+					this.ToolTip = m_xe.Name + "\r\n" + ctrlTip;
 				}
 				else
 				{
-					mx_radio.ToolTip = m_xe.Name;
+					this.ToolTip = m_xe.Name;
 				}
 
 				if (m_curDeepDef.m_mapAttrDef != null && m_curDeepDef.m_mapAttrDef.ToList().Count > 0)
@@ -215,7 +216,7 @@ namespace UIEditor.BoloUI
 					name = parseApprIdFromDic(name);
 				}
 				tmpCon += "<" + name + ">";
-				mx_radio.Content = "_" + tmpCon;
+				mx_text.Text = tmpCon;
 			}
 		}
 		public static void resetXeView(Basic uiView, out XmlElement xeView)
@@ -355,7 +356,7 @@ namespace UIEditor.BoloUI
 					//todo 更改皮肤预览
 				}
 			}
-			mx_radio.IsChecked = true;
+			this.IsSelected = true;
 			BringIntoView();
 			gotoSelectXe();
 			AttrList.selectFirstVisibleAttrList();

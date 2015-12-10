@@ -289,6 +289,8 @@ namespace UIEditor
 			{
 				skinBasic.changeSelectItem(ctrlUI);
 				setAllChildExpand(skinBasic);
+
+				return true;
 			}
 			else
 			{
@@ -298,10 +300,12 @@ namespace UIEditor
 					string path = Project.Setting.s_skinPath + "\\" + lstGroupName[0] + ".xml";
 
 					changeSelectSkinAndFile(path, skinName, ctrlUI);
+
+					return true;
 				}
 				else
 				{
-					Public.ResultLink.createResult("\r\n没有找到该皮肤。(" + skinName + ")", Public.ResultType.RT_WARNING);
+					Public.ResultLink.createResult("\r\n没有找到该皮肤。(" + skinName + ")", Public.ResultType.RT_ERROR);
 				}
 			}
 
@@ -841,11 +845,11 @@ namespace UIEditor
 							m_treeSkin = new BoloUI.ResBasic(m_xeRoot, this, null);
 
 							MainWindow.s_pW.mx_treeCtrlFrame.Items.Add(m_treeUI);
-							m_treeUI.mx_radio.Content = "_" + StringDic.getFileNameWithoutPath(m_openedFile.m_path);
-							m_treeUI.mx_radio.ToolTip = m_openedFile.m_path;
+							m_treeUI.mx_text.Text = StringDic.getFileNameWithoutPath(m_openedFile.m_path);
+							m_treeUI.ToolTip = m_openedFile.m_path;
 							MainWindow.s_pW.mx_treeSkinFrame.Items.Add(m_treeSkin);
-							m_treeSkin.mx_radio.Content = "_" + StringDic.getFileNameWithoutPath(m_openedFile.m_path);
-							m_treeSkin.mx_radio.ToolTip = m_openedFile.m_path;
+							m_treeSkin.mx_text.Text = StringDic.getFileNameWithoutPath(m_openedFile.m_path);
+							m_treeSkin.ToolTip = m_openedFile.m_path;
 
 							m_treeUI.Items.Clear();
 							m_treeSkin.Items.Clear();
@@ -873,10 +877,12 @@ namespace UIEditor
 										{
 											ResBasic treeChild = new ResBasic(xe, this, skinPtr);
 
-											if (xe.Name != "skin" && xe.Name != "publicskin")
-											{
-												m_treeSkin.Items.Add(treeChild);
-											}
+											//显示或隐藏皮肤节点
+// 											if (xe.Name != "skin" && xe.Name != "publicskin")
+// 											{
+// 												m_treeSkin.Items.Add(treeChild);
+// 											}
+											m_treeSkin.Items.Add(treeChild);
 											if (xe.Name == "skingroup")
 											{
 												refreshSkinDicByGroupName(xe.GetAttribute("Name"));
