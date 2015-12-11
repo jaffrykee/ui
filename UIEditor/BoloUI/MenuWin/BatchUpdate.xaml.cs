@@ -34,17 +34,6 @@ namespace UIEditor.BoloUI.MenuWin
 		}
 		public void refreshCtrlComboBox()
 		{
-			bool isEvent;
-
-			if(mx_rbEvent.IsChecked == true)
-			{
-				isEvent = true;
-			}
-			else
-			{
-				isEvent = false;
-			}
-
 			mx_cbCtrl.Items.Clear();
 			mx_cbAttr.Items.Clear();
 			foreach(KeyValuePair<string, DefConfig.CtrlDef_T> pairCtrlDef in MainWindow.s_pW.m_mapCtrlDef.ToList())

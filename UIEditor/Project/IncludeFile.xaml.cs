@@ -504,16 +504,7 @@ namespace UIEditor.Project
 		}
 		private void mx_openFolder_Click(object sender, RoutedEventArgs e)
 		{
-			if (File.Exists(m_path))
-			{
-				FileInfo fi = new FileInfo(m_path);
-
-				System.Diagnostics.Process.Start("explorer.exe", fi.DirectoryName);
-			}
-			else if(Directory.Exists(m_path))
-			{
-				System.Diagnostics.Process.Start("explorer.exe", m_path);
-			}
+			OpenedFile.openLocalFolder(m_path);
 		}
 		private void mx_radio_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
 		{

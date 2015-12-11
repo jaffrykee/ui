@@ -117,7 +117,6 @@ namespace UIEditor
 				}
 			}
 		}
-		private bool mt_isMoba;
 		public bool m_isMoba;
 		public int m_screenWidthBasic;
 		private int mt_screenHeightBasic;
@@ -269,25 +268,55 @@ namespace UIEditor
 				MessageBox.Show("Failed to set hook, error = " + Marshal.GetLastWin32Error());
 			}
 		}
+		private void loadToolConfigByDefault()
+		{
+			if (!File.Exists(conf_pathConfDefault))
+			{
+				string initConfXml = "<Config><runMode>release</runMode><ProjHistory>E:\\mmo2015001\\artist\\ui\\free</ProjHistory></Config>";
+
+				m_docConf.LoadXml(initConfXml);
+			}
+			else
+			{
+				m_docConf.Load(conf_pathConfDefault);
+			}
+		}
 		public void checkAndInitToolConfig()
 		{
 			m_docConf = new XmlDocument();
 			if (!File.Exists(conf_pathConf))
 			{
-				if(!File.Exists(conf_pathConfDefault))
-				{
-					string initConfXml = "<Config><runMode>release</runMode><ProjHistory>E:\\mmo2015001\\artist\\ui\\free</ProjHistory></Config>";
-
-					m_docConf.LoadXml(initConfXml);
-				}
-				else
-				{
-					m_docConf.Load(conf_pathConfDefault);
-				}
+				loadToolConfigByDefault();
 			}
 			else
 			{
-				m_docConf.Load(conf_pathConf);
+				try
+				{
+					m_docConf.Load(conf_pathConf);
+				}
+				catch
+				{
+					MessageBoxResult ret = MessageBox.Show("编辑器配置文件已经损坏(" + conf_pathConf + ")。是否使用默认配置文件？（可能是由于SVN更新后冲突导致，选“是”则会失去原有的编辑器配置）", "配置文件损坏", MessageBoxButton.YesNo, MessageBoxImage.Error);
+
+					switch(ret)
+					{
+						case MessageBoxResult.Yes:
+							{
+								loadToolConfigByDefault();
+							}
+							break;
+						case MessageBoxResult.No:
+							{
+								return;
+							}
+							break;
+						default:
+							{
+								return;
+							}
+							break;
+					}
+				}
 			}
 
 			XmlNode xnConfig = m_docConf.SelectSingleNode("Config");
@@ -1645,27 +1674,57 @@ namespace UIEditor
 								break;
 						}
 					}
-					if ((System.Windows.Forms.Control.ModifierKeys & System.Windows.Forms.Keys.Control) == System.Windows.Forms.Keys.Control)
+					System.Windows.Forms.Keys ret = System.Windows.Forms.Control.ModifierKeys;
+					if ((ret & System.Windows.Forms.Keys.Control) > 0)
 					{
-						switch ((int)wParam)
+						if((ret & System.Windows.Forms.Keys.Shift) > 0)
 						{
-							case VK_W:
-								{
-									OpenedFile fileDef;
-
-									if (s_pW.m_mapOpenedFiles.TryGetValue(s_pW.m_curFile, out fileDef) && fileDef != null && fileDef.m_tabItem != null)
+							switch ((int)wParam)
+							{
+								case VK_W:
 									{
-										fileDef.m_tabItem.closeFile();
+										OpenedFile.closeAllFile();
 									}
-								}
-								break;
-							case VK_O:
-								{
-									openProjSelectBox();
-								}
-								break;
-							default:
-								break;
+									break;
+								default:
+									break;
+							}
+						}
+						else if ((ret & System.Windows.Forms.Keys.Alt) > 0)
+						{
+							switch ((int)wParam)
+							{
+								case VK_W:
+									{
+										OpenedFile.closeAllFile(OpenedFile.getCurFileDef());
+									}
+									break;
+								default:
+									break;
+							}
+						}
+						else
+						{
+							switch ((int)wParam)
+							{
+								case VK_W:
+									{
+										OpenedFile curFileDef = OpenedFile.getCurFileDef();
+
+										if (curFileDef != null)
+										{
+											curFileDef.m_tabItem.closeFile();
+										}
+									}
+									break;
+								case VK_O:
+									{
+										openProjSelectBox();
+									}
+									break;
+								default:
+									break;
+							}
 						}
 					}
 					#endregion
@@ -2081,11 +2140,28 @@ namespace UIEditor
 		}
 		private void mx_viewCloseFile_Click(object sender, RoutedEventArgs e)
 		{
-			OpenedFile fileDef;
+			OpenedFile curFileDef = OpenedFile.getCurFileDef();
 
-			if (m_mapOpenedFiles.TryGetValue(m_curFile, out fileDef) && fileDef != null && fileDef.m_tabItem != null)
+			if (curFileDef != null)
 			{
-				fileDef.m_tabItem.closeFile();
+				curFileDef.m_tabItem.closeFile();
+			}
+		}
+		private void mx_viewCloseAll_Click(object sender, RoutedEventArgs e)
+		{
+			OpenedFile.closeAllFile();
+		}
+		private void mx_viewCloseAllExSelf_Click(object sender, RoutedEventArgs e)
+		{
+			OpenedFile.closeAllFile(OpenedFile.getCurFileDef());
+		}
+		private void mx_viewOpenFolder_Click(object sender, RoutedEventArgs e)
+		{
+			OpenedFile curFileDef = OpenedFile.getCurFileDef();
+
+			if (curFileDef != null)
+			{
+				OpenedFile.openLocalFolder(curFileDef.m_path);
 			}
 		}
 
@@ -2736,6 +2812,13 @@ namespace UIEditor
 					mx_textFrame.Visibility = System.Windows.Visibility.Collapsed;
 				}
 				mx_drawFrame.Visibility = System.Windows.Visibility.Collapsed;
+			}
+
+			XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
+
+			if(curXmlCtrl != null)
+			{
+				curXmlCtrl.refreshXmlText();
 			}
 		}
 		private void mx_treeFrame_SelectionChanged(object sender, SelectionChangedEventArgs e)

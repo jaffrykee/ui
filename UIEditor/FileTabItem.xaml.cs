@@ -108,18 +108,20 @@ namespace UIEditor
 		public void closeFile(bool isForce = false)
 		{
 			TabItem tabItem = (TabItem)this.Parent;
-			string tabPath = ((ToolTip)tabItem.ToolTip).Content.ToString();
 			MainWindow pW = MainWindow.s_pW;
 			XmlControl xmlCtrl = XmlControl.getCurXmlControl();
 
-			if (isForce == false && pW.m_mapOpenedFiles[pW.m_curFile].haveDiffToFile() && xmlCtrl != null)
+			if (isForce == false && m_fileDef != null && m_fileDef.haveDiffToFile())
 			{
-				MessageBoxResult ret = MessageBox.Show("是否将更改保存到 " + tabPath, "保存确认", MessageBoxButton.YesNoCancel, MessageBoxImage.Asterisk);
+				MessageBoxResult ret = MessageBox.Show("是否将更改保存到 " + m_filePath, "保存确认", MessageBoxButton.YesNoCancel, MessageBoxImage.Asterisk);
 				switch (ret)
 				{
 					case MessageBoxResult.Yes:
 						{
-							xmlCtrl.saveCurStatus();
+							if(m_fileDef.m_frame != null && m_fileDef.m_frame is XmlControl)
+							{
+								((XmlControl)m_fileDef.m_frame).saveCurStatus();
+							}
 						}
 						break;
 					case MessageBoxResult.No:
@@ -130,7 +132,7 @@ namespace UIEditor
 				}
 			}
 			pW.updateGL(m_filePath, W2GTag.W2G_NORMAL_NAME);
-			pW.m_mapOpenedFiles.Remove(tabPath);
+			pW.m_mapOpenedFiles.Remove(m_filePath);
 			pW.mx_workTabs.Items.Remove(tabItem);
 			if (pW.mx_workTabs.Items.Count == 0)
 			{
@@ -142,7 +144,6 @@ namespace UIEditor
 				pW.mx_xmlText.Document = new FlowDocument();
 			}
 			pW.hiddenAllAttr();
-			//pW.mx_result.Inlines.Clear();
 		}
 		private void closeFileTab(object sender, RoutedEventArgs e)
 		{

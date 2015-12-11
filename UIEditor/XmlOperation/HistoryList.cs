@@ -246,6 +246,9 @@ namespace UIEditor.XmlOperation
 					docXml.Save(m_curNode.Value.m_path);
 				}
 			}
+
+			XmlItem dstItem;
+
 			if (m_xmlCtrl.m_isOnlySkin)
 			{
 				XmlElement xeView;
@@ -259,7 +262,6 @@ namespace UIEditor.XmlOperation
 					xeView = MainWindow.s_pW.m_xeTest;
 				}
 				m_pW.updateXmlToGL(m_xmlCtrl, xeView, false);
-				XmlItem dstItem;
 
 				if (m_xmlCtrl.m_mapXeItem.TryGetValue(m_curNode.Value.m_dstXe, out dstItem))
 				{
@@ -268,8 +270,6 @@ namespace UIEditor.XmlOperation
 			}
 			else
 			{
-				XmlItem dstItem;
-
 				if (m_xmlCtrl.m_mapXeItem.TryGetValue(m_curNode.Value.m_dstXe, out dstItem))
 				{
 					dstItem.initHeader();
@@ -289,35 +289,27 @@ namespace UIEditor.XmlOperation
 
 			if (!isAddOpt)
 			{
-				XmlItem dstItem;
-
-				if (m_xmlCtrl.m_mapXeItem.TryGetValue(m_curNode.Value.m_dstXe, out dstItem))
+				if (dstItem != null)
 				{
-					if (dstItem != null)
+					dstItem.changeSelectItem();
+					switch (dstItem.m_type)
 					{
-						switch (dstItem.m_type)
-						{
-							case "CtrlUI":
-								((BoloUI.Basic)dstItem).changeSelectItem();
-								m_pW.refreshAllCtrlUIHeader();
-								break;
-							case "Skin":
-								((BoloUI.ResBasic)dstItem).changeSelectItem();
-								m_pW.refreshAllSkinHeader();
-								break;
-							default:
-								break;
-						}
+						case "CtrlUI":
+							m_pW.refreshAllCtrlUIHeader();
+							break;
+						case "Skin":
+							m_pW.refreshAllSkinHeader();
+							break;
+						default:
+							break;
 					}
 				}
 			}
 			else
 			{
-				if (m_xmlCtrl != null && m_xmlCtrl.m_curItem != null && m_xmlCtrl.m_curItem is BoloUI.Basic)
+				if (dstItem != null)
 				{
-					BoloUI.Basic uiCtrl = (BoloUI.Basic)m_xmlCtrl.m_curItem;
-
-					uiCtrl.showBlueRect();
+					dstItem.changeSelectItem();
 				}
 			}
 
@@ -327,7 +319,15 @@ namespace UIEditor.XmlOperation
 			}
 			else
 			{
-				m_xmlCtrl.refreshXmlText();
+				if (MainWindow.s_pW.mx_showUITab.Visibility == System.Windows.Visibility.Visible &&
+					MainWindow.s_pW.mx_showUITab.IsChecked == true)
+				{
+
+				}
+				else
+				{
+					m_xmlCtrl.refreshXmlText();
+				}
 			}
 		}
 		static public void refreshItemHeader(XmlItem dstItem)

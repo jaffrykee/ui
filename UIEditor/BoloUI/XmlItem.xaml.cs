@@ -195,7 +195,9 @@ namespace UIEditor.BoloUI
 
 						if (scriptName != null && scriptName[0] != "")
 						{
-							string scriptPath = Project.Setting.s_projPath + "\\..\\..\\scripts\\dev\\source\\" + scriptName[0] + ".bolos";
+							string scriptPath = Project.Setting.s_projPath + "\\..\\..\\scripts\\dev\\source\\";
+
+							scriptPath = StringDic.getRealPath(scriptPath) + scriptName[0] + ".bolos";
 							MainWindow.s_pW.openFileByPath(scriptPath);
 						}
 					}

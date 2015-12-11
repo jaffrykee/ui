@@ -238,9 +238,9 @@ namespace UIEditor.BoloUI
 		private void mx_checkOverflow_Click(object sender, RoutedEventArgs e)
 		{
 			ResultLink.createResult("\r\n开始检测溢出的控件");
-			if (this is Basic)
+			if (XmlItem.getCurItem() != null && XmlItem.getCurItem() is Basic)
 			{
-				XmlItem.getCurItem().m_xmlCtrl.refreshVRect();
+				XmlControl.getCurXmlControl().refreshVRect();
 				checkOverflow((Basic)XmlItem.getCurItem());
 			}
 			ResultLink.createResult("\r\n检测结束");

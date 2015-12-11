@@ -794,7 +794,7 @@
 			<Border 
                 x:Name="ColorBorder" 
                 Focusable="False" 
-                Background="{Binding Path=CurrentColor}"
+                Background="Black"
                 Height="20" BorderThickness="1,1,1,1" BorderBrush="#b4b4b5" Width="20">
 				<Border Width="10" Height="10" BorderThickness="1,1,1,1" BorderBrush="DarkBlue" Background="#FFFFFFFF" HorizontalAlignment="Right" VerticalAlignment="Bottom">
 					<Path Width="5" Height="5" Fill="DarkBlue" Stretch="Fill" Stroke="DarkBlue"  Data="M-0.024898728,-0.48261954 L3.4753354,-0.47870237 1.7095923,2.3573258 z"/>
@@ -912,18 +912,8 @@
 									  Opacity="0.5"/>
 								</Border.BitmapEffect>
 								<StackPanel>
-									<Border Height="25" Margin="0,0,0,0" CornerRadius="7 7 0 0" Visibility="{Binding TitleBarVisibility}">
-										<Grid x:Name="titlePanel">
-											<TextBlock Text="Advanced Color Palette" VerticalAlignment="Center" Margin="5,0,0,0" />
-											<Thumb x:Name="moveThumb" BorderThickness="0" HorizontalAlignment="Stretch" Tag="{Binding Title}" Cursor="ScrollAll" DragDelta="moveThumb_DragDelta"/>
-											<Button Style="{DynamicResource DialogCloseButtonStyle}" Click="Cancel_Click" HorizontalAlignment="Right" VerticalAlignment="Center" BorderThickness="0" Margin="5,0" Background="Transparent" Cursor="Hand">
-											</Button>
-										</Grid>
-									</Border>
-									<Rectangle Fill="#ffffff" StrokeThickness="0"  Margin="0,0,0,0" VerticalAlignment="Top" Height="1" Visibility="{Binding TitleBarVisibility}"/>
-									<Rectangle Fill="#cfd8da" StrokeThickness="0"  Margin="0,0,0,0" VerticalAlignment="Top" Height="1" Visibility="{Binding TitleBarVisibility}"/>
 									<Border Padding="0,0">
-										<Border Style="{DynamicResource  FrameBKPanel}" >
+										<Border>
 											<StackPanel >
 												<Grid Background="Transparent">
 													<Border Margin="0,0,0,0" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center">

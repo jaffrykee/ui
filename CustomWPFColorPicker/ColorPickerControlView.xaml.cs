@@ -13,8 +13,17 @@ namespace CustomWPFColorPicker
 	{
 		#region Properties
 		private byte[] _pixels;
-		public Color CurrentColor = Colors.Gray;
-		public event EventHandler DialogResultEvent;
+		private Color mt_curColor = Colors.Gray;
+		public Color m_curColor
+		{
+			get { return mt_curColor; }
+			set
+			{
+				mt_curColor = value;
+				ColorButton.Background = new SolidColorBrush(value);
+				ColorBorder.Background = new SolidColorBrush(value);
+			}
+		}
 		public event DragDeltaEventHandler Drag;
 
 		private void OnDragDelta(DragDeltaEventArgs e)
@@ -91,10 +100,6 @@ namespace CustomWPFColorPicker
         void AdvancedColorPickerDialogDialogResultEvent(object sender, EventArgs e)
         {
             _advancedPickerWindow.Close();
-            var dialogEventArgs = (DialogEventArgs)e;
-            if (dialogEventArgs.DialogResult == DialogResult.Cancel)
-                return;
-            CurrentColorBrush = dialogEventArgs.SelectedColor;
         }
 
 
@@ -119,13 +124,6 @@ namespace CustomWPFColorPicker
 		#endregion
 
 		#region Advanced Picker Members
-
-		private void OnDialogResultEvent(DialogEventArgs e)
-		{
-			var dialogResultEvent = DialogResultEvent;
-			if (dialogResultEvent != null)
-				dialogResultEvent(this, e);
-		}
 
 		private readonly TranslateTransform _markerTransform = new TranslateTransform();
 
@@ -153,10 +151,10 @@ namespace CustomWPFColorPicker
 
 		private void UpdateCurrentColor()
 		{
-			CurrentColor = Color.FromRgb(_pixels[2], _pixels[1], _pixels[0]);
+			m_curColor = Color.FromRgb(_pixels[2], _pixels[1], _pixels[0]);
 			currentColorBorder.Background = new SolidColorBrush(Color.FromRgb(_pixels[2], _pixels[1], _pixels[0]));
 			brightnessSlider.Value = 0.5;
-			SelectedCurrentColor = new SolidColorBrush(CurrentColor);
+			SelectedCurrentColor = new SolidColorBrush(m_curColor);
 		}
 
 		private void UpdateMarkerPosition()
@@ -170,9 +168,9 @@ namespace CustomWPFColorPicker
 			if (_pixels == null)
 			{
 				_pixels = new byte[3];
-				_pixels[2] = CurrentColor.R;
-				_pixels[1] = CurrentColor.G;
-				_pixels[0] = CurrentColor.B;
+				_pixels[2] = m_curColor.R;
+				_pixels[1] = m_curColor.G;
+				_pixels[0] = m_curColor.B;
 			}
 
 			var nc = Color.FromRgb(_pixels[2], _pixels[1], _pixels[0]);
@@ -193,8 +191,8 @@ namespace CustomWPFColorPicker
 				b = nc.ScB * f * 2;
 			}
 
-			CurrentColor = Color.FromScRgb(a, r, g, b);
-			currentColorBorder.Background = new SolidColorBrush(CurrentColor);
+			m_curColor = Color.FromScRgb(a, r, g, b);
+			currentColorBorder.Background = new SolidColorBrush(m_curColor);
 		}
 
 		private void UpdateSlider()
@@ -244,12 +242,10 @@ namespace CustomWPFColorPicker
 
 		private void Ok_Click(object sender, RoutedEventArgs e)
 		{
-			OnDialogResultEvent(new DialogEventArgs() { SelectedColor = SelectedCurrentColor, DialogResult = DialogResult.Ok });
 		}
 
 		private void Cancel_Click(object sender, RoutedEventArgs e)
 		{
-			OnDialogResultEvent(new DialogEventArgs() { DialogResult = DialogResult.Cancel });
 		}
 		#endregion
     }

@@ -17,9 +17,10 @@ using System.Xml;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using System.Text.RegularExpressions;
-using UIEditor.XmlOperation;
 using System.Collections;
+using UIEditor.XmlOperation;
 using UIEditor.Public;
+using UIEditor.Project;
 
 namespace UIEditor
 {
@@ -40,6 +41,31 @@ namespace UIEditor
 		public DateTime m_lastWriteTime;
 		public Paragraph m_paraResult;
 		public List<ResultLink> m_lstResult;
+
+		static private OpenedFileContextMenu st_menu = null;
+		static public OpenedFileContextMenu s_menu
+		{
+			get
+			{
+				if(OpenedFile.getCurFileDef() != null)
+				{
+					if(st_menu == null)
+					{
+						st_menu = new OpenedFileContextMenu();
+					}
+
+					return st_menu;
+				}
+				else
+				{
+					return null;
+				}
+			}
+			set
+			{
+				st_menu = value;
+			}
+		}
 
 		public OpenedFile(string path, string skinName = "", bool isShowTabItem = true)
 		{
@@ -69,6 +95,7 @@ namespace UIEditor
 			tabTip.Content = m_path;
 			m_tab.Header = "_" + StringDic.getFileNameWithoutPath(path);
 			m_tab.ToolTip = tabTip;
+			m_tab.MouseRightButtonDown += fileTabItem_MouseRightButtonDown;
 
 			if(isShowTabItem)
 			{
@@ -82,6 +109,18 @@ namespace UIEditor
 				m_tabItem = null;
 			}
 			Public.ErrorInfo.showErrorInfo();
+		}
+
+		private void fileTabItem_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			MainWindow.s_pW.openFileByDef(this);
+
+			if (s_menu != null)
+			{
+				s_menu.mx_menu.PlacementTarget = m_tab;
+				s_menu.mx_menu.Placement = System.Windows.Controls.Primitives.PlacementMode.MousePoint;
+				s_menu.mx_menu.IsOpen = true;
+			}
 		}
 
 		public bool frameIsXmlCtrl()
@@ -183,6 +222,36 @@ namespace UIEditor
 			}
 
 			return null;
+		}
+		static public void closeAllFile(OpenedFile exFileDef = null)
+		{
+			List<OpenedFile> lstFileDef = new List<OpenedFile>();
+
+			foreach(KeyValuePair<string, OpenedFile> pairFileDef in MainWindow.s_pW.m_mapOpenedFiles.ToList())
+			{
+				if (pairFileDef.Value != null && pairFileDef.Value != exFileDef)
+				{
+					lstFileDef.Add(pairFileDef.Value);
+				}
+			}
+
+			foreach(OpenedFile fileDef in lstFileDef)
+			{
+				fileDef.m_tabItem.closeFile();
+			}
+		}
+		static public void openLocalFolder(string path)
+		{
+			if (File.Exists(path))
+			{
+				FileInfo fi = new FileInfo(path);
+
+				System.Diagnostics.Process.Start("explorer.exe", fi.DirectoryName);
+			}
+			else if (Directory.Exists(path))
+			{
+				System.Diagnostics.Process.Start("explorer.exe", path);
+			}
 		}
 	}
 }

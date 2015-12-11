@@ -282,7 +282,6 @@ namespace UIEditor
 		}
 		public bool findSkinAndSelect(string skinName, BoloUI.Basic ctrlUI = null)
 		{
-			string groupName;
 			BoloUI.ResBasic skinBasic;
 
 			if (m_mapSkin.TryGetValue(skinName, out skinBasic))
@@ -1023,7 +1022,6 @@ namespace UIEditor
 		}
 		static public XmlElement getXeByOffset(XmlElement xeParent, int offset)
 		{
-			XmlElement xe;
 			int count = 0;
 
 			foreach(XmlNode xn in xeParent.ChildNodes)

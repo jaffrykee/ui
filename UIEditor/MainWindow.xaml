@@ -202,10 +202,14 @@
 				<MenuItem Name="mx_setting" Header="选项..." IsEnabled="False"/>
 			</MenuItem>
 			<MenuItem Header="视图(_V)" Padding="{Binding ElementName=mx_miFile, Path=Padding}">
-				<MenuItem Name="mx_viewPrevFile" Header="上一窗口" InputGestureText="Ctrl+PageUp" Click="mx_viewPrevFile_Click"/>
-				<MenuItem Name="mx_viewNextFile" Header="下一窗口" InputGestureText="Ctrl+PageDown" Click="mx_viewNextFile_Click"/>
+				<MenuItem Name="mx_viewPrevFile" Header="上一文档" InputGestureText="Ctrl+PageUp" Click="mx_viewPrevFile_Click"/>
+				<MenuItem Name="mx_viewNextFile" Header="下一文档" InputGestureText="Ctrl+PageDown" Click="mx_viewNextFile_Click"/>
 				<Separator/>
-				<MenuItem Name="mx_viewCloseFile" Header="关闭窗口" InputGestureText="Ctrl+W" Click="mx_viewCloseFile_Click"/>
+				<MenuItem Name="mx_viewCloseFile" Header="关闭当前文档" InputGestureText="Ctrl+W" Click="mx_viewCloseFile_Click"/>
+				<MenuItem Name="mx_viewCloseAll" Header="关闭所有文档" InputGestureText="Ctrl+Shift+W" Click="mx_viewCloseAll_Click"/>
+				<MenuItem Name="mx_viewCloseAllExSelf" Header="除此之外全部关闭" InputGestureText="Ctrl+Alt+W" Click="mx_viewCloseAllExSelf_Click"/>
+				<Separator/>
+				<MenuItem Name="mx_viewOpenFolder" Header="打开所在文件夹" Click="mx_viewOpenFolder_Click"/>
 			</MenuItem>
 			<MenuItem Header="帮助(_H)" Padding="{Binding ElementName=mx_miFile, Path=Padding}">
 				<MenuItem Name="mx_help" Header="查看帮助" Click="mx_help_Click"/>
