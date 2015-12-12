@@ -310,6 +310,42 @@ namespace UIEditor.XmlOperation
 				if (dstItem != null)
 				{
 					dstItem.changeSelectItem();
+					switch(m_curNode.Value.m_optType)
+					{
+						case XmlOptType.NODE_UPDATE:
+							{
+								if(m_curNode.Value.m_attrName == "skin")
+								{
+									string skinValue = dstItem.m_xe.GetAttribute("skin");
+
+									if(skinValue != "")
+									{
+										string xmlPath;
+										object retSkin;
+
+										//Project.Setting.refreshSkinIndex();
+										retSkin = dstItem.m_xmlCtrl.findSkin(skinValue, out xmlPath);
+										if (retSkin == null)
+										{
+											//没在本文件的皮肤组中发现该皮肤。
+										}
+									}
+								}
+							}
+							break;
+						case XmlOptType.NODE_INSERT:
+							{
+								string skinValue = dstItem.m_xe.GetAttribute("skin");
+
+								if (skinValue != "")
+								{
+									Project.Setting.refreshSkinIndex();
+								}
+							}
+							break;
+						default:
+							break;
+					}
 				}
 			}
 

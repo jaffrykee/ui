@@ -20,7 +20,7 @@ namespace UIEditor
 	public partial class PackImage : Grid
 	{
 		public Dictionary<string, System.Drawing.Rectangle> m_mapImgRect;
-		public XmlControl m_xmlDef;
+		public string m_xmlPath;
 		public int m_imageWidth;
 		public int m_imageHeight;
 
@@ -44,13 +44,68 @@ namespace UIEditor
 				refreshWinStatus();
 			}
 		}
-		private string mt_namePng;
-		public string m_namePng
+		public string getPngFullPath(string pngName)
 		{
-			get { return mt_namePng; }
+			string pngPath = m_xmlPath.Remove(m_xmlPath.IndexOf(".")) + "\\" + pngName + ".png";
+
+			return pngPath;
+		}
+		public int getCurPngWidth()
+		{
+			System.Drawing.Rectangle pngArea;
+
+			if (m_curPngName != null && m_curPngName != "" && m_mapImgRect.TryGetValue(m_curPngName, out pngArea) && pngArea != null)
+			{
+				return pngArea.Width;
+			}
+
+			return 0;
+		}
+		public int getCurPngHeight()
+		{
+			System.Drawing.Rectangle pngArea;
+
+			if (m_curPngName != null && m_curPngName != "" && m_mapImgRect.TryGetValue(m_curPngName, out pngArea) && pngArea != null)
+			{
+				return pngArea.Height;
+			}
+
+			return 0;
+		}
+		private string mt_curPngName;
+		public string m_curPngName
+		{
+			get { return mt_curPngName; }
 			set
 			{
-				mt_namePng = value;
+				mt_curPngName = value;
+
+				System.Drawing.Rectangle pngArea;
+
+				if (value != null && value != "" && m_mapImgRect.TryGetValue(value, out pngArea) && pngArea != null)
+				{
+					mx_selPath.Visibility = System.Windows.Visibility.Visible;
+					mx_selPath.Data = new RectangleGeometry(new Rect(
+						pngArea.X,
+						pngArea.Y,
+						pngArea.Width,
+						pngArea.Height
+					));
+
+					MainWindow.s_pW.mb_status3 = ("png图片显示范围：( " + pngArea.X.ToString() + " , " + pngArea.Y.ToString() + " ) " +
+						pngArea.Width.ToString() + " x " + pngArea.Height.ToString());
+
+					if (BoloUI.SelImage.s_pW != null)
+					{
+						TreeViewItem curPngItem;
+
+						if (BoloUI.SelImage.s_pW.m_mapPngItem.TryGetValue(getPngFullPath(value), out curPngItem) && curPngItem != null)
+						{
+							curPngItem.IsSelected = true;
+							curPngItem.BringIntoView();
+						}
+					}
+				}
 				refreshWinStatus();
 			}
 		}
@@ -59,8 +114,8 @@ namespace UIEditor
 		{
 			MainWindow.s_pW.mb_status0 = "( " + m_poiX + " , " + m_poiY + " )\t图片总尺寸： " + m_imageWidth + " x " + m_imageHeight;
 			MainWindow.s_pW.mb_status1 = "";
-			string pngPath = Project.Setting.s_imagePath + "\\" + System.IO.Path.GetFileNameWithoutExtension(m_xmlDef.m_openedFile.m_path)
-				+ "\\" + m_namePng + ".png";
+			string pngPath = Project.Setting.s_imagePath + "\\" + System.IO.Path.GetFileNameWithoutExtension(m_xmlPath)
+				+ "\\" + m_curPngName + ".png";
 
 			if(System.IO.File.Exists(pngPath))
 			{
@@ -212,16 +267,52 @@ namespace UIEditor
 			}
 		}
 
-		public PackImage(XmlControl parent, bool isRePack = true)
+		public PackImage(string xmlPath, bool isRePack = true)
 		{
-			m_xmlDef = parent;
+			m_xmlPath = xmlPath;
 
 			InitializeComponent();
 
 			System.Drawing.Bitmap tgaImg;
 			BitmapSource imgSource;
 
-			refreshImagePack(parent.m_openedFile.m_path, isRePack, out m_mapImgRect, out tgaImg, out m_imageWidth, out m_imageHeight);
+			refreshImagePack(xmlPath, isRePack, out m_mapImgRect, out tgaImg, out m_imageWidth, out m_imageHeight);
+
+			mx_canvas.Width = m_imageWidth;
+			mx_canvas.Height = m_imageHeight;
+
+			if (m_imageHeight > 4096)
+			{
+				Public.ResultLink.createResult("\r\n图片尺寸过大，不提供预览功能", Public.ResultType.RT_WARNING);
+
+				return;
+			}
+
+			IntPtr ip = tgaImg.GetHbitmap();
+			imgSource = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+				ip, IntPtr.Zero, Int32Rect.Empty,
+				System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+			MainWindow.DeleteObject(ip);
+
+			System.Windows.Controls.Image cImg = new System.Windows.Controls.Image();
+			cImg.Source = imgSource;
+			cImg.Stretch = Stretch.Uniform;
+			mx_canvas.Children.Insert(0, cImg);
+		}
+		public PackImage(XmlControl parent, bool isRePack = true)
+		{
+			if (parent == null || parent.m_openedFile == null || !System.IO.File.Exists(parent.m_openedFile.m_path))
+			{
+				return;
+			}
+			m_xmlPath = parent.m_openedFile.m_path;
+
+			InitializeComponent();
+
+			System.Drawing.Bitmap tgaImg;
+			BitmapSource imgSource;
+
+			refreshImagePack(m_xmlPath, isRePack, out m_mapImgRect, out tgaImg, out m_imageWidth, out m_imageHeight);
 
 			if (parent.m_parent != null)
 			{
@@ -297,21 +388,12 @@ namespace UIEditor
 			{
 				if (pairImgRect.Value.Contains(m_poiX, m_poiY))
 				{
-					mx_selPath.Visibility = System.Windows.Visibility.Visible;
-					mx_selPath.Data = new RectangleGeometry(new Rect(
-						pairImgRect.Value.X,
-						pairImgRect.Value.Y,
-						pairImgRect.Value.Width,
-						pairImgRect.Value.Height
-					));
-
 					if (e.ChangedButton == MouseButton.Right)
 					{
-						string pngPath = m_xmlDef.m_openedFile.m_path.Remove(m_xmlDef.m_openedFile.m_path.IndexOf(".")) +
-							"\\" + pairImgRect.Key + ".png";
+						string pngPath = getPngFullPath(m_curPngName);
 						IncludeFile pngFileDef;
 
-						if (MainWindow.s_pW.m_mapIncludeFiles != null && 
+						if (MainWindow.s_pW.m_mapIncludeFiles != null &&
 							MainWindow.s_pW.m_mapIncludeFiles.TryGetValue(pngPath, out pngFileDef))
 						{
 							pngFileDef.mx_menu.PlacementTarget = mx_canvas;
@@ -319,14 +401,12 @@ namespace UIEditor
 							pngFileDef.mx_menu.IsOpen = true;
 						}
 					}
-					m_namePng = pairImgRect.Key;
-					MainWindow.s_pW.mb_status3 = ("png图片显示范围：( " + pairImgRect.Value.X.ToString() + " , " + pairImgRect.Value.Y.ToString() + " ) " +
-						pairImgRect.Value.Width.ToString() + " x " + pairImgRect.Value.Height.ToString());
+					m_curPngName = pairImgRect.Key;
 
 					return;
 				}
 			}
-			m_namePng = "";
+			m_curPngName = "";
 			mx_selPath.Visibility = System.Windows.Visibility.Collapsed;
 		}
 		private void mx_canvas_MouseMove(object sender, MouseEventArgs e)

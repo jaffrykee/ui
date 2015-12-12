@@ -37,7 +37,8 @@
 			</Grid>
 			<TreeView Name="mx_skinTreeFrame"
 					  Grid.Row="1"
-					  Margin="5">
+					  Margin="5"
+					  SelectedItemChanged="mx_skinTreeFrame_SelectedItemChanged">
 				<TreeViewItem Name="mx_rootItem" Header="请选择图片资源" IsExpanded="True">
 					<TreeViewItem Name="mx_localRes" Header="已包含的资源" IsExpanded="True"/>
 					<TreeViewItem Name="mx_otherRes" Header="未包含的资源" IsExpanded="False"/>

@@ -19,7 +19,7 @@ namespace UIEditor.BoloUI
 	public partial class SelImage
 	{
 		public IAttrRow m_iRowImage;
-		public PngControl m_curPngCtrl;
+		public PackImage m_curTgaCtrl;
 		private TreeViewItem mt_curImg;
 		public TreeViewItem m_curImg
 		{
@@ -39,6 +39,7 @@ namespace UIEditor.BoloUI
 		}
 		public Dictionary<string, TreeViewItem> m_mapLocalRes;
 		public Dictionary<string, TreeViewItem> m_mapOtherRes;
+		public Dictionary<string, TreeViewItem> m_mapPngItem;
 		public XmlDocument m_doc;
 
 		static public SelImage s_pW;
@@ -49,10 +50,11 @@ namespace UIEditor.BoloUI
 			m_iRowImage = iRowImage;
 			m_mapLocalRes = new Dictionary<string, TreeViewItem>();
 			m_mapOtherRes = new Dictionary<string, TreeViewItem>();
+			m_mapPngItem = new Dictionary<string, TreeViewItem>();
 			InitializeComponent();
 			this.Owner = MainWindow.s_pW;
 
-			m_curPngCtrl = null;
+			m_curTgaCtrl = null;
 			m_curImg = null;
 			ImageIndex.refreshImageIndex();
 			refreshResMap();
@@ -67,12 +69,14 @@ namespace UIEditor.BoloUI
 			s_pW = null;
 		}
 
-		public void refreshImageItem(TreeViewItem viewItem, string resName)
+		public void refreshImageItem(TreeViewItem tgaItem, string resName)
 		{
 			string resPath = Project.Setting.s_imagePath + "\\" + resName + ".xml";
 			string tgaPath = Project.Setting.s_imagePath + "\\" + resName + ".tga";
+			string pngFolderPath = Project.Setting.s_imagePath + "\\" + resName + "\\";
 
-			viewItem.ToolTip = resPath;
+			tgaItem.ToolTip = resPath;
+			tgaItem.Selected += tgaItem_Selected;
 			if(System.IO.File.Exists(resPath) && System.IO.File.Exists(tgaPath))
 			{
 				ImageIndex imgIndex;
@@ -81,16 +85,19 @@ namespace UIEditor.BoloUI
 				{
 					foreach(KeyValuePair<string, XmlElement> pairImg in imgIndex.m_mapImageXe.ToList())
 					{
-						TreeViewItem imgItem = new TreeViewItem();
+						TreeViewItem pngItem = new TreeViewItem();
+						string pngPath = pngFolderPath + pairImg.Key + ".png";
 
-						imgItem.Header = pairImg.Key;
-						imgItem.ToolTip =  resName + "." + pairImg.Key;
-						imgItem.Selected += imageItem_Selected;
-						viewItem.Items.Add(imgItem);
+						pngItem.Header = pairImg.Key;
+						pngItem.ToolTip = resName + "." + pairImg.Key;
+						pngItem.Selected += pngItem_Selected;
+						tgaItem.Items.Add(pngItem);
+						m_mapPngItem.Add(pngPath, pngItem);
 					}
 				}
 			}
 		}
+
 		public void refreshResMap()
 		{
 			XmlElement xeRoot = null;
@@ -164,26 +171,42 @@ namespace UIEditor.BoloUI
 			}
 		}
 
-		private void imageItem_Selected(object sender, RoutedEventArgs e)
+		private void showPackImage(TreeViewItem tgaItem, string pngName = null)
 		{
-			if(sender is TreeViewItem)
+			string tgaPath = Project.Setting.s_imagePath + "\\" + tgaItem.Header.ToString() + ".xml";
+
+			m_curTgaCtrl = new PackImage(tgaPath, false);
+
+			mx_imgFrame.Children.Clear();
+			mx_imgFrame.Width = m_curTgaCtrl.m_imageWidth;
+			mx_imgFrame.Height = m_curTgaCtrl.m_imageHeight;
+			m_curTgaCtrl.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+			m_curTgaCtrl.VerticalAlignment = System.Windows.VerticalAlignment.Top;
+			mx_imgFrame.Children.Add(m_curTgaCtrl);
+
+			m_curTgaCtrl.m_curPngName = pngName;
+		}
+		private void tgaItem_Selected(object sender, RoutedEventArgs e)
+		{
+			if (sender is TreeViewItem && mx_skinTreeFrame.SelectedItem == sender)
 			{
-				TreeViewItem imgItem = (TreeViewItem)sender;
+				TreeViewItem tgaItem = (TreeViewItem)sender;
 
-				if(imgItem.Parent is TreeViewItem)
+				showPackImage(tgaItem);
+			}
+		}
+		private void pngItem_Selected(object sender, RoutedEventArgs e)
+		{
+			if (sender is TreeViewItem && mx_skinTreeFrame.SelectedItem == sender)
+			{
+				TreeViewItem pngItem = (TreeViewItem)sender;
+
+				if(pngItem.Parent is TreeViewItem)
 				{
-					TreeViewItem resItem = (TreeViewItem)imgItem.Parent;
-					string pngPath = Project.Setting.s_imagePath + "\\" + resItem.Header.ToString() +
-						"\\" + imgItem.Header.ToString() + ".png";
-					m_curPngCtrl = new PngControl(pngPath);
+					TreeViewItem tgaItem = (TreeViewItem)pngItem.Parent;
 
-					mx_imgFrame.Children.Clear();
-					mx_imgFrame.Width = m_curPngCtrl.m_imgWidth;
-					mx_imgFrame.Height = m_curPngCtrl.m_imgHeight;
-					m_curPngCtrl.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
-					m_curPngCtrl.VerticalAlignment = System.Windows.VerticalAlignment.Top;
-					mx_imgFrame.Children.Add(m_curPngCtrl);
-					m_curImg = imgItem;
+					showPackImage(tgaItem, pngItem.Header.ToString());
+					m_curImg = pngItem;
 				}
 				else
 				{
@@ -209,7 +232,7 @@ namespace UIEditor.BoloUI
 		}
 		private void mx_ok_Click(object sender, RoutedEventArgs e)
 		{
-			if (m_curImg != null && m_curPngCtrl != null)
+			if (m_curImg != null && m_curTgaCtrl != null && m_curTgaCtrl.m_curPngName != null && m_curTgaCtrl.m_curPngName != "")
 			{
 				string newImgValue;
 
@@ -237,11 +260,11 @@ namespace UIEditor.BoloUI
 
 					m_iRowImage.m_parent.m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
 						new XmlOperation.HistoryNode(m_iRowImage.m_parent.m_xe, "Width", m_iRowImage.m_parent.m_xe.GetAttribute("Width"),
-							m_curPngCtrl.m_imgWidth.ToString())
+							m_curTgaCtrl.getCurPngWidth().ToString())
 						);
 					m_iRowImage.m_parent.m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
 						new XmlOperation.HistoryNode(m_iRowImage.m_parent.m_xe, "Height", m_iRowImage.m_parent.m_xe.GetAttribute("Height"),
-							m_curPngCtrl.m_imgHeight.ToString())
+							m_curTgaCtrl.getCurPngHeight().ToString())
 						);
 					m_iRowImage.m_parent.m_basic.changeSelectItem();
 				}
@@ -251,6 +274,10 @@ namespace UIEditor.BoloUI
 		private void mx_cancel_Click(object sender, RoutedEventArgs e)
 		{
 			this.Close();
+		}
+
+		private void mx_skinTreeFrame_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+		{
 		}
 	}
 }
