@@ -114,8 +114,6 @@ namespace UIEditor.BoloUI
 				}
 				else
 				{
-					OpenedFile fileDef;
-
 					m_iAttrRow.m_value = m_skinName;
 					if (System.IO.File.Exists(m_pathSkinGroup))
 					{
@@ -123,116 +121,10 @@ namespace UIEditor.BoloUI
 
 						if (curXmlCtrl != null)
 						{
-							Dictionary<string, XmlElement> mapXeGroup = curXmlCtrl.getSkinGroupMap();
-
-							if (m_skinGroupShortName != null && m_skinGroupShortName != "")
-							{
-								XmlElement xeOut;
-
-								if (!mapXeGroup.TryGetValue(m_skinGroupShortName, out xeOut))
-								{
-									XmlElement newXe = curXmlCtrl.m_xmlDoc.CreateElement("skingroup");
-									newXe.SetAttribute("Name", m_skinGroupShortName);
-									BoloUI.Basic treeChild = new BoloUI.Basic(newXe, curXmlCtrl);
-
-									curXmlCtrl.m_openedFile.m_lstOpt.addOperation(
-										new XmlOperation.HistoryNode(
-											XmlOperation.XmlOptType.NODE_INSERT,
-											treeChild.m_xe,
-											curXmlCtrl.m_xmlDoc.DocumentElement)
-										);
-								}
-							}
+							curXmlCtrl.addSkinGroup(m_skinGroupShortName);
 						}
 
-						//MainWindow.s_pW.openFileByPath(m_pathSkinGroup);
-						if (MainWindow.s_pW.m_mapOpenedFiles.TryGetValue(m_pathSkinGroup, out fileDef))
-						{
-							if (fileDef.m_frame is XmlControl)
-							{
-								this.Close();
-								XmlControl xmlCtrl = (XmlControl)fileDef.m_frame;
-								XmlElement newXe = xmlCtrl.m_xmlDoc.CreateElement("skin");
-
-								if (m_skinContent != null && m_skinContent != "")
-								{
-									XmlDocument docTmpl = new XmlDocument();
-
-									try
-									{
-										docTmpl.LoadXml(m_skinContent);
-										if (docTmpl.DocumentElement != null &&
-											docTmpl.DocumentElement.InnerXml != null &&
-											docTmpl.DocumentElement.InnerXml != "")
-										{
-											newXe.InnerXml = docTmpl.DocumentElement.InnerXml;
-										}
-									}
-									catch
-									{
-
-									}
-								}
-								newXe.SetAttribute("Name", m_skinName);
-								xmlCtrl.m_treeSkin.addResItem(newXe);
-
-								m_iAttrRow.m_parent.m_basic.changeSelectItem();
-								MainWindow.s_pW.mx_treeFrame.SelectedItem = MainWindow.s_pW.mx_skinEditor;
-
-								xmlCtrl.saveCurStatus();
-							}
-						}
-						else
-						{
-							if (File.Exists(m_pathSkinGroup))
-							{
-								XmlDocument docSkinGroup = new XmlDocument();
-
-								try
-								{
-									docSkinGroup.Load(m_pathSkinGroup);
-									if(docSkinGroup.DocumentElement.Name == "BoloUI")
-									{
-										XmlElement xeSkin = docSkinGroup.CreateElement("skin");
-
-										if (m_skinContent != null && m_skinContent != "")
-										{
-											XmlDocument docTmpl = new XmlDocument();
-
-											try
-											{
-												docTmpl.LoadXml(m_skinContent);
-												if (docTmpl.DocumentElement != null &&
-													docTmpl.DocumentElement.InnerXml != null &&
-													docTmpl.DocumentElement.InnerXml != "")
-												{
-													xeSkin.InnerXml = docTmpl.DocumentElement.InnerXml;
-												}
-											}
-											catch
-											{
-
-											}
-										}
-										xeSkin.SetAttribute("Name", m_skinName);
-										docSkinGroup.DocumentElement.AppendChild(xeSkin);
-
-										this.Close();
-
-										docSkinGroup.Save(m_pathSkinGroup);
-										Project.Setting.refreshSkinIndex();
-
-										m_iAttrRow.m_parent.m_basic.changeSelectItem();
-										MainWindow.s_pW.mx_treeFrame.SelectedItem = MainWindow.s_pW.mx_skinEditor;
-
-									}
-								}
-								catch
-								{
-
-								}
-							}
-						}
+						XmlControl.createSkin(m_pathSkinGroup, m_skinName, m_skinContent, m_iAttrRow);
 					}
 				}
 			}

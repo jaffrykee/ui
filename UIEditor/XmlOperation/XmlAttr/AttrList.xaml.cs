@@ -133,9 +133,110 @@ namespace UIEditor.XmlOperation.XmlAttr
 			}
 			mx_toolScroll.ScrollToRightEnd();
 		}
+
+		static public void hiddenOtherAttrList()
+		{
+			if (MainWindow.s_pW.m_otherAttrList != null)
+			{
+				MainWindow.s_pW.mx_toolArea.Items.Remove(MainWindow.s_pW.m_otherAttrList);
+				MainWindow.s_pW.m_otherAttrList = null;
+			}
+		}
+		static private int s_lastRightToolsIndex = 0;
+		static public int getVisibleSelectItemIndex(TabControl tab)
+		{
+			int index = 0;
+			var temp = tab.Items;
+
+			foreach (TabItem tabItem in temp)
+			{
+				if (tabItem.Visibility == System.Windows.Visibility.Visible)
+				{
+					if (tabItem.IsSelected == true)
+					{
+						return index;
+					}
+					else
+					{
+						index++;
+					}
+				}
+			}
+
+			return -1;
+		}
+		static public void setVisibleSelectItemIndex(TabControl tab, int selIndex)
+		{
+			int index = 0;
+			var temp = tab.Items;
+
+			foreach (TabItem tabItem in temp)
+			{
+				if (tabItem.Visibility == System.Windows.Visibility.Visible)
+				{
+					if (index == selIndex)
+					{
+						tabItem.IsSelected = true;
+
+						return;
+					}
+					else
+					{
+						index++;
+					}
+				}
+			}
+		}
+		static public void hiddenAllAttr()
+		{
+			s_lastRightToolsIndex = getVisibleSelectItemIndex(MainWindow.s_pW.mx_toolArea);
+			hiddenOtherAttrList();
+			//AttrList
+			foreach (object attrList in MainWindow.s_pW.mx_toolArea.Items)
+			{
+				if (attrList is TabItem)
+				{
+					TabItem tab = (TabItem)attrList;
+
+					tab.Visibility = Visibility.Collapsed;
+				}
+			}
+			if (MainWindow.s_pW.mx_skinEditor != null)
+			{
+				XmlControl curXml = XmlControl.getCurXmlControl();
+
+				if (curXml != null && curXml.m_curItem != null && curXml.m_curItem is ResBasic)
+				{
+					ResBasic curSkin = (ResBasic)curXml.m_curItem;
+
+					if (curSkin.m_isSkinEditor == true)
+					{
+						MainWindow.s_pW.mx_skinEditor.Visibility = System.Windows.Visibility.Visible;
+					}
+					else
+					{
+						MainWindow.s_pW.mx_skinEditor.Visibility = System.Windows.Visibility.Collapsed;
+						if (MainWindow.s_pW.mx_treeFrame.SelectedItem == MainWindow.s_pW.mx_skinEditor)
+						{
+							MainWindow.s_pW.mx_skinEditor.mx_treeAppr.Items.Clear();
+							MainWindow.s_pW.mx_treeFrame.SelectedIndex = 0;
+						}
+					}
+				}
+				else
+				{
+					MainWindow.s_pW.mx_skinEditor.Visibility = System.Windows.Visibility.Collapsed;
+					if (MainWindow.s_pW.mx_treeFrame.SelectedItem == MainWindow.s_pW.mx_skinEditor)
+					{
+						MainWindow.s_pW.mx_skinEditor.mx_treeAppr.Items.Clear();
+						MainWindow.s_pW.mx_treeFrame.SelectedIndex = 0;
+					}
+				}
+			}
+		}
 		static public void selectFirstVisibleAttrList()
 		{
-			foreach(TabItem tabItem in MainWindow.s_pW.mx_toolArea.Items)
+			foreach (TabItem tabItem in MainWindow.s_pW.mx_toolArea.Items)
 			{
 				if (tabItem.Visibility == Visibility.Visible)
 				{
@@ -143,6 +244,17 @@ namespace UIEditor.XmlOperation.XmlAttr
 
 					return;
 				}
+			}
+		}
+		static public void selectLastAttrList()
+		{
+			if (s_lastRightToolsIndex >= 0)
+			{
+				setVisibleSelectItemIndex(MainWindow.s_pW.mx_toolArea, s_lastRightToolsIndex);
+			}
+			else
+			{
+				selectFirstVisibleAttrList();
 			}
 		}
 

@@ -14,9 +14,10 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
 using System.Xml;
+using System.Windows.Threading;
 using UIEditor.BoloUI;
 using UIEditor.BoloUI.DefConfig;
-using System.Windows.Threading;
+using UIEditor.Project;
 
 namespace UIEditor
 {
@@ -185,6 +186,161 @@ namespace UIEditor
 
 			return mapXeGroup;
 		}
+		public void checkSkinLinkAndAddSkinGroup(string skinName)
+		{
+			string xmlPath;
+			object retSkin;
+
+			//Project.Setting.refreshSkinIndex();
+			retSkin = findSkin(skinName, out xmlPath);
+			if (retSkin == null)
+			{
+				List<string> lstSkinGroup;
+
+				//没在本文件的皮肤组中发现该皮肤。
+				findSkinForAll(skinName, out lstSkinGroup);
+				if(lstSkinGroup != null && lstSkinGroup.Count > 0)
+				{
+					if(lstSkinGroup.Count == 1)
+					{
+						Public.ResultLink.createResult("\r\n已自动在本UI添加皮肤[" + skinName + "]的所在皮肤组[", Public.ResultType.RT_INFO);
+						Public.ResultLink.createResult(lstSkinGroup[0], Public.ResultType.RT_INFO, Setting.getSkinGroupPathByName(lstSkinGroup[0]));
+						Public.ResultLink.createResult("]", Public.ResultType.RT_INFO);
+						addSkinGroup(lstSkinGroup[0]);
+					}
+					else
+					{
+						MultipleSkinGroupSelectWin winMulSkinGroup = new MultipleSkinGroupSelectWin(this, skinName, lstSkinGroup);
+
+						winMulSkinGroup.ShowDialog();
+					}
+				}
+				else
+				{
+					Public.ResultLink.createResult("\r\n在全工程范围没有发现本皮肤(" + skinName + ")", Public.ResultType.RT_ERROR);
+				}
+			}
+		}
+		public void addSkinGroup(string groupName)
+		{
+			Dictionary<string, XmlElement> mapXeGroup = getSkinGroupMap();
+			XmlItem lastItem = m_curItem;
+
+			if (groupName != null && groupName != "")
+			{
+				XmlElement xeOut;
+
+				if (!mapXeGroup.TryGetValue(groupName, out xeOut))
+				{
+					XmlElement newXe = m_xmlDoc.CreateElement("skingroup");
+					newXe.SetAttribute("Name", groupName);
+					BoloUI.Basic treeChild = new BoloUI.Basic(newXe, this);
+
+					m_openedFile.m_lstOpt.addOperation(
+						new XmlOperation.HistoryNode(
+							XmlOperation.XmlOptType.NODE_INSERT,
+							treeChild.m_xe,
+							m_xmlDoc.DocumentElement)
+						);
+					if(lastItem != null)
+					{
+						lastItem.changeSelectItem();
+					}
+				}
+			}
+		}
+		static public void createSkin(string pathSkinGroup, string skinName, string skinContent, XmlOperation.XmlAttr.IAttrRow iAttrRow)
+		{
+			OpenedFile fileDef;
+
+			//MainWindow.s_pW.openFileByPath(m_pathSkinGroup);
+			if (MainWindow.s_pW.m_mapOpenedFiles.TryGetValue(pathSkinGroup, out fileDef))
+			{
+				if (fileDef.m_frame is XmlControl)
+				{
+					XmlControl xmlCtrl = (XmlControl)fileDef.m_frame;
+					XmlElement newXe = xmlCtrl.m_xmlDoc.CreateElement("skin");
+
+					if (skinContent != null && skinContent != "")
+					{
+						XmlDocument docTmpl = new XmlDocument();
+
+						try
+						{
+							docTmpl.LoadXml(skinContent);
+							if (docTmpl.DocumentElement != null &&
+								docTmpl.DocumentElement.InnerXml != null &&
+								docTmpl.DocumentElement.InnerXml != "")
+							{
+								newXe.InnerXml = docTmpl.DocumentElement.InnerXml;
+							}
+						}
+						catch
+						{
+
+						}
+					}
+					newXe.SetAttribute("Name", skinName);
+					xmlCtrl.m_treeSkin.addResItem(newXe);
+
+					xmlCtrl.saveCurStatus();
+				}
+			}
+			else
+			{
+				if (File.Exists(pathSkinGroup))
+				{
+					XmlDocument docSkinGroup = new XmlDocument();
+
+					try
+					{
+						docSkinGroup.Load(pathSkinGroup);
+						if (docSkinGroup.DocumentElement.Name == "BoloUI")
+						{
+							XmlElement xeSkin = docSkinGroup.CreateElement("skin");
+
+							if (skinContent != null && skinContent != "")
+							{
+								XmlDocument docTmpl = new XmlDocument();
+
+								try
+								{
+									docTmpl.LoadXml(skinContent);
+									if (docTmpl.DocumentElement != null &&
+										docTmpl.DocumentElement.InnerXml != null &&
+										docTmpl.DocumentElement.InnerXml != "")
+									{
+										xeSkin.InnerXml = docTmpl.DocumentElement.InnerXml;
+									}
+								}
+								catch
+								{
+
+								}
+							}
+							xeSkin.SetAttribute("Name", skinName);
+							docSkinGroup.DocumentElement.AppendChild(xeSkin);
+
+							docSkinGroup.Save(pathSkinGroup);
+							Project.Setting.refreshSkinIndex();
+
+						}
+					}
+					catch
+					{
+
+					}
+				}
+			}
+
+			if (newSkin.s_pW != null)
+			{
+				newSkin.s_pW.Close();
+			}
+
+			iAttrRow.m_parent.m_basic.changeSelectItem();
+			MainWindow.s_pW.mx_treeFrame.SelectedItem = MainWindow.s_pW.mx_skinEditor;
+		}
 
 		public List<string> getIncludeSkinGroupList(string skinName)
 		{
@@ -227,7 +383,11 @@ namespace UIEditor
 			return lstIncludeGroupName;
 		}
 
-		public object findSkin(string skinName, out string xmlPath)
+		static void findSkinForAll(string skinName, out List<string> lstSkinGroup)
+		{
+			Project.Setting.s_mapSkinIndex.TryGetValue(skinName, out lstSkinGroup);
+		}
+		public XmlElement findSkin(string skinName, out string xmlPath)
 		{
 			ResBasic retSkinCtrl = null;
 			xmlPath = null;
@@ -243,6 +403,15 @@ namespace UIEditor
 
 				if (lstGroupName != null && lstGroupName.Count > 0)
 				{
+					if(lstGroupName.Count > 1)
+					{
+						Public.ResultLink.createResult("\r\n皮肤 " + skinName + " 存在多个皮肤组归属：", Public.ResultType.RT_WARNING);
+						foreach(string skinGroupName in lstGroupName)
+						{
+							Public.ResultLink.createResult(" [" + skinGroupName + "] ", Public.ResultType.RT_WARNING,
+								Setting.getSkinGroupPathByName(skinGroupName));
+						}
+					}
 					string path = Project.Setting.s_skinPath + "\\" + lstGroupName[0] + ".xml";
 
 					if (File.Exists(path))
@@ -309,28 +478,6 @@ namespace UIEditor
 			}
 
 			return false;
-		}
-		public string tryFindSkin(string skinName)
-		{
-			BoloUI.ResBasic skinBasic;
-
-			if (m_mapSkin.TryGetValue(skinName, out skinBasic))
-			{
-				return m_openedFile.m_path;
-			}
-			else
-			{
-				List<string> lstGroupName = getIncludeSkinGroupList(skinName);
-
-				if(lstGroupName != null && lstGroupName.Count > 0)
-				{
-					string path = Project.Setting.s_skinPath + "\\" + lstGroupName[0] + ".xml";
-
-					return path;
-				}
-			}
-
-			return "";
 		}
 		public void refreshVRect()
 		{

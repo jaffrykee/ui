@@ -6,6 +6,7 @@
 		 mc:Ignorable="d"
 		 Name="mx_root"
 		 Header="皮肤"
+		 ToolTip="Ctrl + 4"
 		 Visibility="Collapsed"
 		 Style="{StaticResource TmplFileItem}">
 	<Grid>

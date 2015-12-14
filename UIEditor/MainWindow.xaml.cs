@@ -801,7 +801,7 @@ namespace UIEditor
 		{
 			XmlControl.clearNodeTreeFrame();
 
-			hiddenAllAttr();
+			AttrList.hiddenAllAttr();
 			if (((TabItem)mx_workTabs.SelectedItem) != null)
 			{
 				if (((ToolTip)((TabItem)mx_workTabs.SelectedItem).ToolTip) != null)
@@ -934,6 +934,17 @@ namespace UIEditor
 
 			VK_OEM_PLUS = 0xBB,
 			VK_OEM_MINUS = 0xBD,
+			
+			VK_0 = 0x30,
+			VK_1 = 0x31,
+			VK_2 = 0x32,
+			VK_3 = 0x33,
+			VK_4 = 0x34,
+			VK_5 = 0x35,
+			VK_6 = 0x36,
+			VK_7 = 0x37,
+			VK_8 = 0x38,
+			VK_9 = 0x39,
 
 			VK_A = 0x41,
 			VK_B = 0x42,
@@ -1131,7 +1142,7 @@ namespace UIEditor
 					SendMessage(m_msgMng.m_hwndGL, WM_COPYDATA, (int)m_msgMng.m_hwndGLParent, ref msgData);
 				}
 			}
-			if (msgTag != W2GTag.W2G_SELECT_UI && msgTag != W2GTag.W2G_VIEWMODE && msgTag != W2GTag.W2G_DRAWRECT)
+			if (msgTag != W2GTag.W2G_SELECT_UI && msgTag != W2GTag.W2G_VIEWMODE && msgTag != W2GTag.W2G_DRAWRECT && msgTag != W2GTag.W2G_NORMAL_UPDATE)
 			{
 				XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
 				if (curXmlCtrl != null && curXmlCtrl.m_curItem != null && curXmlCtrl.m_curItem is BoloUI.Basic)
@@ -1722,6 +1733,38 @@ namespace UIEditor
 										openProjSelectBox();
 									}
 									break;
+								case VK_1:
+									{
+										if(mx_treeFrameProj != null && mx_treeFrameProj.Visibility == System.Windows.Visibility.Visible)
+										{
+											mx_treeFrameProj.IsSelected = true;
+										}
+									}
+									break;
+								case VK_2:
+									{
+										if (mx_treeFrameUI != null && mx_treeFrameUI.Visibility == System.Windows.Visibility.Visible)
+										{
+											mx_treeFrameUI.IsSelected = true;
+										}
+									}
+									break;
+								case VK_3:
+									{
+										if (mx_treeFrameSkin != null && mx_treeFrameSkin.Visibility == System.Windows.Visibility.Visible)
+										{
+											mx_treeFrameSkin.IsSelected = true;
+										}
+									}
+									break;
+								case VK_4:
+									{
+										if (mx_skinEditor != null && mx_skinEditor.Visibility == System.Windows.Visibility.Visible)
+										{
+											mx_skinEditor.IsSelected = true;
+										}
+									}
+									break;
 								default:
 									break;
 							}
@@ -1849,63 +1892,6 @@ namespace UIEditor
 			updateGL(buffer, W2GTag.W2G_NORMAL_DATA);
 			xmlCtrl.refreshVRect();
 		}
-
-		#region 资源读取
-		public void hiddenOtherAttrList()
-		{
-			if (m_otherAttrList != null)
-			{
-				mx_toolArea.Items.Remove(m_otherAttrList);
-				m_otherAttrList = null;
-			}
-		}
-		public void hiddenAllAttr()
-		{
-			hiddenOtherAttrList();
-			//AttrList
-			foreach (object attrList in mx_toolArea.Items)
-			{
-				if (attrList is TabItem)
-				{
-					TabItem tab = (TabItem)attrList;
-
-					tab.Visibility = Visibility.Collapsed;
-				}
-			}
-			if (mx_skinEditor != null)
-			{
-				XmlControl curXml = XmlControl.getCurXmlControl();
-
-				if(curXml != null && curXml.m_curItem != null && curXml.m_curItem is ResBasic)
-				{
-					ResBasic curSkin = (ResBasic)curXml.m_curItem;
-
-					if(curSkin.m_isSkinEditor == true)
-					{
-						mx_skinEditor.Visibility = System.Windows.Visibility.Visible;
-					}
-					else
-					{
-						mx_skinEditor.Visibility = System.Windows.Visibility.Collapsed;
-						if (mx_treeFrame.SelectedItem == mx_skinEditor)
-						{
-							mx_skinEditor.mx_treeAppr.Items.Clear();
-							mx_treeFrame.SelectedIndex = 0;
-						}
-					}
-				}
-				else
-				{
-					mx_skinEditor.Visibility = System.Windows.Visibility.Collapsed;
-					if (mx_treeFrame.SelectedItem == mx_skinEditor)
-					{
-						mx_skinEditor.mx_treeAppr.Items.Clear();
-						mx_treeFrame.SelectedIndex = 0;
-					}
-				}
-			}
-		}
-		#endregion
 
 		public void refreshAllCtrlUIHeader()
 		{
@@ -2592,7 +2578,7 @@ namespace UIEditor
 
 				m_hitCount = 0;
 				m_isTextChanged = true;
-				hiddenAllAttr();
+				AttrList.hiddenAllAttr();
 
 				m_isCanEdit = true;
 			}
@@ -3003,6 +2989,14 @@ namespace UIEditor
 			ResultLink.refreshResultVisibility();
 		}
 		private void mx_showWarningResult_Unchecked(object sender, RoutedEventArgs e)
+		{
+			ResultLink.refreshResultVisibility();
+		}
+		private void mx_showInfoResult_Checked(object sender, RoutedEventArgs e)
+		{
+			ResultLink.refreshResultVisibility();
+		}
+		private void mx_showInfoResult_Unchecked(object sender, RoutedEventArgs e)
 		{
 			ResultLink.refreshResultVisibility();
 		}

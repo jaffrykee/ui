@@ -410,6 +410,19 @@ namespace UIEditor.Project
 			return openFileDialog.FileName;
 		}
 
+		static public string getSkinGroupPathByName(string skinGroupName)
+		{
+			if(skinGroupName != null && skinGroupName != "")
+			{
+				string path = s_skinPath + "\\" + skinGroupName + ".xml";
+
+				return StringDic.getRealPath(path);
+			}
+			else
+			{
+				return null;
+			}
+		}
 		static public void refreshSkinIndex()
 		{
 			if (s_mapSkinIndex != null)

@@ -271,7 +271,7 @@ namespace UIEditor.BoloUI
 			if(m_xe.Name != "BoloUI")
 			{
 				BoloUI.Basic ctrlUI;
-				MainWindow.s_pW.hiddenAllAttr();
+				AttrList.hiddenAllAttr();
 
 				if (obj != null && obj is Basic)
 				{
@@ -359,7 +359,7 @@ namespace UIEditor.BoloUI
 			this.IsSelected = true;
 			BringIntoView();
 			gotoSelectXe();
-			AttrList.selectFirstVisibleAttrList();
+			AttrList.selectLastAttrList();
 			m_selLock.delLock(ref stackLock);
 		}
 	}

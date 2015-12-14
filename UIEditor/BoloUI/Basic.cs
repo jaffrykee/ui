@@ -211,7 +211,7 @@ namespace UIEditor.BoloUI
 			showBlueRect();
 
 			m_xmlCtrl.m_curItem = this;
-			MainWindow.s_pW.hiddenAllAttr();
+			AttrList.hiddenAllAttr();
 			CtrlDef_T ctrlDef;
 
 			if (MainWindow.s_pW.m_mapCtrlDef.TryGetValue(m_xe.Name, out ctrlDef))
@@ -301,10 +301,10 @@ namespace UIEditor.BoloUI
 					selBn.mx_radio.IsChecked = true;
 				}
 			}
-			MainWindow.s_pW.hiddenOtherAttrList();
+			AttrList.hiddenOtherAttrList();
 			BringIntoView();
 			gotoSelectXe();
-			AttrList.selectFirstVisibleAttrList();
+			AttrList.selectLastAttrList();
 			if(MainWindow.s_pW.mx_skinEditor != null)
 			{
 				MainWindow.s_pW.mx_skinEditor.refreshSkinEditor(this);

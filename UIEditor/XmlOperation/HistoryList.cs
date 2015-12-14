@@ -70,6 +70,12 @@ namespace UIEditor.XmlOperation
 		}
 		static public void updateAttrToGL(XmlControl xmlCtrl, Basic uiCtrl, string attrName, string newValue)
 		{
+			if (uiCtrl.m_xe.Name == "progress" && attrName == "value")
+			{
+				MainWindow.s_pW.updateGL(System.IO.Path.GetFileName(xmlCtrl.m_openedFile.m_path) + ":" +
+					uiCtrl.m_vId + ":" + attrName + ":" + newValue, W2GTag.W2G_NORMAL_UPDATE);
+				return;
+			}
 			if (MainWindow.s_pW.mx_isShowAll.IsChecked != true)
 			{
 				foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in MainWindow.s_pW.m_mapBasicCtrlDef.ToList())
@@ -312,35 +318,18 @@ namespace UIEditor.XmlOperation
 					dstItem.changeSelectItem();
 					switch(m_curNode.Value.m_optType)
 					{
+							//用于添加控件中带有皮肤名或修改控件的皮肤名后，自动添加皮肤组。
 						case XmlOptType.NODE_UPDATE:
 							{
 								if(m_curNode.Value.m_attrName == "skin")
 								{
-									string skinValue = dstItem.m_xe.GetAttribute("skin");
-
-									if(skinValue != "")
-									{
-										string xmlPath;
-										object retSkin;
-
-										//Project.Setting.refreshSkinIndex();
-										retSkin = dstItem.m_xmlCtrl.findSkin(skinValue, out xmlPath);
-										if (retSkin == null)
-										{
-											//没在本文件的皮肤组中发现该皮肤。
-										}
-									}
+									checkSkinLink(dstItem.m_xmlCtrl, dstItem.m_xe, false);
 								}
 							}
 							break;
 						case XmlOptType.NODE_INSERT:
 							{
-								string skinValue = dstItem.m_xe.GetAttribute("skin");
-
-								if (skinValue != "")
-								{
-									Project.Setting.refreshSkinIndex();
-								}
+								checkSkinLink(dstItem.m_xmlCtrl, dstItem.m_xe);
 							}
 							break;
 						default:
@@ -363,6 +352,26 @@ namespace UIEditor.XmlOperation
 				else
 				{
 					m_xmlCtrl.refreshXmlText();
+				}
+			}
+		}
+		static private void checkSkinLink(XmlControl xmlCtrl, XmlElement xeUiCtrl, bool isAll = true)
+		{
+			string skinName = xeUiCtrl.GetAttribute("skin");
+
+			if (skinName != "")
+			{
+				Project.Setting.refreshSkinIndex();
+				xmlCtrl.checkSkinLinkAndAddSkinGroup(skinName);
+			}
+			if (isAll)
+			{
+				foreach (XmlNode xn in xeUiCtrl.ChildNodes)
+				{
+					if (xn is XmlElement)
+					{
+						checkSkinLink(xmlCtrl, (XmlElement)xn, isAll);
+					}
 				}
 			}
 		}

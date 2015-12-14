@@ -123,6 +123,9 @@
     <Compile Include="BoloUI\MenuWin\BatchUpdate.xaml.cs">
       <DependentUpon>BatchUpdate.xaml</DependentUpon>
     </Compile>
+    <Compile Include="BoloUI\MultipleSkinGroupSelectWin.xaml.cs">
+      <DependentUpon>MultipleSkinGroupSelectWin.xaml</DependentUpon>
+    </Compile>
     <Compile Include="BoloUI\newSkin.xaml.cs">
       <DependentUpon>newSkin.xaml</DependentUpon>
     </Compile>
@@ -269,6 +272,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="BoloUI\MenuWin\BatchUpdate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="BoloUI\MultipleSkinGroupSelectWin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -93,6 +93,14 @@ namespace UIEditor.Public
 								}
 							}
 							break;
+						case ResultType.RT_INFO:
+							{
+								if (MainWindow.s_pW.mx_showInfoResult.IsChecked == true && rLink.m_line != null)
+								{
+									s_curResultFrame.Inlines.Add(rLink.m_line);
+								}
+							}
+							break;
 						default:
 							{
 								if (MainWindow.s_pW.mx_showOtherResult.IsChecked == true && rLink.m_line != null)
@@ -151,7 +159,7 @@ namespace UIEditor.Public
 			}
 			else
 			{
-				if (rt == ResultType.RT_WARNING || rt == ResultType.RT_ERROR)
+				if (rt == ResultType.RT_WARNING || rt == ResultType.RT_ERROR || rt == ResultType.RT_INFO)
 				{
 					Image imgResult = new Image();
 					m_line = new InlineUIContainer();
@@ -166,6 +174,11 @@ namespace UIEditor.Public
 						case ResultType.RT_ERROR:
 							{
 								imgResult.Source = s_bmpError;
+							}
+							break;
+						case ResultType.RT_INFO:
+							{
+								imgResult.Source = s_bmpLinkInfo;
 							}
 							break;
 						default:

@@ -379,7 +379,7 @@ namespace UIEditor
 		{
 		}
 
-		private void mx_canvas_MouseDown(object sender, MouseButtonEventArgs e)
+		private void mouseDownEvent(MouseButtonEventArgs e)
 		{
 			m_poiX = (int)Math.Round(e.GetPosition(mx_canvas).X);
 			m_poiY = (int)Math.Round(e.GetPosition(mx_canvas).Y);
@@ -408,6 +408,15 @@ namespace UIEditor
 			}
 			m_curPngName = "";
 			mx_selPath.Visibility = System.Windows.Visibility.Collapsed;
+		}
+		private void mx_canvas_MouseDown(object sender, MouseButtonEventArgs e)
+		{
+			mouseDownEvent(e);
+		}
+		private void mx_canvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			mouseDownEvent(e);
+			e.Handled = true;
 		}
 		private void mx_canvas_MouseMove(object sender, MouseEventArgs e)
 		{

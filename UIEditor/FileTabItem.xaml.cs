@@ -143,7 +143,7 @@ namespace UIEditor
 				}
 				pW.mx_xmlText.Document = new FlowDocument();
 			}
-			pW.hiddenAllAttr();
+			XmlOperation.XmlAttr.AttrList.hiddenAllAttr();
 		}
 		private void closeFileTab(object sender, RoutedEventArgs e)
 		{
