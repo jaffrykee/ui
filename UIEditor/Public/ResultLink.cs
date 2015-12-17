@@ -42,7 +42,14 @@ namespace UIEditor.Public
 			get { return st_curResultFrame; }
 			set
 			{
-				st_curResultFrame = value;
+				if (value != null)
+				{
+					st_curResultFrame = value;
+				}
+				else
+				{
+					st_curResultFrame = OpenedFile.s_paraResult;
+				}
 				MainWindow.s_pW.mx_docResult.Blocks.Clear();
 				MainWindow.s_pW.mx_docResult.Blocks.Add(value);
 				refreshResultVisibility();
@@ -66,68 +73,94 @@ namespace UIEditor.Public
 		static public BitmapImage s_bmpWarning = new BitmapImage(new Uri(@".\data\image\warning.png", UriKind.Relative));
 		static public BitmapImage s_bmpLinkInfo = new BitmapImage(new Uri(@".\data\image\linkInfo.png", UriKind.Relative));
 
+		static private void showResultRow(ResultLink rLink)
+		{
+			switch (rLink.m_rt)
+			{
+				case ResultType.RT_ERROR:
+					{
+						if (MainWindow.s_pW.mx_showErrorResult.IsChecked == true && rLink.m_line != null)
+						{
+							s_curResultFrame.Inlines.Add(rLink.m_line);
+						}
+					}
+					break;
+				case ResultType.RT_WARNING:
+					{
+						if (MainWindow.s_pW.mx_showWarningResult.IsChecked == true && rLink.m_line != null)
+						{
+							s_curResultFrame.Inlines.Add(rLink.m_line);
+						}
+					}
+					break;
+				case ResultType.RT_INFO:
+					{
+						if (MainWindow.s_pW.mx_showInfoResult.IsChecked == true && rLink.m_line != null)
+						{
+							s_curResultFrame.Inlines.Add(rLink.m_line);
+						}
+					}
+					break;
+				default:
+					{
+						if (MainWindow.s_pW.mx_showOtherResult.IsChecked == true && rLink.m_line != null)
+						{
+							s_curResultFrame.Inlines.Add(rLink.m_line);
+						}
+					}
+					break;
+			}
+		}
 		static public void refreshResultVisibility()
 		{
 			OpenedFile curFileDef = OpenedFile.getCurFileDef();
 
-			if(curFileDef != null && s_curResultFrame != null)
+			if (s_curResultFrame != null)
 			{
 				s_curResultFrame.Inlines.Clear();
-				foreach (ResultLink rLink in curFileDef.m_lstResult)
+				if (curFileDef != null)
 				{
-					switch(rLink.m_rt)
+					foreach (ResultLink rLink in curFileDef.m_lstResult)
 					{
-						case ResultType.RT_ERROR:
-							{
-								if (MainWindow.s_pW.mx_showErrorResult.IsChecked == true && rLink.m_line != null)
-								{
-									s_curResultFrame.Inlines.Add(rLink.m_line);
-								}
-							}
-							break;
-						case ResultType.RT_WARNING:
-							{
-								if (MainWindow.s_pW.mx_showWarningResult.IsChecked == true && rLink.m_line != null)
-								{
-									s_curResultFrame.Inlines.Add(rLink.m_line);
-								}
-							}
-							break;
-						case ResultType.RT_INFO:
-							{
-								if (MainWindow.s_pW.mx_showInfoResult.IsChecked == true && rLink.m_line != null)
-								{
-									s_curResultFrame.Inlines.Add(rLink.m_line);
-								}
-							}
-							break;
-						default:
-							{
-								if (MainWindow.s_pW.mx_showOtherResult.IsChecked == true && rLink.m_line != null)
-								{
-									s_curResultFrame.Inlines.Add(rLink.m_line);
-								}
-							}
-							break;
+						showResultRow(rLink);
 					}
 				}
-				if(s_curResultFrame.Inlines.Count() > 0 && s_curResultFrame.Inlines.First() != null &&
+				foreach (ResultLink rLink in OpenedFile.s_lstResult)
+				{
+					showResultRow(rLink);
+				}
+				if (s_curResultFrame.Inlines.Count() > 0 && s_curResultFrame.Inlines.First() != null &&
 					s_curResultFrame.Inlines.First() is Run && ((Run)s_curResultFrame.Inlines.First()).Text == "\r\n")
 				{
 					s_curResultFrame.Inlines.Remove(s_curResultFrame.Inlines.First());
 				}
 			}
 		}
-		static public void addLineToCurResultFrame(ResultLink rLink)
+		static public void addLineToCurResultFrame(ResultLink rLink, bool isAlwaysShow = false)
 		{
-			OpenedFile curFileDef = OpenedFile.getCurFileDef();
-
-			if (curFileDef != null && curFileDef.m_lstResult != null)
+			if(isAlwaysShow == true)
 			{
-				curFileDef.m_lstResult.Add(rLink);
+				OpenedFile.s_lstResult.Add(rLink);
+			}
+			else
+			{
+				OpenedFile curFileDef = OpenedFile.getCurFileDef();
+
+				if (curFileDef != null && curFileDef.m_lstResult != null)
+				{
+					curFileDef.m_lstResult.Add(rLink);
+				}
+				else
+				{
+					OpenedFile.s_lstResult.Add(rLink);
+				}
 			}
 		}
-		static public void createResult(string text, ResultType rt = ResultType.RT_NONE, object link = null)
+		static public void createResult(string text, bool isAlwaysShow)
+		{
+			createResult(text, ResultType.RT_NONE, null, isAlwaysShow);
+		}
+		static public void createResult(string text, ResultType rt = ResultType.RT_NONE, object link = null, bool isAlwaysShow = false)
 		{
 			if (text[0] == '\r' && text[1] == '\n')
 			{
@@ -136,12 +169,12 @@ namespace UIEditor.Public
 				ResultLink rLink = new Public.ResultLink("\r\n", rt, link);
 				ResultLink rImageLink = new Public.ResultLink(null, rt, link);
 
-				addLineToCurResultFrame(rLink);
-				addLineToCurResultFrame(rImageLink);
+				addLineToCurResultFrame(rLink, isAlwaysShow);
+				addLineToCurResultFrame(rImageLink, isAlwaysShow);
 			}
 			ResultLink rTextLink = new Public.ResultLink(text, rt, link);
 
-			addLineToCurResultFrame(rTextLink);
+			addLineToCurResultFrame(rTextLink, isAlwaysShow);
 			MainWindow.s_pW.mx_bFrameError.IsSelected = true;
 		}
 

@@ -35,26 +35,26 @@
 							 SelectionChanged="mx_lbResolution_SelectionChanged">
 					</ListBox>
 					<StackPanel Grid.Column="1" Margin="0,10,10,10">
-						<Button Name="mx_addRow" Width="70" Height="25" Click="mx_addRow_Click">添加</Button>
-						<Button Name="mx_delRow"
+						<Button Name="mx_addResolutionRow" Width="70" Height="25" Click="mx_addResolutionRow_Click">添加</Button>
+						<Button Name="mx_delResolutionRow"
 								IsEnabled="False"
-								Width="{Binding ElementName=mx_addRow, Path=Width}"
-								Height="{Binding ElementName=mx_addRow, Path=Height}"
-								Click="mx_delRow_Click">
+								Width="{Binding ElementName=mx_addResolutionRow, Path=Width}"
+								Height="{Binding ElementName=mx_addResolutionRow, Path=Height}"
+								Click="mx_delResolutionRow_Click">
 							删除
 						</Button>
-						<Button Name="mx_updRow"
-								IsEnabled="{Binding ElementName=mx_delRow, Path=IsEnabled}"
-								Width="{Binding ElementName=mx_addRow, Path=Width}"
-								Height="{Binding ElementName=mx_addRow, Path=Height}"
-								Click="mx_updRow_Click">
+						<Button Name="mx_updResolutionRow"
+								IsEnabled="{Binding ElementName=mx_delResolutionRow, Path=IsEnabled}"
+								Width="{Binding ElementName=mx_addResolutionRow, Path=Width}"
+								Height="{Binding ElementName=mx_addResolutionRow, Path=Height}"
+								Click="mx_updResolutionRow_Click">
 							修改
 						</Button>
-						<Button Name="mx_setDefault"
-								IsEnabled="{Binding ElementName=mx_delRow, Path=IsEnabled}"
-								Width="{Binding ElementName=mx_addRow, Path=Width}"
-								Height="{Binding ElementName=mx_addRow, Path=Height}"
-								Click="mx_setDefault_Click">
+						<Button Name="mx_setResolutionDefault"
+								IsEnabled="{Binding ElementName=mx_delResolutionRow, Path=IsEnabled}"
+								Width="{Binding ElementName=mx_addResolutionRow, Path=Width}"
+								Height="{Binding ElementName=mx_addResolutionRow, Path=Height}"
+								Click="mx_setResolutionDefault_Click">
 							设为默认
 						</Button>
 					</StackPanel>
@@ -139,6 +139,48 @@
 							</Button>
 						</Grid>
 					</Grid>
+				</Grid>
+			</TabItem>
+			<TabItem Header="主题">
+				<Grid Background="{StaticResource BackgroundNormal}">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*"/>
+						<ColumnDefinition Width="auto"/>
+					</Grid.ColumnDefinitions>
+					<ListBox Name="mx_lbTheme"
+							 Grid.Column="0"
+							 BorderThickness="1"
+							 Margin="10"
+							 Padding="0"
+							 BorderBrush="{StaticResource BorderBrushNormal}"
+							 Foreground="{StaticResource Foreground}"
+							 Background="{StaticResource Background}"
+							 SelectionChanged="mx_lbTheme_SelectionChanged">
+					</ListBox>
+					<StackPanel Grid.Column="1" Margin="0,10,10,10">
+						<Button Name="mx_addThemeRow" Width="70" Height="25" Click="mx_addThemeRow_Click">添加</Button>
+						<Button Name="mx_delThemeRow"
+								IsEnabled="False"
+								Width="{Binding ElementName=mx_addThemeRow, Path=Width}"
+								Height="{Binding ElementName=mx_addThemeRow, Path=Height}"
+								Click="mx_delThemeRow_Click">
+							删除
+						</Button>
+						<Button Name="mx_updThemeRow"
+								IsEnabled="{Binding ElementName=mx_delThemeRow, Path=IsEnabled}"
+								Width="{Binding ElementName=mx_addThemeRow, Path=Width}"
+								Height="{Binding ElementName=mx_addThemeRow, Path=Height}"
+								Click="mx_updThemeRow_Click">
+							修改
+						</Button>
+						<Button Name="mx_setThemeDefault"
+								IsEnabled="{Binding ElementName=mx_delThemeRow, Path=IsEnabled}"
+								Width="{Binding ElementName=mx_addThemeRow, Path=Width}"
+								Height="{Binding ElementName=mx_addThemeRow, Path=Height}"
+								Click="mx_setThemeDefault_Click">
+							设为默认
+						</Button>
+					</StackPanel>
 				</Grid>
 			</TabItem>
 		</TabControl>

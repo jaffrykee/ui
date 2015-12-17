@@ -40,7 +40,9 @@ namespace UIEditor
 
 		public DateTime m_lastWriteTime;
 		public Paragraph m_paraResult;
+		static public Paragraph s_paraResult;
 		public List<ResultLink> m_lstResult;
+		static public List<ResultLink> s_lstResult = new List<ResultLink>();
 
 		static private OpenedFileContextMenu st_menu = null;
 		static public OpenedFileContextMenu s_menu

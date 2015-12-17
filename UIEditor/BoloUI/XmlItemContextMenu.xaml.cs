@@ -245,6 +245,15 @@ namespace UIEditor.BoloUI
 			}
 			ResultLink.createResult("\r\n检测结束");
 		}
+		private void mx_checkBaseId_Click(object sender, RoutedEventArgs e)
+		{
+			ResultLink.createResult("\r\n开始检测重复的baseID");
+			if (XmlControl.getCurXmlControl() != null)
+			{
+				XmlControl.getCurXmlControl().checkAllUICtrlBaseId();
+			}
+			ResultLink.createResult("\r\n检测结束");
+		}
 		private void mx_shrinkChildren_Click(object sender, RoutedEventArgs e)
 		{
 			XmlItem.getCurItem().IsExpanded = true;
@@ -379,6 +388,7 @@ namespace UIEditor.BoloUI
 								mx_batchUpdate.IsEnabled = true;
 							}
 						}
+						mx_checkBaseId.IsEnabled = true;
 						#endregion
 					}
 					break;

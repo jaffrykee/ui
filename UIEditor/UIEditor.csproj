@@ -176,6 +176,9 @@
     <Compile Include="Project\SetResolutionWin.xaml.cs">
       <DependentUpon>SetResolutionWin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Project\SetSettingRowWin.xaml.cs">
+      <DependentUpon>SetSettingRowWin.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Project\Setting.cs" />
     <Compile Include="Project\IncludeFile.xaml.cs">
       <DependentUpon>IncludeFile.xaml</DependentUpon>
@@ -344,6 +347,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Project\SetResolutionWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Project\SetSettingRowWin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

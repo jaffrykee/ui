@@ -82,7 +82,6 @@ namespace UIEditor.XmlOperation.XmlAttr
 				}
 			}
 		}
-
 		public void refreshRowVisible()
 		{
 			bool onlySetted;

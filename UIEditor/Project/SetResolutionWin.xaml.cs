@@ -64,11 +64,11 @@ namespace UIEditor.Project
 		}
 		private void mx_ok_Click(object sender, RoutedEventArgs e)
 		{
-			if(ProjectSettingWin.s_pW != null && ProjectSettingWin.s_pW.m_mapLbiRow != null)
+			if(ProjectSettingWin.s_pW != null && ProjectSettingWin.s_pW.m_mapLbiResolutionRow != null)
 			{
 				XmlElement xeRow;
 
-				if(ProjectSettingWin.s_pW.m_mapLbiRow.TryGetValue(m_lbiRow, out xeRow) && xeRow != null)
+				if(ProjectSettingWin.s_pW.m_mapLbiResolutionRow.TryGetValue(m_lbiRow, out xeRow) && xeRow != null)
 				{
 					int w, h;
 
@@ -88,7 +88,7 @@ namespace UIEditor.Project
 		{
 			if (m_isAdd)
 			{
-				ProjectSettingWin.delRow(m_lbiRow);
+				ProjectSettingWin.delResolutionRow(m_lbiRow);
 			}
 
 			this.Close();

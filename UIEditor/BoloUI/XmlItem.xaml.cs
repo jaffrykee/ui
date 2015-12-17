@@ -289,7 +289,7 @@ namespace UIEditor.BoloUI
 								}
 								else
 								{
-									if (m_xe.ParentNode.NodeType == XmlNodeType.Element)
+									if (m_xe.ParentNode != null && m_xe.ParentNode.NodeType == XmlNodeType.Element)
 									{
 										if (((XmlElement)m_xe.ParentNode).Name == "BoloUI" &&
 											MainWindow.s_pW.m_mapSkinTreeDef.TryGetValue(treeChild.m_xe.Name, out skinChildDef))

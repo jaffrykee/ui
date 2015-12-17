@@ -9,9 +9,11 @@
 		<ContextMenu Name="mx_menu" Loaded="mx_menu_Loaded" Unloaded="mx_menu_Unloaded">
 			<MenuItem Name="mx_addNode" Header="添加节点或事件" Loaded="mx_addNode_Loaded"/>
 			<MenuItem Name="mx_addTmpl" Header="将该控件作为模板..." Click="mx_addTmpl_Click"/>
+			<Separator/>
 			<MenuItem Name="mx_shrinkChildren" Header="显示并折叠子节点" Click="mx_shrinkChildren_Click"/>
 			<MenuItem Name="mx_batchUpdate" Header="批量修改" Click="mx_batchUpdate_Click" IsEnabled="False"/>
 			<MenuItem Name="mx_checkOverflow" Header="检测溢出" Click="mx_checkOverflow_Click" IsEnabled="False"/>
+			<MenuItem Name="mx_checkBaseId" Header="检测重复的baseID" Click="mx_checkBaseId_Click" IsEnabled="False"/>
 			<Separator/>
 			<MenuItem Name="mx_cut" Header="剪切" InputGestureText="Ctrl+X" Click="mx_cut_Click">
 				<MenuItem.Icon>

@@ -32,7 +32,19 @@ namespace UIEditor.Project
 				}
 			}
 		}
-		static public string s_langPath;
+		static private string st_langPath;
+		static public string s_langPath
+		{
+			get { return st_langPath; }
+			set
+			{
+				st_langPath = value;
+
+				string folderPath = Path.GetDirectoryName(getLangPath());
+
+				MainWindow.s_pW.updateGL(folderPath, W2GTag.W2G_PATH_LANGUAGE);
+			}
+		}
 		static private string st_backgroundPath;
 		static public string s_backgroundPath
 		{
@@ -51,12 +63,24 @@ namespace UIEditor.Project
 		static public void refreshAllProjectSetting()
 		{
 			XmlNode xnResolutionSetting = s_docProj.DocumentElement.SelectSingleNode("ResolutionSetting");
+			XmlNode xnThemeSetting = s_docProj.DocumentElement.SelectSingleNode("ThemeSetting");
 
 			refreshResolutionBoxByConfigNode(xnResolutionSetting);
+			refreshSettingUIByConfigNode(xnThemeSetting, MainWindow.s_pW.mx_cbThemeName);
 			refreshPathSetting(initPathSetting(s_docProj.DocumentElement));
+			refreshLanguageBox();
 			s_docProj.Save(s_projPath + "\\" + s_projName);
 			s_skinPath = s_projPath + "\\skin";
 			s_imagePath = s_projPath + "\\images";
+
+			if (MainWindow.s_pW.mx_isEnableTheme.IsChecked == true)
+			{
+				setEnableTheme(true);
+			}
+			else
+			{
+				setEnableTheme(false);
+			}
 		}
 		static public void refreshPathSetting(XmlElement xePathSetting)
 		{
@@ -138,6 +162,75 @@ namespace UIEditor.Project
 
 			return null;
 		}
+		static public XmlElement initSetting(XmlNode xnConfig, string settingName, string[] arrInitValue)
+		{
+			if (MainWindow.s_pW.m_docConf != null && settingName != null && arrInitValue != null)
+			{
+				XmlElement xeToolConfig = MainWindow.s_pW.m_docConf.DocumentElement;
+
+				if(xeToolConfig.Name == "Config")
+				{
+					XmlNodeList xnListSetting = xnConfig.SelectNodes(settingName);
+
+					if (xnListSetting.Count > 0)
+					{
+						foreach (XmlNode xnSettingRow in xnListSetting)
+						{
+							xnConfig.RemoveChild(xnSettingRow);
+						}
+					}
+
+					XmlNode xnToolSetting = xeToolConfig.SelectSingleNode(settingName);
+					XmlElement xeSettingSetting = xnConfig.OwnerDocument.CreateElement(settingName);
+
+					if (xnToolSetting != null && xnToolSetting is XmlElement)
+					{
+						XmlElement xeToolSetting = (XmlElement)xnToolSetting;
+
+						xeSettingSetting.InnerXml = xeToolSetting.InnerXml;
+					}
+					else
+					{
+						string[] arrStrRsl = {};
+						bool isDef = true;
+
+						foreach (string strRow in arrStrRsl)
+						{
+							XmlElement xeRow = xnConfig.OwnerDocument.CreateElement("row");
+
+							xeRow.InnerXml = strRow;
+							if (isDef)
+							{
+								isDef = false;
+								xeRow.SetAttribute("isDefault", "true");
+							}
+							xeSettingSetting.AppendChild(xeRow);
+						}
+					}
+					xnConfig.AppendChild(xeSettingSetting);
+
+					return xeSettingSetting;
+				}
+			}
+
+			return null;
+		}
+		static public void refreshLanguageBox()
+		{
+			Dictionary<string, int> mapLangIndex;
+			XmlDocument docLang;
+
+			getMapLangIndexAndDocLang(out mapLangIndex, out docLang);
+			MainWindow.s_pW.mx_cbLangName.Items.Clear();
+			foreach(KeyValuePair<string, int> pairLangIndex in mapLangIndex)
+			{
+				ComboBoxItem cbiRow = new ComboBoxItem();
+
+				cbiRow.Content = pairLangIndex.Key;
+				cbiRow.ToolTip = pairLangIndex.Value.ToString();
+				MainWindow.s_pW.mx_cbLangName.Items.Add(cbiRow);
+			}
+		}
 		static public void refreshResolutionBoxByConfigNode(XmlNode xnResolutionSetting)
 		{
 			if (xnResolutionSetting != null)
@@ -164,6 +257,38 @@ namespace UIEditor.Project
 								//cbiRow.Content += " <默认>";
 								MainWindow.s_pW.mx_resolution.SelectedItem = cbiRow;
 								MainWindow.s_pW.mx_resolutionBasic.SelectedItem = cbiRowBasic;
+								isDefault = false;
+							}
+							else
+							{
+								((XmlElement)xnRow).RemoveAttribute("isDefault");
+							}
+						}
+					}
+				}
+			}
+		}
+		static public void refreshSettingUIByConfigNode(XmlNode xnSetting, ComboBox cbSetting)
+		{
+			if (xnSetting != null)
+			{
+				bool isDefault = true;
+
+				cbSetting.Items.Clear();
+				foreach (XmlNode xnRow in xnSetting.ChildNodes)
+				{
+					if (xnRow.Name == "row" && xnRow is XmlElement)
+					{
+						System.Windows.Controls.ComboBoxItem cbiRow = new System.Windows.Controls.ComboBoxItem();
+
+						cbiRow.Content = xnRow.InnerXml;
+						cbSetting.Items.Add(cbiRow);
+						if (((XmlElement)xnRow).GetAttribute("isDefault") == "true")
+						{
+							if (isDefault)
+							{
+								//cbiRow.Content += " <默认>";
+								cbSetting.SelectedItem = cbiRow;
 								isDefault = false;
 							}
 							else
@@ -529,14 +654,14 @@ namespace UIEditor.Project
 				}
 			}
 		}
-		static public void exportLanguageSettingLog()
+		static public void getMapLangIndexAndDocLang(out Dictionary<string, int> mapLangIndex, out XmlDocument docLang)
 		{
 			string langPath = Setting.getLangPath();
 
 			//Public.ResultLink.createResult("\r\n开始导出Lang");
 			if (File.Exists(langPath))
 			{
-				XmlDocument docLang = new XmlDocument();
+				docLang = new XmlDocument();
 
 				try
 				{
@@ -544,14 +669,18 @@ namespace UIEditor.Project
 				}
 				catch
 				{
+					mapLangIndex = null;
+					docLang = null;
+
 					return;
 				}
 
 				XmlNode xnIndex = docLang.DocumentElement.SelectSingleNode("index");
-				Dictionary<string, int> mapLangIndex = new Dictionary<string, int>();
-				int max = 1;
-				string retString = "";
 
+				mapLangIndex = new Dictionary<string, int>();
+				int max = 1;
+
+				mapLangIndex["id"] = 0;
 				if (xnIndex != null)
 				{
 					foreach (XmlNode xn in xnIndex.ChildNodes)
@@ -565,7 +694,27 @@ namespace UIEditor.Project
 						}
 					}
 				}
-				mapLangIndex["id"] = 0;
+			}
+			else
+			{
+				docLang = null;
+				mapLangIndex = null;
+			}
+		}
+		static public void exportLanguageSettingLog()
+		{
+			int max = 0;
+			string retString = "";
+			XmlDocument docLang;
+			Dictionary<string, int> mapLangIndex;
+
+			getMapLangIndexAndDocLang(out mapLangIndex, out docLang);
+
+			//Public.ResultLink.createResult("\r\n开始导出Lang");
+			if (mapLangIndex != null && docLang != null)
+			{
+				XmlNode xnIndex = docLang.DocumentElement.SelectSingleNode("index");
+
 
 				Dictionary<string, Dictionary<int, string>> mapIdLangRowMap = new Dictionary<string, Dictionary<int, string>>();
 
@@ -627,6 +776,42 @@ namespace UIEditor.Project
 				sw.Close();
 			}
 			Public.ResultLink.createResult("\r\n导出Lang结束");
+		}
+
+		static private void getEnableThemeMsgData(bool isEnable, out string msgData)
+		{
+			if(isEnable == true)
+			{
+				msgData = "true:";
+			}
+			else
+			{
+				msgData = "false:";
+			}
+
+			if (MainWindow.s_pW.mx_cbThemeName != null && MainWindow.s_pW.mx_cbThemeName.SelectedItem != null &&
+				MainWindow.s_pW.mx_cbThemeName.SelectedItem is ComboBoxItem)
+			{
+				ComboBoxItem selCbi = (ComboBoxItem)MainWindow.s_pW.mx_cbThemeName.SelectedItem;
+
+				msgData += selCbi.Content.ToString();
+			}
+			msgData += ":";
+			if (MainWindow.s_pW.mx_cbLangName != null && MainWindow.s_pW.mx_cbLangName.SelectedItem != null &&
+				MainWindow.s_pW.mx_cbLangName.SelectedItem is ComboBoxItem)
+			{
+				ComboBoxItem selCbi = (ComboBoxItem)MainWindow.s_pW.mx_cbLangName.SelectedItem;
+
+				msgData += selCbi.ToolTip.ToString();
+			}
+			msgData += ":";
+		}
+		static public void setEnableTheme(bool isEnable)
+		{
+			string msgData;
+
+			getEnableThemeMsgData(isEnable, out msgData);
+			MainWindow.s_pW.updateGL(msgData, W2GTag.W2G_THEME_ISENABLE);
 		}
 	}
 }

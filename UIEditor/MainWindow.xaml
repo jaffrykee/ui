@@ -188,6 +188,10 @@
 					<MenuItem Name="mx_statisticsSkin"
 							  Header="统计未被引用的皮肤"/>
 				</MenuItem>
+				<MenuItem Name="mx_checkBaseId"
+						  Header="检测全部文件重复的BaseID"
+						  IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
+						  Click="mx_checkBaseId_Click"/>
 				<MenuItem Name="mx_exportLang"
 						  Header="导出lang"
 						  IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
@@ -214,6 +218,8 @@
 			<MenuItem Header="帮助(_H)" Padding="{Binding ElementName=mx_miFile, Path=Padding}">
 				<MenuItem Name="mx_help" Header="查看帮助" Click="mx_help_Click"/>
 				<MenuItem Name="mx_version" Header="关于UI编辑器" Click="mx_version_Click"/>
+				<Separator/>
+				<MenuItem Name="mx_touchError" Header="别点我" IsEnabled="False" Click="mx_error_Click"/>
 			</MenuItem>
 			<WrapPanel Name="mx_debugTools" Margin="0">
 				<TextBlock VerticalAlignment="Center">调试句柄：</TextBlock>
@@ -376,6 +382,22 @@
 								Click="mx_refreshShape_Click">
 							文字置顶
 						</Button>
+						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
+								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
+								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
+						<CheckBox Name="mx_isEnableTheme"
+								  Width="auto"
+								  Padding="7"
+								  Style="{StaticResource ToggleButtonTeml_Tools}"
+								  IsChecked="True"
+								  Checked="mx_isEnableTheme_Checked"
+								  Unchecked="mx_isEnableTheme_Unchecked">
+							新主题
+						</CheckBox>
+						<TextBlock Padding="5,0,0,0" VerticalAlignment="Center">主题：</TextBlock>
+						<ComboBox Name="mx_cbThemeName" Margin="5" SelectedIndex="0" SelectionChanged="mx_cbThemeName_SelectionChanged"/>
+						<TextBlock Padding="5,0,0,0" VerticalAlignment="Center">语言：</TextBlock>
+						<ComboBox Name="mx_cbLangName" Margin="5" SelectedIndex="0" SelectionChanged="mx_cbLangName_SelectionChanged"/>
 						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
 								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
 								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
@@ -672,7 +694,7 @@
 									<CheckBox Name="mx_showWarningResult"
 											  Margin="10,0,10,0"
 											  VerticalAlignment="Center"
-											  IsChecked="True"
+											  IsChecked="False"
 											  Checked="mx_showWarningResult_Checked"
 											  Unchecked="mx_showWarningResult_Unchecked">
 										显示警告

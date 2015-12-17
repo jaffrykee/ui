@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.IO;
 
 namespace UIEditor.Public
 {
@@ -20,7 +21,22 @@ namespace UIEditor.Public
 		public ErrorInfo(string errorInfo)
 		{
 			InitializeComponent();
-			mx_errorInfo.Text = errorInfo;
+			mx_errorInfo.Text = errorInfo + "\r\n\r\n在工程目录： " + Project.Setting.s_projPath + " 已经生成已打开文件的当前状态备份：";
+			foreach (KeyValuePair<string, OpenedFile> pairFileDef in MainWindow.s_pW.m_mapOpenedFiles.ToList())
+			{
+				if (File.Exists(pairFileDef.Key))
+				{
+					FileInfo fi = new FileInfo(pairFileDef.Key);
+
+					if (pairFileDef.Value.m_frame is XmlControl)
+					{
+						XmlControl xmlCtrl = (XmlControl)pairFileDef.Value.m_frame;
+
+						xmlCtrl.m_xmlDoc.Save(pairFileDef.Key + ".backup");
+						mx_errorInfo.Text += "\r\n" + pairFileDef.Key + ".backup";
+					}
+				}
+			}
 		}
 
 		public static void clearErrorInfo()

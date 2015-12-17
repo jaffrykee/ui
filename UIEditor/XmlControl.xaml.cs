@@ -26,8 +26,10 @@ namespace UIEditor
 		public FileTabItem m_parent;
 		public OpenedFile m_openedFile;
 		public bool m_showGL;
-		//以baseID为索引的UI们
+		//以baseID为索引的UI们(假id)
 		public Dictionary<string, BoloUI.Basic> m_mapCtrlUI;
+		//真id
+		public Dictionary<string, BoloUI.Basic> m_mapBaseIdCtrlUI;
 		public Dictionary<string, long> m_mapImageSize;
 		public Dictionary<string, BoloUI.ResBasic> m_mapSkin;
 		public Dictionary<XmlElement, XmlItem> m_mapXeItem;
@@ -970,6 +972,126 @@ namespace UIEditor
 				}
 			}
 		}
+		private void checkUICtrlBaseIdByXe(XmlElement xe)
+		{
+			foreach(XmlNode xnChild in xe.ChildNodes)
+			{
+				CtrlDef_T ctrlDef;
+
+				if(xnChild is XmlElement)
+				{
+					if (xnChild.Name == "BoloUI")
+					{
+						checkUICtrlBaseIdByXe((XmlElement)xnChild);
+					}
+					else if (MainWindow.s_pW.m_mapCtrlDef.TryGetValue(xnChild.Name, out ctrlDef))
+					{
+						XmlElement xeChild = (XmlElement)xnChild;
+						string baseId = xeChild.GetAttribute("baseID");
+
+						if (baseId != "")
+						{
+							Basic ctrlItem;
+							
+							if(m_mapBaseIdCtrlUI.TryGetValue(baseId, out ctrlItem))
+							{
+								XmlItem xmlItem;
+
+								if (m_mapXeItem.TryGetValue(xeChild, out xmlItem) && xmlItem != null && xmlItem is Basic)
+								{
+									Basic newCtrlItem = (Basic)xmlItem;
+
+									Public.ResultLink.createResult("\r\n" + m_openedFile.m_path + " - 在控件 ", Public.ResultType.RT_ERROR);
+									Public.ResultLink.createResult("[" + newCtrlItem.mx_text.Text + "]", Public.ResultType.RT_ERROR, newCtrlItem);
+									Public.ResultLink.createResult(" 和 ", Public.ResultType.RT_ERROR);
+									Public.ResultLink.createResult("[" + ctrlItem.mx_text.Text + "]", Public.ResultType.RT_ERROR, ctrlItem);
+									Public.ResultLink.createResult(" 存在相同的\"baseID\"属性", Public.ResultType.RT_ERROR);
+								}
+							}
+							else
+							{
+								XmlItem xmlItem;
+
+								if(m_mapXeItem.TryGetValue(xeChild, out xmlItem) && xmlItem != null && xmlItem is Basic)
+								{
+									m_mapBaseIdCtrlUI.Add(baseId, (Basic)xmlItem);
+								}
+							}
+						}
+						checkUICtrlBaseIdByXe((XmlElement)xnChild);
+					}
+				}
+			}
+		}
+		public void checkAllUICtrlBaseId()
+		{
+			m_mapBaseIdCtrlUI = new Dictionary<string, Basic>();
+			checkUICtrlBaseIdByXe(m_xmlDoc.DocumentElement);
+		}
+
+		static private void checkUICtrlBaseIdByXe(string xmlPath, XmlElement xe, Dictionary<string, XmlElement> mapBaseIdXe)
+		{
+			foreach (XmlNode xnChild in xe.ChildNodes)
+			{
+				CtrlDef_T ctrlDef;
+
+				if (xnChild is XmlElement)
+				{
+					if (xnChild.Name == "BoloUI")
+					{
+						checkUICtrlBaseIdByXe(xmlPath, (XmlElement)xnChild, mapBaseIdXe);
+					}
+					else if (MainWindow.s_pW.m_mapCtrlDef.TryGetValue(xnChild.Name, out ctrlDef))
+					{
+						XmlElement xeChild = (XmlElement)xnChild;
+						string baseId = xeChild.GetAttribute("baseID");
+
+						if (baseId != "")
+						{
+							XmlElement xeCtrl;
+
+							if (mapBaseIdXe.TryGetValue(baseId, out xeCtrl))
+							{
+								Public.ResultLink.createResult("\r\n" + xmlPath + " - 存在相同的\"baseID\"属性。("
+									+ baseId + ")", Public.ResultType.RT_ERROR, xmlPath, true);
+							}
+							else
+							{
+								mapBaseIdXe.Add(baseId, xeCtrl);
+							}
+						}
+						checkUICtrlBaseIdByXe(xmlPath, (XmlElement)xnChild, mapBaseIdXe);
+					}
+				}
+			}
+		}
+		static public void checkAllBoloUIXmlControlBaseId()
+		{
+			if(Directory.Exists(Setting.s_projPath))
+			{
+				DirectoryInfo dri = new DirectoryInfo(Setting.s_projPath);
+
+				foreach(FileInfo fi in dri.GetFiles("*.xml"))
+				{
+					XmlDocument xmlDoc = new XmlDocument();
+
+					try
+					{
+						xmlDoc.Load(fi.FullName);
+					}
+					catch
+					{
+						continue;
+					}
+
+					if(xmlDoc.DocumentElement.Name == "BoloUI")
+					{
+						checkUICtrlBaseIdByXe(fi.FullName, xmlDoc.DocumentElement, new Dictionary<string, XmlElement>());
+					}
+				}
+			}
+		}
+
 		public void refreshControl(string skinName = "")
 		{
 			m_mapCtrlUI = new Dictionary<string, BoloUI.Basic>();
@@ -1085,6 +1207,7 @@ namespace UIEditor
 			{
 				Public.ResultLink.createResult("\r\nxml文件格式错误。", Public.ResultType.RT_ERROR);
 			}
+			checkAllUICtrlBaseId();
 			refreshSkinDicForAll();
 		}
 

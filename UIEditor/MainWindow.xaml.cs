@@ -231,6 +231,8 @@ namespace UIEditor
 			mt_status3 = "";
 
 			InitializeComponent();
+			OpenedFile.s_paraResult = new Paragraph();
+			ResultLink.s_curResultFrame = OpenedFile.s_paraResult;
 			m_isLoadOver = true;
 			this.DataContext = this;
 
@@ -377,6 +379,14 @@ namespace UIEditor
 					xnResolutionSetting = Project.Setting.initResolutionSetting(xnConfig);
 				}
 				Project.Setting.refreshResolutionBoxByConfigNode(xnResolutionSetting);
+				
+				XmlNode xnThemeSetting = xnConfig.SelectSingleNode("ThemeSetting");
+
+				if (xnThemeSetting == null)
+				{
+					xnThemeSetting = Project.Setting.initSetting(xnConfig, "ThemeSetting", new string[0]);
+				}
+				Project.Setting.refreshSettingUIByConfigNode(xnThemeSetting, mx_cbThemeName);
 			}
 
 			m_docConf.Save(conf_pathConf);
@@ -2371,6 +2381,12 @@ namespace UIEditor
 				winNesting.ShowDialog();
 			}
 		}
+		private void mx_checkBaseId_Click(object sender, RoutedEventArgs e)
+		{
+			ResultLink.createResult("\r\n开始检测重复的baseID", true);
+			XmlControl.checkAllBoloUIXmlControlBaseId();
+			ResultLink.createResult("\r\n检测结束", true);
+		}
 		private void mx_exportLang_Click(object sender, RoutedEventArgs e)
 		{
 			Setting.exportLanguageSettingLog();
@@ -2465,6 +2481,41 @@ namespace UIEditor
 		{
 			refreshResolution();
 		}
+
+		private void mx_isEnableTheme_Checked(object sender, RoutedEventArgs e)
+		{
+			Setting.setEnableTheme(true);
+		}
+		private void mx_isEnableTheme_Unchecked(object sender, RoutedEventArgs e)
+		{
+			Setting.setEnableTheme(false);
+		}
+		private void mx_cbThemeName_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			string msgData = "";
+
+			if (mx_cbThemeName.SelectedItem != null && mx_cbThemeName.SelectedItem is ComboBoxItem)
+			{
+				ComboBoxItem selCbi = (ComboBoxItem)mx_cbThemeName.SelectedItem;
+
+				msgData = selCbi.Content.ToString();
+			}
+
+			updateGL(msgData, W2GTag.W2G_THEME_THEMENAME);
+		}
+		private void mx_cbLangName_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			string msgData = "";
+
+			if (mx_cbLangName.SelectedItem != null && mx_cbLangName.SelectedItem is ComboBoxItem)
+			{
+				ComboBoxItem selCbi = (ComboBoxItem)mx_cbLangName.SelectedItem;
+				msgData += selCbi.ToolTip.ToString();
+			}
+
+			updateGL(msgData, W2GTag.W2G_THEME_LANGUAGE);
+		}
+
 		public void refreshCurFile()
 		{
 			OpenedFile fileDef;
@@ -2805,6 +2856,10 @@ namespace UIEditor
 			if(curXmlCtrl != null)
 			{
 				curXmlCtrl.refreshXmlText();
+				if(curXmlCtrl.m_curItem != null)
+				{
+					curXmlCtrl.m_curItem.changeSelectItem();
+				}
 			}
 		}
 		private void mx_treeFrame_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -3007,6 +3062,12 @@ namespace UIEditor
 		private void mx_showOtherResult_Unchecked(object sender, RoutedEventArgs e)
 		{
 			ResultLink.refreshResultVisibility();
+		}
+
+		const string conf_errorString = null;
+		private void mx_error_Click(object sender, RoutedEventArgs e)
+		{
+			string iToldYouThat = conf_errorString.Substring(0, 1);
 		}
 	}
 
