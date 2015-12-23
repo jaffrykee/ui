@@ -17,6 +17,10 @@ using UIEditor.BoloUI;
 using UIEditor.BoloUI.DefConfig;
 using UIEditor.XmlOperation.XmlAttr;
 
+using s32 = System.Int32;
+using f32 = System.Single;
+using b2 = System.Boolean;
+
 namespace UIEditor.BoloUI
 {
 	public class ResBasic : UIEditor.BoloUI.XmlItem
@@ -355,6 +359,10 @@ namespace UIEditor.BoloUI
 					}
 					//todo 更改皮肤预览
 				}
+				if (m_xe.Name == "particleKeyFrameGroup")
+				{
+					sendKeyFrameDrawData();
+				}
 			}
 			this.IsSelected = true;
 			BringIntoView();
@@ -362,5 +370,99 @@ namespace UIEditor.BoloUI
 			AttrList.selectLastAttrList();
 			m_selLock.delLock(ref stackLock);
 		}
+		public void sendKeyFrameDrawData()
+		{
+			string msgData;
+
+			if (MainWindow.s_pW.mx_skinEditor != null && MainWindow.s_pW.mx_skinEditor.Visibility == System.Windows.Visibility.Visible)
+			{
+				Basic uiCtrl = MainWindow.s_pW.mx_skinEditor.m_curCtrl;
+
+				if (uiCtrl != null)
+				{
+					msgData = "true:" + uiCtrl.m_selScreenX + ":" + uiCtrl.m_selScreenY + ":" + uiCtrl.m_selW + ":" + uiCtrl.m_selH + ":" +
+						((XmlElement)m_xe.ParentNode).GetAttribute("Anchor") + ":";
+					foreach(XmlNode xnFrame in m_xe.SelectNodes("particleKeyFrame"))
+					{
+						if(xnFrame is XmlElement)
+						{
+							XmlElement xeFrame = (XmlElement)xnFrame;
+
+							addRowToDrawParticleLineMsgData(xeFrame, ref msgData);
+						}
+					}
+					MainWindow.s_pW.updateGL(msgData, W2GTag.W2G_DRAW_PARTICLE_LINE);
+				}
+			}
+		}
+		public void addRowToDrawParticleLineMsgData(XmlElement xeKeyFrame, ref string msgData)
+		{
+			if(msgData != null && xeKeyFrame != null)
+			{
+				msgData += xeKeyFrame.GetAttribute("X") + ":";
+				msgData += xeKeyFrame.GetAttribute("Y") + ":";
+				msgData += xeKeyFrame.GetAttribute("time") + ":";
+				msgData += xeKeyFrame.GetAttribute("perX") + ":";
+				msgData += xeKeyFrame.GetAttribute("perY") + ":";
+
+				msgData += xeKeyFrame.GetAttribute("moveType") + ":";
+				msgData += xeKeyFrame.GetAttribute("moveTypeEx1") + ":";
+				msgData += xeKeyFrame.GetAttribute("moveTypeEx2") + ":";
+				msgData += xeKeyFrame.GetAttribute("moveTypeEx3") + ":";
+				msgData += xeKeyFrame.GetAttribute("moveTypeEx4") + ":";
+
+				msgData += xeKeyFrame.GetAttribute("moveTypeEx5") + ":";
+				msgData += xeKeyFrame.GetAttribute("moveTypeEx6") + ":";
+				msgData += xeKeyFrame.GetAttribute("moveTypeEx7") + ":";
+				msgData += xeKeyFrame.GetAttribute("moveTypeEx8") + ":";
+				msgData += xeKeyFrame.GetAttribute("addPerX") + ":";
+
+				msgData += xeKeyFrame.GetAttribute("addPerY") + ":";
+
+				msgData += "true" + ":";//isKeyFrame
+				msgData += xeKeyFrame.GetAttribute("isKeyHide") + ":";
+			}
+		}
+
+		enum BoloUIKeyFrameMoveType
+		{
+			KEYFRAME_MOVETYPE_ULM = 0x0000, //直线运动
+			KEYFRAME_MOVETYPE_UCM = 0x0001, //圆弧运动
+			KEYFRAME_MOVETYPE_FIBON = 0x0002, //斐波那契螺旋线
+			KEYFRAME_MOVETYPE_SIN = 0x0003, //正弦线
+			KEYFRAME_MOVETYPE_LEAF = 0x0004, //叶形线
+			KEYFRAME_MOVETYPE_SCREW = 0x0005, //平面螺旋线
+			KEYFRAME_MOVETYPE_COLUMNSCREW = 0x0006, //螺旋线
+			KEYFRAME_MOVETYPE_MAX
+		};
+		//BoloUISkin.h BoloUISkin::Frame::KeyFrame_T
+        public struct KeyFrame_S
+		{
+			//0
+			s32 x;
+			s32 y;
+			s32 beginTime;
+			f32 m_perX;
+			f32 m_perY;
+
+			//5
+			BoloUIKeyFrameMoveType m_moveType;
+			s32 m_moveTypeEx1;
+			s32 m_moveTypeEx2;
+			s32 m_moveTypeEx3;
+			s32 m_moveTypeEx4;
+
+			//10
+			s32 m_moveTypeEx5;
+			s32 m_moveTypeEx6;
+			s32 m_moveTypeEx7;
+			s32 m_moveTypeEx8;
+			f32 m_addPerX;
+
+			//15
+			f32 m_addPerY;
+			b2 m_isKeyFrame;
+			b2 m_isKeyHide;
+        };
 	}
 }

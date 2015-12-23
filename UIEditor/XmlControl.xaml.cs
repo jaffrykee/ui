@@ -385,11 +385,11 @@ namespace UIEditor
 			return lstIncludeGroupName;
 		}
 
-		static void findSkinForAll(string skinName, out List<string> lstSkinGroup)
+		static public void findSkinForAll(string skinName, out List<string> lstSkinGroup)
 		{
 			Project.Setting.s_mapSkinIndex.TryGetValue(skinName, out lstSkinGroup);
 		}
-		public XmlElement findSkin(string skinName, out string xmlPath)
+		private XmlElement findSkinWithThemeAndLanguage(string skinName, out string xmlPath)
 		{
 			ResBasic retSkinCtrl = null;
 			xmlPath = null;
@@ -405,10 +405,10 @@ namespace UIEditor
 
 				if (lstGroupName != null && lstGroupName.Count > 0)
 				{
-					if(lstGroupName.Count > 1)
+					if (lstGroupName.Count > 1)
 					{
 						Public.ResultLink.createResult("\r\n皮肤 " + skinName + " 存在多个皮肤组归属：", Public.ResultType.RT_WARNING);
-						foreach(string skinGroupName in lstGroupName)
+						foreach (string skinGroupName in lstGroupName)
 						{
 							Public.ResultLink.createResult(" [" + skinGroupName + "] ", Public.ResultType.RT_WARNING,
 								Setting.getSkinGroupPathByName(skinGroupName));
@@ -451,7 +451,65 @@ namespace UIEditor
 
 			return null;
 		}
-		public bool findSkinAndSelect(string skinName, BoloUI.Basic ctrlUI = null)
+		public XmlElement findSkin(string skinName, out string xmlPath)
+		{
+			XmlElement xeRet = null;
+
+			if(MainWindow.s_pW.mx_isEnableTheme.IsChecked != true)
+			{
+				xeRet = findSkinWithThemeAndLanguage(skinName, out xmlPath);
+			}
+			else
+			{
+				ComboBoxItem cbiCurTheme = null;
+				ComboBoxItem cbiCurLanguage = null;
+				string curThemeName = "";
+				string curLangName = "";
+
+				if(MainWindow.s_pW.mx_cbThemeName.SelectedItem != null && MainWindow.s_pW.mx_cbThemeName.SelectedItem is ComboBoxItem)
+				{
+					cbiCurTheme = (ComboBoxItem)MainWindow.s_pW.mx_cbThemeName.SelectedItem;
+				}
+				if(MainWindow.s_pW.mx_cbLangName.SelectedItem != null && MainWindow.s_pW.mx_cbLangName.SelectedItem is ComboBoxItem)
+				{
+					cbiCurLanguage = (ComboBoxItem)MainWindow.s_pW.mx_cbLangName.SelectedItem;
+				}
+				if(cbiCurTheme != null)
+				{
+					curThemeName = cbiCurTheme.Content.ToString();
+				}
+				if(cbiCurLanguage != null)
+				{
+					curLangName = cbiCurLanguage.Content.ToString();
+				}
+				
+				string skinName_full = skinName + "{" + curThemeName + "}" + "{" + curLangName + "}";
+				string skinName_onlyTheme = skinName + "{" + curThemeName + "}" + "{}";
+				string skinName_onlyLang = skinName + "{}" + "{" + curLangName + "}";
+				string skinName_none = skinName + "{}{}";
+
+				xeRet = findSkinWithThemeAndLanguage(skinName_full, out xmlPath);
+				if (xeRet == null)
+				{
+					xeRet = findSkinWithThemeAndLanguage(skinName_onlyTheme, out xmlPath);
+					if (xeRet == null)
+					{
+						xeRet = findSkinWithThemeAndLanguage(skinName_onlyLang, out xmlPath);
+						if (xeRet == null)
+						{
+							xeRet = findSkinWithThemeAndLanguage(skinName_none, out xmlPath);
+							if (xeRet == null)
+							{
+								xeRet = findSkinWithThemeAndLanguage(skinName, out xmlPath);
+							}
+						}
+					}
+				}
+			}
+
+			return xeRet;
+		}
+		private bool findSkinAndSelectWithThemeAndLanguage(string skinName, BoloUI.Basic ctrlUI = null)
 		{
 			BoloUI.ResBasic skinBasic;
 
@@ -465,7 +523,7 @@ namespace UIEditor
 			else
 			{
 				List<string> lstGroupName = getIncludeSkinGroupList(skinName);
-				if(lstGroupName != null && lstGroupName.Count > 0)
+				if (lstGroupName != null && lstGroupName.Count > 0)
 				{
 					string path = Project.Setting.s_skinPath + "\\" + lstGroupName[0] + ".xml";
 
@@ -473,14 +531,73 @@ namespace UIEditor
 
 					return true;
 				}
-				else
-				{
-					Public.ResultLink.createResult("\r\n没有找到该皮肤。(" + skinName + ")", Public.ResultType.RT_ERROR);
-				}
 			}
 
 			return false;
 		}
+		public bool findSkinAndSelect(string skinName, BoloUI.Basic ctrlUI = null)
+		{
+			bool ret = false;
+
+			if (MainWindow.s_pW.mx_isEnableTheme.IsChecked != true)
+			{
+				ret = findSkinAndSelectWithThemeAndLanguage(skinName, ctrlUI);
+			}
+			else
+			{
+				ComboBoxItem cbiCurTheme = null;
+				ComboBoxItem cbiCurLanguage = null;
+				string curThemeName = "";
+				string curLangName = "";
+
+				if (MainWindow.s_pW.mx_cbThemeName.SelectedItem != null && MainWindow.s_pW.mx_cbThemeName.SelectedItem is ComboBoxItem)
+				{
+					cbiCurTheme = (ComboBoxItem)MainWindow.s_pW.mx_cbThemeName.SelectedItem;
+				}
+				if (MainWindow.s_pW.mx_cbLangName.SelectedItem != null && MainWindow.s_pW.mx_cbLangName.SelectedItem is ComboBoxItem)
+				{
+					cbiCurLanguage = (ComboBoxItem)MainWindow.s_pW.mx_cbLangName.SelectedItem;
+				}
+				if (cbiCurTheme != null)
+				{
+					curThemeName = cbiCurTheme.Content.ToString();
+				}
+				if (cbiCurLanguage != null)
+				{
+					curLangName = cbiCurLanguage.Content.ToString();
+				}
+
+				string skinName_full = skinName + "{" + curThemeName + "}" + "{" + curLangName + "}";
+				string skinName_onlyTheme = skinName + "{" + curThemeName + "}" + "{}";
+				string skinName_onlyLang = skinName + "{}" + "{" + curLangName + "}";
+				string skinName_none = skinName + "{}{}";
+
+				ret = findSkinAndSelectWithThemeAndLanguage(skinName_full, ctrlUI);
+				if (ret == false)
+				{
+					ret = findSkinAndSelectWithThemeAndLanguage(skinName_onlyTheme, ctrlUI);
+					if (ret == false)
+					{
+						ret = findSkinAndSelectWithThemeAndLanguage(skinName_onlyLang, ctrlUI);
+						if (ret == false)
+						{
+							ret = findSkinAndSelectWithThemeAndLanguage(skinName_none, ctrlUI);
+							if (ret == false)
+							{
+								ret = findSkinAndSelectWithThemeAndLanguage(skinName, ctrlUI);
+							}
+						}
+					}
+				}
+			}
+			if(ret == false)
+			{
+				Public.ResultLink.createResult("\r\n没有找到该皮肤。(" + skinName + ")", Public.ResultType.RT_ERROR);
+			}
+
+			return ret;
+		}
+
 		public void refreshVRect()
 		{
 			string msgData = "";

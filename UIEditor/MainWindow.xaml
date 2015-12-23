@@ -20,7 +20,8 @@
 	Foreground="{StaticResource Foreground}"
 	Background="{StaticResource BackgroundNormal}"
 	Loaded="mx_root_Loaded"
-	Closing="mx_root_Closing">
+	Closing="mx_root_Closing"
+	KeyDown="mx_root_KeyDown">
 	<Window.Resources>
 		<RoutedUICommand x:Key="btnClick_mx_toolNew" Text="Button Click" />
 		<RoutedUICommand x:Key="btnClick_mx_toolOpen" Text="Button Click" />

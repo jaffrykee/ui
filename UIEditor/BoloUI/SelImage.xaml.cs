@@ -238,7 +238,8 @@ namespace UIEditor.BoloUI
 
 				if(m_curImg.Parent != null && m_curImg.Parent is TreeViewItem)
 				{
-					if (((TreeViewItem)m_curImg.Parent).Parent == mx_otherRes)
+					//isDynamicLoadImage不需要添加资源
+					if (((TreeViewItem)m_curImg.Parent).Parent == mx_otherRes && m_iRowImage.m_parent.m_xe.GetAttribute("isDynamicLoadImage") != "true")
 					{
 						XmlElement newXe = m_doc.CreateElement("resource");
 

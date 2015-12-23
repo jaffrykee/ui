@@ -227,6 +227,14 @@ namespace UIEditor.Public
 			if (m_line != null)
 			{
 				m_line.MouseDown += ResultLink_MouseDown;
+				if (m_link != null && m_line is Run)
+				{
+					Run runLink = (Run)m_line;
+
+					runLink.TextDecorations = TextDecorations.Underline;
+					runLink.Foreground = new SolidColorBrush(Color.FromArgb(0xff, 0x99, 0xcc, 0xff));
+					runLink.Cursor = Cursors.Hand;
+				}
 			}
 
 			switch(rt)

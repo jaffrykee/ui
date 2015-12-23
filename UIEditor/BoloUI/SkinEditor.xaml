@@ -13,15 +13,22 @@
 		<Grid.RowDefinitions>
 			<RowDefinition Height="auto"/>
 			<RowDefinition Height="auto"/>
+			<RowDefinition Height="auto"/>
 			<RowDefinition Height="*"/>
 		</Grid.RowDefinitions>
 		<Grid Grid.Row="0">
-			<ComboBox Name="mx_skinApprPre"/>
+			<WrapPanel>
+				<TextBlock Margin="5">当前皮肤：</TextBlock>
+				<TextBox Name="mx_tbSkinName" Width="150" Height="20" IsReadOnly="True"/>
+			</WrapPanel>
 		</Grid>
 		<Grid Grid.Row="1">
+			<ComboBox Name="mx_skinApprPre"/>
+		</Grid>
+		<Grid Grid.Row="2">
 			<ComboBox Name="mx_skinApprSuf"/>
 		</Grid>
-		<Grid Grid.Row="2" Name="mx_skinAttrList">
+		<Grid Grid.Row="3" Name="mx_skinAttrList">
 			<TreeView Name="mx_treeAppr">
 			</TreeView>
 		</Grid>

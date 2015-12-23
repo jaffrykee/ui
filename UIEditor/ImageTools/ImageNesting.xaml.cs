@@ -730,6 +730,7 @@ namespace UIEditor.ImageTools
 			}
 		}
 
+		//图包中小图移动到另一个图包时调用
 		private static bool refreshRes(XmlElement xeRoot, string oldName, string newName)
 		{
 			string imgName = "";
@@ -738,6 +739,7 @@ namespace UIEditor.ImageTools
 
 			if (oldName != "" && oldName != null && newName != null && (xeRoot.Name == "imageShape" || xeRoot.Name == "frame"))
 			{
+				//isDynamicLoadImage也需要，因为是图包的移动。
 				if (xeRoot.GetAttribute("image") != "")
 				{
 					imgName = xeRoot.GetAttribute("image");
@@ -838,6 +840,7 @@ namespace UIEditor.ImageTools
 
 			if (xeRoot.Name == "imageShape" || xeRoot.Name == "frame")
 			{
+				//isDynamicLoadImage也需要，因为是图包的移动。
 				if (xeRoot.GetAttribute("image") != "")
 				{
 					imgName = xeRoot.GetAttribute("image");

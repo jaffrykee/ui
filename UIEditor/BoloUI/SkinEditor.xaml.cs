@@ -20,7 +20,41 @@ namespace UIEditor.BoloUI
 	public partial class SkinEditor : TabItem
 	{
 		public string m_xmlPath;
-		public object m_curSkin;
+		private object mt_curSkin;
+		public object m_curSkin
+		{
+			get { return mt_curSkin; }
+			set
+			{
+				mt_curSkin = value;
+				if(value != null)
+				{
+					XmlElement xeSkin = null;
+
+					if(value is XmlElement)
+					{
+						xeSkin = (XmlElement)value;
+					}
+					else if(value is ResBasic)
+					{
+						ResBasic resItem = (ResBasic)value;
+
+						xeSkin = resItem.m_xe;
+					}
+
+					if(xeSkin != null)
+					{
+						string skinName = xeSkin.GetAttribute("Name");
+
+						mx_tbSkinName.Text = skinName;
+
+						return;
+					}
+				}
+
+				mx_tbSkinName.Text = "";
+			}
+		}
 		public object m_selResItem;
 		private Basic mt_curCtrl;
 		public Basic m_curCtrl
@@ -45,7 +79,7 @@ namespace UIEditor.BoloUI
 
 							m_curSkin = retSkin;
 
-							string ctrlName = mt_curCtrl.m_xe.Name;
+							string ctrlName = value.m_xe.Name;
 							DefConfig.CtrlDef_T ctrlDef;
 
 							if(MainWindow.s_pW.m_mapCtrlDef.TryGetValue(ctrlName, out ctrlDef))
@@ -214,8 +248,8 @@ namespace UIEditor.BoloUI
 
 		public SkinEditor()
 		{
-			m_curSkin = null;
 			InitializeComponent();
+			m_curSkin = null;
 		}
 
 		public void refreshSkinEditor(Basic curCtrl = null)
@@ -227,6 +261,11 @@ namespace UIEditor.BoloUI
 				if (curXmlCtrl != null && curXmlCtrl.m_curItem is Basic)
 				{
 					m_curCtrl = (Basic)(curXmlCtrl.m_curItem);
+				}
+				else
+				{
+					m_curCtrl = m_curCtrl;
+					XmlOperation.XmlAttr.AttrList.hiddenAllAttr();
 				}
 			}
 			else

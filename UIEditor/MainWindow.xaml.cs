@@ -899,6 +899,14 @@ namespace UIEditor
 
 			UnhookWindowsHookEx(hHook); // release keyboard hook
 		}
+		private void mx_root_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.F5)
+			{
+				Setting.refreshSkinIndex();
+				refreshCurFile();
+			}
+		}
 
 		//============================================================
 
@@ -2482,13 +2490,22 @@ namespace UIEditor
 			refreshResolution();
 		}
 
+		private void refreshSkinEditorAtMainWindow()
+		{
+			if (mx_skinEditor != null && mx_treeFrame != null && mx_treeFrame.SelectedItem == mx_skinEditor)
+			{
+				mx_skinEditor.refreshSkinEditor();
+			}
+		}
 		private void mx_isEnableTheme_Checked(object sender, RoutedEventArgs e)
 		{
 			Setting.setEnableTheme(true);
+			refreshSkinEditorAtMainWindow();
 		}
 		private void mx_isEnableTheme_Unchecked(object sender, RoutedEventArgs e)
 		{
 			Setting.setEnableTheme(false);
+			refreshSkinEditorAtMainWindow();
 		}
 		private void mx_cbThemeName_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
@@ -2500,6 +2517,7 @@ namespace UIEditor
 
 				msgData = selCbi.Content.ToString();
 			}
+			refreshSkinEditorAtMainWindow();
 
 			updateGL(msgData, W2GTag.W2G_THEME_THEMENAME);
 		}
@@ -2512,6 +2530,7 @@ namespace UIEditor
 				ComboBoxItem selCbi = (ComboBoxItem)mx_cbLangName.SelectedItem;
 				msgData += selCbi.ToolTip.ToString();
 			}
+			refreshSkinEditorAtMainWindow();
 
 			updateGL(msgData, W2GTag.W2G_THEME_LANGUAGE);
 		}
@@ -2885,6 +2904,10 @@ namespace UIEditor
 				}
 				else if (mx_treeFrame.SelectedItem == mx_skinEditor)
 				{
+					if (e.AddedItems.Count > 0 && e.AddedItems[0] == mx_skinEditor)
+					{
+						mx_skinEditor.refreshSkinEditor();
+					}
 					if(mx_skinEditor.mx_skinApprPre.SelectedItem == null || mx_skinEditor.mx_skinApprSuf.SelectedItem == null)
 					{
 						mx_skinEditor.mx_skinApprPre.SelectedIndex = 0;
