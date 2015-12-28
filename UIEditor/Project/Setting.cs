@@ -221,6 +221,11 @@ namespace UIEditor.Project
 			XmlDocument docLang;
 
 			getMapLangIndexAndDocLang(out mapLangIndex, out docLang);
+			if (mapLangIndex == null || docLang == null)
+			{
+				Public.ResultLink.createResult("语言文件(language.xml)没有找到，请检查\"项目\"->\"属性\"");
+				return;
+			}
 			MainWindow.s_pW.mx_cbLangName.Items.Clear();
 			foreach(KeyValuePair<string, int> pairLangIndex in mapLangIndex)
 			{

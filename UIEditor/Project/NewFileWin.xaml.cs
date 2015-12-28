@@ -254,17 +254,28 @@ namespace UIEditor.Project
 				DirectoryInfo di = new DirectoryInfo(tmplPath);
 				DirectoryInfo[] arrDi = di.GetDirectories();
 
-				if(arrDi.Count() == 1)
+				if(arrDi.Count() > 0)
 				{
-					string dirName = arrDi[0].Name;
-					if (Directory.Exists(path + "\\" + dirName))
+					foreach(DirectoryInfo dri in arrDi)
 					{
-						MessageBox.Show("该目录已经存在“" + dirName + "”文件夹，请重新选择目录，或者删除该目录的此文件夹。（旧项目请通过打开项目来进行打开）",
-							"项目已存在", MessageBoxButton.OK, MessageBoxImage.Warning);
-						return;
+						if (Directory.Exists(path + "\\" + dri.Name))
+						{
+							MessageBox.Show("该目录已经存在“" + dri.Name + "”文件夹，但并不影响工程的创建，点击\"确定\"继续。（旧项目请通过打开项目来进行打开）",
+								"项目已存在", MessageBoxButton.OK, MessageBoxImage.Warning);
+						}
+						else
+						{
+							CopyDirectory(tmplPath + "\\" + dri.Name, path);
+						}
 					}
-					CopyDirectory(tmplPath + "\\" + dirName, path);
-					MainWindow.s_pW.openProjByPath(path + "\\" + dirName , "pro.bup");
+					if (File.Exists(path + "\\ui\\free\\pro.bup"))
+					{
+						MainWindow.s_pW.openProjByPath(path + "\\ui\\free\\", "pro.bup");
+					}
+					else
+					{
+						MessageBox.Show("工程创建失败，pro.bup文件不存在(可能是由于该目录已经存在ui文件夹)。(" + path + "\\ui\\free\\pro.bup)", "模板创建失败", MessageBoxButton.OK, MessageBoxImage.Error);
+					}
 					this.Close();
 				}
 				else

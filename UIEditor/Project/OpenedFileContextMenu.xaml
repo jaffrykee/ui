@@ -9,7 +9,7 @@
 		<ContextMenu Name="mx_menu">
 			<MenuItem Name="mx_close" Header="关闭" InputGestureText="Ctrl+W" Click="mx_close_Click"/>
 			<MenuItem Name="mx_closeAll" Header="关闭所有文档" InputGestureText="Ctrl+Shift+W" Click="mx_closeAll_Click"/>
-			<MenuItem Name="mx_closeAllExSelf" Header="除此之外全部关闭" InputGestureText="Ctrl+Alt+W" Click="mx_closeAllExSelf_Click"/>
+			<MenuItem Name="mx_closeAllExSelf" Header="除此之外全部关闭" InputGestureText="Shift+W" Click="mx_closeAllExSelf_Click"/>
 			<Separator/>
 			<MenuItem Name="mx_openFolder" Header="打开所在文件夹" Click="mx_openFolder_Click"/>
 		</ContextMenu>

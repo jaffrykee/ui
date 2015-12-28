@@ -25,6 +25,8 @@ using UIEditor.BoloUI.DefConfig;
 using UIEditor.Project;
 using UIEditor.XmlOperation.XmlAttr;
 using UIEditor.Public;
+using System.Net;
+using System.Net.Sockets;
 
 namespace UIEditor
 {
@@ -96,7 +98,7 @@ namespace UIEditor
 			set
 			{
 				mt_screenWidth = value;
-				if(mx_scrollGrid != null)
+				if (mx_scrollGrid != null)
 				{
 					mx_scrollGrid.Width = value;
 					refreshScreenStatus();
@@ -110,7 +112,7 @@ namespace UIEditor
 			set
 			{
 				mt_screenHeight = value;
-				if(mx_scrollGrid != null)
+				if (mx_scrollGrid != null)
 				{
 					mx_scrollGrid.Height = value;
 					refreshScreenStatus();
@@ -161,7 +163,8 @@ namespace UIEditor
 			mx_status.Text = mb_status0 + "\t\t" + mb_status1 + "\t\t" + mb_status2 + "\t\t" + mb_status3;
 		}
 		private string mt_status0;
-		public string mb_status0{
+		public string mb_status0
+		{
 			get
 			{
 				return mt_status0;
@@ -212,6 +215,10 @@ namespace UIEditor
 			}
 		}
 
+		private int maxLink = 100000;
+		private int currentLinked;
+		private ManualResetEvent tcpClientConnected = new ManualResetEvent(false);
+
 		public MainWindow()
 		{
 			s_pW = this;
@@ -261,15 +268,63 @@ namespace UIEditor
 
 			checkAndInitToolConfig();
 
-			// hook keyboard
-			IntPtr hModule = GetModuleHandle(IntPtr.Zero);
-			hookProc = new LowLevelKeyboardProcDelegate(LowLevelKeyboardProc);
-			hHook = SetWindowsHookEx(WH_KEYBOARD_LL, hookProc, hModule, 0);
-			if (hHook == IntPtr.Zero)
-			{
-				MessageBox.Show("Failed to set hook, error = " + Marshal.GetLastWin32Error());
-			}
+			// hook keyboard 可能会报毒
+			// 			IntPtr hModule = GetModuleHandle(IntPtr.Zero);
+			// 			hookProc = new LowLevelKeyboardProcDelegate(LowLevelKeyboardProc);
+			// 			hHook = SetWindowsHookEx(WH_KEYBOARD_LL, hookProc, hModule, 0);
+			// 			if (hHook == IntPtr.Zero)
+			// 			{
+			// 				MessageBox.Show("Failed to set hook, error = " + Marshal.GetLastWin32Error());
+			// 			}
+
+			return;
+
+			TcpListener server = new TcpListener(new System.Net.IPEndPoint(IPAddress.Parse("10.0.6.10"), 10088));
+			server.Start(100);
+			tcpClientConnected.Reset();
+			IAsyncResult result = server.BeginAcceptTcpClient(new AsyncCallback(Acceptor), server);
+			tcpClientConnected.WaitOne();
+
 		}
+		private void Acceptor(IAsyncResult o)
+		{
+			TcpListener server = o.AsyncState as TcpListener;
+			System.Diagnostics.Debug.Assert(server != null);
+			TcpClient client = null;
+			try
+			{
+				client = server.EndAcceptTcpClient(o);
+				System.Threading.Interlocked.Increment(ref currentLinked);
+
+			}
+			catch
+			{
+
+			}
+			IAsyncResult result = server.BeginAcceptTcpClient(new AsyncCallback(Acceptor), server);
+			if (client == null)
+			{
+				return;
+			}
+			else
+			{
+				Thread.CurrentThread.Join();
+			}
+			Close(client);
+		}
+
+		private void Close(TcpClient client)
+		{
+			if (client.Connected)
+			{
+				client.Client.Shutdown(SocketShutdown.Both);
+			}
+			client.Client.Close();
+			client.Close();
+
+			System.Threading.Interlocked.Decrement(ref currentLinked);
+		}
+
 		private void loadToolConfigByDefault()
 		{
 			if (!File.Exists(conf_pathConfDefault))
@@ -300,7 +355,7 @@ namespace UIEditor
 				{
 					MessageBoxResult ret = MessageBox.Show("编辑器配置文件已经损坏(" + conf_pathConf + ")。是否使用默认配置文件？（可能是由于SVN更新后冲突导致，选“是”则会失去原有的编辑器配置）", "配置文件损坏", MessageBoxButton.YesNo, MessageBoxImage.Error);
 
-					switch(ret)
+					switch (ret)
 					{
 						case MessageBoxResult.Yes:
 							{
@@ -379,7 +434,7 @@ namespace UIEditor
 					xnResolutionSetting = Project.Setting.initResolutionSetting(xnConfig);
 				}
 				Project.Setting.refreshResolutionBoxByConfigNode(xnResolutionSetting);
-				
+
 				XmlNode xnThemeSetting = xnConfig.SelectSingleNode("ThemeSetting");
 
 				if (xnThemeSetting == null)
@@ -423,12 +478,12 @@ namespace UIEditor
 			m_fileChangeTimer.Tick += new EventHandler(m_fileChangeTimer_Tick);
 			m_fileChangeTimer.Start();
 
-			foreach(KeyValuePair<string, CtrlDef_T> pairCtrlDef in m_mapEnInsertCtrlDef.ToList())
+			foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in m_mapEnInsertCtrlDef.ToList())
 			{
 				string ctrlKey = pairCtrlDef.Key;
 				string ctrlName = MainWindow.s_pW.m_strDic.getWordByKey(ctrlKey);
 
-				if(ctrlName == null || ctrlName == "")
+				if (ctrlName == null || ctrlName == "")
 				{
 					ctrlName = ctrlKey;
 				}
@@ -452,25 +507,25 @@ namespace UIEditor
 		}
 		void mx_addCtrl_Click(object sender, RoutedEventArgs e)
 		{
-			if(sender is Button)
+			if (sender is Button)
 			{
 				Button btnCtrl = (Button)sender;
 				string ctrlName = btnCtrl.ToolTip.ToString();
 				CtrlDef_T ctrlDef;
 
-				if(ctrlName != null && ctrlName != "" && m_mapCtrlDef.TryGetValue(ctrlName, out ctrlDef))
+				if (ctrlName != null && ctrlName != "" && m_mapCtrlDef.TryGetValue(ctrlName, out ctrlDef))
 				{
 					XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
 
-					if(curXmlCtrl != null && curXmlCtrl.m_curItem != null && curXmlCtrl.m_curItem is Basic)
+					if (curXmlCtrl != null && curXmlCtrl.m_curItem != null && curXmlCtrl.m_curItem is Basic)
 					{
 						string dstCtrlName = curXmlCtrl.m_curItem.m_xe.Name;
 
-						if(dstCtrlName != "event")
+						if (dstCtrlName != "event")
 						{
 							CtrlDef_T dstCtrlDef;
 
-							if(m_mapEnInsertCtrlDef.TryGetValue(dstCtrlName, out dstCtrlDef))
+							if (m_mapEnInsertCtrlDef.TryGetValue(dstCtrlName, out dstCtrlDef))
 							{
 								if (m_mapPanelCtrlDef.TryGetValue(dstCtrlName, out dstCtrlDef))
 								{
@@ -482,7 +537,7 @@ namespace UIEditor
 								}
 								else
 								{
-									if(curXmlCtrl.m_curItem.Parent is Basic)
+									if (curXmlCtrl.m_curItem.Parent is Basic)
 									{
 										XmlElement newXe = curXmlCtrl.m_curItem.m_xe.OwnerDocument.CreateElement(ctrlName);
 										BoloUI.Basic treeChild = new BoloUI.Basic(newXe, curXmlCtrl);
@@ -561,9 +616,9 @@ namespace UIEditor
 				int delCount = xeBup.SelectNodes("row").Count - 9;
 				XmlElement xeTop = null;
 
-				foreach(XmlNode xnRow in xeBup.SelectNodes("row"))
+				foreach (XmlNode xnRow in xeBup.SelectNodes("row"))
 				{
-					if(xnRow.NodeType == XmlNodeType.Element)
+					if (xnRow.NodeType == XmlNodeType.Element)
 					{
 						XmlElement xeRow = (XmlElement)xnRow;
 						string rowPath = xeRow.GetAttribute("key");
@@ -574,7 +629,7 @@ namespace UIEditor
 						}
 					}
 				}
-				if(xeTop == null)
+				if (xeTop == null)
 				{
 					XmlElement xeNewRow = m_docConf.CreateElement("row");
 
@@ -615,7 +670,7 @@ namespace UIEditor
 		}
 		public void openProjSelectBox(string projPath = null)
 		{
-			if(projPath == null)
+			if (projPath == null)
 			{
 				projPath = m_docConf.SelectSingleNode("Config").SelectSingleNode("ProjHistory").InnerXml;
 			}
@@ -689,7 +744,7 @@ namespace UIEditor
 
 		public void showGLCtrl(bool isShow = true, bool isShowText = false)
 		{
-			if(isShow)
+			if (isShow)
 			{
 				mx_selModeFrame.Visibility = System.Windows.Visibility.Visible;
 				mx_scrollFrame.Visibility = System.Windows.Visibility.Visible;
@@ -767,7 +822,7 @@ namespace UIEditor
 						}
 						if (xmlCtrl.m_treeSkin != null)
 						{
-							if(xmlCtrl.m_treeSkin.Parent != null && xmlCtrl.m_treeSkin.Parent is ItemsControl)
+							if (xmlCtrl.m_treeSkin.Parent != null && xmlCtrl.m_treeSkin.Parent is ItemsControl)
 							{
 								((ItemsControl)xmlCtrl.m_treeSkin.Parent).Items.Remove(xmlCtrl.m_treeSkin);
 							}
@@ -802,7 +857,7 @@ namespace UIEditor
 		}
 		public void eventCloseFile(object sender, RoutedEventArgs e)
 		{
-			if(m_mapOpenedFiles.Count == 0)
+			if (m_mapOpenedFiles.Count == 0)
 			{
 				showGLCtrl(false);
 			}
@@ -828,7 +883,7 @@ namespace UIEditor
 						if (m_mapOpenedFiles.TryGetValue(tabPath, out openFile))
 						{
 							Public.ResultLink.s_curResultFrame = openFile.m_paraResult;
-							if(openFile.m_frame is XmlControl)
+							if (openFile.m_frame is XmlControl)
 							{
 								//updateGL(fileName, W2GTag.W2G_NORMAL_TURN);
 								refreshCurFile();
@@ -846,7 +901,7 @@ namespace UIEditor
 								}
 								xmlCtrl.refreshXmlText();
 								xmlCtrl.refreshSkinDicForAll();
-								if(xmlCtrl.m_curItem != null)
+								if (xmlCtrl.m_curItem != null)
 								{
 									xmlCtrl.m_curItem.changeSelectItem();
 								}
@@ -901,11 +956,235 @@ namespace UIEditor
 		}
 		private void mx_root_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (e.Key == Key.F5)
+		}
+		private void mx_root_PreviewKeyDown(object sender, KeyEventArgs e)
+		{
+			switch(e.KeyboardDevice.Modifiers)
 			{
-				Setting.refreshSkinIndex();
-				refreshCurFile();
+				case ModifierKeys.None:
+					{
+						#region 无控制键
+						switch (e.Key)
+						{
+							case Key.F5:
+								{
+									Setting.refreshSkinIndex();
+									refreshCurFile();
+									e.Handled = true;
+								}
+								break;
+							case Key.Delete:
+								{
+									if (XmlItem.s_menu != null && XmlItem.s_menu.canDelete())
+									{
+										XmlItem.getCurItem().deleteItem();
+									}
+								}
+								break;
+							default:
+								return;
+						}
+						#endregion
+					}
+					break;
+				case ModifierKeys.Control:
+					{
+						#region Ctrl
+						switch (e.Key)
+						{
+							case Key.W:
+								{
+									OpenedFile curFileDef = OpenedFile.getCurFileDef();
+
+									if (curFileDef != null)
+									{
+										curFileDef.m_tabItem.closeFile();
+									}
+								}
+								break;
+							case Key.O:
+								{
+									openProjSelectBox();
+								}
+								break;
+							case Key.D1:
+								{
+									if (mx_treeFrameProj != null && mx_treeFrameProj.Visibility == System.Windows.Visibility.Visible)
+									{
+										mx_treeFrameProj.IsSelected = true;
+									}
+								}
+								break;
+							case Key.D2:
+								{
+									if (mx_treeFrameUI != null && mx_treeFrameUI.Visibility == System.Windows.Visibility.Visible)
+									{
+										mx_treeFrameUI.IsSelected = true;
+									}
+								}
+								break;
+							case Key.D3:
+								{
+									if (mx_treeFrameSkin != null && mx_treeFrameSkin.Visibility == System.Windows.Visibility.Visible)
+									{
+										mx_treeFrameSkin.IsSelected = true;
+									}
+								}
+								break;
+							case Key.D4:
+								{
+									if (mx_skinEditor != null && mx_skinEditor.Visibility == System.Windows.Visibility.Visible)
+									{
+										mx_skinEditor.IsSelected = true;
+									}
+								}
+								break;
+							case Key.PageUp:
+								{
+									viewPrevFile(s_pW);
+								}
+								break;
+							case Key.PageDown:
+								{
+									viewNextFile(s_pW);
+								}
+								break;
+							case Key.Up:
+								{
+									if (XmlItem.s_menu != null && XmlItem.s_menu.canMoveUp())
+									{
+										XmlItem.getCurItem().moveUpItem();
+									}
+								}
+								break;
+							case Key.Down:
+								{
+									if (XmlItem.s_menu != null && XmlItem.s_menu.canMoveDown())
+									{
+										XmlItem.getCurItem().moveDownItem();
+									}
+								}
+								break;
+							case Key.Left:
+								{
+									if (XmlItem.s_menu != null && XmlItem.s_menu.canMoveToParent())
+									{
+										XmlItem.getCurItem().moveToParent();
+									}
+								}
+								break;
+							case Key.Right:
+								{
+									if (XmlItem.s_menu != null && XmlItem.s_menu.canMoveToChild())
+									{
+										XmlItem.getCurItem().moveToChild();
+									}
+								}
+								break;
+							case Key.Y:
+								{
+									s_pW.curFileRedo();
+									if (Keyboard.FocusedElement is TextBox)
+									{
+										TextBox tb = (TextBox)Keyboard.FocusedElement;
+
+										tb.SelectionStart = tb.Text.Length;
+									}
+								}
+								break;
+							case Key.Z:
+								{
+									s_pW.curFileUndo();
+									if (Keyboard.FocusedElement is TextBox)
+									{
+										TextBox tb = (TextBox)Keyboard.FocusedElement;
+
+										tb.SelectionStart = tb.Text.Length;
+									}
+								}
+								break;
+							case Key.X:
+								{
+									if (Keyboard.FocusedElement == XmlItem.getCurItem() && XmlItem.s_menu != null && XmlItem.s_menu.canCut())
+									{
+										XmlItem.getCurItem().cutItem();
+									}
+									else
+									{
+										return;
+									}
+								}
+								break;
+							case Key.C:
+								{
+									if (Keyboard.FocusedElement == XmlItem.getCurItem() && XmlItem.s_menu != null && XmlItem.s_menu.canCopy())
+									{
+										//m_pasteFilePath = ((TreeViewItem)Keyboard.FocusedElement).ToolTip.ToString();
+										XmlItem.getCurItem().copyItem();
+									}
+									else
+									{
+										return;
+									}
+								}
+								break;
+							case Key.V:
+								{
+									if (Keyboard.FocusedElement == XmlItem.getCurItem() && XmlItem.s_menu != null && XmlItem.s_menu.canPaste())
+									{
+//										if (m_pasteFilePath != null && m_pasteFilePath != "")
+// 										{
+// 										}
+										XmlItem.getCurItem().pasteItem();
+									}
+									else
+									{
+										return;
+									}
+								}
+								break;
+							default:
+								return;
+						}
+						#endregion
+					}
+					break;
+				case ModifierKeys.Control | ModifierKeys.Shift:
+					{
+						#region Ctrl+Shift
+						switch (e.Key)
+						{
+							case Key.W:
+								{
+									OpenedFile.closeAllFile();
+								}
+								break;
+							default:
+								return;
+						}
+						#endregion
+					}
+					break;
+				case ModifierKeys.Shift:
+					{
+						#region Alt
+						switch (e.Key)
+						{
+							case Key.W:
+								{
+									OpenedFile.closeAllFile(OpenedFile.getCurFileDef());
+								}
+								break;
+							default:
+								return;
+						}
+						#endregion
+					}
+					break;
+				default:
+					return;
 			}
+			e.Handled = true;
 		}
 
 		//============================================================
@@ -952,7 +1231,7 @@ namespace UIEditor
 
 			VK_OEM_PLUS = 0xBB,
 			VK_OEM_MINUS = 0xBD,
-			
+
 			VK_0 = 0x30,
 			VK_1 = 0x31,
 			VK_2 = 0x32,
@@ -1101,11 +1380,11 @@ namespace UIEditor
 		{
 			string resPath = "";
 
-			if(freePath != null && freePath != "" && Directory.Exists(freePath))
+			if (freePath != null && freePath != "" && Directory.Exists(freePath))
 			{
 				DirectoryInfo dri = new DirectoryInfo(freePath);
 
-				if(dri != null && dri.Parent != null && dri.Parent.Parent != null)
+				if (dri != null && dri.Parent != null && dri.Parent.Parent != null)
 				{
 					DirectoryInfo driRes = dri.Parent.Parent;
 
@@ -1148,7 +1427,7 @@ namespace UIEditor
 				fixed (byte* tmpBuff = charArr)
 				{
 					msgData.dwData = (IntPtr)msgTag;
-					if(len != 0)
+					if (len != 0)
 					{
 						msgData.lpData = (IntPtr)tmpBuff;
 					}
@@ -1187,7 +1466,7 @@ namespace UIEditor
 						int pY = ((int)lParam >> 16) & 0xFFFF;
 
 						mb_status0 = "( " + pX + " , " + pY + " )";
-						if(mx_isViewMode.IsChecked == true)
+						if (mx_isViewMode.IsChecked == true)
 						{
 							break;
 						}
@@ -1251,11 +1530,11 @@ namespace UIEditor
 						{
 							break;
 						}
-						if(m_isMouseDown == true)
+						if (m_isMouseDown == true)
 						{
 							int pX = (int)lParam & 0xFFFF;
 							int pY = ((int)lParam >> 16) & 0xFFFF;
-							if(m_isCtrlMoved == false)
+							if (m_isCtrlMoved == false)
 							{
 								List<BoloUI.Basic> lstSelCtrl = new List<BoloUI.Basic>();
 								BoloUI.Basic selCtrl = null;
@@ -1266,7 +1545,7 @@ namespace UIEditor
 
 								XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
 
-								if(curXmlCtrl != null)
+								if (curXmlCtrl != null)
 								{
 									foreach (KeyValuePair<string, BoloUI.Basic> pairCtrlDef in
 										curXmlCtrl.m_mapCtrlUI.ToList())
@@ -1385,7 +1664,7 @@ namespace UIEditor
 						case G2WTag.G2W_DRAW_COUNT:
 							{
 								string[] sArray = Regex.Split(strData, ":", RegexOptions.IgnoreCase);
-								
+
 								if (sArray.Length >= 4)
 								{
 									int imageCount = 0;
@@ -1395,7 +1674,7 @@ namespace UIEditor
 									int sumCount = 0;
 
 
-									if(int.TryParse(sArray[0], out imageCount))
+									if (int.TryParse(sArray[0], out imageCount))
 									{
 										sumCount += imageCount;
 									}
@@ -1427,7 +1706,7 @@ namespace UIEditor
 									string id = sArray[0];
 									string ent = sArray[1];
 
-									switch(ent)
+									switch (ent)
 									{
 										case "click":
 											{
@@ -1507,69 +1786,6 @@ namespace UIEditor
 				{
 					switch (wParam)
 					{
-						case WM_KEYDOWN:
-							if (s_pW != null)
-							{
-								if ((System.Windows.Forms.Control.ModifierKeys & System.Windows.Forms.Keys.Control) == System.Windows.Forms.Keys.Control &&
-									(System.Windows.Forms.Control.ModifierKeys & System.Windows.Forms.Keys.Alt) == System.Windows.Forms.Keys.None &&
-									(System.Windows.Forms.Control.ModifierKeys & System.Windows.Forms.Keys.Shift) == System.Windows.Forms.Keys.None)
-								{
-									switch (lParam.vkCode)
-									{
-										case VK_PRIOR:
-											viewPrevFile(s_pW);
-											return 1;
-										case VK_NEXT:
-											viewNextFile(s_pW);
-											return 1;
-										case VK_UP:
-											if (XmlItem.s_menu != null && XmlItem.s_menu.canMoveUp())
-											{
-												XmlItem.getCurItem().moveUpItem();
-											}
-											return 1;
-										case VK_DOWN:
-											if (XmlItem.s_menu != null && XmlItem.s_menu.canMoveDown())
-											{
-												XmlItem.getCurItem().moveDownItem();
-											}
-											return 1;
-										case VK_LEFT:
-											if (XmlItem.s_menu != null && XmlItem.s_menu.canMoveToParent())
-											{
-												XmlItem.getCurItem().moveToParent();
-											}
-											return 1;
-										case VK_RIGHT:
-											if (XmlItem.s_menu != null && XmlItem.s_menu.canMoveToChild())
-											{
-												XmlItem.getCurItem().moveToChild();
-											}
-											return 1;
-										case VK_Y:
-											s_pW.curFileRedo();
-											if (Keyboard.FocusedElement is TextBox)
-											{
-												TextBox tb = (TextBox)Keyboard.FocusedElement;
-
-												tb.SelectionStart = tb.Text.Length;
-											}
-											return 1;
-										case VK_Z:
-											s_pW.curFileUndo();
-											if (Keyboard.FocusedElement is TextBox)
-											{
-												TextBox tb = (TextBox)Keyboard.FocusedElement;
-
-												tb.SelectionStart = tb.Text.Length;
-											}
-											return 1;
-										default:
-											break;
-									}
-								}
-							}
-							break;
 						default:
 							break;
 					}
@@ -1602,193 +1818,7 @@ namespace UIEditor
 					}
 					break;
 				case WM_KEYDOWN:
-					#region WM_KEYDOWN
-					if (XmlItem.s_menu != null)
-					{
-						if ((System.Windows.Forms.Control.ModifierKeys & System.Windows.Forms.Keys.Control) == System.Windows.Forms.Keys.Control)
-						{
-							switch ((int)wParam)
-							{
-								case VK_X:
-									if (XmlItem.s_menu.canCut())
-									{
-										XmlItem.getCurItem().cutItem();
-									}
-									break;
-								case VK_C:
-									//需要简化下
-									if
-									(
-										(
-											(
-												Keyboard.FocusedElement is TreeViewItem ||
-												Keyboard.FocusedElement.GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem"
-											)
-										) &&
-										((TreeViewItem)Keyboard.FocusedElement).Parent != null &&
-										(
-											((TreeViewItem)Keyboard.FocusedElement).Parent == mx_treePro ||
-											(
-												(
-													((TreeViewItem)Keyboard.FocusedElement).Parent is TreeViewItem ||
-													((TreeViewItem)Keyboard.FocusedElement).Parent.GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem"
-												) &&
-												((TreeViewItem)((TreeViewItem)Keyboard.FocusedElement).Parent).Parent != null &&
-												((TreeViewItem)((TreeViewItem)Keyboard.FocusedElement).Parent).Parent == mx_treePro
-											)
-										)
-									)
-									{
-										m_pasteFilePath = ((TreeViewItem)Keyboard.FocusedElement).ToolTip.ToString();
-									}
-									else
-									{
-										if (XmlItem.s_menu.canCopy())
-										{
-											XmlItem.getCurItem().copyItem();
-										}
-									}
-									break;
-								case VK_V:
-									//需要简化下
-									if
-									(
-										(
-											(
-												Keyboard.FocusedElement is TreeViewItem ||
-												Keyboard.FocusedElement.GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem"
-											)
-										) &&
-										((TreeViewItem)Keyboard.FocusedElement).Parent != null &&
-										(
-											((TreeViewItem)Keyboard.FocusedElement).Parent == mx_treePro ||
-											(
-												(
-													((TreeViewItem)Keyboard.FocusedElement).Parent is TreeViewItem ||
-													((TreeViewItem)Keyboard.FocusedElement).Parent.GetType().BaseType.ToString() == "System.Windows.Controls.TreeViewItem"
-												) &&
-												((TreeViewItem)((TreeViewItem)Keyboard.FocusedElement).Parent).Parent != null &&
-												((TreeViewItem)((TreeViewItem)Keyboard.FocusedElement).Parent).Parent == mx_treePro
-											)
-										)
-									)
-									{
-										if (m_pasteFilePath != null && m_pasteFilePath != "")
-										{
-											
-										}
-									}
-									else
-									{
-										XmlItem.getCurItem().pasteItem();
-									}
-									break;
-								case VK_DELETE:
-									if (XmlItem.s_menu.canDelete())
-									{
-										XmlItem.getCurItem().deleteItem();
-									}
-									break;
-								default:
-									break;
-							}
-						}
-						switch ((int)wParam)
-						{
-							case VK_DELETE:
-								if (XmlItem.s_menu.canDelete())
-								{
-									XmlItem.getCurItem().deleteItem();
-								}
-								break;
-						}
-					}
-					System.Windows.Forms.Keys ret = System.Windows.Forms.Control.ModifierKeys;
-					if ((ret & System.Windows.Forms.Keys.Control) > 0)
-					{
-						if((ret & System.Windows.Forms.Keys.Shift) > 0)
-						{
-							switch ((int)wParam)
-							{
-								case VK_W:
-									{
-										OpenedFile.closeAllFile();
-									}
-									break;
-								default:
-									break;
-							}
-						}
-						else if ((ret & System.Windows.Forms.Keys.Alt) > 0)
-						{
-							switch ((int)wParam)
-							{
-								case VK_W:
-									{
-										OpenedFile.closeAllFile(OpenedFile.getCurFileDef());
-									}
-									break;
-								default:
-									break;
-							}
-						}
-						else
-						{
-							switch ((int)wParam)
-							{
-								case VK_W:
-									{
-										OpenedFile curFileDef = OpenedFile.getCurFileDef();
-
-										if (curFileDef != null)
-										{
-											curFileDef.m_tabItem.closeFile();
-										}
-									}
-									break;
-								case VK_O:
-									{
-										openProjSelectBox();
-									}
-									break;
-								case VK_1:
-									{
-										if(mx_treeFrameProj != null && mx_treeFrameProj.Visibility == System.Windows.Visibility.Visible)
-										{
-											mx_treeFrameProj.IsSelected = true;
-										}
-									}
-									break;
-								case VK_2:
-									{
-										if (mx_treeFrameUI != null && mx_treeFrameUI.Visibility == System.Windows.Visibility.Visible)
-										{
-											mx_treeFrameUI.IsSelected = true;
-										}
-									}
-									break;
-								case VK_3:
-									{
-										if (mx_treeFrameSkin != null && mx_treeFrameSkin.Visibility == System.Windows.Visibility.Visible)
-										{
-											mx_treeFrameSkin.IsSelected = true;
-										}
-									}
-									break;
-								case VK_4:
-									{
-										if (mx_skinEditor != null && mx_skinEditor.Visibility == System.Windows.Visibility.Visible)
-										{
-											mx_skinEditor.IsSelected = true;
-										}
-									}
-									break;
-								default:
-									break;
-							}
-						}
-					}
-					#endregion
+					//移动到MainWindow的根节点处理
 					break;
 				default:
 					break;
@@ -1804,7 +1834,7 @@ namespace UIEditor
 			}
 			foreach (XmlNode xn in srcXe.ChildNodes)
 			{
-				if(xn.NodeType == XmlNodeType.Element)
+				if (xn.NodeType == XmlNodeType.Element)
 				{
 					XmlElement xe = (XmlElement)xn;
 					XmlItem item;
@@ -1812,17 +1842,17 @@ namespace UIEditor
 
 					addVidToMsgXml(xe, newXe, dstDoc, xmlCtrl);
 
-					if(xmlCtrl.m_mapXeItem.TryGetValue(xe, out item))
+					if (xmlCtrl.m_mapXeItem.TryGetValue(xe, out item))
 					{
-						if(item is Basic)
+						if (item is Basic)
 						{
 							BoloUI.Basic uiCtrl = (BoloUI.Basic)item;
 
-							if(uiCtrl.m_vId != null && uiCtrl.m_vId != "")
+							if (uiCtrl.m_vId != null && uiCtrl.m_vId != "")
 							{
 								newXe.SetAttribute("baseID", uiCtrl.m_vId);
 							}
-							if(mx_isShowAll.IsChecked == true)
+							if (mx_isShowAll.IsChecked == true)
 							{
 								newXe.SetAttribute("visible", "true");
 							}
@@ -1978,9 +2008,9 @@ namespace UIEditor
 		}
 		private void mx_toolSaveAll_Click(object sender, RoutedEventArgs e)
 		{
-			foreach(KeyValuePair<string, OpenedFile> pairFile in m_mapOpenedFiles.ToList())
+			foreach (KeyValuePair<string, OpenedFile> pairFile in m_mapOpenedFiles.ToList())
 			{
-				if(pairFile.Value.frameIsXmlCtrl())
+				if (pairFile.Value.frameIsXmlCtrl())
 				{
 					((XmlControl)pairFile.Value.m_frame).saveCurStatus();
 				}
@@ -2171,7 +2201,7 @@ namespace UIEditor
 
 		static private string getStrFromItemHeader(object header, string type = "")
 		{
-			switch(type)
+			switch (type)
 			{
 				case "XmlItem":
 					{
@@ -2210,11 +2240,11 @@ namespace UIEditor
 		}
 		static public void refreshSearch(TreeViewItem viewItem, string key, bool isExpanded = false)
 		{
-			if(viewItem.Items.Count > 0)
+			if (viewItem.Items.Count > 0)
 			{
-				foreach(TreeViewItem item in viewItem.Items)
+				foreach (TreeViewItem item in viewItem.Items)
 				{
-					if(key != "" && key != null)
+					if (key != "" && key != null)
 					{
 						object header = null;
 						string type = "";
@@ -2353,7 +2383,7 @@ namespace UIEditor
 		{
 			XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
 
-			if(curXmlCtrl != null)
+			if (curXmlCtrl != null)
 			{
 				curXmlCtrl.refreshVRect();
 			}
@@ -2379,7 +2409,7 @@ namespace UIEditor
 		}
 		private void mx_btnNesting_Click(object sender, RoutedEventArgs e)
 		{
-			if(Project.Setting.s_projPath != null && Project.Setting.s_projPath != "")
+			if (Project.Setting.s_projPath != null && Project.Setting.s_projPath != "")
 			{
 				if (!System.IO.Directory.Exists(Project.Setting.s_projPath + "\\images\\"))
 				{
@@ -2422,7 +2452,7 @@ namespace UIEditor
 		{
 			string[] sArray = Regex.Split(strScreen, " x ", RegexOptions.IgnoreCase);
 
-			if(sArray.Count() >= 2)
+			if (sArray.Count() >= 2)
 			{
 				int.TryParse(sArray[0], out w);
 				int.TryParse(sArray[1], out h);
@@ -2460,7 +2490,7 @@ namespace UIEditor
 				m_screenWidthBasic = w;
 				m_screenHeightBasic = h;
 			}
-			if(mx_isMoba.IsChecked == true)
+			if (mx_isMoba.IsChecked == true)
 			{
 				m_isMoba = true;
 				mx_resolutionBasic.Visibility = System.Windows.Visibility.Visible;
@@ -2555,12 +2585,14 @@ namespace UIEditor
 		private void mx_isShowAll_CheckChanged(object sender, RoutedEventArgs e)
 		{
 			Setting.refreshSkinIndex();
+			MainWindow.s_pW.updateGL("", W2GTag.W2G_IMAGE_RELOAD);
+			MainWindow.s_pW.updateGL("", W2GTag.W2G_PARTICLE_RELOAD);
 			refreshCurFile();
 		}
 
 		static public List<TextRange> FindAllMatchedTextRanges(RichTextBox richBox, string keyWord)
 		{
-			if(keyWord == "" || keyWord == null)
+			if (keyWord == "" || keyWord == null)
 			{
 				return null;
 			}
@@ -2603,7 +2635,7 @@ namespace UIEditor
 		{
 			List<TextRange> lstRag = FindAllMatchedTextRanges(mx_xmlText, keyWord);
 
-			foreach(TextRange rag in lstRag)
+			foreach (TextRange rag in lstRag)
 			{
 				rag.ApplyPropertyValue(TextElement.ForegroundProperty, brush);
 			}
@@ -2615,10 +2647,10 @@ namespace UIEditor
 			TextRange textRange = new TextRange(mx_xmlText.Document.ContentStart, mx_xmlText.Document.ContentEnd);
 			textRange.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.Black));
 
-			foreach(KeyValuePair<string, CtrlDef_T> pairCtrlDef in m_mapCtrlDef)
+			foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in m_mapCtrlDef)
 			{
 				findKeyWord(pairCtrlDef.Key, new SolidColorBrush(Colors.Red));
-				foreach(KeyValuePair<string, AttrDef_T> pairAttrDef in pairCtrlDef.Value.m_mapAttrDef)
+				foreach (KeyValuePair<string, AttrDef_T> pairAttrDef in pairCtrlDef.Value.m_mapAttrDef)
 				{
 					findKeyWord(pairAttrDef.Key, new SolidColorBrush(Colors.Red));
 				}
@@ -2642,7 +2674,7 @@ namespace UIEditor
 		public Run m_lastUpdateRun;
 		private void mx_xmlText_TextChanged(object sender, TextChangedEventArgs e)
 		{
-			if(m_isCanEdit)
+			if (m_isCanEdit)
 			{
 				m_isCanEdit = false;
 
@@ -2657,13 +2689,13 @@ namespace UIEditor
 		{
 			ArrayList arrFileChanged = OpenedFile.checkFileChangedAtOutside();
 
-			foreach(object objFile in arrFileChanged)
+			foreach (object objFile in arrFileChanged)
 			{
-				if(objFile is string)
+				if (objFile is string)
 				{
 					string path = (string)objFile;
 
-					if(File.Exists(path))
+					if (File.Exists(path))
 					{
 						ReloadConfirm winReload = new ReloadConfirm(path);
 						winReload.ShowDialog();
@@ -2686,16 +2718,16 @@ namespace UIEditor
 			else
 			{
 				m_hitCount = 0;
-				if(m_isTextChanged)
+				if (m_isTextChanged)
 				{
 					m_isCanEdit = false;
 					m_isTextChanged = false;
 					TextRange textRange = new TextRange(mx_xmlText.Document.ContentStart, mx_xmlText.Document.ContentEnd);
 
 					OpenedFile fileDef;
-					if(m_mapOpenedFiles.TryGetValue(m_curFile, out fileDef))
+					if (m_mapOpenedFiles.TryGetValue(m_curFile, out fileDef))
 					{
-						if(fileDef.m_frame != null && fileDef.m_frame is XmlControl)
+						if (fileDef.m_frame != null && fileDef.m_frame is XmlControl)
 						{
 							XmlControl xmlCtrl = (XmlControl)fileDef.m_frame;
 							XmlDocument newDoc = new XmlDocument();
@@ -2726,12 +2758,12 @@ namespace UIEditor
 		private void mx_bupHistory_Loaded(object sender, RoutedEventArgs e)
 		{
 			XmlNode xnConf = m_docConf.SelectSingleNode("Config");
-			
+
 			if (xnConf != null)
 			{
 				XmlNode xnBup = xnConf.SelectSingleNode("bupHistory");
 
-				if(xnBup != null)
+				if (xnBup != null)
 				{
 					int countItem = 0;
 					mx_bupHistory.Items.Clear();
@@ -2740,8 +2772,8 @@ namespace UIEditor
 						if (xnRow.NodeType == XmlNodeType.Element)
 						{
 							XmlElement xeRow = (XmlElement)xnRow;
-							
-							if(xeRow.Name == "row")
+
+							if (xeRow.Name == "row")
 							{
 								string bupPath = xeRow.GetAttribute("key");
 
@@ -2775,7 +2807,7 @@ namespace UIEditor
 		}
 		void mx_bupItem_Click(object sender, RoutedEventArgs e)
 		{
-			if(sender is System.Windows.Controls.MenuItem)
+			if (sender is System.Windows.Controls.MenuItem)
 			{
 				openProjByPath(
 					System.IO.Path.GetDirectoryName((sender as MenuItem).ToolTip.ToString()),
@@ -2788,7 +2820,7 @@ namespace UIEditor
 
 			if (trSel != null && curXmlCtrl != null)
 			{
-				if(trSel.Start.Parent is Run)
+				if (trSel.Start.Parent is Run)
 				{
 					Run runSel = (Run)trSel.Start.Parent;
 
@@ -2829,7 +2861,7 @@ namespace UIEditor
 		{
 			XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
 
-			if(curXmlCtrl != null)
+			if (curXmlCtrl != null)
 			{
 				curXmlCtrl.m_curSearchIndex = 0;
 				setSearchHighLighted();
@@ -2872,10 +2904,10 @@ namespace UIEditor
 
 			XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
 
-			if(curXmlCtrl != null)
+			if (curXmlCtrl != null)
 			{
 				curXmlCtrl.refreshXmlText();
-				if(curXmlCtrl.m_curItem != null)
+				if (curXmlCtrl.m_curItem != null)
 				{
 					curXmlCtrl.m_curItem.changeSelectItem();
 				}
@@ -2908,7 +2940,7 @@ namespace UIEditor
 					{
 						mx_skinEditor.refreshSkinEditor();
 					}
-					if(mx_skinEditor.mx_skinApprPre.SelectedItem == null || mx_skinEditor.mx_skinApprSuf.SelectedItem == null)
+					if (mx_skinEditor.mx_skinApprPre.SelectedItem == null || mx_skinEditor.mx_skinApprSuf.SelectedItem == null)
 					{
 						mx_skinEditor.mx_skinApprPre.SelectedIndex = 0;
 						mx_skinEditor.mx_skinApprSuf.SelectedIndex = 0;
@@ -2920,15 +2952,15 @@ namespace UIEditor
 		private void mx_refreshShape_Click(object sender, RoutedEventArgs e)
 		{
 			Public.ResultLink.createResult("\r\n开始shape的重排", Public.ResultType.RT_INFO);
-			if(Project.Setting.s_skinPath != null && Project.Setting.s_skinPath != "")
+			if (Project.Setting.s_skinPath != null && Project.Setting.s_skinPath != "")
 			{
-				if(Directory.Exists(Project.Setting.s_skinPath))
+				if (Directory.Exists(Project.Setting.s_skinPath))
 				{
 					DirectoryInfo di = new DirectoryInfo(Project.Setting.s_skinPath);
 
-					foreach(FileInfo fi in di.GetFiles())
+					foreach (FileInfo fi in di.GetFiles())
 					{
-						if(fi.Extension == ".xml")
+						if (fi.Extension == ".xml")
 						{
 							XmlDocument docSkin = new XmlDocument();
 							bool isChange = false;
@@ -2952,17 +2984,17 @@ namespace UIEditor
 								{
 									foreach (XmlNode xnAppr in xnSkin.ChildNodes)
 									{
-										if(xnAppr is XmlElement && (xnAppr.Name == "apperance"))
+										if (xnAppr is XmlElement && (xnAppr.Name == "apperance"))
 										{
 											//用于多个textShape的情况
 											//List<XmlElement> lstShape = new List<XmlElement>();
-											for(int i = 0; i < xnAppr.ChildNodes.Count; i++)
+											for (int i = 0; i < xnAppr.ChildNodes.Count; i++)
 											{
 												XmlNode xnShape = xnAppr.ChildNodes[i];
 
 												if (xnShape is XmlElement && xnShape.Name == "textShape")
 												{
-													if(i == xnAppr.ChildNodes.Count - 1)
+													if (i == xnAppr.ChildNodes.Count - 1)
 													{
 														break;
 													}
@@ -2987,7 +3019,7 @@ namespace UIEditor
 								}
 							}
 
-							if(isChange)
+							if (isChange)
 							{
 								docSkin.Save(fi.FullName);
 								Public.ResultLink.createResult("\r\n" + fi.Name, Public.ResultType.RT_INFO);
@@ -3000,11 +3032,11 @@ namespace UIEditor
 		}
 		private void mx_textFrame_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
 		{
-			if((bool)e.NewValue)
+			if ((bool)e.NewValue)
 			{
 				XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
 
-				if(curXmlCtrl != null && curXmlCtrl.m_curItem != null)
+				if (curXmlCtrl != null && curXmlCtrl.m_curItem != null)
 				{
 					curXmlCtrl.m_curItem.gotoSelectXe();
 				}
@@ -3026,7 +3058,7 @@ namespace UIEditor
 		}
 		private void mx_projSetting_Click(object sender, RoutedEventArgs e)
 		{
-			if(Project.Setting.s_docProj != null)
+			if (Project.Setting.s_docProj != null)
 			{
 				ProjectSettingWin winPs = new ProjectSettingWin();
 
@@ -3091,6 +3123,20 @@ namespace UIEditor
 		private void mx_error_Click(object sender, RoutedEventArgs e)
 		{
 			string iToldYouThat = conf_errorString.Substring(0, 1);
+		}
+
+		private void mx_tbTimeSleep_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			int iSleepTime;
+
+			if (int.TryParse(mx_tbTimeSleep.Text, out iSleepTime))
+			{
+				if (iSleepTime <= 0)
+				{
+					iSleepTime = 33;
+				}
+				updateGL(iSleepTime.ToString(), W2GTag.W2G_SETTING_SLEEPTIME);
+			}
 		}
 	}
 

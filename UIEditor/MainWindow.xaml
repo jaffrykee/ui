@@ -21,6 +21,7 @@
 	Background="{StaticResource BackgroundNormal}"
 	Loaded="mx_root_Loaded"
 	Closing="mx_root_Closing"
+	PreviewKeyDown="mx_root_PreviewKeyDown"
 	KeyDown="mx_root_KeyDown">
 	<Window.Resources>
 		<RoutedUICommand x:Key="btnClick_mx_toolNew" Text="Button Click" />
@@ -212,7 +213,7 @@
 				<Separator/>
 				<MenuItem Name="mx_viewCloseFile" Header="关闭当前文档" InputGestureText="Ctrl+W" Click="mx_viewCloseFile_Click"/>
 				<MenuItem Name="mx_viewCloseAll" Header="关闭所有文档" InputGestureText="Ctrl+Shift+W" Click="mx_viewCloseAll_Click"/>
-				<MenuItem Name="mx_viewCloseAllExSelf" Header="除此之外全部关闭" InputGestureText="Ctrl+Alt+W" Click="mx_viewCloseAllExSelf_Click"/>
+				<MenuItem Name="mx_viewCloseAllExSelf" Header="除此之外全部关闭" InputGestureText="Shift+W" Click="mx_viewCloseAllExSelf_Click"/>
 				<Separator/>
 				<MenuItem Name="mx_viewOpenFolder" Header="打开所在文件夹" Click="mx_viewOpenFolder_Click"/>
 			</MenuItem>
@@ -226,6 +227,10 @@
 				<TextBlock VerticalAlignment="Center">调试句柄：</TextBlock>
 				<TextBox MinWidth="100" Name="mx_hwndDebug"></TextBox>
 				<Button Name="mx_getHwnd" Padding="0" BorderThickness="0" Margin="0" VerticalAlignment="Center" Click="mx_getHwnd_Click">获取</Button>
+			</WrapPanel>
+			<WrapPanel>
+				<TextBlock VerticalAlignment="Center" Margin="20,0,0,0">sleep时间(请谨慎修改)：</TextBlock>
+				<TextBox MinWidth="100" Name="mx_tbTimeSleep" TextChanged="mx_tbTimeSleep_TextChanged">33</TextBox>
 			</WrapPanel>
 		</Menu>
 		<DockPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
@@ -438,7 +443,7 @@
 						<Button Name="mx_refresh"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Style="{StaticResource BtnStyle_Tools}"
-								ToolTip="刷新"
+								ToolTip="刷新 (F5)"
 								Click="mx_isShowAll_CheckChanged">
 							<Image Width="16" Source="pack://application:,,,/data/image/refresh.png"/>
 						</Button>

@@ -72,17 +72,7 @@ namespace UIEditor.BoloUI
 
 		public void addResItem(XmlElement newXe)
 		{
-			ResBasic treeChild;
-			if (m_xe.Name == "BoloUI")
-			{
-				treeChild = new ResBasic(newXe, m_xmlCtrl, MainWindow.s_pW.m_mapSkinTreeDef[newXe.Name]);
-			}
-			else
-			{
-				treeChild = new ResBasic(newXe, m_xmlCtrl, m_curDeepDef.m_mapEnChild[newXe.Name]);
-			}
-
-			m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe));
+			m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, newXe, m_xe));
 		}
 		void insertSkinItem_Click(object sender, RoutedEventArgs e)
 		{
