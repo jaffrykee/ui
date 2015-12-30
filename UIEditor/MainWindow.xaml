@@ -198,6 +198,10 @@
 						  Header="导出lang"
 						  IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 						  Click="mx_exportLang_Click"/>
+				<MenuItem Name="mx_templateSetting"
+						  Header="项目控件模板管理..."
+						  IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
+						  Click="mx_templateSetting_Click"/>
 				<Separator/>
 				<MenuItem Name="mx_projSetting"
 						  Header="属性..."
@@ -527,24 +531,20 @@
 						<Grid Margin="0,0,0,5">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="auto"/>
-								<RowDefinition Height="auto"/>
 								<RowDefinition Height="*"/>
 							</Grid.RowDefinitions>
-							<Label Name="mx_lbProj" Margin="0" Padding="10,2,2,2" Background="{StaticResource LightBackground}">
-								工程目录
-							</Label>
 							<TextBox Name="mx_search"
-							 Grid.Row="1"
-							 Margin="5"
-							 TextChanged="mx_search_TextChanged">
+									 Grid.Row="0"
+									 Margin="5"
+									 TextChanged="mx_search_TextChanged">
 							</TextBox>
 							<Image Width="17"
-						   Margin="0,4,6,3"
-						   HorizontalAlignment="Right"
-						   Grid.Row="1"
-						   Source="pack://application:,,,/data/image/search.png"
-						   RenderOptions.BitmapScalingMode="Fant"/>
-							<TreeView Grid.Row="2">
+								   Margin="0,4,6,3"
+								   HorizontalAlignment="Right"
+								   Grid.Row="0"
+								   Source="pack://application:,,,/data/image/search.png"
+								   RenderOptions.BitmapScalingMode="Fant"/>
+							<TreeView Grid.Row="1">
 								<TreeViewItem Name="mx_treePro">
 								</TreeViewItem>
 							</TreeView>
@@ -554,15 +554,9 @@
 						<Grid Margin="0,0,0,5">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="auto"/>
-								<RowDefinition Height="auto"/>
 								<RowDefinition Height="*"/>
 							</Grid.RowDefinitions>
-							<Label Margin="{Binding ElementName=mx_lbProj, Path=Margin}"
-						   Padding="{Binding ElementName=mx_lbProj, Path=Padding}"
-						   Background="{Binding ElementName=mx_lbProj, Path=Background}">
-								控件节点
-							</Label>
-							<Grid Grid.Row="1">
+							<Grid Grid.Row="0">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="100"/>
 									<ColumnDefinition Width="*"/>
@@ -604,7 +598,7 @@
 									   Source="pack://application:,,,/data/image/search.png"
 						   RenderOptions.BitmapScalingMode="Fant"/>
 							</Grid>
-							<TreeView Grid.Row="2" Name="mx_treeCtrlFrame">
+							<TreeView Grid.Row="1" Name="mx_treeCtrlFrame">
 							</TreeView>
 						</Grid>
 					</TabItem>
@@ -612,25 +606,19 @@
 						<Grid Margin="0,0,0,5">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="auto"/>
-								<RowDefinition Height="auto"/>
 								<RowDefinition Height="*"/>
 							</Grid.RowDefinitions>
-							<Label Margin="{Binding ElementName=mx_lbProj, Path=Margin}"
-								   Padding="{Binding ElementName=mx_lbProj, Path=Padding}"
-								   Background="{Binding ElementName=mx_lbProj, Path=Background}">
-								非控件节点
-							</Label>
 							<TextBox Name="mx_skinSearch"
-									 Grid.Row="1"
+									 Grid.Row="0"
 									 Margin="5"
 									 TextChanged="mx_skinSearch_TextChanged"/>
-							<Image Grid.Row="1"
+							<Image Grid.Row="0"
 								   Width="17"
 								   Margin="0,4,6,3"
 								   HorizontalAlignment="Right"
 								   Source="pack://application:,,,/data/image/search.png"
 								   RenderOptions.BitmapScalingMode="Fant"/>
-							<TreeView Name="mx_treeSkinFrame" Grid.Row="2">
+							<TreeView Name="mx_treeSkinFrame" Grid.Row="1">
 							</TreeView>
 						</Grid>
 					</TabItem>

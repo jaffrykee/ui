@@ -349,9 +349,32 @@ namespace UIEditor.BoloUI
 					}
 					//todo 更改皮肤预览
 				}
-				if (m_xe.Name == "particleKeyFrameGroup")
+				switch(m_xe.Name)
 				{
-					sendKeyFrameDrawData();
+					//特效关键帧的运动轨迹绘制
+					case "particleShape":
+						{
+							sendKeyFrameDrawData(m_xe);
+						}
+						break;
+					case "particleKeyFrameGroup":
+						{
+							if (m_xe.ParentNode != null && m_xe.ParentNode is XmlElement)
+							{
+								sendKeyFrameDrawData((XmlElement)m_xe.ParentNode);
+							}
+						}
+						break;
+					case "particleKeyFrame":
+						{
+							if (m_xe.ParentNode != null && m_xe.ParentNode.ParentNode != null && m_xe.ParentNode.ParentNode is XmlElement)
+							{
+								sendKeyFrameDrawData((XmlElement)m_xe.ParentNode.ParentNode);
+							}
+						}
+						break;
+					default:
+						break;
 				}
 			}
 			this.IsSelected = true;
@@ -360,7 +383,7 @@ namespace UIEditor.BoloUI
 			AttrList.selectLastAttrList();
 			m_selLock.delLock(ref stackLock);
 		}
-		public void sendKeyFrameDrawData()
+		public void sendKeyFrameDrawData(XmlElement xeParticleShape)
 		{
 			string msgData;
 
@@ -371,17 +394,25 @@ namespace UIEditor.BoloUI
 				if (uiCtrl != null)
 				{
 					msgData = "true:" + uiCtrl.m_selScreenX + ":" + uiCtrl.m_selScreenY + ":" + uiCtrl.m_selW + ":" + uiCtrl.m_selH + ":" +
-						((XmlElement)m_xe.ParentNode).GetAttribute("Anchor") + ":";
-					foreach(XmlNode xnFrame in m_xe.SelectNodes("particleKeyFrame"))
-					{
-						if(xnFrame is XmlElement)
-						{
-							XmlElement xeFrame = (XmlElement)xnFrame;
+						xeParticleShape.GetAttribute("Anchor") + ":";
 
-							addRowToDrawParticleLineMsgData(xeFrame, ref msgData);
+					XmlNode xnGroup = xeParticleShape.SelectSingleNode("particleKeyFrameGroup");
+
+					if (xnGroup != null && xnGroup is XmlElement)
+					{
+						XmlElement xeGroup = (XmlElement)xnGroup;
+
+						foreach (XmlNode xnFrame in xeGroup.SelectNodes("particleKeyFrame"))
+						{
+							if (xnFrame is XmlElement)
+							{
+								XmlElement xeFrame = (XmlElement)xnFrame;
+
+								addRowToDrawParticleLineMsgData(xeFrame, ref msgData);
+							}
 						}
+						MainWindow.s_pW.updateGL(msgData, W2GTag.W2G_DRAW_PARTICLE_LINE);
 					}
-					MainWindow.s_pW.updateGL(msgData, W2GTag.W2G_DRAW_PARTICLE_LINE);
 				}
 			}
 		}

@@ -195,6 +195,7 @@
     <Compile Include="Public\EventLock.cs" />
     <Compile Include="Public\LocalConst.cs" />
     <Compile Include="Public\ResultLink.cs" />
+    <Compile Include="Public\RichTextTools.cs" />
     <Compile Include="TemplateCreate.xaml.cs">
       <DependentUpon>TemplateCreate.xaml</DependentUpon>
     </Compile>

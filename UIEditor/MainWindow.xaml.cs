@@ -1119,7 +1119,6 @@ namespace UIEditor
 								{
 									if (Keyboard.FocusedElement == XmlItem.getCurItem() && XmlItem.s_menu != null && XmlItem.s_menu.canCopy())
 									{
-										//m_pasteFilePath = ((TreeViewItem)Keyboard.FocusedElement).ToolTip.ToString();
 										XmlItem.getCurItem().copyItem();
 									}
 									else
@@ -1132,9 +1131,6 @@ namespace UIEditor
 								{
 									if (Keyboard.FocusedElement == XmlItem.getCurItem() && XmlItem.s_menu != null && XmlItem.s_menu.canPaste())
 									{
-//										if (m_pasteFilePath != null && m_pasteFilePath != "")
-// 										{
-// 										}
 										XmlItem.getCurItem().pasteItem();
 									}
 									else
@@ -1632,7 +1628,7 @@ namespace UIEditor
 					{
 						if (XmlItem.s_menu != null)
 						{
-							XmlItem.s_menu.mx_menu.PlacementTarget = mx_GLCtrl;
+							XmlItem.s_menu.mx_menu.PlacementTarget = mx_root;
 							XmlItem.s_menu.mx_menu.Placement = System.Windows.Controls.Primitives.PlacementMode.MousePoint;
 							XmlItem.s_menu.mx_menu.IsOpen = true;
 						}
@@ -2429,6 +2425,10 @@ namespace UIEditor
 		{
 			Setting.exportLanguageSettingLog();
 		}
+		private void mx_templateSetting_Click(object sender, RoutedEventArgs e)
+		{
+
+		}
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto)]
 		public static extern int MoveWindow(IntPtr hWnd, int x, int y, int nWidth, int nHeight, bool BRePaint);
@@ -2590,80 +2590,6 @@ namespace UIEditor
 			refreshCurFile();
 		}
 
-		static public List<TextRange> FindAllMatchedTextRanges(RichTextBox richBox, string keyWord)
-		{
-			if (keyWord == "" || keyWord == null)
-			{
-				return null;
-			}
-			List<TextRange> trList = new List<TextRange>();
-			//设置文字指针为Document初始位置
-			TextPointer position = richBox.Document.ContentStart;
-			while (position != null)
-			{
-				//向前搜索,需要内容为Text
-				if (position.GetPointerContext(LogicalDirection.Forward) == TextPointerContext.Text)
-				{
-					//拿出Run的Text
-					string text = position.GetTextInRun(LogicalDirection.Forward);
-					//可能包含多个keyword,做遍历查找
-					int index = 0;
-					while (index < text.Length)
-					{
-						index = text.IndexOf(keyWord, index);
-						if (index == -1)
-						{
-							break;
-						}
-						else
-						{
-							//添加为新的Range
-							TextPointer start = position.GetPositionAtOffset(index);
-							TextPointer end = start.GetPositionAtOffset(keyWord.Length);
-
-							trList.Add(new TextRange(start, end));
-							index += keyWord.Length;
-						}
-					}
-				}
-				//文字指针向前偏移
-				position = position.GetNextContextPosition(LogicalDirection.Forward);
-			}
-			return trList;
-		}
-		public void findKeyWord(string keyWord, SolidColorBrush brush)  //给关键字上色
-		{
-			List<TextRange> lstRag = FindAllMatchedTextRanges(mx_xmlText, keyWord);
-
-			foreach (TextRange rag in lstRag)
-			{
-				rag.ApplyPropertyValue(TextElement.ForegroundProperty, brush);
-			}
-		}
-		public void refreshXmlTextTip()
-		{
-			//太浪费时间
-			return;
-			TextRange textRange = new TextRange(mx_xmlText.Document.ContentStart, mx_xmlText.Document.ContentEnd);
-			textRange.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.Black));
-
-			foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in m_mapCtrlDef)
-			{
-				findKeyWord(pairCtrlDef.Key, new SolidColorBrush(Colors.Red));
-				foreach (KeyValuePair<string, AttrDef_T> pairAttrDef in pairCtrlDef.Value.m_mapAttrDef)
-				{
-					findKeyWord(pairAttrDef.Key, new SolidColorBrush(Colors.Red));
-				}
-			}
-			foreach (KeyValuePair<string, SkinDef_T> pairSkinDef in m_mapSkinAllDef)
-			{
-				findKeyWord(pairSkinDef.Key, new SolidColorBrush(Colors.Red));
-				foreach (KeyValuePair<string, AttrDef_T> pairAttrDef in pairSkinDef.Value.m_mapAttrDef)
-				{
-					findKeyWord(pairAttrDef.Key, new SolidColorBrush(Colors.Red));
-				}
-			}
-		}
 		public bool m_isCanEdit;
 		public bool m_isTextChanged;
 		public long m_tLast;
@@ -2835,7 +2761,7 @@ namespace UIEditor
 		}
 		private void setSearchHighLighted()
 		{
-			List<TextRange> lstRag = FindAllMatchedTextRanges(mx_xmlText, mx_xmlTextSearch.Text);
+			List<TextRange> lstRag = RichTextTools.FindAllMatchedTextRanges(mx_xmlText, mx_xmlTextSearch.Text);
 			XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
 
 			if (curXmlCtrl != null && lstRag != null && lstRag.Count != 0)
