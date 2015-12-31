@@ -405,7 +405,7 @@ namespace UIEditor.Project
 				}
 				else
 				{
-					pathPack = StringDic.getRealPath(s_projPath + "\\..\\..\\texiao\\");
+					pathPack = StringDic.getRealPath(s_projPath + "\\..\\..\\effect\\");
 				}
 			}
 
