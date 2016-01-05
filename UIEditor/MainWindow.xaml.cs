@@ -529,21 +529,13 @@ namespace UIEditor
 							{
 								if (m_mapPanelCtrlDef.TryGetValue(dstCtrlName, out dstCtrlDef))
 								{
-									XmlElement newXe = curXmlCtrl.m_curItem.m_xe.OwnerDocument.CreateElement(ctrlName);
-									BoloUI.Basic treeChild = new BoloUI.Basic(newXe, curXmlCtrl);
-
-									curXmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT,
-										treeChild.m_xe, curXmlCtrl.m_curItem.m_xe, curXmlCtrl.m_curItem.m_xe.ChildNodes.Count));
+									XmlItem.addItemToCurItemByString(XmlItem.getDefaultNewXmlItem(btnCtrl.ToolTip.ToString()), curXmlCtrl.m_curItem);
 								}
 								else
 								{
 									if (curXmlCtrl.m_curItem.Parent is Basic)
 									{
-										XmlElement newXe = curXmlCtrl.m_curItem.m_xe.OwnerDocument.CreateElement(ctrlName);
-										BoloUI.Basic treeChild = new BoloUI.Basic(newXe, curXmlCtrl);
-
-										curXmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT,
-											treeChild.m_xe, (XmlElement)curXmlCtrl.m_curItem.m_xe.ParentNode, XmlOperation.HistoryNode.getXeIndex(curXmlCtrl.m_curItem.m_xe) + 1));
+										XmlItem.addItemToCurItemByString(XmlItem.getDefaultNewXmlItem(btnCtrl.ToolTip.ToString()), (Basic)curXmlCtrl.m_curItem.Parent);
 									}
 								}
 							}
@@ -1402,11 +1394,11 @@ namespace UIEditor
 
 			if (msgTag == W2GTag.W2G_PATH)
 			{
-				string resPath = getResPath(buffer);
+				string resPath = MainWindow.getResPath(buffer);
 
 				if (resPath != "")
 				{
-					charArr = Encoding.Default.GetBytes(resPath);
+					charArr = Encoding.Default.GetBytes(resPath + "|" + buffer);
 				}
 				else
 				{
@@ -1450,7 +1442,8 @@ namespace UIEditor
 				MoveWindow(m_msgMng.m_hwndGL, 0, 0, m_screenWidth, m_screenHeight, true);
 			}
 		}
-		private IntPtr ControlMsgFilter(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)//响应主逻辑
+		//响应主逻辑
+		private IntPtr ControlMsgFilter(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
 		{
 			handled = false;
 			switch (msg)
@@ -1462,7 +1455,7 @@ namespace UIEditor
 						int pY = ((int)lParam >> 16) & 0xFFFF;
 
 						mb_status0 = "( " + pX + " , " + pY + " )";
-						if (mx_isViewMode.IsChecked == true)
+						if (mx_isViewMode.IsChecked == true || ResBasic.isEnableSkinEditor())
 						{
 							break;
 						}
@@ -1499,7 +1492,7 @@ namespace UIEditor
 				case WM_LBUTTONDOWN:
 					#region WM_LBUTTONDOWN
 					{
-						if (mx_isViewMode.IsChecked == true)
+						if (mx_isViewMode.IsChecked == true || ResBasic.isEnableSkinEditor())
 						{
 							break;
 						}
@@ -1522,7 +1515,7 @@ namespace UIEditor
 				case WM_LBUTTONUP:
 					#region WM_LBUTTONUP
 					{
-						if (mx_isViewMode.IsChecked == true)
+						if (mx_isViewMode.IsChecked == true || ResBasic.isEnableSkinEditor())
 						{
 							break;
 						}
@@ -1595,9 +1588,6 @@ namespace UIEditor
 											x = int.Parse(selItem.m_xe.GetAttribute("x"));
 										}
 										x += pX - m_downX;
-										selItem.m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
-											new XmlOperation.HistoryNode(selItem.m_xe, "x", selItem.m_xe.GetAttribute("x"), x.ToString())
-											);
 										if (selItem.m_xe.GetAttribute("y") == "")
 										{
 											y = 0;
@@ -1607,9 +1597,12 @@ namespace UIEditor
 											y = int.Parse(selItem.m_xe.GetAttribute("y"));
 										}
 										y += pY - m_downY;
-										selItem.m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
-											new XmlOperation.HistoryNode(selItem.m_xe, "y", selItem.m_xe.GetAttribute("y"), y.ToString())
-											);
+
+										List<XmlOperation.HistoryNode> lstOptNode = new List<XmlOperation.HistoryNode>();
+
+										lstOptNode.Add(new XmlOperation.HistoryNode(selItem.m_xe, "x", selItem.m_xe.GetAttribute("x"), x.ToString()));
+										lstOptNode.Add(new XmlOperation.HistoryNode(selItem.m_xe, "y", selItem.m_xe.GetAttribute("y"), y.ToString()));
+										selItem.m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(lstOptNode);
 										selItem.changeSelectItem();
 									}
 								}
@@ -1655,10 +1648,13 @@ namespace UIEditor
 					switch (tag)
 					{
 						case G2WTag.G2W_HWND:
-							m_msgMng.m_hwndGL = wParam;
+							{
+								m_msgMng.m_hwndGL = wParam;
+							}
 							break;
 						case G2WTag.G2W_DRAW_COUNT:
 							{
+								#region 绘制计数
 								string[] sArray = Regex.Split(strData, ":", RegexOptions.IgnoreCase);
 
 								if (sArray.Length >= 4)
@@ -1691,10 +1687,12 @@ namespace UIEditor
 										"  文字：" + textCount.ToString() + "  特效：" + particleCount.ToString() +
 										"  总计：" + sumCount.ToString();
 								}
+								#endregion
 							}
 							break;
 						case G2WTag.G2W_EVENT:
 							{
+								#region 事件回传
 								string[] sArray = Regex.Split(strData, ":", RegexOptions.IgnoreCase);
 
 								if (sArray.Length >= 2)
@@ -1723,10 +1721,12 @@ namespace UIEditor
 											break;
 									}
 								}
+								#endregion
 							}
 							break;
 						case G2WTag.G2W_UI_VRECT:
 							{
+								#region UI显示范围
 								string[] sArray = Regex.Split(strData, ":", RegexOptions.IgnoreCase);
 								const int iVRectMaxNum = 7;
 
@@ -1758,6 +1758,32 @@ namespace UIEditor
 
 									}
 								}
+								#endregion
+							}
+							break;
+						case G2WTag.G2W_PARTICLE_SELECT_KEYFRAME:
+							{
+								#region 选中某一特效关键帧
+								int index = 0;
+								ResBasic curParticleKeyFrame = null;
+								string[] sArray = Regex.Split(strData, ":", RegexOptions.IgnoreCase);
+
+								if (sArray.Count() > 0 && int.TryParse(sArray[0], out index))
+								{
+									curParticleKeyFrame = ResBasic.getParticleKeyFrameItem(index);
+									if (curParticleKeyFrame != null)
+									{
+										curParticleKeyFrame.changeSelectItem();
+									}
+								}
+								#endregion
+							}
+							break;
+						case G2WTag.G2W_PARTICLE_CHANGE_KEYFRAME:
+							{
+								#region 修改某一特效关键帧
+								ResBasic.updateParticleKeyFrameFromG2WData(strData);
+								#endregion
 							}
 							break;
 						default:
@@ -3062,6 +3088,15 @@ namespace UIEditor
 					iSleepTime = 33;
 				}
 				updateGL(iSleepTime.ToString(), W2GTag.W2G_SETTING_SLEEPTIME);
+			}
+		}
+		private void mx_btnSendScript_Click(object sender, RoutedEventArgs e)
+		{
+			string scriptName = mx_tbScriptName.Text;
+
+			if(scriptName != "")
+			{
+				updateGL(scriptName, W2GTag.W2G_SCRIPT_RUN);
 			}
 		}
 	}

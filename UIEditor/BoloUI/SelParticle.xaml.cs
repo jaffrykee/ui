@@ -197,7 +197,7 @@ namespace UIEditor.BoloUI
 
 				if (resPath != "")
 				{
-					charArr = Encoding.Default.GetBytes(resPath);
+					charArr = Encoding.Default.GetBytes(resPath + "|" + buffer);
 				}
 				else
 				{

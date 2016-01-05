@@ -245,143 +245,144 @@
 				</Grid.RowDefinitions>
 				<WrapPanel Name="mx_wpTools" Grid.Row="0" Height="auto" Margin="3" Background="{StaticResource Background}">
 					<WrapPanel HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0" Background="{Binding ElementName=mx_wpTools, Path=Background}">
-						<Button Name="mx_toolNew"
+						<WrapPanel>
+							<Button Name="mx_toolNew"
 								IsEnabled="False"
 								Click="mx_newFile_Click"
 								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="新建 (Ctrl + N)">
-							<Image Width="16" Source="pack://application:,,,/data/image/new.png"/>
-						</Button>
-						<Button Name="mx_toolOpen"
+								<Image Width="16" Source="pack://application:,,,/data/image/new.png"/>
+							</Button>
+							<Button Name="mx_toolOpen"
 								Click="openProj"
 								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="打开项目 (Ctrl + O)">
-							<Image Width="16" Source="pack://application:,,,/data/image/open.png"/>
-						</Button>
-						<Button Name="mx_toolSave"
+								<Image Width="16" Source="pack://application:,,,/data/image/open.png"/>
+							</Button>
+							<Button Name="mx_toolSave"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolSave_Click"
 								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="保存 (Ctrl + S)">
-							<Image Width="16" Source="pack://application:,,,/data/image/save.png"/>
-						</Button>
-						<Button Name="mx_toolSaveAll"
+								<Image Width="16" Source="pack://application:,,,/data/image/save.png"/>
+							</Button>
+							<Button Name="mx_toolSaveAll"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolSaveAll_Click"
 								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="全部保存 (Ctrl + Shift + S)">
-							<Image Width="16" Source="pack://application:,,,/data/image/saveAll.png"/>
-						</Button>
-						<Separator/>
-						<Button Name="mx_toolUndo"
+								<Image Width="16" Source="pack://application:,,,/data/image/saveAll.png"/>
+							</Button>
+							<Separator/>
+							<Button Name="mx_toolUndo"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolUndo_Click"
 								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="撤销 (Ctrl + Z)">
-							<Image Width="16" Source="pack://application:,,,/data/image/undo.png"/>
-						</Button>
-						<Button Name="mx_toolRedo"
+								<Image Width="16" Source="pack://application:,,,/data/image/undo.png"/>
+							</Button>
+							<Button Name="mx_toolRedo"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolRedo_Click"
 								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="重复 (Ctrl + Y)">
-							<Image Width="16" Source="pack://application:,,,/data/image/redo.png"/>
-						</Button>
-						<TextBlock Name="mx_sqTool" Margin="0" Padding="5,0,0,0" Background="{StaticResource Background}"/>
-						<Button Name="mx_toolCut"
+								<Image Width="16" Source="pack://application:,,,/data/image/redo.png"/>
+							</Button>
+							<TextBlock Name="mx_sqTool" Margin="0" Padding="5,0,0,0" Background="{StaticResource Background}"/>
+							<Button Name="mx_toolCut"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolCut_Click"
 								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="剪切 (Ctrl + X)">
-							<Image Width="16" Source="pack://application:,,,/data/image/cut.png"/>
-						</Button>
-						<Button Name="mx_toolCopy"
+								<Image Width="16" Source="pack://application:,,,/data/image/cut.png"/>
+							</Button>
+							<Button Name="mx_toolCopy"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolCopy_Click"
 								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="复制 (Ctrl + C)">
-							<Image Width="16" Source="pack://application:,,,/data/image/copy.png"/>
-						</Button>
-						<Button Name="mx_toolPaste"
+								<Image Width="16" Source="pack://application:,,,/data/image/copy.png"/>
+							</Button>
+							<Button Name="mx_toolPaste"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolPaste_Click"
 								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="粘贴 (Ctrl + V)">
-							<Image Width="16" Source="pack://application:,,,/data/image/paste.png"/>
-						</Button>
-						<Button Name="mx_toolDelete"
+								<Image Width="16" Source="pack://application:,,,/data/image/paste.png"/>
+							</Button>
+							<Button Name="mx_toolDelete"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolDelete_Click"
 								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="删除 (Delete)">
-							<Image Width="16" Source="pack://application:,,,/data/image/delete.png"/>
-						</Button>
-						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
+								<Image Width="16" Source="pack://application:,,,/data/image/delete.png"/>
+							</Button>
+							<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
 								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
 								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
-						<Button Name="mx_toolMoveUp"
+							<Button Name="mx_toolMoveUp"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolMoveUp_Click"
 								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="上移 (Ctrl + ↑)">
-							<Image Width="16" Source="pack://application:,,,/data/image/moveUp.png"/>
-						</Button>
-						<Button Name="mx_toolMoveDown"
+								<Image Width="16" Source="pack://application:,,,/data/image/moveUp.png"/>
+							</Button>
+							<Button Name="mx_toolMoveDown"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_toolMoveDown_Click"
 								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="下移 (Ctrl + ↓)">
-							<Image Width="16" Source="pack://application:,,,/data/image/moveDown.png"/>
-						</Button>
-						<Button Name="mx_toolMoveToParent"
+								<Image Width="16" Source="pack://application:,,,/data/image/moveDown.png"/>
+							</Button>
+							<Button Name="mx_toolMoveToParent"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="移动到上一级 (Ctrl + ←)"
 								Click="mx_toolMoveToParent_Click">
-							<Image Width="16" Source="pack://application:,,,/data/image/moveLeft.png"/>
-						</Button>
-						<Button Name="mx_toolMoveToChild"
+								<Image Width="16" Source="pack://application:,,,/data/image/moveLeft.png"/>
+							</Button>
+							<Button Name="mx_toolMoveToChild"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="移动到下一个的下一级 (Ctrl + →)"
 								Click="mx_toolMoveToChild_Click">
-							<Image Width="16" Source="pack://application:,,,/data/image/moveRight.png"/>
-						</Button>
-						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
+								<Image Width="16" Source="pack://application:,,,/data/image/moveRight.png"/>
+							</Button>
+							<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
 								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
 								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
-						<Button Name="mx_toolPackUi"
+							<Button Name="mx_toolPackUi"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="打包UI"
 								Click="mx_toolPackUi_Click">
-							<Image Width="16" Source="pack://application:,,,/data/image/packUi.png"/>
-						</Button>
-						<Button Name="mx_toolPackScript"
+								<Image Width="16" Source="pack://application:,,,/data/image/packUi.png"/>
+							</Button>
+							<Button Name="mx_toolPackScript"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="打包脚本"
 								Click="mx_toolPackScript_Click">
-							<Image Width="16" Source="pack://application:,,,/data/image/packScript.png"/>
-						</Button>
-						<Button Name="mx_toolRunGame"
+								<Image Width="16" Source="pack://application:,,,/data/image/packScript.png"/>
+							</Button>
+							<Button Name="mx_toolRunGame"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="运行游戏"
 								Click="mx_toolRunGame_Click">
-							<Image Width="16" Source="pack://application:,,,/data/image/runGame.png"/>
-						</Button>
-						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
+								<Image Width="16" Source="pack://application:,,,/data/image/runGame.png"/>
+							</Button>
+							<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
 								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
 								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
-						<Button Name="mx_btnNesting"
+							<Button Name="mx_btnNesting"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="图片打包"
 								Click="mx_btnNesting_Click">
-							<Image Width="16" Source="pack://application:,,,/data/image/nesting.png"/>
-						</Button>
-						<Button Name="mx_refreshShape"
+								<Image Width="16" Source="pack://application:,,,/data/image/nesting.png"/>
+							</Button>
+							<Button Name="mx_refreshShape"
 								ToolTip="自动将所有公共皮肤（skin目录下）的textShape置于imageShape之上"
 								Height="30"
 								Width="60"
@@ -390,109 +391,128 @@
 								BorderBrush="{StaticResource BackgroundNormal}"
 								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								Click="mx_refreshShape_Click">
-							文字置顶
-						</Button>
+								文字置顶
+							</Button>
+						</WrapPanel>
 						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
 								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
 								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
-						<CheckBox Name="mx_isEnableTheme"
-								  Width="auto"
-								  Padding="7"
-								  Style="{StaticResource ToggleButtonTeml_Tools}"
-								  IsChecked="True"
-								  Checked="mx_isEnableTheme_Checked"
-								  Unchecked="mx_isEnableTheme_Unchecked">
-							新主题
-						</CheckBox>
-						<TextBlock Padding="5,0,0,0" VerticalAlignment="Center">主题：</TextBlock>
-						<ComboBox Name="mx_cbThemeName" Margin="5" SelectedIndex="0" SelectionChanged="mx_cbThemeName_SelectionChanged"/>
-						<TextBlock Padding="5,0,0,0" VerticalAlignment="Center">语言：</TextBlock>
-						<ComboBox Name="mx_cbLangName" Margin="5" SelectedIndex="0" SelectionChanged="mx_cbLangName_SelectionChanged"/>
-						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
-								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
-								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
-						<TextBlock Padding="5,0,0,0" VerticalAlignment="Center">分辨率：</TextBlock>
-						<ComboBox Name="mx_resolution" Margin="5" SelectedIndex="0" SelectionChanged="mx_resolution_SelectionChanged">
-						</ComboBox>
-						<CheckBox Name="mx_isMoba"
-								  Width="auto"
-								  Padding="7"
-								  Style="{StaticResource ToggleButtonTeml_Tools}"
-								  Checked="mx_isMoba_Checked"
-								  Unchecked="mx_isMoba_Unchecked">
-							延展屏幕
-						</CheckBox>
-						<TextBlock Name="mx_rslBasicName"
-								   Padding="5,0,0,0"
-								   VerticalAlignment="Center"
-								   Visibility="{Binding ElementName=mx_resolutionBasic, Path=Visibility}">
-							延展基准分辨率：
-						</TextBlock>
-						<ComboBox Name="mx_resolutionBasic"
-								  Margin="5"
-								  SelectedIndex="0"
-								  Visibility="Collapsed"
-								  SelectionChanged="mx_resolutionBasic_SelectionChanged">
-							<ComboBoxItem>960 x 540</ComboBoxItem>
-							<ComboBoxItem>1024 x 768</ComboBoxItem>
-							<ComboBoxItem>1134 x 640</ComboBoxItem>
-							<ComboBoxItem>1280 x 720</ComboBoxItem>
-							<ComboBoxItem>1334 x 750</ComboBoxItem>
-							<ComboBoxItem>1920 x 1080</ComboBoxItem>
-							<ComboBoxItem>2560 x 1440</ComboBoxItem>
-						</ComboBox>
-						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
-								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
-								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
-						<Button Name="mx_refresh"
-								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
+						<WrapPanel IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}">
+							<Button Name="mx_refresh"
 								Style="{StaticResource BtnStyle_Tools}"
 								ToolTip="刷新 (F5)"
 								Click="mx_isShowAll_CheckChanged">
-							<Image Width="16" Source="pack://application:,,,/data/image/refresh.png"/>
-						</Button>
-						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
+								<Image Width="16" Source="pack://application:,,,/data/image/refresh.png"/>
+							</Button>
+							<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
 								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
 								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
-						<CheckBox Name="mx_isShowAll"
-								  IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
+							<CheckBox Name="mx_isShowAll"
 								  IsChecked="False"
 								  ToolTip="显示隐藏"
 								  Padding="7"
 								  Style="{StaticResource ToggleButtonTeml_Tools}"
 								  Checked="mx_isShowAll_CheckChanged"
 								  Unchecked="mx_isShowAll_CheckChanged">
-							<Image Width="16" Source="pack://application:,,,/data/image/showAll.png"/>
-						</CheckBox>
-						<CheckBox Name="mx_isViewMode"
-								  IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
+								<Image Width="16" Source="pack://application:,,,/data/image/showAll.png"/>
+							</CheckBox>
+							<CheckBox Name="mx_isViewMode"
 								  ToolTip="预览模式"
 								  Padding="7"
 								  Style="{StaticResource ToggleButtonTeml_Tools}"
 								  Checked="mx_isViewMode_Checked"
 								  Unchecked="mx_isViewMode_Unchecked">
-							<Image Width="16" Source="pack://application:,,,/data/image/viewMode.png"/>
-						</CheckBox>
-						<CheckBox Name="mx_showBorder"
+								<Image Width="16" Source="pack://application:,,,/data/image/viewMode.png"/>
+							</CheckBox>
+							<CheckBox Name="mx_showBorder"
 								  Width="auto"
 								  Padding="7"
-								  IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								  ToolTip="显示所有可见控件的边框"
 								  Style="{StaticResource ToggleButtonTeml_Tools}"
 								  Checked="mx_showBorder_Checked"
 								  Unchecked="mx_showBorder_Unchecked">
-							显示边框
-						</CheckBox>
-						<CheckBox Name="mx_showBack"
+								显示边框
+							</CheckBox>
+							<CheckBox Name="mx_showBack"
 								  Width="auto"
 								  Padding="7"
-								  IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 								  ToolTip="显示背景图，只能是tga格式的。"
 								  Style="{StaticResource ToggleButtonTeml_Tools}"
 								  Checked="mx_showBack_Checked"
 								  Unchecked="mx_showBack_Unchecked">
-							显示背景
-						</CheckBox>
+								显示背景
+							</CheckBox>
+						</WrapPanel>
+						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
+								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
+								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
+						<WrapPanel Background="#33000000"
+								   IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}">
+							<TextBox Name="mx_tbScriptName" Width="200" Margin="4"></TextBox>
+							<Button Name="mx_btnSendScript"
+								ToolTip="只支持只包含BoloUI库、脚本库等公共库和MOBA精灵库中的脚本接口的脚本（bs文件，预设路径:artist/scripts/dev/scripts/）。"
+								Height="24"
+								Width="60"
+								Margin="3"
+								Foreground="{StaticResource Foreground}"
+								BorderBrush="{StaticResource BackgroundNormal}"
+								Click="mx_btnSendScript_Click">
+								运行脚本
+							</Button>
+						</WrapPanel>
+						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
+								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
+								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
+						<WrapPanel IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}">
+							<CheckBox Name="mx_isEnableTheme"
+								  Width="auto"
+								  Padding="7"
+								  Style="{StaticResource ToggleButtonTeml_Tools}"
+								  IsChecked="True"
+								  Checked="mx_isEnableTheme_Checked"
+								  Unchecked="mx_isEnableTheme_Unchecked">
+								新主题
+							</CheckBox>
+							<TextBlock Padding="5,0,0,0" VerticalAlignment="Center">主题：</TextBlock>
+							<ComboBox Name="mx_cbThemeName" Margin="5" SelectedIndex="0" SelectionChanged="mx_cbThemeName_SelectionChanged"/>
+							<TextBlock Padding="5,0,0,0" VerticalAlignment="Center">语言：</TextBlock>
+							<ComboBox Name="mx_cbLangName" Margin="5" SelectedIndex="0" SelectionChanged="mx_cbLangName_SelectionChanged"/>
+						</WrapPanel>
+						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
+								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
+								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
+						<WrapPanel IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}">
+							<TextBlock Padding="5,0,0,0" VerticalAlignment="Center">分辨率：</TextBlock>
+							<ComboBox Name="mx_resolution" Margin="5" SelectedIndex="0" SelectionChanged="mx_resolution_SelectionChanged">
+							</ComboBox>
+							<CheckBox Name="mx_isMoba"
+								  Width="auto"
+								  Padding="7"
+								  Style="{StaticResource ToggleButtonTeml_Tools}"
+								  Checked="mx_isMoba_Checked"
+								  Unchecked="mx_isMoba_Unchecked">
+								延展屏幕
+							</CheckBox>
+							<TextBlock Name="mx_rslBasicName"
+								   Padding="5,0,0,0"
+								   VerticalAlignment="Center"
+								   Visibility="{Binding ElementName=mx_resolutionBasic, Path=Visibility}">
+							延展基准分辨率：
+							</TextBlock>
+							<ComboBox Name="mx_resolutionBasic"
+								  Margin="5"
+								  SelectedIndex="0"
+								  Visibility="Collapsed"
+								  SelectionChanged="mx_resolutionBasic_SelectionChanged">
+								<ComboBoxItem>960 x 540</ComboBoxItem>
+								<ComboBoxItem>1024 x 768</ComboBoxItem>
+								<ComboBoxItem>1134 x 640</ComboBoxItem>
+								<ComboBoxItem>1280 x 720</ComboBoxItem>
+								<ComboBoxItem>1334 x 750</ComboBoxItem>
+								<ComboBoxItem>1920 x 1080</ComboBoxItem>
+								<ComboBoxItem>2560 x 1440</ComboBoxItem>
+							</ComboBox>
+						</WrapPanel>
 					</WrapPanel>
 				</WrapPanel>
 				<WrapPanel Grid.Row="1" Margin="3">

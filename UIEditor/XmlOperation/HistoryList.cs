@@ -23,11 +23,11 @@ namespace UIEditor.XmlOperation
 		public MainWindow m_pW;
 		public XmlControl m_xmlCtrl;
 		public int m_maxSize;
-		public LinkedList<HistoryNode> m_lstOpt;
-		public LinkedListNode<HistoryNode> m_curNode;
-		public LinkedListNode<HistoryNode> m_headNode;
-		private LinkedListNode<HistoryNode> mt_saveNode;
-		public LinkedListNode<HistoryNode> m_saveNode
+		public LinkedList<List<HistoryNode>> m_lstOpt;
+		public LinkedListNode<List<HistoryNode>> m_curNode;
+		public LinkedListNode<List<HistoryNode>> m_headNode;
+		private LinkedListNode<List<HistoryNode>> mt_saveNode;
+		public LinkedListNode<List<HistoryNode>> m_saveNode
 		{
 			get { return mt_saveNode; }
 			set
@@ -45,8 +45,8 @@ namespace UIEditor.XmlOperation
 			m_pW = pW;
 			m_xmlCtrl = xmlCtrl;
 			m_maxSize = maxSize;
-			m_lstOpt = new LinkedList<HistoryNode>();
-			m_curNode = new LinkedListNode<HistoryNode>(null);
+			m_lstOpt = new LinkedList<List<HistoryNode>>();
+			m_curNode = new LinkedListNode<List<HistoryNode>>(null);
 			m_saveNode = m_curNode;
 			m_headNode = m_curNode;
 			m_lstOpt.AddLast(m_curNode);
@@ -54,19 +54,29 @@ namespace UIEditor.XmlOperation
 
 		public void addOperation(HistoryNode optNode)
 		{
-			for (LinkedListNode<HistoryNode> iNode = m_curNode.Next; iNode != m_headNode && iNode != null; iNode = m_curNode.Next)
+			List<HistoryNode> lstNode = new List<HistoryNode>();
+
+			lstNode.Add(optNode);
+			addOperation(lstNode);
+		}
+		public void addOperation(List<HistoryNode> lstNode)
+		{
+			if (lstNode.Count > 0)
 			{
-				iNode.List.Remove(iNode);
+				for (LinkedListNode<List<HistoryNode>> iNode = m_curNode.Next; iNode != m_headNode && iNode != null; iNode = m_curNode.Next)
+				{
+					iNode.List.Remove(iNode);
+				}
+				if (m_lstOpt.Count() >= m_maxSize)
+				{
+					m_headNode = m_headNode.Next;
+					m_headNode.List.Remove(m_headNode.Previous);
+				}
+				m_curNode = new LinkedListNode<List<HistoryNode>>(lstNode);
+				m_lstOpt.AddLast(m_curNode);
+				redoOperation(true);
+				m_xmlCtrl.m_openedFile.updateSaveStatus();
 			}
-			if (m_lstOpt.Count() >= m_maxSize)
-			{
-				m_headNode = m_headNode.Next;
-				m_headNode.List.Remove(m_headNode.Previous);
-			}
-			m_curNode = new LinkedListNode<HistoryNode>(optNode);
-			m_lstOpt.AddLast(m_curNode);
-			redoOperation(true);
-			m_xmlCtrl.m_openedFile.updateSaveStatus();
 		}
 		static public void updateAttrToGL(XmlControl xmlCtrl, Basic uiCtrl, string attrName, string newValue)
 		{
@@ -181,24 +191,35 @@ namespace UIEditor.XmlOperation
  			}
 			MainWindow.s_pW.updateXmlToGL(xmlCtrl);
 		}
-		public void redoOperation(bool isAddOpt = false)
+		static public void updateAttrToOptList(ref List<HistoryNode> lstOptNode, XmlElement xe, string attrName, string newValue)
+		{
+			if (xe.GetAttribute(attrName) != newValue)
+			{
+				lstOptNode.Add(new XmlOperation.HistoryNode(xe, attrName, xe.GetAttribute(attrName), newValue));
+			}
+		}
+		//处理操作节点组中单个节点的回退。
+		//isGroupEnd	null:代表通常模式
+		//				false:代表操作组模式未到达最后一步
+		//				true:代表操作组模式到达最后一步
+		private void redoStepNode(HistoryNode curStepNode, bool isAddOpt, bool? isGroupEnd)
 		{
 			XmlDocument docXml = null;
 
-			if (m_curNode.Value.m_dstXe != null)
+			if (curStepNode.m_dstXe != null)
 			{
-				docXml = m_curNode.Value.m_dstXe.OwnerDocument;
+				docXml = curStepNode.m_dstXe.OwnerDocument;
 			}
-			switch (m_curNode.Value.m_optType)
+			switch (curStepNode.m_optType)
 			{
 				case XmlOptType.NODE_INSERT:
 					{
 						HistoryNode.insertXmlNode(
 							m_pW,
 							m_xmlCtrl,
-							m_curNode.Value.m_dstXe,
-							m_curNode.Value.m_srcXe,
-							m_curNode.Value.m_newIndex);
+							curStepNode.m_dstXe,
+							curStepNode.m_srcXe,
+							curStepNode.m_newIndex);
 					}
 					break;
 				case XmlOptType.NODE_DELETE:
@@ -206,7 +227,7 @@ namespace UIEditor.XmlOperation
 						HistoryNode.deleteXmlNode(
 							m_pW,
 							m_xmlCtrl,
-							m_curNode.Value.m_dstXe);
+							curStepNode.m_dstXe);
 					}
 					break;
 				case XmlOptType.NODE_MOVE:
@@ -214,27 +235,27 @@ namespace UIEditor.XmlOperation
 						HistoryNode.deleteXmlNode(
 							m_pW,
 							m_xmlCtrl,
-							m_curNode.Value.m_dstXe);
+							curStepNode.m_dstXe);
 						HistoryNode.insertXmlNode(
 							m_pW,
 							m_xmlCtrl,
-							m_curNode.Value.m_dstXe,
-							m_curNode.Value.m_newSrcXe,
-							m_curNode.Value.m_newIndex);
+							curStepNode.m_dstXe,
+							curStepNode.m_newSrcXe,
+							curStepNode.m_newIndex);
 					}
 					break;
 				case XmlOptType.NODE_UPDATE:
 					{
 						HistoryNode.updateXmlNode(
 							m_pW,
-							m_curNode.Value.m_dstXe,
-							m_curNode.Value.m_attrName,
-							m_curNode.Value.m_newValue);
+							curStepNode.m_dstXe,
+							curStepNode.m_attrName,
+							curStepNode.m_newValue);
 					}
 					break;
 				case XmlOptType.TEXT:
 					{
-						HistoryNode.updateXmlText(m_xmlCtrl, m_curNode.Value.m_newDoc);
+						HistoryNode.updateXmlText(m_xmlCtrl, curStepNode.m_newDoc);
 						if (!isAddOpt)
 						{
 							m_xmlCtrl.refreshXmlText();
@@ -245,11 +266,11 @@ namespace UIEditor.XmlOperation
 				default:
 					return;
 			}
-			if (m_curNode.Value.m_path != null && m_curNode.Value.m_path != "")
+			if (curStepNode.m_path != null && curStepNode.m_path != "")
 			{
 				if (docXml != null)
 				{
-					docXml.Save(m_curNode.Value.m_path);
+					docXml.Save(curStepNode.m_path);
 				}
 			}
 
@@ -267,27 +288,37 @@ namespace UIEditor.XmlOperation
 				{
 					xeView = MainWindow.s_pW.m_xeTest;
 				}
-				m_pW.updateXmlToGL(m_xmlCtrl, xeView, false);
+				if (isGroupEnd != false)
+				{
+					m_pW.updateXmlToGL(m_xmlCtrl, xeView, false);
+				}
 
-				if (m_xmlCtrl.m_mapXeItem.TryGetValue(m_curNode.Value.m_dstXe, out dstItem))
+				if (m_xmlCtrl.m_mapXeItem.TryGetValue(curStepNode.m_dstXe, out dstItem))
 				{
 					dstItem.initHeader();
 				}
 			}
 			else
 			{
-				if (m_xmlCtrl.m_mapXeItem.TryGetValue(m_curNode.Value.m_dstXe, out dstItem))
+				if (m_xmlCtrl.m_mapXeItem.TryGetValue(curStepNode.m_dstXe, out dstItem))
 				{
 					dstItem.initHeader();
 				}
 
-				if (m_curNode.Value.m_optType == XmlOptType.NODE_UPDATE && dstItem != null && dstItem.m_type == "CtrlUI")
+				if (isGroupEnd == null)
 				{
-					Basic ctrlItem = (Basic)dstItem;
+					if (curStepNode.m_optType == XmlOptType.NODE_UPDATE && dstItem != null && dstItem.m_type == "CtrlUI")
+					{
+						Basic ctrlItem = (Basic)dstItem;
 
-					updateAttrToGL(m_xmlCtrl, ctrlItem, m_curNode.Value.m_attrName, m_curNode.Value.m_newValue);
+						updateAttrToGL(m_xmlCtrl, ctrlItem, curStepNode.m_attrName, curStepNode.m_newValue);
+					}
+					else
+					{
+						m_pW.updateXmlToGL(m_xmlCtrl);
+					}
 				}
-				else
+				else if (isGroupEnd == true)
 				{
 					m_pW.updateXmlToGL(m_xmlCtrl);
 				}
@@ -316,12 +347,12 @@ namespace UIEditor.XmlOperation
 				if (dstItem != null)
 				{
 					dstItem.changeSelectItem();
-					switch(m_curNode.Value.m_optType)
+					switch (curStepNode.m_optType)
 					{
-							//用于添加控件中带有皮肤名或修改控件的皮肤名后，自动添加皮肤组。
+						//用于添加控件中带有皮肤名或修改控件的皮肤名后，自动添加皮肤组。
 						case XmlOptType.NODE_UPDATE:
 							{
-								if(m_curNode.Value.m_attrName == "skin")
+								if (curStepNode.m_attrName == "skin")
 								{
 									checkSkinLink(dstItem.m_xmlCtrl, dstItem.m_xe, false);
 								}
@@ -338,7 +369,7 @@ namespace UIEditor.XmlOperation
 				}
 			}
 
-			if (m_curNode.Value.m_path != null && m_curNode.Value.m_path != "")
+			if (curStepNode.m_path != null && curStepNode.m_path != "")
 			{
 
 			}
@@ -351,7 +382,39 @@ namespace UIEditor.XmlOperation
 				}
 				else
 				{
-					m_xmlCtrl.refreshXmlText();
+					if (isGroupEnd != false)
+					{
+						m_xmlCtrl.refreshXmlText();
+					}
+				}
+			}
+		}
+		//处理整个操作节点组的撤销
+		//isGroupEnd	null:代表通常模式
+		//				false:代表操作组模式未到达最后一步
+		//				true:代表操作组模式到达最后一步
+		public void redoOperation(bool isAddOpt)
+		{
+			if(m_curNode.Value.Count <= 0)
+			{
+				return;
+			}
+			if (m_curNode.Value.Count == 1)
+			{
+				redoStepNode(m_curNode.Value[0], isAddOpt, null);
+			}
+			else
+			{
+				for (int i = 0; i < m_curNode.Value.Count; i++)
+				{
+					if (i < m_curNode.Value.Count - 1)
+					{
+						redoStepNode(m_curNode.Value[i], isAddOpt, false);
+					}
+					else
+					{
+						redoStepNode(m_curNode.Value[i], isAddOpt, true);
+					}
 				}
 			}
 		}
@@ -396,22 +459,22 @@ namespace UIEditor.XmlOperation
 				}
 			}
 		}
-		public void undoOperation()
+		private void undoStepNode(HistoryNode curStepNode, bool? isGroupEnd)
 		{
 			XmlDocument docXml = null;
 
-			if (m_curNode.Value.m_dstXe != null)
+			if (curStepNode.m_dstXe != null)
 			{
-				docXml = m_curNode.Value.m_dstXe.OwnerDocument;
+				docXml = curStepNode.m_dstXe.OwnerDocument;
 			}
-			switch (m_curNode.Value.m_optType)
+			switch (curStepNode.m_optType)
 			{
 				case XmlOptType.NODE_INSERT:
 					{
 						HistoryNode.deleteXmlNode(
 							m_pW,
 							m_xmlCtrl,
-							m_curNode.Value.m_dstXe);
+							curStepNode.m_dstXe);
 					}
 					break;
 				case XmlOptType.NODE_DELETE:
@@ -419,9 +482,9 @@ namespace UIEditor.XmlOperation
 						HistoryNode.insertXmlNode(
 							m_pW,
 							m_xmlCtrl,
-							m_curNode.Value.m_dstXe,
-							m_curNode.Value.m_srcXe,
-							m_curNode.Value.m_oldIndex);
+							curStepNode.m_dstXe,
+							curStepNode.m_srcXe,
+							curStepNode.m_oldIndex);
 					}
 					break;
 				case XmlOptType.NODE_MOVE:
@@ -429,27 +492,27 @@ namespace UIEditor.XmlOperation
 						HistoryNode.deleteXmlNode(
 							m_pW,
 							m_xmlCtrl,
-							m_curNode.Value.m_dstXe);
+							curStepNode.m_dstXe);
 						HistoryNode.insertXmlNode(
 							m_pW,
 							m_xmlCtrl,
-							m_curNode.Value.m_dstXe,
-							m_curNode.Value.m_srcXe,
-							m_curNode.Value.m_oldIndex);
+							curStepNode.m_dstXe,
+							curStepNode.m_srcXe,
+							curStepNode.m_oldIndex);
 					}
 					break;
 				case XmlOptType.NODE_UPDATE:
 					{
 						HistoryNode.updateXmlNode(
 							m_pW,
-							m_curNode.Value.m_dstXe,
-							m_curNode.Value.m_attrName,
-							m_curNode.Value.m_oldValue);
+							curStepNode.m_dstXe,
+							curStepNode.m_attrName,
+							curStepNode.m_oldValue);
 					}
 					break;
 				case XmlOptType.TEXT:
 					{
-						HistoryNode.updateXmlText(m_xmlCtrl, m_curNode.Value.m_oldDoc);
+						HistoryNode.updateXmlText(m_xmlCtrl, curStepNode.m_oldDoc);
 						m_xmlCtrl.refreshXmlText();
 						return;
 					}
@@ -457,23 +520,31 @@ namespace UIEditor.XmlOperation
 				default:
 					return;
 			}
-			if (m_curNode.Value.m_path != null && m_curNode.Value.m_path != "")
+			if (curStepNode.m_path != null && curStepNode.m_path != "")
 			{
 				if (docXml != null)
 				{
-					docXml.Save(m_curNode.Value.m_path);
+					docXml.Save(curStepNode.m_path);
 				}
 			}
 			XmlItem dstItem = null;
 
-			m_xmlCtrl.m_mapXeItem.TryGetValue(m_curNode.Value.m_dstXe, out dstItem);
-			if (m_curNode.Value.m_optType == XmlOptType.NODE_UPDATE && dstItem != null && dstItem.m_type == "CtrlUI")
-			{
-				Basic ctrlItem = (Basic)dstItem;
+			m_xmlCtrl.m_mapXeItem.TryGetValue(curStepNode.m_dstXe, out dstItem);
 
-				updateAttrToGL(m_xmlCtrl, ctrlItem, m_curNode.Value.m_attrName, m_curNode.Value.m_oldValue);
+			if (isGroupEnd == null)
+			{
+				if (curStepNode.m_optType == XmlOptType.NODE_UPDATE && dstItem != null && dstItem.m_type == "CtrlUI")
+				{
+					Basic ctrlItem = (Basic)dstItem;
+
+					updateAttrToGL(m_xmlCtrl, ctrlItem, curStepNode.m_attrName, curStepNode.m_oldValue);
+				}
+				else
+				{
+					m_pW.updateXmlToGL(m_xmlCtrl);
+				}
 			}
-			else
+			else if (isGroupEnd == true)
 			{
 				m_pW.updateXmlToGL(m_xmlCtrl);
 			}
@@ -497,13 +568,41 @@ namespace UIEditor.XmlOperation
 				}
 			}
 
-			if (m_curNode.Value.m_path != null && m_curNode.Value.m_path != "")
+			if (curStepNode.m_path != null && curStepNode.m_path != "")
 			{
 
 			}
 			else
 			{
-				m_xmlCtrl.refreshXmlText();
+				if (isGroupEnd != false)
+				{
+					m_xmlCtrl.refreshXmlText();
+				}
+			}
+		}
+		public void undoOperation()
+		{
+			if (m_curNode.Value.Count <= 0)
+			{
+				return;
+			}
+			if (m_curNode.Value.Count == 1)
+			{
+				undoStepNode(m_curNode.Value[0], null);
+			}
+			else
+			{
+				for (int i = 0; i < m_curNode.Value.Count; i++)
+				{
+					if (i < m_curNode.Value.Count - 1)
+					{
+						undoStepNode(m_curNode.Value[i], false);
+					}
+					else
+					{
+						undoStepNode(m_curNode.Value[i], true);
+					}
+				}
 			}
 		}
 		public void undo()
@@ -520,7 +619,7 @@ namespace UIEditor.XmlOperation
 			if (m_curNode != null && m_curNode.Next != null && m_curNode.Next != m_headNode)
 			{
 				m_curNode = m_curNode.Next;
-				redoOperation();
+				redoOperation(false);
 				m_xmlCtrl.m_openedFile.updateSaveStatus();
 			}
 		}

@@ -141,53 +141,11 @@ namespace UIEditor.BoloUI
 		}
 		private void insertCtrlItem_Click(object sender, RoutedEventArgs e)
 		{
-			switch (sender.GetType().ToString())
+			if (sender is MenuItem)
 			{
-				case "System.Windows.Controls.MenuItem":
-					{
-						MenuItem ctrlItem = (MenuItem)sender;
-						XmlElement newXe = XmlItem.getCurItem().m_xe.OwnerDocument.CreateElement(ctrlItem.ToolTip.ToString());
-						BoloUI.Basic treeChild = new BoloUI.Basic(newXe, XmlItem.getCurItem().m_xmlCtrl);
+				MenuItem menuItem = (MenuItem)sender;
 
-						if (treeChild.m_xe.Name == "event")
-						{
-							XmlItem.getCurItem().m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
-								XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, XmlItem.getCurItem().m_xe, 0));
-						}
-						else
-						{
-							XmlItem.getCurItem().m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
-								XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, XmlItem.getCurItem().m_xe, XmlItem.getCurItem().m_xe.ChildNodes.Count));
-						}
-					}
-					break;
-				case "UIEditor.BoloUI.CtrlTemplate":
-					{
-						BoloUI.CtrlTemplate ctrlItem = (BoloUI.CtrlTemplate)sender;
-						XmlDocument newDoc = new XmlDocument();
-						XmlElement newXe = XmlItem.getCurItem().m_xe.OwnerDocument.CreateElement("tmp");
-
-						if (ctrlItem.ToolTip.ToString() != "")
-						{
-							newXe.InnerXml = ctrlItem.ToolTip.ToString();
-							if (newXe.FirstChild.NodeType == XmlNodeType.Element)
-							{
-								BoloUI.Basic treeChild = new BoloUI.Basic((XmlElement)newXe.FirstChild, XmlItem.getCurItem().m_xmlCtrl);
-
-								if (treeChild.m_xe.Name == "event")
-								{
-									XmlItem.getCurItem().m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
-										XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, XmlItem.getCurItem().m_xe, 0));
-								}
-								else
-								{
-									XmlItem.getCurItem().m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
-										XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, XmlItem.getCurItem().m_xe, XmlItem.getCurItem().m_xe.ChildNodes.Count));
-								}
-							}
-						}
-					}
-					break;
+				XmlItem.addItemToCurItemByString(menuItem.ToolTip.ToString());
 			}
 		}
 		private void mx_addTmpl_Click(object sender, RoutedEventArgs e)
@@ -478,6 +436,7 @@ namespace UIEditor.BoloUI
 			bool isNull = true;
 
 			MainWindow.s_pW.m_strDic.getNameAndTip(ctrlMenuItem, StringDic.conf_ctrlTipDic, addStr);
+			ctrlMenuItem.ToolTip = XmlItem.getDefaultNewXmlItem(addStr);
 			if (MainWindow.s_pW.m_docConf.SelectSingleNode("Config").SelectSingleNode("template") != null &&
 				MainWindow.s_pW.m_docConf.SelectSingleNode("Config").SelectSingleNode("template").SelectSingleNode(addStr + "Tmpls") != null)
 			{
@@ -553,7 +512,6 @@ namespace UIEditor.BoloUI
 			mx_addNode.Items.Add(ctrlMenuItem);
 		}
 
-
 		static private void showTmpl(MenuItem ctrlMenuItem, XmlElement xeTmpls, string addStr, RoutedEventHandler rehClick)
 		{
 			if (ctrlMenuItem.Items.Count == 0)
@@ -561,7 +519,7 @@ namespace UIEditor.BoloUI
 				MenuItem emptyCtrl = new MenuItem();
 
 				emptyCtrl.Header = "空节点";
-				emptyCtrl.ToolTip = addStr;
+				emptyCtrl.ToolTip = XmlItem.getDefaultNewXmlItem(addStr);
 				emptyCtrl.Click += rehClick;
 				ctrlMenuItem.Items.Add(emptyCtrl);
 				ctrlMenuItem.Items.Add(new Separator());

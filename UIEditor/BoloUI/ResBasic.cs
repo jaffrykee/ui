@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,6 +16,7 @@ using System.Windows.Shapes;
 using System.Xml;
 using UIEditor.BoloUI;
 using UIEditor.BoloUI.DefConfig;
+using UIEditor.XmlOperation;
 using UIEditor.XmlOperation.XmlAttr;
 
 using s32 = System.Int32;
@@ -383,6 +385,66 @@ namespace UIEditor.BoloUI
 			AttrList.selectLastAttrList();
 			m_selLock.delLock(ref stackLock);
 		}
+		static public ResBasic getParticleKeyFrameItem(int index)
+		{
+			if(index < 0)
+			{
+				return null;
+			}
+
+			XmlItem curItem = XmlItem.getCurItem();
+			ResBasic retItem = null;
+
+			if (curItem != null && curItem is ResBasic)
+			{
+				ResBasic curResItem = (ResBasic)curItem;
+				ResBasic retGroup = null;
+
+				switch (curItem.m_xe.Name)
+				{
+					//特效关键帧的运动轨迹绘制
+					case "particleShape":
+						{
+							if (curResItem.Items.Count > 0 && curResItem.Items[0] != null &&
+								curResItem.Items[0] is ResBasic && ((ResBasic)curResItem.Items[0]).m_xe.Name == "particleKeyFrameGroup")
+							{
+								retGroup = (ResBasic)curResItem.Items[0];
+							}
+						}
+						break;
+					case "particleKeyFrameGroup":
+						{
+							retGroup = curResItem;
+						}
+						break;
+					case "particleKeyFrame":
+						{
+							if (curResItem.Parent != null && curResItem.Parent is ResBasic &&
+								((ResBasic)curResItem.Parent).m_xe.Name == "particleKeyFrameGroup")
+							{
+								retGroup = (ResBasic)curResItem.Parent;
+							}
+						}
+						break;
+					default:
+						break;
+				}
+				if(retGroup != null)
+				{
+					if (retGroup.Items.Count > index && retGroup.Items[index] != null && retGroup.Items[index] is ResBasic)
+					{
+						retItem = (ResBasic)retGroup.Items[index];
+
+						if(retItem.m_xe.Name == "particleKeyFrame")
+						{
+							return retItem;
+						}
+					}
+				}
+			}
+
+			return null;
+		}
 		public void sendKeyFrameDrawData(XmlElement xeParticleShape)
 		{
 			string msgData;
@@ -416,32 +478,194 @@ namespace UIEditor.BoloUI
 				}
 			}
 		}
-		public void addRowToDrawParticleLineMsgData(XmlElement xeKeyFrame, ref string msgData)
+		static public void addRowToDrawParticleLineMsgData(XmlElement xeKeyFrame, ref string msgData)
 		{
 			if(msgData != null && xeKeyFrame != null)
 			{
+				//0
 				msgData += xeKeyFrame.GetAttribute("X") + ":";
 				msgData += xeKeyFrame.GetAttribute("Y") + ":";
 				msgData += xeKeyFrame.GetAttribute("time") + ":";
 				msgData += xeKeyFrame.GetAttribute("perX") + ":";
 				msgData += xeKeyFrame.GetAttribute("perY") + ":";
 
+				//5
 				msgData += xeKeyFrame.GetAttribute("moveType") + ":";
 				msgData += xeKeyFrame.GetAttribute("moveTypeEx1") + ":";
 				msgData += xeKeyFrame.GetAttribute("moveTypeEx2") + ":";
 				msgData += xeKeyFrame.GetAttribute("moveTypeEx3") + ":";
 				msgData += xeKeyFrame.GetAttribute("moveTypeEx4") + ":";
 
+				//10
 				msgData += xeKeyFrame.GetAttribute("moveTypeEx5") + ":";
 				msgData += xeKeyFrame.GetAttribute("moveTypeEx6") + ":";
 				msgData += xeKeyFrame.GetAttribute("moveTypeEx7") + ":";
 				msgData += xeKeyFrame.GetAttribute("moveTypeEx8") + ":";
 				msgData += xeKeyFrame.GetAttribute("addPerX") + ":";
 
+				//15
 				msgData += xeKeyFrame.GetAttribute("addPerY") + ":";
-
 				msgData += "true" + ":";//isKeyFrame
 				msgData += xeKeyFrame.GetAttribute("isKeyHide") + ":";
+			}
+		}
+		static public void updateParticleKeyFrameFromG2WData(string msgData)
+		{
+			string[] sArray = Regex.Split(msgData, ":", RegexOptions.IgnoreCase);
+			ResBasic curParticleKeyFrame = null;
+			int index;
+			List<HistoryNode> lstOptNode = new List<HistoryNode>();
+
+			if (int.TryParse(sArray[0], out index))
+			{
+				curParticleKeyFrame = getParticleKeyFrameItem(index);
+			}
+			if (curParticleKeyFrame == null)
+			{
+				return;
+			}
+
+			for (int i = 1; i < sArray.Length; i++)
+			{
+				if (sArray[i] == null || sArray[i] == "")
+				{
+					continue;
+				}
+				switch(i)
+				{
+					case 1:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curParticleKeyFrame.m_xe, "X", curParticleKeyFrame.m_xe.GetAttribute("X"), sArray[i]));
+						}
+						break;
+					case 2:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curParticleKeyFrame.m_xe, "Y", curParticleKeyFrame.m_xe.GetAttribute("Y"), sArray[i]));
+						}
+						break;
+					case 3:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curParticleKeyFrame.m_xe, "time", curParticleKeyFrame.m_xe.GetAttribute("time"), sArray[i]));
+						}
+						break;
+					case 4:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curParticleKeyFrame.m_xe, "perX", curParticleKeyFrame.m_xe.GetAttribute("perX"), sArray[i]));
+						}
+						break;
+					case 5:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curParticleKeyFrame.m_xe, "perY", curParticleKeyFrame.m_xe.GetAttribute("perY"), sArray[i]));
+						}
+						break;
+
+					case 6:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curParticleKeyFrame.m_xe, "moveType", curParticleKeyFrame.m_xe.GetAttribute("moveType"), sArray[i]));
+						}
+						break;
+					case 7:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curParticleKeyFrame.m_xe, "moveTypeEx1", curParticleKeyFrame.m_xe.GetAttribute("moveTypeEx1"), sArray[i]));
+						}
+						break;
+					case 8:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curParticleKeyFrame.m_xe, "moveTypeEx2", curParticleKeyFrame.m_xe.GetAttribute("moveTypeEx2"), sArray[i]));
+						}
+						break;
+					case 9:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curParticleKeyFrame.m_xe, "moveTypeEx3", curParticleKeyFrame.m_xe.GetAttribute("moveTypeEx3"), sArray[i]));
+						}
+						break;
+					case 10:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curParticleKeyFrame.m_xe, "moveTypeEx4", curParticleKeyFrame.m_xe.GetAttribute("moveTypeEx4"), sArray[i]));
+						}
+						break;
+
+					case 11:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curParticleKeyFrame.m_xe, "moveTypeEx5", curParticleKeyFrame.m_xe.GetAttribute("moveTypeEx5"), sArray[i]));
+						}
+						break;
+					case 12:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curParticleKeyFrame.m_xe, "moveTypeEx6", curParticleKeyFrame.m_xe.GetAttribute("moveTypeEx6"), sArray[i]));
+						}
+						break;
+					case 13:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curParticleKeyFrame.m_xe, "moveTypeEx7", curParticleKeyFrame.m_xe.GetAttribute("moveTypeEx7"), sArray[i]));
+						}
+						break;
+					case 14:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curParticleKeyFrame.m_xe, "moveTypeEx8", curParticleKeyFrame.m_xe.GetAttribute("moveTypeEx8"), sArray[i]));
+						}
+						break;
+					case 15:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curParticleKeyFrame.m_xe, "addPerX", curParticleKeyFrame.m_xe.GetAttribute("addPerX"), sArray[i]));
+						}
+						break;
+
+					case 16:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curParticleKeyFrame.m_xe, "addPerY", curParticleKeyFrame.m_xe.GetAttribute("addPerY"), sArray[i]));
+						}
+						break;
+					case 17:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curParticleKeyFrame.m_xe, "isKeyFrame", curParticleKeyFrame.m_xe.GetAttribute("isKeyFrame"), sArray[i]));
+						}
+						break;
+					case 18:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curParticleKeyFrame.m_xe, "isKeyHide", curParticleKeyFrame.m_xe.GetAttribute("isKeyHide"), sArray[i]));
+						}
+						break;
+					default:
+						{
+
+						}
+						break;
+				}
+			}
+			if (lstOptNode != null && lstOptNode.Count > 0)
+			{
+				curParticleKeyFrame.m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(lstOptNode);
+			}
+		}
+		static public bool isEnableSkinEditor()
+		{
+			if (MainWindow.s_pW.mx_skinEditor != null && MainWindow.s_pW.mx_skinEditor.Visibility == System.Windows.Visibility.Visible &&
+				MainWindow.s_pW.mx_skinEditor.IsSelected == true)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
 			}
 		}
 

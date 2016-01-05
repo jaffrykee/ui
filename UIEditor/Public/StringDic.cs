@@ -145,6 +145,30 @@ namespace UIEditor
 
 			return "";
 		}
+		public bool setWordByKey(string key, string newValue, string dicName = "DefDic")
+		{
+			Dictionary<string, Dictionary<string, string>> dicData;
+			Dictionary<string, string> mapLang;
+
+			if (dicName != null && dicName != "" && m_mapStrDic.TryGetValue(dicName, out dicData))
+			{
+				if (dicData.TryGetValue(key, out mapLang))
+				{
+					mapLang[m_curLang] = newValue;
+				}
+				else
+				{
+					dicData[key] = new Dictionary<string, string>();
+					dicData[key][m_curLang] = newValue;
+				}
+
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
 
 		public void getNameAndTip(MenuItem menuItem, string tipDic, string key, string nameDic = "DefDic")
 		{

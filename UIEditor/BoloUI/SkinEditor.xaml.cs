@@ -124,6 +124,43 @@ namespace UIEditor.BoloUI
 											}
 										}
 									}
+									else if (ctrlName == "virtualpad" && (pairPrefix.Key == "s" || pairPrefix.Key == "t"))
+									{
+										string strNum = m_curCtrl.m_xe.GetAttribute("angleScaleCount");
+										int num;
+										string strCon;
+
+										if (pairPrefix.Key == "s")
+										{
+											strCon = "自身";
+										}
+										else
+										{
+											strCon = "触摸点";
+										}
+
+										if (strNum != "" && int.TryParse(strNum, out num) && num > 0)
+										{
+											for (int i = 0; i <= num; i++)
+											{
+												ComboBoxItem cbItem = new ComboBoxItem();
+
+												cbItem.Content = strCon + i.ToString();
+												cbItem.ToolTip = pairPrefix.Key + i.ToString();
+												cbItem.Selected += mx_cbItemPrefix_Selected;
+												mx_skinApprPre.Items.Add(cbItem);
+											}
+										}
+										else
+										{
+											ComboBoxItem cbItem = new ComboBoxItem();
+
+											cbItem.Content = strCon + "0";
+											cbItem.ToolTip = pairPrefix.Key + "0";
+											cbItem.Selected += mx_cbItemPrefix_Selected;
+											mx_skinApprPre.Items.Add(cbItem);
+										}
+									}
 									else
 									{
 										ComboBoxItem cbItem = new ComboBoxItem();

@@ -132,6 +132,18 @@ namespace UIEditor.XmlOperation.XmlAttr
 			}
 			mx_toolScroll.ScrollToRightEnd();
 		}
+		public void refreshRowHeader()
+		{
+			foreach(object child in mx_frame.Children)
+			{
+				if(child is IAttrRow)
+				{
+					IAttrRow attrRow = (IAttrRow)child;
+
+					attrRow.m_name = attrRow.m_name;
+				}
+			}
+		}
 
 		static public void hiddenOtherAttrList()
 		{

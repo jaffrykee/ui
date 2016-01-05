@@ -69,26 +69,32 @@ namespace UIEditor.XmlOperation
 			switch (optType)
 			{
 				case XmlOptType.NODE_DELETE:
-					m_srcXe = (XmlElement)m_dstXe.ParentNode;
-					int tmpIndex = getXeIndex(m_dstXe);
-					if (tmpIndex < 0)
 					{
-						return;
-					}
-					else
-					{
-						m_oldIndex = tmpIndex;
+						m_srcXe = (XmlElement)m_dstXe.ParentNode;
+						int tmpIndex = getXeIndex(m_dstXe);
+						if (tmpIndex < 0)
+						{
+							return;
+						}
+						else
+						{
+							m_oldIndex = tmpIndex;
+						}
 					}
 					break;
 				case XmlOptType.NODE_INSERT:
-					m_srcXe = srcXe;
-					m_newIndex = newIndex;
+					{
+						m_srcXe = srcXe;
+						m_newIndex = newIndex;
+					}
 					break;
 				case XmlOptType.NODE_MOVE:
-					m_srcXe = (XmlElement)m_dstXe.ParentNode;
-					m_newSrcXe = srcXe;
-					m_newIndex = newIndex;
-					m_oldIndex = getXeIndex(m_dstXe);
+					{
+						m_srcXe = (XmlElement)m_dstXe.ParentNode;
+						m_newSrcXe = srcXe;
+						m_newIndex = newIndex;
+						m_oldIndex = getXeIndex(m_dstXe);
+					}
 					break;
 				default:
 					break;
