@@ -418,5 +418,25 @@ namespace UIEditor.Project
 				setSettingRowDefault(lbi, m_mapLbiThemeRow, ref m_xeThemeDef);
 			}
 		}
+
+		private void mx_lbTemplateGlobal_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+
+		}
+
+		private void mx_renameTemplateRow_Click(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+		private void mx_delTemplateRow_Click(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+		private void mx_lbTemplateProject_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+
+		}
 	}
 }

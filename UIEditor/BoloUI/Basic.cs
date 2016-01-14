@@ -304,6 +304,7 @@ namespace UIEditor.BoloUI
 			AttrList.hiddenOtherAttrList();
 			BringIntoView();
 			gotoSelectXe();
+			ResBasic.clearKeyFrameDrawData();
 			AttrList.selectLastAttrList();
 			if(MainWindow.s_pW.mx_skinEditor != null)
 			{

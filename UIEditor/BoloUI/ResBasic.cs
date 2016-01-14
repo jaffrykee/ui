@@ -376,8 +376,15 @@ namespace UIEditor.BoloUI
 						}
 						break;
 					default:
+						{
+							clearKeyFrameDrawData();
+						}
 						break;
 				}
+			}
+			else
+			{
+				clearKeyFrameDrawData();
 			}
 			this.IsSelected = true;
 			BringIntoView();
@@ -445,7 +452,7 @@ namespace UIEditor.BoloUI
 
 			return null;
 		}
-		public void sendKeyFrameDrawData(XmlElement xeParticleShape)
+		static public void sendKeyFrameDrawData(XmlElement xeParticleShape)
 		{
 			string msgData;
 
@@ -477,6 +484,12 @@ namespace UIEditor.BoloUI
 					}
 				}
 			}
+		}
+		static public void clearKeyFrameDrawData()
+		{
+			string msgData = "false";
+
+			MainWindow.s_pW.updateGL(msgData, W2GTag.W2G_DRAW_PARTICLE_LINE);
 		}
 		static public void addRowToDrawParticleLineMsgData(XmlElement xeKeyFrame, ref string msgData)
 		{

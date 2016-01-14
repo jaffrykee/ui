@@ -720,7 +720,7 @@ namespace UIEditor.Project
 			{
 				XmlNode xnIndex = docLang.DocumentElement.SelectSingleNode("index");
 
-
+				max = xnIndex.ChildNodes.Count;
 				Dictionary<string, Dictionary<int, string>> mapIdLangRowMap = new Dictionary<string, Dictionary<int, string>>();
 
 				foreach (XmlNode xnString in docLang.DocumentElement.SelectNodes("string"))

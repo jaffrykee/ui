@@ -946,9 +946,6 @@ namespace UIEditor
 
 			UnhookWindowsHookEx(hHook); // release keyboard hook
 		}
-		private void mx_root_KeyDown(object sender, KeyEventArgs e)
-		{
-		}
 		private void mx_root_PreviewKeyDown(object sender, KeyEventArgs e)
 		{
 			switch(e.KeyboardDevice.Modifiers)
@@ -1840,7 +1837,9 @@ namespace UIEditor
 					}
 					break;
 				case WM_KEYDOWN:
-					//移动到MainWindow的根节点处理
+					{
+						//移动到MainWindow的根节点处理
+					}
 					break;
 				default:
 					break;

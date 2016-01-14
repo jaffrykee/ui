@@ -21,8 +21,7 @@
 	Background="{StaticResource BackgroundNormal}"
 	Loaded="mx_root_Loaded"
 	Closing="mx_root_Closing"
-	PreviewKeyDown="mx_root_PreviewKeyDown"
-	KeyDown="mx_root_KeyDown">
+	PreviewKeyDown="mx_root_PreviewKeyDown">
 	<Window.Resources>
 		<RoutedUICommand x:Key="btnClick_mx_toolNew" Text="Button Click" />
 		<RoutedUICommand x:Key="btnClick_mx_toolOpen" Text="Button Click" />
@@ -397,6 +396,23 @@
 						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
 								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
 								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
+						<WrapPanel Background="#33000000"
+								   IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}">
+							<TextBox Name="mx_tbScriptName" Width="200" Margin="4"></TextBox>
+							<Button Name="mx_btnSendScript"
+								ToolTip="只支持只包含BoloUI库、脚本库等公共库和MOBA精灵库中的脚本接口的脚本（bs文件，预设路径:artist/scripts/dev/scripts/）。"
+								Height="24"
+								Width="60"
+								Margin="3"
+								Foreground="{StaticResource Foreground}"
+								BorderBrush="{StaticResource BackgroundNormal}"
+								Click="mx_btnSendScript_Click">
+								运行脚本
+							</Button>
+						</WrapPanel>
+						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
+								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
+								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
 						<WrapPanel IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}">
 							<Button Name="mx_refresh"
 								Style="{StaticResource BtnStyle_Tools}"
@@ -442,23 +458,6 @@
 								  Unchecked="mx_showBack_Unchecked">
 								显示背景
 							</CheckBox>
-						</WrapPanel>
-						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
-								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
-								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
-						<WrapPanel Background="#33000000"
-								   IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}">
-							<TextBox Name="mx_tbScriptName" Width="200" Margin="4"></TextBox>
-							<Button Name="mx_btnSendScript"
-								ToolTip="只支持只包含BoloUI库、脚本库等公共库和MOBA精灵库中的脚本接口的脚本（bs文件，预设路径:artist/scripts/dev/scripts/）。"
-								Height="24"
-								Width="60"
-								Margin="3"
-								Foreground="{StaticResource Foreground}"
-								BorderBrush="{StaticResource BackgroundNormal}"
-								Click="mx_btnSendScript_Click">
-								运行脚本
-							</Button>
 						</WrapPanel>
 						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
 								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
