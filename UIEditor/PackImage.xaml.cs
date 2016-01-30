@@ -276,6 +276,13 @@ namespace UIEditor
 			System.Drawing.Bitmap tgaImg;
 			BitmapSource imgSource;
 
+			if (!System.IO.File.Exists(xmlPath))
+			{
+				Public.ResultLink.createResult("\r\n" + xmlPath + "图包配置文件没有找到（资源缺失）。", Public.ResultType.RT_ERROR);
+
+				return;
+			}
+
 			refreshImagePack(xmlPath, isRePack, out m_mapImgRect, out tgaImg, out m_imageWidth, out m_imageHeight);
 
 			mx_canvas.Width = m_imageWidth;

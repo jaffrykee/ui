@@ -512,6 +512,14 @@
 								<ComboBoxItem>2560 x 1440</ComboBoxItem>
 							</ComboBox>
 						</WrapPanel>
+						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
+								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
+								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
+						<WrapPanel>
+							<Label>替换路径：</Label>
+							<TextBox Name="mx_tbReplacePath" Width="200" Margin="4"></TextBox>
+							<Button Click="mx_replaceTools_Click">替换</Button>
+						</WrapPanel>
 					</WrapPanel>
 				</WrapPanel>
 				<WrapPanel Grid.Row="1" Margin="3">

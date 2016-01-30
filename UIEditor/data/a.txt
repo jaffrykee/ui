@@ -1,15 +1,30 @@
 ﻿
-	//右侧属性工具栏的UI
-	public AttrRow m_attrRowUI;
-	//数据类型
-	public string m_type;
-	//子类型
-	public string m_subType;
-	//默认值(废弃)
-	public string m_defValue;
-	//枚举
-	public bool m_isEnum;
-	//常用项
-	public bool m_isCommon;
-	//枚举列表
-	public Dictionary<string, ComboBoxItem=""> m_mapEnum;
+        BoloUISkin* skin;
+        Apperance* app;
+        wstring type;
+        wstring name;
+        s32 x;
+        s32 y;
+        f32 m_perX;
+        f32 m_perY;
+        s32 width;
+        s32 height;
+        s32 anchor;
+        s32 topBorder;
+        s32 bottomBorder;
+        s32 leftBorder;
+        s32 rightBorder;
+        f32 scaleX;
+        f32 scaleY;
+        s32 lastTime;
+        s32 m_lastKeyFrameTime;
+        bool loop;
+        bool frameDone;
+        s32 angle;
+        s32 rotateType;
+        s32 mirrorType;
+        b2 m_playType; //用于关键帧动画的播放顺序模式
+        b2 m_isSport; //是否使用运动轨迹
+        
+        s32 tx;
+        s32 ty;

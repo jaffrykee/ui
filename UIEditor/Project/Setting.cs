@@ -572,7 +572,15 @@ namespace UIEditor.Project
 				{
 					XmlDocument docXml = new XmlDocument();
 
-					docXml.Load(fi.FullName);
+					try
+					{
+						docXml.Load(fi.FullName);
+					}
+					catch
+					{
+						Public.ResultLink.createResult("xml文件:" + fi.FullName + "格式错误（有可能是由于SVN冲突引起的）。", Public.ResultType.RT_ERROR, null, true);
+						continue;
+					}
 					if (docXml.DocumentElement.Name == "BoloUI")
 					{
 						foreach (XmlNode xnSkin in docXml.DocumentElement.SelectNodes("skin"))

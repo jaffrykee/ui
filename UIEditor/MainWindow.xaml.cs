@@ -3098,6 +3098,39 @@ namespace UIEditor
 				updateGL(scriptName, W2GTag.W2G_SCRIPT_RUN);
 			}
 		}
+		static string CapText(Match m)
+		{
+			string x = m.ToString();
+
+			if (char.IsLower(x[4]))
+			{
+				return x.Substring(0, 4) + char.ToUpper(x[4]) + x.Substring(5, x.Length - 5);
+			}
+
+			return x;
+		}
+
+		private void mx_replaceTools_Click(object sender, RoutedEventArgs e)
+		{
+			string path = mx_tbReplacePath.Text;
+			if(File.Exists(path))
+			{
+				StreamReader sr = new StreamReader(path, Encoding.Default);
+				string strFileData;
+				Regex regex = new Regex(@"([ :][gs]et)([a-z])");
+
+				strFileData = sr.ReadToEnd();
+
+				string toLower = regex.Replace(strFileData, new MatchEvaluator(CapText));
+
+				sr.Close();
+
+				StreamWriter sw = new StreamWriter(path, false, Encoding.Default);
+
+				sw.Write(toLower);
+				sw.Close();
+			}
+		}
 	}
 
 	class TreeViewLineConverter : IValueConverter
