@@ -143,6 +143,9 @@ namespace UIEditor.XmlOperation.XmlAttr
 		}
 		public string m_type { get; set; }
 
+		private string mt_defValue;
+		public string m_defValue { get; set; }
+
 		public RowNormal(AttrDef_T attrDef = null, string name = "", string value = "", AttrList parent = null)
 		{
 			InitializeComponent();

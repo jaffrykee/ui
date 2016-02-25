@@ -3101,10 +3101,11 @@ namespace UIEditor
 		static string CapText(Match m)
 		{
 			string x = m.ToString();
+			int maxCount = 4;
 
-			if (char.IsLower(x[4]))
+			if (char.IsLower(x[maxCount]))
 			{
-				return x.Substring(0, 4) + char.ToUpper(x[4]) + x.Substring(5, x.Length - 5);
+				return x.Substring(0, maxCount) + char.ToUpper(x[maxCount]) + x.Substring(maxCount + 1, x.Length - maxCount - 1);
 			}
 
 			return x;

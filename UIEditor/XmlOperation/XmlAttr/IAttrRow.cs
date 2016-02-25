@@ -17,5 +17,6 @@ namespace UIEditor.XmlOperation.XmlAttr
 		string m_preValue { get; set; }
 		string m_value { get; set; }
 		string m_type { get; set; }
+		string m_defValue { get; set; }
 	}
 }

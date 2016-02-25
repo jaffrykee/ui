@@ -27,7 +27,7 @@ namespace UIEditor.BoloUI.DefConfig
 		public string m_type;
 		//子类型
 		public string m_subType;
-		//默认值(废弃)
+		//默认值
 		public string m_defValue;
 		//枚举
 		public bool m_isEnum;
@@ -37,7 +37,7 @@ namespace UIEditor.BoloUI.DefConfig
 		public Dictionary<string, ComboBoxItem> m_mapEnum;
 		public ArrayList m_lstWeight;
 
-		public AttrDef_T(string type = "int", string defValue = null, IAttrRow iRowUI = null, bool isEnum = false, Dictionary<string, ComboBoxItem> mapEnum = null)
+		public AttrDef_T(string type = "int", string defValue = "", IAttrRow iRowUI = null, bool isEnum = false, Dictionary<string, ComboBoxItem> mapEnum = null)
 		{
 			m_iAttrRowUI = iRowUI;
 			m_type = type;

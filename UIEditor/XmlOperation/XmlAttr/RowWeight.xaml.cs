@@ -171,6 +171,9 @@ namespace UIEditor.XmlOperation.XmlAttr
 		}
 		public string m_type { get; set; }
 
+		private string mt_defValue;
+		public string m_defValue { get; set; }
+
 		public ArrayList m_lstWeight;
 
 		public RowWeight(AttrDef_T attrDef, string name = "", string value = "", AttrList parent = null)

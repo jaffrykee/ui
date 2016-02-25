@@ -345,6 +345,9 @@ namespace UIEditor.XmlOperation.XmlAttr
 		public string m_type { get; set; }
 		public Dictionary<string, ComboBoxItem> m_mapEnum;
 
+		private string mt_defValue;
+		public string m_defValue { get; set; }
+
 		public RowEnum(AttrDef_T attrDef, string name = "", string value = "", AttrList parent = null)
 		{
 			m_isUseEvent = false;

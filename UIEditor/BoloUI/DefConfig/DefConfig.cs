@@ -103,6 +103,7 @@ namespace UIEditor.BoloUI.DefConfig
 									attrDef.m_isCommon = false;
 								}
 								attrDef.m_subType = xeAttr.GetAttribute("subType");
+								attrDef.m_defValue = xeAttr.GetAttribute("defValue");
 								mapAttrDef.Add(keyAttr, attrDef);
 							}
 						}

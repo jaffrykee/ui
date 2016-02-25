@@ -501,7 +501,7 @@ namespace UIEditor.Project
 			}
 
 			System.Windows.Forms.FolderBrowserDialog folderDialog = new System.Windows.Forms.FolderBrowserDialog();
-			folderDialog.Tag = "选择文件";
+			folderDialog.Tag = "选择目录";
 			folderDialog.SelectedPath = curPath;
 			System.Windows.Forms.DialogResult result = folderDialog.ShowDialog();
 			if (result == System.Windows.Forms.DialogResult.Cancel)

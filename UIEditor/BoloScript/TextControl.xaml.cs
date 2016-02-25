@@ -833,6 +833,7 @@ namespace UIEditor.BoloScript
 
 					run.Text = reader.ReadToEnd();
 					mx_textPara.Inlines.Add(run);
+					reader.Close();
 				}
 				catch (IOException ex)
 				{

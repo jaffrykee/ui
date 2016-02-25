@@ -22,12 +22,13 @@ namespace UIEditor.XmlOperation.XmlAttr
 	/// </summary>
 	public partial class RowBool : Grid, IAttrRow
 	{
-		private string mt_name;
-		private string mt_value;
-		private string mt_type;
 		private bool m_eventLock;
 		private void setValue(bool isPre, string value)
 		{
+			if ((value == null || value == "") && m_defValue != null && m_defValue != "")
+			{
+				value = m_defValue;
+			}
 			if (mt_value != value && m_eventLock == false)
 			{
 				if (!isPre && m_parent != null && m_parent.m_xmlCtrl != null &&
@@ -76,6 +77,7 @@ namespace UIEditor.XmlOperation.XmlAttr
 		public bool m_isCommon { get; set; }
 		public string m_subType { get; set; }
 
+		private string mt_name;
 		public string m_name
 		{
 			get { return mt_name; }
@@ -105,6 +107,8 @@ namespace UIEditor.XmlOperation.XmlAttr
 				}
 			}
 		}
+
+		private string mt_value;
 		public string m_preValue
 		{
 			get { return mt_value; }
@@ -121,7 +125,12 @@ namespace UIEditor.XmlOperation.XmlAttr
 				setValue(false, value);
 			}
 		}
+
+		private string mt_type;
 		public string m_type { get; set; }
+
+		private string mt_defValue;
+		public string m_defValue { get; set; }
 
 		public RowBool(AttrDef_T attrDef, string name = "", string value = "", AttrList parent = null)
 		{
@@ -134,6 +143,7 @@ namespace UIEditor.XmlOperation.XmlAttr
 			m_name = name;
 			m_preValue = value;
 			m_type = attrDef.m_type;
+			m_defValue = attrDef.m_defValue;
 		}
 
 		private void mx_valueBool_Checked(object sender, RoutedEventArgs e)
