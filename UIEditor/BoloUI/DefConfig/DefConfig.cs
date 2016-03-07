@@ -342,7 +342,7 @@ namespace UIEditor.BoloUI.DefConfig
 
 			docNode.Load(nodePath);
 
-			if (docNode.DocumentElement.Name != "SkinNodes")
+			if (docNode.DocumentElement.Name != "DataNodes")
 			{
 				return false;
 			}

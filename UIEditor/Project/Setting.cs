@@ -59,6 +59,7 @@ namespace UIEditor.Project
 			}
 		}
 		static public Dictionary<string, List<string>> s_mapSkinIndex;
+		static public DateTime s_uiconfigLastUpdateTime;
 
 		static public void refreshAllProjectSetting()
 		{
@@ -493,6 +494,33 @@ namespace UIEditor.Project
 			}
 		}
 
+		static public bool checkUiConfigReload()
+		{
+			string path = Project.Setting.s_projPath + "\\..\\..\\ext_config\\uiconfig.xml";
+
+			if (File.Exists(path))
+			{
+				FileInfo fi = new FileInfo(path);
+
+				if(s_uiconfigLastUpdateTime == null)
+				{
+					s_uiconfigLastUpdateTime = fi.LastWriteTime;
+
+					return false;
+				}
+				else
+				{
+					if (fi.LastWriteTime != s_uiconfigLastUpdateTime)
+					{
+						s_uiconfigLastUpdateTime = fi.LastWriteTime;
+
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
 		static public string openSelectFolderBox(string curPath = null)
 		{
 			if (curPath == null)

@@ -2636,6 +2636,7 @@ namespace UIEditor
 				m_isCanEdit = true;
 			}
 		}
+		//文件修改触发器
 		private void m_fileChangeTimer_Tick(object send, EventArgs e)
 		{
 			ArrayList arrFileChanged = OpenedFile.checkFileChangedAtOutside();
@@ -2653,6 +2654,13 @@ namespace UIEditor
 					}
 				}
 			}
+			if (Setting.checkUiConfigReload())
+			{
+				updateGL("", W2GTag.W2G_SETTING_RELOAD_UICONFIG);
+				refreshCurFile();
+				ResultLink.createResult("\r\n检测到\"uiconfig.xml\"发生改变，已经自动重新加载", ResultType.RT_INFO, null, true);
+			}
+
 			ResultLink.refreshResultVisibility();
 		}
 		private void m_textTimer_Tick(object send, EventArgs e)

@@ -127,6 +127,16 @@ namespace UIEditor.BoloUI
 			{
 				xeTmp.SetAttribute("w", "50");
 				xeTmp.SetAttribute("h", "50");
+				switch(xeName)
+				{
+					case "countDown":
+						{
+							xeTmp.SetAttribute("text", "%a:%b:%c:%d");
+						}
+						break;
+					default:
+						break;
+				}
 			}
 
 			return xeTmp.OuterXml;

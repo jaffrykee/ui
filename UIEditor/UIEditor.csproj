@@ -173,6 +173,10 @@
     <Compile Include="Project\OpenedFileContextMenu.xaml.cs">
       <DependentUpon>OpenedFileContextMenu.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Project\PlugIn\DataAttr.cs" />
+    <Compile Include="Project\PlugIn\DataAttrsDef.cs" />
+    <Compile Include="Project\PlugIn\DataNode.cs" />
+    <Compile Include="Project\PlugIn\DataNodesDef.cs" />
     <Compile Include="Project\SetResolutionWin.xaml.cs">
       <DependentUpon>SetResolutionWin.xaml</DependentUpon>
     </Compile>
