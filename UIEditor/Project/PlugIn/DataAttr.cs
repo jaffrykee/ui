@@ -19,26 +19,54 @@ namespace UIEditor.Project.PlugIn
 			m_lstRow = new List<string>();
 		}
 	}
+	/// <summary>
+	/// 一切插件xml数据配置文档属性设置的基类。
+	/// </summary>
 	public class DataAttr
 	{
-		//右侧属性工具栏的UI
+		/// <summary>
+		/// 右侧属性工具栏的UI
+		/// </summary>
+		public DataAttrGroup m_parent;
 		public IAttrRow m_iAttrRowUI;
-		//数据类型
+		/// <summary>
+		/// 数据类型
+		/// </summary>
 		public string m_type;
-		//子类型
+		/// <summary>
+		/// 子类型
+		/// </summary>
 		public string m_subType;
-		//默认值
+		/// <summary>
+		/// 默认值
+		/// </summary>
 		public string m_defValue;
-		//枚举
+		/// <summary>
+		/// 枚举
+		/// </summary>
 		public bool m_isEnum;
-		//常用项
+		/// <summary>
+		/// 常用项
+		/// </summary>
 		public bool m_isCommon;
-		//枚举列表
+		/// <summary>
+		/// 枚举列表
+		/// </summary>
 		public Dictionary<string, ComboBoxItem> m_mapEnum;
 		public ArrayList m_lstWeight;
 
-		public DataAttr(string type = "int", string defValue = "", IAttrRow iRowUI = null, bool isEnum = false, Dictionary<string, ComboBoxItem> mapEnum = null)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="type">数据类型</param>
+		/// <param name="defValue">默认值</param>
+		/// <param name="iRowUI">属性条目UI接口</param>
+		/// <param name="isEnum">是否是枚举类型</param>
+		/// <param name="mapEnum">枚举单选UI字典</param>
+		public DataAttr(DataAttrGroup parent, string type = "int", string defValue = "", IAttrRow iRowUI = null,
+			bool isEnum = false, Dictionary<string, ComboBoxItem> mapEnum = null)
 		{
+			m_parent = parent;
 			m_iAttrRowUI = iRowUI;
 			m_type = type;
 			m_defValue = defValue;
