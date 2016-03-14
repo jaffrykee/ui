@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Xml;
+using UIEditor.Project.PlugIn;
 
 namespace UIEditor.BoloUI.MenuWin
 {
@@ -36,24 +37,30 @@ namespace UIEditor.BoloUI.MenuWin
 		{
 			mx_cbCtrl.Items.Clear();
 			mx_cbAttr.Items.Clear();
-			foreach(KeyValuePair<string, DefConfig.CtrlDef_T> pairCtrlDef in MainWindow.s_pW.m_mapCtrlDef.ToList())
-			{
-				if(pairCtrlDef.Value.m_enInsert == true || pairCtrlDef.Value.m_enInsertAll == true)
-				{
-					ComboBoxItem cbItem = new ComboBoxItem();
-					string ctrlName = MainWindow.s_pW.m_strDic.getWordByKey(pairCtrlDef.Key);
 
-					if (ctrlName == "")
+			DataNodeGroup nodeGroup;
+
+			if(DataNodeGroup.tryGetDataNodeGroup("BoloUI", "Ctrl", out nodeGroup) && nodeGroup != null)
+			{
+				foreach(KeyValuePair<string, DataNode> pairNodeDef in nodeGroup.m_mapDataNode.ToList())
+				{
+					if(pairNodeDef.Value is DefConfig.CtrlDef_T)
 					{
-						ctrlName = pairCtrlDef.Key;
+						ComboBoxItem cbItem = new ComboBoxItem();
+						string ctrlName = MainWindow.s_pW.m_strDic.getWordByKey(pairNodeDef.Key);
+
+						if (ctrlName == "")
+						{
+							ctrlName = pairNodeDef.Key;
+						}
+						else
+						{
+							ctrlName = pairNodeDef.Key + " | " + ctrlName;
+						}
+						cbItem.Content = ctrlName;
+						cbItem.ToolTip = pairNodeDef.Key;
+						mx_cbCtrl.Items.Add(cbItem);
 					}
-					else
-					{
-						ctrlName = pairCtrlDef.Key + " | " + ctrlName;
-					}
-					cbItem.Content = ctrlName;
-					cbItem.ToolTip = pairCtrlDef.Key;
-					mx_cbCtrl.Items.Add(cbItem);
 				}
 			}
 		}
@@ -160,22 +167,25 @@ namespace UIEditor.BoloUI.MenuWin
 		}
 		private void addAttrCbi(DefConfig.CtrlDef_T ctrlDef)
 		{
-			foreach (KeyValuePair<string, DefConfig.AttrDef_T> pairAttr in ctrlDef.m_mapAttrDef.ToList())
+			foreach(KeyValuePair<string, DataAttrGroup> pairGroup in ctrlDef.m_mapDataAttrGroup.ToList())
 			{
-				string attrName = MainWindow.s_pW.m_strDic.getWordByKey(pairAttr.Key);
-				ComboBoxItem cbiAttr = new ComboBoxItem();
+				foreach(KeyValuePair<string, DataAttr> pairAttr in pairGroup.Value.m_mapDataAttr.ToList())
+				{
+					string attrName = MainWindow.s_pW.m_strDic.getWordByKey(pairAttr.Key);
+					ComboBoxItem cbiAttr = new ComboBoxItem();
 
-				if (attrName == "")
-				{
-					attrName = pairAttr.Key;
+					if (attrName == "")
+					{
+						attrName = pairAttr.Key;
+					}
+					else
+					{
+						attrName = pairAttr.Key + " | " + attrName;
+					}
+					cbiAttr.Content = attrName;
+					cbiAttr.ToolTip = pairAttr.Key;
+					mx_cbAttr.Items.Add(cbiAttr);
 				}
-				else
-				{
-					attrName = pairAttr.Key + " | " + attrName;
-				}
-				cbiAttr.Content = attrName;
-				cbiAttr.ToolTip = pairAttr.Key;
-				mx_cbAttr.Items.Add(cbiAttr);
 			}
 		}
 		private void mx_cbCtrl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -191,18 +201,11 @@ namespace UIEditor.BoloUI.MenuWin
 					DefConfig.CtrlDef_T ctrlDef;
 
 					mx_cbAttr.Items.Clear();
-					if (ctrlName != "" && MainWindow.s_pW.m_mapCtrlDef.TryGetValue(ctrlName, out ctrlDef) && ctrlDef != null && ctrlDef.m_mapAttrDef != null)
+					if (ctrlName != "" && DefConfig.CtrlDef_T.tryGetCtrlDef(ctrlName, out ctrlDef))
 					{
 						if (mx_rbAttr.IsChecked == true)
 						{
 							//改属性
-							foreach(KeyValuePair<string, DefConfig.CtrlDef_T> pairCtrl in MainWindow.s_pW.m_mapCtrlDef.ToList())
-							{
-								if (pairCtrl.Value != null && pairCtrl.Value.m_isBasic)
-								{
-									addAttrCbi(pairCtrl.Value);
-								}
-							}
 							addAttrCbi(ctrlDef);
 						}
 						else

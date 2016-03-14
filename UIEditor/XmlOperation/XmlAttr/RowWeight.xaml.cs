@@ -15,6 +15,7 @@ using UIEditor;
 using UIEditor.BoloUI;
 using UIEditor.BoloUI.DefConfig;
 using System.Collections;
+using UIEditor.Project.PlugIn;
 
 namespace UIEditor.XmlOperation.XmlAttr
 {
@@ -176,7 +177,7 @@ namespace UIEditor.XmlOperation.XmlAttr
 
 		public ArrayList m_lstWeight;
 
-		public RowWeight(AttrDef_T attrDef, string name = "", string value = "", AttrList parent = null)
+		public RowWeight(DataAttr attrDef, string name = "", string value = "", AttrList parent = null)
 		{
 			m_mapRow = new Dictionary<string, CheckBox>();
 			m_mapRowGroup = new Dictionary<string, Dictionary<string, RadioButton>>();

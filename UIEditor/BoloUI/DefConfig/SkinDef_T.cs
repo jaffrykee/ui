@@ -4,20 +4,30 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using UIEditor.XmlOperation.XmlAttr;
+using UIEditor.Project.PlugIn;
 
 namespace UIEditor.BoloUI.DefConfig
 {
-	public class SkinDef_T
+	public class SkinDef_T : Project.PlugIn.DataNode
 	{
-		public Dictionary<string, SkinDef_T> m_mapEnChild;
-		public Dictionary<string, AttrDef_T> m_mapAttrDef;
-		public AttrList m_skinAttrList;
-
-		public SkinDef_T(Dictionary<string, SkinDef_T> mapChild, Dictionary<string, AttrDef_T> mapAttrDef, AttrList attrListUI)
+		static public bool tryGetSkinDef(string nodeName, out SkinDef_T skinDef)
 		{
-			m_mapEnChild = mapChild;
-			m_mapAttrDef = mapAttrDef;
-			m_skinAttrList = attrListUI;
+			DataNode nodeDef;
+
+			skinDef = null;
+			if (DataNodeGroup.tryGetDataNode("BoloUI", "Ctrl", nodeName, out nodeDef) && nodeDef != null && nodeDef is SkinDef_T)
+			{
+				skinDef = (SkinDef_T)nodeDef;
+
+				return true;
+			}
+
+			return false;
+		}
+
+		public SkinDef_T(DataNodeGroup parent, string name)
+			: base(parent, name)
+		{
 		}
 	}
 }

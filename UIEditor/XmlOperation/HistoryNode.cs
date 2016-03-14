@@ -126,7 +126,7 @@ namespace UIEditor.XmlOperation
 		static public bool deleteItemByXe(MainWindow pW, XmlControl xmlCtrl, XmlElement dstXe)
 		{
 			bool ret = false;
-			CtrlDef_T nullCtrlDef;
+			Project.PlugIn.DataNode dataNode;
 			XmlItem dstItem;
 
 			if (xmlCtrl != null && xmlCtrl.m_mapXeItem != null && xmlCtrl.m_mapXeItem.TryGetValue(dstXe, out dstItem))
@@ -148,7 +148,7 @@ namespace UIEditor.XmlOperation
 					if (dstItem.Parent != null)
 					{
 						((TreeViewItem)dstItem.Parent).Items.Remove(dstItem);
-						if (pW.m_mapCtrlDef.TryGetValue(dstXe.Name, out nullCtrlDef) &&
+						if (Project.PlugIn.DataNodeGroup.tryGetDataNode("BoloUI", "Ctrl", dstXe.Name, out dataNode) &&
 							dstXe.Name != "event")
 						{
 							//仅Ctrl
@@ -183,7 +183,7 @@ namespace UIEditor.XmlOperation
 			{
 				XmlItem dstItem;
 				XmlItem srcItem = null;
-				SkinDef_T skinPtr;
+				Project.PlugIn.DataNode skinPtr;
 
 				if (srcXe.Name != "BoloUI")
 				{
@@ -193,20 +193,19 @@ namespace UIEditor.XmlOperation
 					}
 				}
 
-				if (pW.m_mapCtrlDef.TryGetValue(dstXe.Name, out nullCtrlDef))
+				if (CtrlDef_T.tryGetCtrlDef(dstXe.Name, out nullCtrlDef))
 				{
 					dstItem = new Basic(dstXe, xmlCtrl, false);
 				}
-				else if (pW.m_mapSkinAllDef.TryGetValue(dstXe.Name, out skinPtr))
+				else if (Project.PlugIn.DataNodeGroup.s_mapDataNodesDef["BoloUI"]["Skin"].m_mapDataNode.TryGetValue(dstXe.Name, out skinPtr) && skinPtr is SkinDef_T)
 				{
-
 					if (srcItem != null && srcItem is ResBasic && ((ResBasic)srcItem).m_isSkinEditor)
 					{
-						dstItem = new ResBasic(dstXe, xmlCtrl, skinPtr, true);
+						dstItem = new ResBasic(dstXe, xmlCtrl, (SkinDef_T)skinPtr, true);
 					}
 					else
 					{
-						dstItem = new ResBasic(dstXe, xmlCtrl, skinPtr, false);
+						dstItem = new ResBasic(dstXe, xmlCtrl, (SkinDef_T)skinPtr, false);
 					}
 				}
 				else

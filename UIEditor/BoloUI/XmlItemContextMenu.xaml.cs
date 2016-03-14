@@ -17,6 +17,7 @@ using System.Text.RegularExpressions;
 using UIEditor.BoloUI;
 using UIEditor.BoloUI.DefConfig;
 using UIEditor.Public;
+using UIEditor.Project.PlugIn;
 
 namespace UIEditor.BoloUI
 {
@@ -39,105 +40,20 @@ namespace UIEditor.BoloUI
 
 		private void mx_addNode_Loaded(object sender, RoutedEventArgs e)
 		{
-			if (XmlItem.getCurItem().m_type == "CtrlUI")
+			DataNode dataNode;
+			XmlElement curXe = XmlItem.getCurItem().m_xe;
+			bool isEnAdd = false;
+
+			mx_addNode.Items.Clear();
+			if(curXe != null && DataNodeGroup.tryGetDataNode(curXe.OwnerDocument.DocumentElement.Name, curXe.Name, out dataNode) && dataNode != null)
 			{
-				CtrlDef_T panelCtrlDef;
-
-				mx_addNode.Items.Clear();
-				if (MainWindow.s_pW.m_mapPanelCtrlDef.TryGetValue(XmlItem.getCurItem().m_xe.Name, out panelCtrlDef))
+				foreach(string childName in dataNode.m_hlstChildNode)
 				{
-					foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in MainWindow.s_pW.m_mapEnInsertCtrlDef.ToList())
-					{
-						if (!pairCtrlDef.Value.m_isFrame)
-						{
-							showTmplGroup(pairCtrlDef.Key);
-						}
-					}
-					mx_addNode.Items.Add(new Separator());
-					foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in MainWindow.s_pW.m_mapEnInsertCtrlDef.ToList())
-					{
-						if (pairCtrlDef.Value.m_isFrame)
-						{
-							showTmplGroup(pairCtrlDef.Key);
-						}
-					}
-					mx_addNode.Items.Add(new Separator());
-					foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in MainWindow.s_pW.m_mapEnInsertAllCtrlDef.ToList())
-					{
-						showTmplGroup(pairCtrlDef.Key);
-					}
-				}
-				else
-				{
-					if (XmlItem.getCurItem().m_xe.Name == "BoloUI")
-					{
-						//<inc>showTmplGroup(pairCtrlDef.Key);
-						foreach (KeyValuePair<string, CtrlDef_T> pairCtrl in MainWindow.s_pW.m_mapPanelCtrlDef.ToList())
-						{
-							MenuItem ctrlItem = new MenuItem();
-							string name = MainWindow.s_pW.m_strDic.getWordByKey(pairCtrl.Key);
-							string tip = MainWindow.s_pW.m_strDic.getWordByKey(pairCtrl.Key, StringDic.conf_ctrlTipDic);
-
-							if (tip != "")
-							{
-								ctrlItem.ToolTip = tip;
-							}
-							else
-							{
-								ctrlItem.ToolTip = pairCtrl.Key;
-							}
-							if (name != "")
-							{
-								ctrlItem.Header = name;
-							}
-							else
-							{
-								ctrlItem.Header = pairCtrl.Key;
-							}
-							ctrlItem.Click += insertCtrlItem_Click;
-							mx_addNode.Items.Add(ctrlItem);
-						}
-					}
-					else if (XmlItem.getCurItem().m_xe.Name != "event")
-					{
-						showTmplGroup("event");
-						/*
-							正则替换："E:\clientlib\DsBoloUIEditor\src\boloUI\BoloEvent.java" 到 "E:\clienttools\UIEditor2\conf.xml" -->
-							[\t a-z_=]*("[a-zA-Z]*")[; \t\/\/]*([\/\u4e00-\u9fa5 a-zA-Z（）]*)
-							\t<row name=$1 tip="$2">\r\n\t\t<event type=$1/>\r\n\t</row>
-						*/
-					}
-					else
-					{
-						mx_addNode.IsEnabled = false;
-					}
+					showTmplGroup(childName);
+					isEnAdd = true;
 				}
 			}
-			else
-			{
-				Dictionary<string, SkinDef_T> mapSkinDef;
-				mx_addNode.Items.Clear();
-				if (XmlItem.getCurItem().m_xe.Name == "BoloUI")
-				{
-					mapSkinDef = MainWindow.s_pW.m_mapSkinTreeDef;
-				}
-				else
-				{
-					mapSkinDef = ((ResBasic)XmlItem.getCurItem()).m_curDeepDef.m_mapEnChild;
-				}
-				if (mapSkinDef != null)
-				{
-					foreach (KeyValuePair<string, SkinDef_T> pairSkinDef in mapSkinDef.ToList())
-					{
-						showTmplGroup(pairSkinDef.Key);
-					}
-					mx_addNode.IsEnabled = true;
-				}
-				else
-				{
-					mx_addNode.IsEnabled = false;
-				}
-			}
+			mx_addNode.IsEnabled = isEnAdd;
 		}
 		private void insertCtrlItem_Click(object sender, RoutedEventArgs e)
 		{
@@ -164,8 +80,7 @@ namespace UIEditor.BoloUI
 			System.Drawing.Rectangle rectFrame = new System.Drawing.Rectangle(
 				ctrlFrame.m_selScreenX, ctrlFrame.m_selScreenY, ctrlFrame.m_selW, ctrlFrame.m_selH);
 
-			if (ctrlFrame != null && ctrlFrame.m_xe != null && ctrlFrame.m_xe.Name != "" &&
-				MainWindow.s_pW.m_mapPanelCtrlDef.TryGetValue(ctrlFrame.m_xe.Name, out ctrlDef))
+			if (ctrlFrame != null && ctrlFrame.m_xe != null && ctrlFrame.m_xe.Name != "" && CtrlDef_T.isFrame(ctrlFrame.m_xe.Name) == true)
 			{
 				foreach (object item in ctrlFrame.Items)
 				{
@@ -293,7 +208,7 @@ namespace UIEditor.BoloUI
 				}
 				CtrlDef_T ctrlDef;
 
-				if (XmlItem.getCurItem().m_xe.NextSibling != null && MainWindow.s_pW.m_mapPanelCtrlDef.TryGetValue(XmlItem.getCurItem().m_xe.NextSibling.Name, out ctrlDef))
+				if (XmlItem.getCurItem().m_xe.NextSibling != null && CtrlDef_T.isFrame(XmlItem.getCurItem().m_xe.NextSibling.Name) == true)
 				{
 					mx_moveToChild.IsEnabled = true;
 				}
@@ -311,9 +226,7 @@ namespace UIEditor.BoloUI
 						{
 							if (MainWindow.s_pW.m_xePaste != null)
 							{
-								CtrlDef_T panelCtrlDef;
-
-								if (MainWindow.s_pW.m_mapPanelCtrlDef.TryGetValue(MainWindow.s_pW.m_xePaste.Name, out panelCtrlDef))
+								if (CtrlDef_T.isFrame(MainWindow.s_pW.m_xePaste.Name) == true)
 								{
 									mx_paste.IsEnabled = true;
 								}
@@ -337,10 +250,7 @@ namespace UIEditor.BoloUI
 							{
 								mx_paste.IsEnabled = false;
 							}
-
-							CtrlDef_T panelCtrlDef;
-
-							if (MainWindow.s_pW.m_mapPanelCtrlDef.TryGetValue(XmlItem.getCurItem().m_xe.Name, out panelCtrlDef))
+							if (CtrlDef_T.isFrame(XmlItem.getCurItem().m_xe.Name) == true)
 							{
 								mx_checkOverflow.IsEnabled = true;
 								mx_batchUpdate.IsEnabled = true;
@@ -453,7 +363,7 @@ namespace UIEditor.BoloUI
 
 				if (xnTmpls != null)
 				{
-					if (MainWindow.s_pW.m_mapCtrlDef.TryGetValue(XmlItem.getCurItem().m_xe.Name, out ctrlDef) && ctrlDef != null)
+					if (CtrlDef_T.tryGetCtrlDef(XmlItem.getCurItem().m_xe.Name, out ctrlDef) && ctrlDef != null)
 					{
 						//控件节点的事件模板
 						if (ctrlDef.m_hasPointerEvent)

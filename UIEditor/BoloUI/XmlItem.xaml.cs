@@ -18,6 +18,8 @@ using System.Text.RegularExpressions;
 using UIEditor.BoloUI;
 using UIEditor.BoloUI.DefConfig;
 using UIEditor.Public;
+using UIEditor.Project;
+using UIEditor.Project.PlugIn;
 
 namespace UIEditor.BoloUI
 {
@@ -27,6 +29,8 @@ namespace UIEditor.BoloUI
 		public XmlElement m_xe;
 		public bool m_isCtrl;
 		public string m_type;
+		public string m_configModName;
+		public string m_configPartName;
 
 		public string m_apprPre;
 		public string m_apprTagStr;
@@ -123,7 +127,7 @@ namespace UIEditor.BoloUI
 			XmlDocument docTmp = new XmlDocument();
 			XmlElement xeTmp = docTmp.CreateElement(xeName);
 
-			if (MainWindow.s_pW.m_mapCtrlDef.TryGetValue(xeName, out ctrlDef) && xeName != "event")
+			if (CtrlDef_T.tryGetCtrlDef(xeName, out ctrlDef) && xeName != "event")
 			{
 				xeTmp.SetAttribute("w", "50");
 				xeTmp.SetAttribute("h", "50");
@@ -279,96 +283,59 @@ namespace UIEditor.BoloUI
 		}
 		public void pasteItem()
 		{
+			XmlItem treeChild = null;
 			XmlElement xeCopy;
+			DataNode dataNodeCopy;
 
 			if (MainWindow.s_pW.m_xePaste != null)
 			{
-				CtrlDef_T ctrlPtr;
-				SkinDef_T skinPtr;
-				XmlItem treeChild = null;
-
 				xeCopy = m_xe.OwnerDocument.CreateElement("tmp");
 				xeCopy.InnerXml = MainWindow.s_pW.m_xePaste.OuterXml;
 				xeCopy = (XmlElement)xeCopy.FirstChild;
 
-				if (MainWindow.s_pW.m_mapCtrlDef.TryGetValue(xeCopy.Name, out ctrlPtr))
+				if (DataNodeGroup.tryGetDataNode(m_xe.OwnerDocument.DocumentElement.Name, MainWindow.s_pW.m_xePaste.Name, out dataNodeCopy))
 				{
-					treeChild = new BoloUI.Basic(xeCopy, m_xmlCtrl);
-				}
-				else if (MainWindow.s_pW.m_mapSkinAllDef.TryGetValue(xeCopy.Name, out skinPtr))
-				{
-					treeChild = new BoloUI.ResBasic(xeCopy, m_xmlCtrl, skinPtr);
+					switch (dataNodeCopy.GetType().ToString())
+					{
+						case "UIEditor.BoloUI.DefConfig.CtrlDef_T":
+							{
+								treeChild = new BoloUI.Basic(xeCopy, m_xmlCtrl);
+							}
+							break;
+						case "UIEditor.BoloUI.DefConfig.SkinDef_T":
+							{
+								treeChild = new BoloUI.ResBasic(xeCopy, m_xmlCtrl, (SkinDef_T)dataNodeCopy);
+							}
+							break;
+						default:
+							{
+
+							}
+							break;
+					}
 				}
 				if (treeChild != null)
 				{
-					if (xeCopy.Name == "event")
-					{
-						m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
-							new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe)
-							);
-					}
-					else
-					{
-						if (m_type == "CtrlUI")
-						{
-							CtrlDef_T panelCtrlDef;
+					DataNode dataNode;
+					DataNode dataNodeParent;
 
-							if (m_xe.Name == "BoloUI" && MainWindow.s_pW.m_mapPanelCtrlDef.TryGetValue(treeChild.m_xe.Name, out panelCtrlDef))
-							{
-								m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
-									new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT,
-										treeChild.m_xe, m_xe, m_xe.ChildNodes.Count));
-							}
-							else if (MainWindow.s_pW.m_mapPanelCtrlDef.TryGetValue(m_xe.Name, out panelCtrlDef))
-							{
-								m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
-									new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT,
-										treeChild.m_xe, m_xe, m_xe.ChildNodes.Count));
-							}
-							else if (m_xe.ParentNode != null && m_xe.ParentNode.ParentNode != null && m_xe.ParentNode.ParentNode.NodeType == XmlNodeType.Element)
-							{
-								m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
-									new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT,
-										treeChild.m_xe, (XmlElement)m_xe.ParentNode, XmlOperation.HistoryNode.getXeIndex(m_xe) + 1));
-							}
-						}
-						else if (m_type == "Skin")
+					if (DataNodeGroup.tryGetDataNode(m_xe.OwnerDocument.DocumentElement.Name, m_xe.Name, out dataNode) &&
+						dataNode != null)
+					{
+						if(dataNode.m_hlstChildNode.Contains(xeCopy.Name))
 						{
-							SkinDef_T skinDef;
-							if (MainWindow.s_pW.m_mapSkinAllDef.TryGetValue(m_xe.Name, out skinDef))
+							m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
+								XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, m_xe, m_xe.ChildNodes.Count));
+						}
+						else
+						{
+							if (m_xe.ParentNode != null && DataNodeGroup.tryGetDataNode(m_xe.OwnerDocument.DocumentElement.Name,
+								m_xe.ParentNode.Name, out dataNodeParent))
 							{
-								SkinDef_T skinChildDef;
-								if (skinDef.m_mapEnChild != null && skinDef.m_mapEnChild.Count > 0
-									&& skinDef.m_mapEnChild.TryGetValue(treeChild.m_xe.Name, out skinChildDef))
+								if (dataNodeParent.m_hlstChildNode.Contains(xeCopy.Name))
 								{
-									m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
-										new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT,
-											treeChild.m_xe, m_xe, m_xe.ChildNodes.Count)
-										);
-								}
-								else
-								{
-									if (m_xe.ParentNode != null && m_xe.ParentNode.NodeType == XmlNodeType.Element)
-									{
-										if (((XmlElement)m_xe.ParentNode).Name == "BoloUI" &&
-											MainWindow.s_pW.m_mapSkinTreeDef.TryGetValue(treeChild.m_xe.Name, out skinChildDef))
-										{
-											m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
-												new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT,
-													treeChild.m_xe, (XmlElement)m_xe.ParentNode, XmlOperation.HistoryNode.getXeIndex(m_xe) + 1)
-												);
-										}
-										else if (MainWindow.s_pW.m_mapSkinAllDef.TryGetValue(((XmlElement)m_xe.ParentNode).Name, out skinDef))
-										{
-											if (skinDef.m_mapEnChild.TryGetValue(treeChild.m_xe.Name, out skinChildDef))
-											{
-												m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
-													new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT,
-														treeChild.m_xe, (XmlElement)m_xe.ParentNode, XmlOperation.HistoryNode.getXeIndex(m_xe) + 1)
-													);
-											}
-										}
-									}
+									m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_INSERT,
+										treeChild.m_xe, (XmlElement)m_xe.ParentNode, XmlOperation.HistoryNode.getXeIndex(m_xe) + 1));
 								}
 							}
 						}
@@ -427,8 +394,7 @@ namespace UIEditor.BoloUI
 		}
 		public void moveToChild()
 		{
-			CtrlDef_T ctrlDef;
-			if (m_xe.NextSibling != null && MainWindow.s_pW.m_mapPanelCtrlDef.TryGetValue(m_xe.NextSibling.Name, out ctrlDef))
+			if (m_xe.NextSibling != null && CtrlDef_T.isFrame(m_xe.NextSibling.Name) == true)
 			{
 				m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
 					new XmlOperation.HistoryNode(

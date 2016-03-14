@@ -18,6 +18,7 @@ using UIEditor.BoloUI;
 using UIEditor.BoloUI.DefConfig;
 using UIEditor.XmlOperation;
 using UIEditor.XmlOperation.XmlAttr;
+using UIEditor.Project.PlugIn;
 
 using s32 = System.Int32;
 using f32 = System.Single;
@@ -27,6 +28,9 @@ namespace UIEditor.BoloUI
 {
 	public class ResBasic : UIEditor.BoloUI.XmlItem
 	{
+		public const string conf_modName = "BoloUI";
+		public const string conf_partName = "Skin";
+
 		public SkinDef_T m_curDeepDef;
 		public bool m_isSkinEditor;
 
@@ -34,6 +38,8 @@ namespace UIEditor.BoloUI
 			: base(xe, rootControl)
 		{
 			m_type = "Skin";
+			m_configModName = conf_modName;
+			m_configPartName = conf_partName;
 			m_curDeepDef = deepDef;
 			m_apprPre = "";
 			m_apprTagStr = "";
@@ -98,14 +104,21 @@ namespace UIEditor.BoloUI
 					XmlElement xe = (XmlElement)xnf;
 					SkinDef_T skinPtr;
 
-					if (m_curDeepDef.m_mapEnChild != null)
+					if (m_curDeepDef.m_hlstChildNode != null)
 					{
-						if (m_curDeepDef.m_mapEnChild.TryGetValue(xe.Name, out skinPtr))
+						if (m_curDeepDef.m_hlstChildNode.Contains(xe.Name))
 						{
-							if (skinPtr != null)
+							DataNodeGroup nodeGroup = DataNodeGroup.s_mapDataNodesDef[m_configModName][m_configPartName];
+
+							if(nodeGroup != null)
 							{
-								this.Items.Add(new ResBasic(xe, m_xmlCtrl, skinPtr, m_isSkinEditor));
-								mx_imgFolder.Visibility = System.Windows.Visibility.Visible;
+								DataNode dataNode;
+
+								if (nodeGroup.m_mapDataNode.TryGetValue(xe.Name, out dataNode) && dataNode != null && dataNode is SkinDef_T)
+								{
+									this.Items.Add(new ResBasic(xe, m_xmlCtrl, (SkinDef_T)dataNode, m_isSkinEditor));
+									mx_imgFolder.Visibility = System.Windows.Visibility.Visible;
+								}
 							}
 						}
 					}
@@ -202,9 +215,12 @@ namespace UIEditor.BoloUI
 					this.ToolTip = m_xe.Name;
 				}
 
-				if (m_curDeepDef.m_mapAttrDef != null && m_curDeepDef.m_mapAttrDef.ToList().Count > 0)
+				if (m_curDeepDef.m_mapDataAttrGroup.ToList().Count > 0 &&
+					m_curDeepDef.m_mapDataAttrGroup.ToList().First().Value != null &&
+					m_curDeepDef.m_mapDataAttrGroup.ToList().First().Value.m_mapDataAttr != null &&
+					m_curDeepDef.m_mapDataAttrGroup.ToList().First().Value.m_mapDataAttr.ToList().Count > 0)
 				{
-					name = m_xe.GetAttribute(m_curDeepDef.m_mapAttrDef.ToList().First().Key);
+					name = m_xe.GetAttribute(m_curDeepDef.m_mapDataAttrGroup.ToList().First().Value.m_mapDataAttr.ToList().First().Key);
 				}
 
 				if (m_xe.Name == "apperance")
@@ -284,22 +300,30 @@ namespace UIEditor.BoloUI
 						ctrlUI = null;
 					}
 				}
-				SkinDef_T skinDef;
-				if(MainWindow.s_pW.m_mapSkinAllDef.TryGetValue(m_xe.Name, out skinDef))
-				{
-					skinDef.m_skinAttrList.Visibility = Visibility.Visible;
-					skinDef.m_skinAttrList.clearRowValue();
 
-					skinDef.m_skinAttrList.refreshRowVisible();
-					skinDef.m_skinAttrList.m_xmlCtrl = m_xmlCtrl;
-					skinDef.m_skinAttrList.m_basic = this;
-					skinDef.m_skinAttrList.m_xe = m_xe;
+				DataNode dataNode;
+
+				if (DataNodeGroup.tryGetDataNode(m_xe.OwnerDocument.DocumentElement.Name, "Skin", m_xe.Name, out dataNode)
+					&& dataNode != null && dataNode is SkinDef_T)
+				{
+					SkinDef_T skinDef = (SkinDef_T)dataNode;
+
+					foreach(KeyValuePair<string, DataAttrGroup> pairAttrGroup in skinDef.m_mapDataAttrGroup.ToList())
+					{
+						pairAttrGroup.Value.m_uiAttrList.Visibility = Visibility.Visible;
+						pairAttrGroup.Value.m_uiAttrList.clearRowValue();
+
+						pairAttrGroup.Value.m_uiAttrList.refreshRowVisible();
+						pairAttrGroup.Value.m_uiAttrList.m_xmlCtrl = m_xmlCtrl;
+						pairAttrGroup.Value.m_uiAttrList.m_basic = this;
+						pairAttrGroup.Value.m_uiAttrList.m_xe = m_xe;
+					}
 
 					foreach (XmlAttribute attr in m_xe.Attributes)
 					{
-						AttrDef_T attrDef;
+						DataAttr attrDef;
 
-						if(skinDef.m_mapAttrDef.TryGetValue(attr.Name, out attrDef))
+						if(skinDef.tryGetAttrDef(attr.Name, out attrDef))
 						{
 							attrDef.m_iAttrRowUI.m_preValue = attr.Value;
 						}

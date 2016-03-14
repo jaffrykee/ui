@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using UIEditor;
 using UIEditor.BoloUI;
 using UIEditor.BoloUI.DefConfig;
+using UIEditor.Project.PlugIn;
 
 namespace UIEditor.XmlOperation.XmlAttr
 {
@@ -348,7 +349,7 @@ namespace UIEditor.XmlOperation.XmlAttr
 		private string mt_defValue;
 		public string m_defValue { get; set; }
 
-		public RowEnum(AttrDef_T attrDef, string name = "", string value = "", AttrList parent = null)
+		public RowEnum(DataAttr attrDef, string name = "", string value = "", AttrList parent = null)
 		{
 			m_isUseEvent = false;
 			InitializeComponent();

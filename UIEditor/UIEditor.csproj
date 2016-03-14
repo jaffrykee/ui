@@ -176,7 +176,7 @@
     <Compile Include="Project\PlugIn\DataAttr.cs" />
     <Compile Include="Project\PlugIn\DataAttrGroup.cs" />
     <Compile Include="Project\PlugIn\DataNode.cs" />
-    <Compile Include="Project\PlugIn\DataNodesDef.cs" />
+    <Compile Include="Project\PlugIn\DataNodeGroup.cs" />
     <Compile Include="Project\SetResolutionWin.xaml.cs">
       <DependentUpon>SetResolutionWin.xaml</DependentUpon>
     </Compile>

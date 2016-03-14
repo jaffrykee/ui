@@ -16,11 +16,15 @@ using System.Xml;
 using UIEditor.BoloUI;
 using UIEditor.BoloUI.DefConfig;
 using UIEditor.XmlOperation.XmlAttr;
+using UIEditor.Project.PlugIn;
 
 namespace UIEditor.BoloUI
 {
 	public class Basic : UIEditor.BoloUI.XmlItem
 	{
+		public const string conf_modName = "BoloUI";
+		public const string conf_partName = "Ctrl";
+
 		public int m_selScreenX;
 		public int m_selScreenY;
 		public int m_selRelativeX;
@@ -32,13 +36,15 @@ namespace UIEditor.BoloUI
 		public Basic(XmlElement xe, XmlControl rootControl, bool isRoot = false) : base(xe, rootControl)
 		{
 			m_type = "CtrlUI";
+			m_configModName = conf_modName;
+			m_configPartName = conf_partName;
 			InitializeComponent();
 			CtrlDef_T ctrlDef;
 			m_isCtrl = true;
 
 			if (isRoot == false)
 			{
-				if (MainWindow.s_pW.m_mapCtrlDef.TryGetValue(m_xe.Name, out ctrlDef) && ctrlDef != null)
+				if (CtrlDef_T.tryGetCtrlDef(m_xe.Name, out ctrlDef) && ctrlDef != null)
 				{
 					m_isCtrl = true;
 				}
@@ -92,7 +98,7 @@ namespace UIEditor.BoloUI
 					XmlElement xe = (XmlElement)xnf;
 					CtrlDef_T ctrlPtr;
 
-					if (MainWindow.s_pW.m_mapCtrlDef.TryGetValue(xe.Name, out ctrlPtr))
+					if (CtrlDef_T.tryGetCtrlDef(xe.Name, out ctrlPtr))
 					{
 						this.Items.Add(new Basic(xe, m_xmlCtrl, false));
 						mx_imgFolder.Visibility = System.Windows.Visibility.Visible;
@@ -212,84 +218,44 @@ namespace UIEditor.BoloUI
 
 			m_xmlCtrl.m_curItem = this;
 			AttrList.hiddenAllAttr();
-			CtrlDef_T ctrlDef;
+			//CtrlDef_T ctrlDef;
+			DataNode dataNode;
 
-			if (MainWindow.s_pW.m_mapCtrlDef.TryGetValue(m_xe.Name, out ctrlDef))
+			if (DataNodeGroup.tryGetDataNode(m_xe.OwnerDocument.DocumentElement.Name, "Ctrl", m_xe.Name, out dataNode))
 			{
-				if (ctrlDef.m_hasBasic == true)
+				foreach(KeyValuePair<string, DataAttrGroup> pairGroup in dataNode.m_mapDataAttrGroup.ToList())
 				{
-					foreach(KeyValuePair<string, CtrlDef_T> pairCtrlDef in MainWindow.s_pW.m_mapBasicCtrlDef.ToList())
-					{
-						pairCtrlDef.Value.m_ctrlAttrList.Visibility = Visibility.Visible;
-						pairCtrlDef.Value.m_ctrlAttrList.clearRowValue();
-					}
+					pairGroup.Value.m_uiAttrList.Visibility = Visibility.Visible;
+					pairGroup.Value.m_uiAttrList.clearRowValue();
 				}
-				ctrlDef.m_ctrlAttrList.Visibility = Visibility.Visible;
-				ctrlDef.m_ctrlAttrList.clearRowValue();
 			}
 
 			foreach (XmlAttribute attr in m_xe.Attributes)
 			{
-				bool isOther = false;
+				DataAttr attrDef;
+				bool tmpFound = false;
 
-				if (m_isCtrl)
+				if(dataNode.tryGetAttrDef(attr.Name, out attrDef))
 				{
-					AttrDef_T attrDef;
-					bool tmpFound = false;
-
-					foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in MainWindow.s_pW.m_mapBasicCtrlDef.ToList())
-					{
-						if (!tmpFound && pairCtrlDef.Value.m_mapAttrDef.TryGetValue(attr.Name, out attrDef))
-						{
-							attrDef.m_iAttrRowUI.m_preValue = attr.Value;
-							tmpFound = true;
-						}
-					}
-					if (!tmpFound && ctrlDef.m_mapAttrDef.TryGetValue(attr.Name, out attrDef))
-					{
-						attrDef.m_iAttrRowUI.m_preValue = attr.Value;
-					}
-					else
-					{
-						isOther = true;
-					}
+					attrDef.m_iAttrRowUI.m_preValue = attr.Value;
 				}
 				else
 				{
-					isOther = true;
-				}
-
-				if (isOther)
-				{
-					if (MainWindow.s_pW.m_otherAttrList == null)
-					{
-						MainWindow.s_pW.m_otherAttrList = new AttrList("other");
-						MainWindow.s_pW.mx_toolArea.Items.Add(MainWindow.s_pW.m_otherAttrList);
-					}
-					MainWindow.s_pW.m_otherAttrList.mx_frame.Children.Add(new RowNormal(null, attr.Name, attr.Value, MainWindow.s_pW.m_otherAttrList));
+					//<inc>抛异常
 				}
 			}
 			if (m_isCtrl)
 			{
-				foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in MainWindow.s_pW.m_mapBasicCtrlDef.ToList())
+				foreach (KeyValuePair<string, DataAttrGroup> pairGroup in dataNode.m_mapDataAttrGroup.ToList())
 				{
-					pairCtrlDef.Value.m_ctrlAttrList.refreshRowVisible();
-					pairCtrlDef.Value.m_ctrlAttrList.m_xmlCtrl = m_xmlCtrl;
-					pairCtrlDef.Value.m_ctrlAttrList.m_basic = this;
-					pairCtrlDef.Value.m_ctrlAttrList.m_xe = m_xe;
+					if(pairGroup.Value.m_uiAttrList != null)
+					{
+						pairGroup.Value.m_uiAttrList.refreshRowVisible();
+						pairGroup.Value.m_uiAttrList.m_xmlCtrl = m_xmlCtrl;
+						pairGroup.Value.m_uiAttrList.m_basic = this;
+						pairGroup.Value.m_uiAttrList.m_xe = m_xe;
+					}
 				}
-				ctrlDef.m_ctrlAttrList.refreshRowVisible();
-				ctrlDef.m_ctrlAttrList.m_xmlCtrl = m_xmlCtrl;
-				ctrlDef.m_ctrlAttrList.m_basic = this;
-				ctrlDef.m_ctrlAttrList.m_xe = m_xe;
-			}
-			if (MainWindow.s_pW.m_otherAttrList != null)
-			{
-				MainWindow.s_pW.m_otherAttrList.refreshRowVisible();
-				MainWindow.s_pW.m_otherAttrList.Visibility = Visibility.Visible;
-				MainWindow.s_pW.m_otherAttrList.m_xmlCtrl = m_xmlCtrl;
-				MainWindow.s_pW.m_otherAttrList.m_basic = this;
-				MainWindow.s_pW.m_otherAttrList.m_xe = m_xe;
 			}
 
 			SelButton selBn;
@@ -301,7 +267,6 @@ namespace UIEditor.BoloUI
 					selBn.mx_radio.IsChecked = true;
 				}
 			}
-			AttrList.hiddenOtherAttrList();
 			BringIntoView();
 			gotoSelectXe();
 			ResBasic.clearKeyFrameDrawData();

@@ -8,24 +8,36 @@ namespace UIEditor.Project.PlugIn
 {
 	public class DataNode
 	{
-		public DataNodesDef m_parent;
+		public DataNodeGroup m_parent;
 		public string m_name;
 		public HashSet<string> m_hlstClassName;
 		public HashSet<string> m_hlstChildNode;
-		public Dictionary<string, DataAttr> m_mapDataAttr;
-		/// <summary>
-		/// 对应的属性组UI。
-		/// </summary>
-		public AttrList m_uiAttrList;
-		public Dictionary<string, AttrList> m_mapDataAttr;
+		public Dictionary<string, DataAttrGroup> m_mapDataAttrGroup;
 
-		public DataNode(DataNodesDef parent, string name, Dictionary<string, DataAttr> mapDataAttr, AttrList attrListUI)
+		public DataNode(DataNodeGroup parent, string name)
 		{
 			m_parent = parent;
 			m_name = name;
 			m_hlstClassName = new HashSet<string>();
 			m_hlstChildNode = new HashSet<string>();
-			m_uiAttrList = attrListUI;
+			m_mapDataAttrGroup = new Dictionary<string, DataAttrGroup>();
+		}
+
+		public bool tryGetAttrDef(string attrName, out DataAttr attrDef)
+		{
+			attrDef = null;
+			if(attrName != null && attrName != "")
+			{
+				foreach(KeyValuePair<string, DataAttrGroup> pairGroup in m_mapDataAttrGroup.ToList())
+				{
+					if(pairGroup.Value.m_mapDataAttr.TryGetValue(attrName, out attrDef))
+					{
+						return true;
+					}
+				}
+			}
+
+			return false;
 		}
 	}
 }

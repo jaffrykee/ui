@@ -11,6 +11,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Xml;
+using UIEditor.Project.PlugIn;
+using UIEditor.BoloUI.DefConfig;
 
 namespace UIEditor.BoloUI
 {
@@ -82,7 +84,7 @@ namespace UIEditor.BoloUI
 							string ctrlName = value.m_xe.Name;
 							DefConfig.CtrlDef_T ctrlDef;
 
-							if(MainWindow.s_pW.m_mapCtrlDef.TryGetValue(ctrlName, out ctrlDef))
+							if (CtrlDef_T.tryGetCtrlDef(ctrlName, out ctrlDef))
 							{
 								foreach(KeyValuePair<string, string> pairPrefix in ctrlDef.m_mapApprPrefix.ToList())
 								{
@@ -232,11 +234,16 @@ namespace UIEditor.BoloUI
 
 							if (xeAppr.Name == "apperance" && xeAppr.GetAttribute("id") == apprName)
 							{
-								ResBasic apprCtrl = new ResBasic(xeAppr, XmlControl.getCurXmlControl(), MainWindow.s_pW.m_mapSkinAllDef[xeAppr.Name], true);
+								DataNode dataNode;
 
-								mx_treeAppr.Items.Add(apprCtrl);
+								if (DataNodeGroup.tryGetDataNode("BoloUI", "Skin", xeAppr.Name, out dataNode) && dataNode != null && dataNode is SkinDef_T)
+								{
+									ResBasic apprCtrl = new ResBasic(xeAppr, XmlControl.getCurXmlControl(), (SkinDef_T)dataNode, true);
 
-								return true;
+									mx_treeAppr.Items.Add(apprCtrl);
+
+									return true;
+								}
 							}
 						}
 					}
@@ -246,9 +253,15 @@ namespace UIEditor.BoloUI
 					xeNewAppr.SetAttribute("id", apprName);
 					xeSkin.AppendChild(xeNewAppr);
 
-					ResBasic newApprCtrl = new ResBasic(xeNewAppr, XmlControl.getCurXmlControl(), MainWindow.s_pW.m_mapSkinAllDef[xeNewAppr.Name], true);
+					SkinDef_T skinDef;
 
-					mx_treeAppr.Items.Add(newApprCtrl);
+					if(SkinDef_T.tryGetSkinDef(xeNewAppr.Name, out skinDef))
+					{
+
+						ResBasic newApprCtrl = new ResBasic(xeNewAppr, XmlControl.getCurXmlControl(), skinDef, true);
+
+						mx_treeAppr.Items.Add(newApprCtrl);
+					}
 				}
 				else if(m_curSkin is ResBasic)
 				{

@@ -14,24 +14,33 @@ using System.Windows.Shapes;
 using System.Xml;
 using UIEditor.BoloUI;
 using UIEditor.BoloUI.DefConfig;
+using UIEditor.Project.PlugIn;
 
 namespace UIEditor.XmlOperation.XmlAttr
 {
 	public partial class AttrList : TabItem
 	{
 		public string m_name;
+		public DataAttrGroup m_attrDefGroup;
 		public XmlElement m_xe;
 		public XmlControl m_xmlCtrl;
 		public XmlItem m_basic;
 
-		public AttrList(string name = "", Dictionary<string, AttrDef_T> mapAttrDef = null)
+		public AttrList(string name = "", DataAttrGroup attrDefGroup = null)
 		{
+			Dictionary<string, DataAttr> mapAttrDef = null;
+
+			m_attrDefGroup = attrDefGroup;
+			if (m_attrDefGroup != null)
+			{
+				mapAttrDef = m_attrDefGroup.m_mapDataAttr;
+			}
 			m_name = name;
 			this.InitializeComponent();
 
 			if(mapAttrDef != null)
 			{
-				foreach (KeyValuePair<string, AttrDef_T> pairAttrDef in mapAttrDef.ToList())
+				foreach (KeyValuePair<string, DataAttr> pairAttrDef in mapAttrDef.ToList())
 				{
 					if (pairAttrDef.Value.m_isEnum == false)
 					{
@@ -145,14 +154,6 @@ namespace UIEditor.XmlOperation.XmlAttr
 			}
 		}
 
-		static public void hiddenOtherAttrList()
-		{
-			if (MainWindow.s_pW.m_otherAttrList != null)
-			{
-				MainWindow.s_pW.mx_toolArea.Items.Remove(MainWindow.s_pW.m_otherAttrList);
-				MainWindow.s_pW.m_otherAttrList = null;
-			}
-		}
 		static private int s_lastRightToolsIndex = 0;
 		static public int getVisibleSelectItemIndex(TabControl tab)
 		{
@@ -201,7 +202,6 @@ namespace UIEditor.XmlOperation.XmlAttr
 		static public void hiddenAllAttr()
 		{
 			s_lastRightToolsIndex = getVisibleSelectItemIndex(MainWindow.s_pW.mx_toolArea);
-			hiddenOtherAttrList();
 			//AttrList
 			foreach (object attrList in MainWindow.s_pW.mx_toolArea.Items)
 			{

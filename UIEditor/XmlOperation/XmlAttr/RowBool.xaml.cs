@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using UIEditor;
 using UIEditor.BoloUI;
 using UIEditor.BoloUI.DefConfig;
+using UIEditor.Project.PlugIn;
 
 namespace UIEditor.XmlOperation.XmlAttr
 {
@@ -132,7 +133,7 @@ namespace UIEditor.XmlOperation.XmlAttr
 		private string mt_defValue;
 		public string m_defValue { get; set; }
 
-		public RowBool(AttrDef_T attrDef, string name = "", string value = "", AttrList parent = null)
+		public RowBool(DataAttr attrDef, string name = "", string value = "", AttrList parent = null)
 		{
 			InitializeComponent();
 			m_parent = parent;

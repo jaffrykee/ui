@@ -10,6 +10,13 @@ namespace UIEditor.Project
 {
 	public class Setting
 	{
+		#region plugin
+		public const string conf_plugInPath = @".\data\PlugIn\";
+		public const string conf_plugInDefExt = ".xml";
+		public const string conf_nodeDefSubFileExt = ".ng";
+		public const string conf_attrDefSubFileExt = ".ag";
+		#endregion
+
 		static public XmlDocument s_docProj;
 		static public string s_skinPath;
 		static public string s_imagePath;

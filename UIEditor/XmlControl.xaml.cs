@@ -1101,7 +1101,7 @@ namespace UIEditor
 					{
 						checkUICtrlBaseIdByXe((XmlElement)xnChild);
 					}
-					else if (MainWindow.s_pW.m_mapCtrlDef.TryGetValue(xnChild.Name, out ctrlDef))
+					else if (CtrlDef_T.tryGetCtrlDef(xnChild.Name, out ctrlDef))
 					{
 						XmlElement xeChild = (XmlElement)xnChild;
 						string baseId = xeChild.GetAttribute("baseID");
@@ -1158,7 +1158,7 @@ namespace UIEditor
 					{
 						checkUICtrlBaseIdByXe(xmlPath, (XmlElement)xnChild, mapBaseIdXe);
 					}
-					else if (MainWindow.s_pW.m_mapCtrlDef.TryGetValue(xnChild.Name, out ctrlDef))
+					else if (CtrlDef_T.tryGetCtrlDef(xnChild.Name, out ctrlDef))
 					{
 						XmlElement xeChild = (XmlElement)xnChild;
 						string baseId = xeChild.GetAttribute("baseID");
@@ -1249,13 +1249,13 @@ namespace UIEditor
 									CtrlDef_T ctrlPtr;
 									SkinDef_T skinPtr;
 
-									if (MainWindow.s_pW.m_mapCtrlDef.TryGetValue(xe.Name, out ctrlPtr))
+									if (CtrlDef_T.tryGetCtrlDef(xe.Name, out ctrlPtr))
 									{
 										m_treeUI.Items.Add(new Basic(xe, this, false));
 										m_isOnlySkin = false;
 										m_xeRootCtrl = xe;
 									}
-									else if (MainWindow.s_pW.m_mapSkinTreeDef.TryGetValue(xe.Name, out skinPtr))
+									else if (SkinDef_T.tryGetSkinDef(xe.Name, out skinPtr))
 									{
 										if (skinName == "" || 
 											((xe.Name == "skin" || xe.Name == "publicskin") && xe.GetAttribute("Name") == skinName))
@@ -1353,7 +1353,7 @@ namespace UIEditor
 
 			if (xnTmpls != null)
 			{
-				if (MainWindow.s_pW.m_mapCtrlDef.TryGetValue(ctrlName, out ctrlDef) && ctrlDef != null)
+				if (CtrlDef_T.tryGetCtrlDef(ctrlName, out ctrlDef) && ctrlDef != null)
 				{
 					//控件节点的事件模板
 					if (ctrlDef.m_hasPointerEvent)

@@ -20,13 +20,14 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Threading;
 using System.Collections;
+using System.Net;
+using System.Net.Sockets;
 using UIEditor.BoloUI;
 using UIEditor.BoloUI.DefConfig;
 using UIEditor.Project;
 using UIEditor.XmlOperation.XmlAttr;
 using UIEditor.Public;
-using System.Net;
-using System.Net.Sockets;
+using UIEditor.Project.PlugIn;
 
 namespace UIEditor
 {
@@ -64,22 +65,24 @@ namespace UIEditor
 		//public Dictionary<string, SkinIndex> m_mapSkinIndex;
 		public Dictionary<string, ImageIndex> m_mapImageIndex;
 
-		public Dictionary<string, CtrlDef_T> m_mapCtrlDef;
-		public Dictionary<string, CtrlDef_T> m_mapPanelCtrlDef;
-		public Dictionary<string, CtrlDef_T> m_mapBasicCtrlDef;
-		public Dictionary<string, CtrlDef_T> m_mapHasBasicCtrlDef;
-		public Dictionary<string, CtrlDef_T> m_mapEnInsertCtrlDef;
-		public Dictionary<string, CtrlDef_T> m_mapEnInsertAllCtrlDef;
+		//已过时
+// 		public Dictionary<string, CtrlDef_T> m_mapCtrlDef;
+// 		public Dictionary<string, CtrlDef_T> m_mapPanelCtrlDef;
+// 		public Dictionary<string, CtrlDef_T> m_mapBasicCtrlDef;
+// 		public Dictionary<string, CtrlDef_T> m_mapHasBasicCtrlDef;
+// 		public Dictionary<string, CtrlDef_T> m_mapEnInsertCtrlDef;
+// 		public Dictionary<string, CtrlDef_T> m_mapEnInsertAllCtrlDef;
 
-		public Dictionary<string, SkinDef_T> m_mapSkinTreeDef;
-		public Dictionary<string, SkinDef_T> m_mapSkinAllDef;
-		public Dictionary<string, Dictionary<string, AttrDef_T>> m_mapSkinAttrDef;
+		//已过时
+// 		public Dictionary<string, SkinDef_T> m_mapSkinTreeDef;
+// 		public Dictionary<string, SkinDef_T> m_mapSkinAllDef;
+// 		public Dictionary<string, Dictionary<string, AttrDef_T>> m_mapSkinAttrDef;
 		public StringDic m_strDic;
 
 		public Dictionary<XmlElement, BoloUI.SelButton> m_mapXeSel;
 		public float m_dpiSysX;
 		public float m_dpiSysY;
-		public AttrList m_otherAttrList;
+		//public AttrList m_otherAttrList;
 		public SkinEditor mx_skinEditor;
 		public bool m_vCtrlName;
 		public bool m_vCtrlId;
@@ -219,6 +222,49 @@ namespace UIEditor
 		private int currentLinked;
 		private ManualResetEvent tcpClientConnected = new ManualResetEvent(false);
 
+		static public void initData()
+		{
+			DataNodeGroup.s_mapDataNodesDef = new Dictionary<string, Dictionary<string, DataNodeGroup>>();
+			new Project.PlugIn.DataNodeGroup("BoloUI", "Skin");
+			new Project.PlugIn.DataNodeGroup("BoloUI", "Ctrl");
+
+			DataNodeGroup nodeGroup;
+
+			if (DataNodeGroup.tryGetDataNodeGroup("BoloUI", "Ctrl", out nodeGroup) && nodeGroup != null)
+			{
+				foreach (KeyValuePair<string, DataNode> pairNodeDef in nodeGroup.m_mapDataNode.ToList())
+				{
+					if (pairNodeDef.Value is CtrlDef_T && ((CtrlDef_T)pairNodeDef.Value).isNormal())
+					{
+						CtrlDef_T ctrlDef = (CtrlDef_T)pairNodeDef.Value;
+						string ctrlKey = pairNodeDef.Key;
+						string ctrlName = MainWindow.s_pW.m_strDic.getWordByKey(ctrlKey);
+
+						if (ctrlName == null || ctrlName == "")
+						{
+							ctrlName = ctrlKey;
+						}
+						Button btnCtrl = new Button();
+
+						btnCtrl.Content = ctrlName;
+						btnCtrl.ToolTip = ctrlKey;
+						btnCtrl.Width = 60;
+						btnCtrl.Height = MainWindow.s_pW.mx_ctrlNormalTitle.Height;
+						btnCtrl.Margin = MainWindow.s_pW.mx_ctrlNormalTitle.Margin;
+						btnCtrl.Click += MainWindow.s_pW.mx_addCtrl_Click;
+						if (ctrlDef.isFrame())
+						{
+							MainWindow.s_pW.mx_ctrlFrame.Children.Add(btnCtrl);
+						}
+						else
+						{
+							MainWindow.s_pW.mx_ctrlNormal.Children.Add(btnCtrl);
+						}
+					}
+				}
+			}
+		}
+
 		public MainWindow()
 		{
 			s_pW = this;
@@ -238,6 +284,9 @@ namespace UIEditor
 			mt_status3 = "";
 
 			InitializeComponent();
+
+			initData();
+
 			OpenedFile.s_paraResult = new Paragraph();
 			ResultLink.s_curResultFrame = OpenedFile.s_paraResult;
 			m_isLoadOver = true;
@@ -249,7 +298,6 @@ namespace UIEditor
 			m_isMoba = false;
 			m_screenWidthBasic = 960;
 			m_screenHeightBasic = 540;
-			m_mapSkinAllDef = new Dictionary<string, SkinDef_T>();
 			m_dpiSysX = 96.0f;
 			m_dpiSysY = 96.0f;
 			m_curFile = "";
@@ -467,7 +515,6 @@ namespace UIEditor
 			}
 			MainWindow.s_pW.showGLCtrl(false);
 
-			DefConf.initXmlValueDef();
 			m_textTimer = new DispatcherTimer();
 			m_textTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
 			m_textTimer.Tick += new EventHandler(m_textTimer_Tick);
@@ -477,33 +524,6 @@ namespace UIEditor
 			m_fileChangeTimer.Interval = new TimeSpan(0, 0, 0, 0, 1000);
 			m_fileChangeTimer.Tick += new EventHandler(m_fileChangeTimer_Tick);
 			m_fileChangeTimer.Start();
-
-			foreach (KeyValuePair<string, CtrlDef_T> pairCtrlDef in m_mapEnInsertCtrlDef.ToList())
-			{
-				string ctrlKey = pairCtrlDef.Key;
-				string ctrlName = MainWindow.s_pW.m_strDic.getWordByKey(ctrlKey);
-
-				if (ctrlName == null || ctrlName == "")
-				{
-					ctrlName = ctrlKey;
-				}
-				Button btnCtrl = new Button();
-
-				btnCtrl.Content = ctrlName;
-				btnCtrl.ToolTip = ctrlKey;
-				btnCtrl.Width = 60;
-				btnCtrl.Height = mx_ctrlNormalTitle.Height;
-				btnCtrl.Margin = mx_ctrlNormalTitle.Margin;
-				btnCtrl.Click += mx_addCtrl_Click;
-				if (pairCtrlDef.Value.m_isFrame)
-				{
-					mx_ctrlFrame.Children.Add(btnCtrl);
-				}
-				else
-				{
-					mx_ctrlNormal.Children.Add(btnCtrl);
-				}
-			}
 		}
 		void mx_addCtrl_Click(object sender, RoutedEventArgs e)
 		{
@@ -513,7 +533,7 @@ namespace UIEditor
 				string ctrlName = btnCtrl.ToolTip.ToString();
 				CtrlDef_T ctrlDef;
 
-				if (ctrlName != null && ctrlName != "" && m_mapCtrlDef.TryGetValue(ctrlName, out ctrlDef))
+				if (ctrlName != null && ctrlName != "" && CtrlDef_T.tryGetCtrlDef(ctrlName, out ctrlDef))
 				{
 					XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
 
@@ -525,9 +545,9 @@ namespace UIEditor
 						{
 							CtrlDef_T dstCtrlDef;
 
-							if (m_mapEnInsertCtrlDef.TryGetValue(dstCtrlName, out dstCtrlDef))
+							if (CtrlDef_T.tryGetCtrlDef(dstCtrlName, out dstCtrlDef) && dstCtrlDef.isNormal())
 							{
-								if (m_mapPanelCtrlDef.TryGetValue(dstCtrlName, out dstCtrlDef))
+								if (dstCtrlDef.isFrame())
 								{
 									XmlItem.addItemToCurItemByString(XmlItem.getDefaultNewXmlItem(btnCtrl.ToolTip.ToString()), curXmlCtrl.m_curItem);
 								}
