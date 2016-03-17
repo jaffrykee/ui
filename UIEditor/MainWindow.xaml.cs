@@ -155,9 +155,11 @@ namespace UIEditor
 		public const string conf_pathGlApp_New = @".\SSUIEditor.exe";
 		public const string conf_pathConf = @".\conf.xml";
 		public const string conf_pathConfDefault = @".\data\conf.xml";
+		public const string conf_pathConfEvent = @".\data\conf_event.xml";
 		public const string conf_pathPlugInBoloUI = @".\data\PlugIn\BoloUI\";
 		public const string conf_pathStringDic = @".\data\Lang\";
 		public XmlDocument m_docConf;
+		public XmlDocument m_docEventConf;
 		public bool m_isDebug;
 		public string m_pathGlApp;
 
@@ -282,6 +284,7 @@ namespace UIEditor
 			mt_status1 = "";
 			mt_status2 = "";
 			mt_status3 = "";
+			//system("taskkill /im conhost.exe /f");
 
 			InitializeComponent();
 
@@ -389,6 +392,12 @@ namespace UIEditor
 		public void checkAndInitToolConfig()
 		{
 			m_docConf = new XmlDocument();
+			m_docEventConf = new XmlDocument();
+
+			if (File.Exists(conf_pathConfEvent))
+			{
+				m_docEventConf.Load(conf_pathConfEvent);
+			}
 			if (!File.Exists(conf_pathConf))
 			{
 				loadToolConfigByDefault();
@@ -984,7 +993,9 @@ namespace UIEditor
 								break;
 							case Key.Delete:
 								{
-									if (XmlItem.s_menu != null && XmlItem.s_menu.canDelete())
+									if ((!(Keyboard.FocusedElement is TextBox && ((TextBox)Keyboard.FocusedElement).IsReadOnly == false) &&
+										!(Keyboard.FocusedElement is RichTextBox && ((RichTextBox)Keyboard.FocusedElement).IsReadOnly == false)) &&
+										XmlItem.s_menu != null && XmlItem.s_menu.canDelete())
 									{
 										XmlItem.getCurItem().deleteItem();
 									}
@@ -1114,7 +1125,9 @@ namespace UIEditor
 								break;
 							case Key.X:
 								{
-									if (Keyboard.FocusedElement == XmlItem.getCurItem() && XmlItem.s_menu != null && XmlItem.s_menu.canCut())
+									if ((!(Keyboard.FocusedElement is TextBox && ((TextBox)Keyboard.FocusedElement).IsReadOnly == false) &&
+										!(Keyboard.FocusedElement is RichTextBox && ((RichTextBox)Keyboard.FocusedElement).IsReadOnly == false)) &&
+										XmlItem.s_menu != null && XmlItem.s_menu.canCut())
 									{
 										XmlItem.getCurItem().cutItem();
 									}
@@ -1126,7 +1139,9 @@ namespace UIEditor
 								break;
 							case Key.C:
 								{
-									if (Keyboard.FocusedElement == XmlItem.getCurItem() && XmlItem.s_menu != null && XmlItem.s_menu.canCopy())
+									if ((!(Keyboard.FocusedElement is TextBox && ((TextBox)Keyboard.FocusedElement).IsReadOnly == false) &&
+										!(Keyboard.FocusedElement is RichTextBox && ((RichTextBox)Keyboard.FocusedElement).IsReadOnly == false)) &&
+										XmlItem.s_menu != null && XmlItem.s_menu.canCopy())
 									{
 										XmlItem.getCurItem().copyItem();
 									}
@@ -1138,7 +1153,9 @@ namespace UIEditor
 								break;
 							case Key.V:
 								{
-									if (Keyboard.FocusedElement == XmlItem.getCurItem() && XmlItem.s_menu != null && XmlItem.s_menu.canPaste())
+									if ((!(Keyboard.FocusedElement is TextBox && ((TextBox)Keyboard.FocusedElement).IsReadOnly == false) &&
+										!(Keyboard.FocusedElement is RichTextBox && ((RichTextBox)Keyboard.FocusedElement).IsReadOnly == false)) &&
+										XmlItem.s_menu != null && XmlItem.s_menu.canPaste())
 									{
 										XmlItem.getCurItem().pasteItem();
 									}
@@ -1444,7 +1461,8 @@ namespace UIEditor
 					SendMessage(m_msgMng.m_hwndGL, WM_COPYDATA, (int)m_msgMng.m_hwndGLParent, ref msgData);
 				}
 			}
-			if (msgTag != W2GTag.W2G_SELECT_UI && msgTag != W2GTag.W2G_VIEWMODE && msgTag != W2GTag.W2G_DRAWRECT && msgTag != W2GTag.W2G_NORMAL_UPDATE)
+			if (msgTag != W2GTag.W2G_SELECT_UI && msgTag != W2GTag.W2G_VIEWMODE && msgTag != W2GTag.W2G_DRAWRECT
+				&& msgTag != W2GTag.W2G_NORMAL_UPDATE && msgTag != W2GTag.W2G_RENDERCACHE_IMAGECOLOR)
 			{
 				XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
 				if (curXmlCtrl != null && curXmlCtrl.m_curItem != null && curXmlCtrl.m_curItem is BoloUI.Basic)
@@ -1782,15 +1800,15 @@ namespace UIEditor
 							{
 								#region 选中某一特效关键帧
 								int index = 0;
-								ResBasic curParticleKeyFrame = null;
+								XmlItem curAniFrame = null;
 								string[] sArray = Regex.Split(strData, ":", RegexOptions.IgnoreCase);
 
 								if (sArray.Count() > 0 && int.TryParse(sArray[0], out index))
 								{
-									curParticleKeyFrame = ResBasic.getParticleKeyFrameItem(index);
-									if (curParticleKeyFrame != null)
+									curAniFrame = XmlItem.getAniFrameItem(index);
+									if (curAniFrame != null)
 									{
-										curParticleKeyFrame.changeSelectItem();
+										curAniFrame.changeSelectItem();
 									}
 								}
 								#endregion
@@ -1799,7 +1817,29 @@ namespace UIEditor
 						case G2WTag.G2W_PARTICLE_CHANGE_KEYFRAME:
 							{
 								#region 修改某一特效关键帧
-								ResBasic.updateParticleKeyFrameFromG2WData(strData);
+								XmlItem.updateParticleKeyFrameFromG2WData(strData);
+								#endregion
+							}
+							break;
+						case G2WTag.G2W_RENDERCACHE_DATA:
+							{
+								#region RenderCache中的渲染批次结构数据
+								const int cSendDataSize = 3;
+								string[] sArray = Regex.Split(strData, ":", RegexOptions.IgnoreCase);
+								string[] strCache = {"", "", ""};
+								int index = 0;
+								List<RenderCacheViewData> lstBinding = new List<RenderCacheViewData>();
+
+								foreach(string curStr in sArray)
+								{
+									if (index % cSendDataSize == 0 && index != 0)
+									{
+										lstBinding.Add(new RenderCacheViewData(index / cSendDataSize, strCache[0], strCache[1], strCache[2], true));
+									}
+									strCache[index % cSendDataSize] = curStr;
+									index++;
+								}
+								mx_lvRenderCache.ItemsSource = lstBinding;
 								#endregion
 							}
 							break;
@@ -1969,12 +2009,13 @@ namespace UIEditor
 				}
 			}
 			//去掉所有事件(<event>)
-			nodeList = newRootXe.SelectNodes("descendant::event");
-
-			foreach (XmlNode xnEvent in nodeList)
-			{
-				xnEvent.ParentNode.RemoveChild(xnEvent);
-			}
+			//<inc>因为要测试新需求，所以这里不屏蔽。
+// 			nodeList = newRootXe.SelectNodes("descendant::event");
+// 
+// 			foreach (XmlNode xnEvent in nodeList)
+// 			{
+// 				xnEvent.ParentNode.RemoveChild(xnEvent);
+// 			}
 
 			string buffer = newDoc.InnerXml;
 			updateGL(fileName, W2GTag.W2G_NORMAL_NAME);
@@ -2681,7 +2722,8 @@ namespace UIEditor
 				ResultLink.createResult("\r\n检测到\"uiconfig.xml\"发生改变，已经自动重新加载", ResultType.RT_INFO, null, true);
 			}
 
-			ResultLink.refreshResultVisibility();
+			//<inc>太耗费资源
+			//ResultLink.refreshResultVisibility();
 		}
 		private void m_textTimer_Tick(object send, EventArgs e)
 		{
@@ -3158,6 +3200,51 @@ namespace UIEditor
 
 				sw.Write(toLower);
 				sw.Close();
+			}
+		}
+		protected class RenderCacheViewData
+		{
+			public int m_id { get; set; }
+			public string m_type { get; set; }
+			public string m_image { get; set; }
+			public int m_bcCount { get; set; }
+			public string m_color { get; set; }
+			public bool m_isVisible { get; set; }
+			public RenderCacheViewData(int id, string type, string image, string color, bool isVisible)
+			{
+				m_id = id;
+				m_type = type;
+				m_image = image;
+				m_color = color;
+				m_isVisible = isVisible;
+			}
+//			public bool IsActived { get; set; }
+// 			public string BackGround
+// 			{
+// 				get
+// 				{
+// 					return IsActived
+// 					  ? "/test;component/Assets/Images/UserItemNull.png"
+// 					  : "/test;component/Assets/Images/UserItemNullg.png";
+// 				}
+// 			}
+		}
+		private void mx_lvRenderCache_Loaded(object sender, RoutedEventArgs e)
+		{
+		}
+
+		private void mx_lviRenderCache_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+		{
+
+		}
+
+		private void mx_lvRenderCache_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if(mx_lvRenderCache.SelectedItem != null && mx_lvRenderCache.SelectedItem is RenderCacheViewData)
+			{
+				RenderCacheViewData selData = (RenderCacheViewData)mx_lvRenderCache.SelectedItem;
+
+				updateGL(selData.m_id.ToString(), W2GTag.W2G_RENDERCACHE_IMAGECOLOR);
 			}
 		}
 	}

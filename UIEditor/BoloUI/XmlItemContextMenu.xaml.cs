@@ -40,17 +40,32 @@ namespace UIEditor.BoloUI
 
 		private void mx_addNode_Loaded(object sender, RoutedEventArgs e)
 		{
-			DataNode dataNode;
+			DataNode dataNode = null;
 			XmlElement curXe = XmlItem.getCurItem().m_xe;
 			bool isEnAdd = false;
 
 			mx_addNode.Items.Clear();
-			if(curXe != null && DataNodeGroup.tryGetDataNode(curXe.OwnerDocument.DocumentElement.Name, curXe.Name, out dataNode) && dataNode != null)
+			if (curXe != null && XmlItem.getCurItem() != null)
 			{
-				foreach(string childName in dataNode.m_hlstChildNode)
+				CtrlDef_T ctrlDef;
+				SkinDef_T skinDef;
+
+				if (XmlItem.getCurItem() is Basic && CtrlDef_T.tryGetCtrlDef(curXe.Name, out ctrlDef) && ctrlDef != null)
 				{
-					showTmplGroup(childName);
-					isEnAdd = true;
+					dataNode = ctrlDef;
+				}
+				else if (XmlItem.getCurItem() is ResBasic && SkinDef_T.tryGetSkinDef(curXe.Name, out skinDef) && skinDef != null)
+				{
+					dataNode = skinDef;
+				}
+
+				if (dataNode != null)
+				{
+					foreach (string childName in dataNode.m_hlstChildNode)
+					{
+						showTmplGroup(childName);
+						isEnAdd = true;
+					}
 				}
 			}
 			mx_addNode.IsEnabled = isEnAdd;
@@ -129,17 +144,7 @@ namespace UIEditor.BoloUI
 		}
 		private void mx_shrinkChildren_Click(object sender, RoutedEventArgs e)
 		{
-			XmlItem.getCurItem().IsExpanded = true;
-
-			foreach (object obj in XmlItem.getCurItem().Items)
-			{
-				if (obj is TreeViewItem)
-				{
-					TreeViewItem item = (TreeViewItem)obj;
-
-					item.IsExpanded = false;
-				}
-			}
+			XmlItem.shrinkChildren();
 		}
 
 		private void mx_cut_Click(object sender, RoutedEventArgs e)
@@ -181,7 +186,7 @@ namespace UIEditor.BoloUI
 			{
 				return;
 			}
-			if (XmlItem.getCurItem().m_xe == XmlItem.getCurItem().m_xe.OwnerDocument.DocumentElement)
+			if (XmlItem.getCurItem().m_xe == XmlItem.getCurItem().m_xe.OwnerDocument.DocumentElement || !(XmlItem.getCurItem().Parent is TreeViewItem))
 			{
 				mx_cut.IsEnabled = false;
 				mx_copy.IsEnabled = false;
@@ -359,7 +364,7 @@ namespace UIEditor.BoloUI
 			if (addStr == "event")
 			{
 				CtrlDef_T ctrlDef;
-				XmlNode xnTmpls = MainWindow.s_pW.m_docConf.SelectSingleNode("Config").SelectSingleNode("template");
+				XmlNode xnTmpls = MainWindow.s_pW.m_docEventConf.SelectSingleNode("Config").SelectSingleNode("template");
 
 				if (xnTmpls != null)
 				{
@@ -500,7 +505,7 @@ namespace UIEditor.BoloUI
 				ComboBoxItem emptyCtrl = new ComboBoxItem();
 
 				emptyCtrl.Content = "空节点";
-				emptyCtrl.ToolTip = addStr;
+				emptyCtrl.ToolTip = XmlItem.getDefaultNewXmlItem(addStr);
 				emptyCtrl.Selected += rehClick;
 				cbItem.Items.Add(emptyCtrl);
 				cbItem.Items.Add(new Separator());

@@ -116,9 +116,7 @@
     <Compile Include="BoloUI\AnimationTools.xaml.cs">
       <DependentUpon>AnimationTools.xaml</DependentUpon>
     </Compile>
-    <Compile Include="BoloUI\DefConfig\AttrDef_T.cs" />
     <Compile Include="BoloUI\DefConfig\CtrlDef_T.cs" />
-    <Compile Include="BoloUI\DefConfig\DefConfig.cs" />
     <Compile Include="BoloUI\ImageIndex.cs" />
     <Compile Include="BoloUI\MenuWin\BatchUpdate.xaml.cs">
       <DependentUpon>BatchUpdate.xaml</DependentUpon>

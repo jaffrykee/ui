@@ -176,6 +176,7 @@ namespace UIEditor.Public
 
 			addLineToCurResultFrame(rTextLink, isAlwaysShow);
 			MainWindow.s_pW.mx_bFrameError.IsSelected = true;
+			ResultLink.refreshResultVisibility();
 		}
 
 		public ResultType m_rt;

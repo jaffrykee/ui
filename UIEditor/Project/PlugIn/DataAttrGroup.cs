@@ -31,6 +31,8 @@ namespace UIEditor.Project.PlugIn
 			if(parseClassData(xeAttrClass) == true)
 			{
 				m_uiAttrList = new AttrList(m_className, this);
+				m_uiAttrList.Visibility = System.Windows.Visibility.Collapsed;
+				MainWindow.s_pW.mx_toolArea.Items.Add(m_uiAttrList);
 			}
 
 			return true;

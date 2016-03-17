@@ -145,6 +145,7 @@ namespace UIEditor.XmlOperation
 					}
 
 					xmlCtrl.m_mapXeItem.Remove(dstXe);
+					//if (dstItem.Parent != null && dstItem.Parent is TreeViewItem)
 					if (dstItem.Parent != null)
 					{
 						((TreeViewItem)dstItem.Parent).Items.Remove(dstItem);

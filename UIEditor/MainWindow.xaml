@@ -655,14 +655,70 @@
 		<GridSplitter Grid.Row="2" Grid.RowSpan="4" Grid.Column="0" Width="5"/>
 		<Grid Grid.Row="2" Grid.RowSpan="3" Grid.Column="2" Margin="5,0,0,0">
 			<Grid.RowDefinitions>
-				<RowDefinition Height="auto"/>
+				<RowDefinition Height="4*"/>
 				<RowDefinition Height="*"/>
 			</Grid.RowDefinitions>
 			<GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="5"/>
-			<TreeView Name="mx_skinFrameTree" Grid.Row="0" Height="200" Margin="0,5,0,0" Visibility="Collapsed">
-			</TreeView>
-			<TabControl Name="mx_toolArea" Grid.Row="1" Width="auto" BorderThickness="0,2,0,0">
+			<TabControl Name="mx_toolArea" Grid.Row="0" Width="auto" BorderThickness="0,2,0,0">
 			</TabControl>
+			<Grid Name="mx_skinFrameTree" Grid.Row="1" Margin="0,5,0,0">
+				<ListView Name="mx_lvRenderCache" Loaded="mx_lvRenderCache_Loaded" Padding="0" SelectionChanged="mx_lvRenderCache_SelectionChanged">
+					<ListView.View>
+						<GridView AllowsColumnReorder="true" ColumnHeaderToolTip="Employee Information">
+							<GridViewColumn Header="ID">
+								<GridViewColumn.CellTemplate>
+									<DataTemplate>
+										<Grid MinWidth="20">
+											<TextBlock Background="White" Text="{Binding Path=m_id}" Padding="2"/>
+										</Grid>
+									</DataTemplate>
+								</GridViewColumn.CellTemplate>
+							</GridViewColumn>
+							<GridViewColumn Header="类型">
+								<GridViewColumn.CellTemplate>
+									<DataTemplate>
+										<Grid MinWidth="20">
+											<TextBlock Background="White" Text="{Binding Path=m_type}" Padding="2"/>
+										</Grid>
+									</DataTemplate>
+								</GridViewColumn.CellTemplate>
+							</GridViewColumn>
+							<GridViewColumn Header="图片">
+								<GridViewColumn.CellTemplate>
+									<DataTemplate>
+										<Grid MinWidth="20">
+											<TextBlock Background="White" Text="{Binding Path=m_image}" Padding="2"/>
+										</Grid>
+									</DataTemplate>
+								</GridViewColumn.CellTemplate>
+							</GridViewColumn>
+							<GridViewColumn Header="颜色">
+								<GridViewColumn.CellTemplate>
+									<DataTemplate>
+										<Grid MinWidth="20">
+											<TextBlock Background="White" Text="{Binding Path=m_color}" Padding="2"/>
+										</Grid>
+									</DataTemplate>
+								</GridViewColumn.CellTemplate>
+							</GridViewColumn>
+							<GridViewColumn Header="可见">
+								<GridViewColumn.CellTemplate>
+									<DataTemplate>
+										<Grid MinWidth="20">
+											<CheckBox Background="White" IsChecked="{Binding Path=m_isVisible}" Padding="2"/>
+										</Grid>
+									</DataTemplate>
+								</GridViewColumn.CellTemplate>
+							</GridViewColumn>
+						</GridView>
+					</ListView.View>
+					<ListView.ItemTemplate>
+						<DataTemplate>
+							<TextBlock>123</TextBlock>
+						</DataTemplate>
+					</ListView.ItemTemplate>
+				</ListView>
+			</Grid>
 		</Grid>
 		<GridSplitter Grid.Row="2" Grid.RowSpan="3" Grid.Column="2" Width="5" HorizontalAlignment="Left"/>
 		<DockPanel Name="mx_normalFrame"
@@ -753,7 +809,7 @@
 							<WrapPanel Name="mx_selCtrlLstFrame" Orientation="Horizontal">
 							</WrapPanel>
 						</TabItem>
-						<TabItem Name="mx_bFrameAnimation" Header="动画设置">
+						<TabItem Name="mx_bFrameAnimation" Header="动画设置" Visibility="Collapsed">
 							<BoloUI:AnimationTools x:Name="mx_aniTools"/>
 						</TabItem>
 					</TabControl>

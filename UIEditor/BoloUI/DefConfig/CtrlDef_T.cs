@@ -142,6 +142,7 @@ namespace UIEditor.BoloUI.DefConfig
 			{
 				m_hasPointerEvent = true;
 			}
+			refreshSkinApprDef();
 		}
 		public bool isFrame()
 		{

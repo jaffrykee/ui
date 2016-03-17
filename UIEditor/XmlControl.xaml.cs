@@ -235,18 +235,25 @@ namespace UIEditor
 				if (!mapXeGroup.TryGetValue(groupName, out xeOut))
 				{
 					XmlElement newXe = m_xmlDoc.CreateElement("skingroup");
-					newXe.SetAttribute("Name", groupName);
-					BoloUI.Basic treeChild = new BoloUI.Basic(newXe, this);
 
-					m_openedFile.m_lstOpt.addOperation(
-						new XmlOperation.HistoryNode(
-							XmlOperation.XmlOptType.NODE_INSERT,
-							treeChild.m_xe,
-							m_xmlDoc.DocumentElement)
-						);
-					if(lastItem != null)
+					newXe.SetAttribute("Name", groupName);
+
+					SkinDef_T skinDef;
+
+					if(SkinDef_T.tryGetSkinDef("skingroup", out skinDef) && skinDef != null)
 					{
-						lastItem.changeSelectItem();
+						BoloUI.ResBasic treeChild = new BoloUI.ResBasic(newXe, this, skinDef);
+
+						m_openedFile.m_lstOpt.addOperation(
+							new XmlOperation.HistoryNode(
+								XmlOperation.XmlOptType.NODE_INSERT,
+								treeChild.m_xe,
+								m_xmlDoc.DocumentElement)
+							);
+						if(lastItem != null)
+						{
+							lastItem.changeSelectItem();
+						}
 					}
 				}
 			}
@@ -1349,7 +1356,7 @@ namespace UIEditor
 		{
 			Dictionary<string, string> mapEvent = new Dictionary<string, string>();
 			CtrlDef_T ctrlDef;
-			XmlNode xnTmpls = MainWindow.s_pW.m_docConf.SelectSingleNode("Config").SelectSingleNode("template");
+			XmlNode xnTmpls = MainWindow.s_pW.m_docEventConf.SelectSingleNode("Config").SelectSingleNode("template");
 
 			if (xnTmpls != null)
 			{

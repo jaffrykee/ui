@@ -221,34 +221,17 @@ namespace UIEditor.BoloUI
 			//CtrlDef_T ctrlDef;
 			DataNode dataNode;
 
-			if (DataNodeGroup.tryGetDataNode(m_xe.OwnerDocument.DocumentElement.Name, "Ctrl", m_xe.Name, out dataNode))
+			if (DataNodeGroup.tryGetDataNode(m_xe.OwnerDocument.DocumentElement.Name, "Ctrl", m_xe.Name, out dataNode) && dataNode != null)
 			{
 				foreach(KeyValuePair<string, DataAttrGroup> pairGroup in dataNode.m_mapDataAttrGroup.ToList())
 				{
 					pairGroup.Value.m_uiAttrList.Visibility = Visibility.Visible;
 					pairGroup.Value.m_uiAttrList.clearRowValue();
 				}
-			}
 
-			foreach (XmlAttribute attr in m_xe.Attributes)
-			{
-				DataAttr attrDef;
-				bool tmpFound = false;
-
-				if(dataNode.tryGetAttrDef(attr.Name, out attrDef))
-				{
-					attrDef.m_iAttrRowUI.m_preValue = attr.Value;
-				}
-				else
-				{
-					//<inc>抛异常
-				}
-			}
-			if (m_isCtrl)
-			{
 				foreach (KeyValuePair<string, DataAttrGroup> pairGroup in dataNode.m_mapDataAttrGroup.ToList())
 				{
-					if(pairGroup.Value.m_uiAttrList != null)
+					if (pairGroup.Value.m_uiAttrList != null)
 					{
 						pairGroup.Value.m_uiAttrList.refreshRowVisible();
 						pairGroup.Value.m_uiAttrList.m_xmlCtrl = m_xmlCtrl;
@@ -256,6 +239,73 @@ namespace UIEditor.BoloUI
 						pairGroup.Value.m_uiAttrList.m_xe = m_xe;
 					}
 				}
+
+				foreach (XmlAttribute attr in m_xe.Attributes)
+				{
+					DataAttr attrDef;
+					bool tmpFound = false;
+
+					if (dataNode.tryGetAttrDef(attr.Name, out attrDef))
+					{
+						attrDef.m_iAttrRowUI.m_preValue = attr.Value;
+					}
+					else
+					{
+						//<inc>抛异常
+					}
+				}
+			}
+
+			XmlElement xeCurCheck = null;
+			XmlElement xeCtrl = null;
+			XmlItem ctrlItem = null;
+			bool isFound = true;
+
+			switch (m_xe.Name)
+			{
+				//特效关键帧的运动轨迹绘制
+				case "event":
+					{
+						if (m_xe.ParentNode != null && m_xe.ParentNode is XmlElement)
+						{
+							xeCurCheck = m_xe;
+							xeCtrl = (XmlElement)m_xe.ParentNode;
+							ctrlItem = m_xmlCtrl.m_mapXeItem[xeCtrl];
+						}
+					}
+					break;
+				case "controlAnimation":
+					{
+						if (m_xe.ParentNode != null && m_xe.ParentNode is XmlElement &&
+							m_xe.ParentNode.ParentNode != null && m_xe.ParentNode.ParentNode is XmlElement)
+						{
+							xeCurCheck = (XmlElement)m_xe.ParentNode;
+							xeCtrl = (XmlElement)m_xe.ParentNode.ParentNode;
+							ctrlItem = m_xmlCtrl.m_mapXeItem[xeCtrl];
+						}
+					}
+					break;
+				case "controlFrame":
+					{
+						if (m_xe.ParentNode != null && m_xe.ParentNode.ParentNode != null && m_xe.ParentNode.ParentNode is XmlElement &&
+							m_xe.ParentNode.ParentNode.ParentNode != null && m_xe.ParentNode.ParentNode.ParentNode is XmlElement)
+						{
+							xeCurCheck = (XmlElement)m_xe.ParentNode.ParentNode;
+							xeCtrl = (XmlElement)m_xe.ParentNode.ParentNode.ParentNode;
+							ctrlItem = m_xmlCtrl.m_mapXeItem[xeCtrl];
+						}
+					}
+					break;
+				default:
+					{
+						isFound = false;
+						clearControlKeyFrameDrawData();
+					}
+					break;
+			}
+			if (isFound == true && ctrlItem != null && ctrlItem is Basic && xeCurCheck != null)
+			{
+				sendControlKeyFrameDrawData(xeCurCheck, ((Basic)ctrlItem).m_vId);
 			}
 
 			SelButton selBn;
@@ -278,6 +328,34 @@ namespace UIEditor.BoloUI
 			this.IsSelected = true;
 
 			m_selLock.delLock(ref stackLock);
+		}
+		public void sendControlKeyFrameDrawData(XmlElement xeParticleShape, string baseId)
+		{
+			string msgData;
+			XmlNode xnGroup = xeParticleShape.SelectSingleNode("controlAnimation");
+
+			msgData = "true:" + baseId + ":";
+			if (xnGroup != null && xnGroup is XmlElement)
+			{
+				XmlElement xeGroup = (XmlElement)xnGroup;
+
+				foreach (XmlNode xnFrame in xeGroup.SelectNodes("controlFrame"))
+				{
+					if (xnFrame is XmlElement)
+					{
+						XmlElement xeFrame = (XmlElement)xnFrame;
+
+						addRowToDrawLineMsgData(xeFrame, ref msgData);
+					}
+				}
+				MainWindow.s_pW.updateGL(msgData, W2GTag.W2G_DRAW_CONTROL_LINE);
+			}
+		}
+		static public void clearControlKeyFrameDrawData()
+		{
+			string msgData = "false";
+
+			MainWindow.s_pW.updateGL(msgData, W2GTag.W2G_DRAW_CONTROL_LINE);
 		}
 		static public void expandAllTreeItemParent(TreeViewItem childItem)
 		{

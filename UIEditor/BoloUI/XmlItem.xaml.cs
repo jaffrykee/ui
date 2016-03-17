@@ -20,6 +20,7 @@ using UIEditor.BoloUI.DefConfig;
 using UIEditor.Public;
 using UIEditor.Project;
 using UIEditor.Project.PlugIn;
+using UIEditor.XmlOperation;
 
 namespace UIEditor.BoloUI
 {
@@ -95,6 +96,294 @@ namespace UIEditor.BoloUI
 
 			return null;
 		}
+		static public XmlItem getAniFrameItem(int index)
+		{
+			if (index < 0)
+			{
+				return null;
+			}
+
+			XmlItem curItem = XmlItem.getCurItem();
+			XmlItem retItem = null;
+
+			if (curItem != null)
+			{
+				if (curItem is ResBasic)
+				{
+					ResBasic curResItem = (ResBasic)curItem;
+					ResBasic retGroup = null;
+
+					switch (curItem.m_xe.Name)
+					{
+						//特效关键帧的运动轨迹绘制
+						case "particleShape":
+							{
+								if (curResItem.Items.Count > 0 && curResItem.Items[0] != null &&
+									curResItem.Items[0] is ResBasic && ((ResBasic)curResItem.Items[0]).m_xe.Name == "particleKeyFrameGroup")
+								{
+									retGroup = (ResBasic)curResItem.Items[0];
+								}
+							}
+							break;
+						case "particleKeyFrameGroup":
+							{
+								retGroup = curResItem;
+							}
+							break;
+						case "particleKeyFrame":
+							{
+								if (curResItem.Parent != null && curResItem.Parent is ResBasic &&
+									((ResBasic)curResItem.Parent).m_xe.Name == "particleKeyFrameGroup")
+								{
+									retGroup = (ResBasic)curResItem.Parent;
+								}
+							}
+							break;
+						default:
+							break;
+					}
+					if (retGroup != null)
+					{
+						if (retGroup.Items.Count > index && retGroup.Items[index] != null && retGroup.Items[index] is ResBasic)
+						{
+							retItem = (ResBasic)retGroup.Items[index];
+
+							if (retItem.m_xe.Name == "particleKeyFrame")
+							{
+								return retItem;
+							}
+						}
+					}
+				}
+				else if (curItem is Basic)
+				{
+					Basic curBasicItem = (Basic)curItem;
+					Basic retGroup = null;
+
+					switch (curItem.m_xe.Name)
+					{
+						//特效关键帧的运动轨迹绘制
+						case "event":
+							{
+								if (curBasicItem.Items.Count > 0 && curBasicItem.Items[0] != null &&
+									curBasicItem.Items[0] is Basic && ((Basic)curBasicItem.Items[0]).m_xe.Name == "controlAnimation")
+								{
+									retGroup = (Basic)curBasicItem.Items[0];
+								}
+							}
+							break;
+						case "controlAnimation":
+							{
+								retGroup = curBasicItem;
+							}
+							break;
+						case "controlFrame":
+							{
+								if (curBasicItem.Parent != null && curBasicItem.Parent is Basic &&
+									((Basic)curBasicItem.Parent).m_xe.Name == "controlAnimation")
+								{
+									retGroup = (Basic)curBasicItem.Parent;
+								}
+							}
+							break;
+						default:
+							break;
+					}
+					if (retGroup != null)
+					{
+						if (retGroup.Items.Count > index && retGroup.Items[index] != null && retGroup.Items[index] is Basic)
+						{
+							retItem = (Basic)retGroup.Items[index];
+
+							if (retItem.m_xe.Name == "controlFrame")
+							{
+								return retItem;
+							}
+						}
+					}
+				}
+			}
+
+			return null;
+		}
+		static public void updateParticleKeyFrameFromG2WData(string msgData)
+		{
+			string[] sArray = Regex.Split(msgData, ":", RegexOptions.IgnoreCase);
+			XmlItem curAniFrame = null;
+			int index;
+			List<HistoryNode> lstOptNode = new List<HistoryNode>();
+
+			if (int.TryParse(sArray[0], out index))
+			{
+				curAniFrame = getAniFrameItem(index);
+			}
+			if (curAniFrame == null)
+			{
+				return;
+			}
+
+			for (int i = 1; i < sArray.Length; i++)
+			{
+				if (sArray[i] == null || sArray[i] == "")
+				{
+					continue;
+				}
+				switch (i)
+				{
+					case 1:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curAniFrame.m_xe, "X", curAniFrame.m_xe.GetAttribute("X"), sArray[i]));
+						}
+						break;
+					case 2:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curAniFrame.m_xe, "Y", curAniFrame.m_xe.GetAttribute("Y"), sArray[i]));
+						}
+						break;
+					case 3:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curAniFrame.m_xe, "time", curAniFrame.m_xe.GetAttribute("time"), sArray[i]));
+						}
+						break;
+					case 4:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curAniFrame.m_xe, "perX", curAniFrame.m_xe.GetAttribute("perX"), sArray[i]));
+						}
+						break;
+					case 5:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curAniFrame.m_xe, "perY", curAniFrame.m_xe.GetAttribute("perY"), sArray[i]));
+						}
+						break;
+
+					case 6:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curAniFrame.m_xe, "moveType", curAniFrame.m_xe.GetAttribute("moveType"), sArray[i]));
+						}
+						break;
+					case 7:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curAniFrame.m_xe, "moveTypeEx1", curAniFrame.m_xe.GetAttribute("moveTypeEx1"), sArray[i]));
+						}
+						break;
+					case 8:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curAniFrame.m_xe, "moveTypeEx2", curAniFrame.m_xe.GetAttribute("moveTypeEx2"), sArray[i]));
+						}
+						break;
+					case 9:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curAniFrame.m_xe, "moveTypeEx3", curAniFrame.m_xe.GetAttribute("moveTypeEx3"), sArray[i]));
+						}
+						break;
+					case 10:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curAniFrame.m_xe, "moveTypeEx4", curAniFrame.m_xe.GetAttribute("moveTypeEx4"), sArray[i]));
+						}
+						break;
+
+					case 11:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curAniFrame.m_xe, "moveTypeEx5", curAniFrame.m_xe.GetAttribute("moveTypeEx5"), sArray[i]));
+						}
+						break;
+					case 12:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curAniFrame.m_xe, "moveTypeEx6", curAniFrame.m_xe.GetAttribute("moveTypeEx6"), sArray[i]));
+						}
+						break;
+					case 13:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curAniFrame.m_xe, "moveTypeEx7", curAniFrame.m_xe.GetAttribute("moveTypeEx7"), sArray[i]));
+						}
+						break;
+					case 14:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curAniFrame.m_xe, "moveTypeEx8", curAniFrame.m_xe.GetAttribute("moveTypeEx8"), sArray[i]));
+						}
+						break;
+					case 15:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curAniFrame.m_xe, "addPerX", curAniFrame.m_xe.GetAttribute("addPerX"), sArray[i]));
+						}
+						break;
+
+					case 16:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curAniFrame.m_xe, "addPerY", curAniFrame.m_xe.GetAttribute("addPerY"), sArray[i]));
+						}
+						break;
+					case 17:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curAniFrame.m_xe, "isKeyFrame", curAniFrame.m_xe.GetAttribute("isKeyFrame"), sArray[i]));
+						}
+						break;
+					case 18:
+						{
+							lstOptNode.Add(new XmlOperation.HistoryNode(
+								curAniFrame.m_xe, "isKeyHide", curAniFrame.m_xe.GetAttribute("isKeyHide"), sArray[i]));
+						}
+						break;
+					default:
+						{
+
+						}
+						break;
+				}
+			}
+			if (lstOptNode != null && lstOptNode.Count > 0)
+			{
+				curAniFrame.m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(lstOptNode);
+			}
+		}
+		static public void addRowToDrawLineMsgData(XmlElement xeKeyFrame, ref string msgData)
+		{
+			if (msgData != null && xeKeyFrame != null)
+			{
+				//0
+				msgData += xeKeyFrame.GetAttribute("X") + ":";
+				msgData += xeKeyFrame.GetAttribute("Y") + ":";
+				msgData += xeKeyFrame.GetAttribute("time") + ":";
+				msgData += xeKeyFrame.GetAttribute("perX") + ":";
+				msgData += xeKeyFrame.GetAttribute("perY") + ":";
+
+				//5
+				msgData += xeKeyFrame.GetAttribute("moveType") + ":";
+				msgData += xeKeyFrame.GetAttribute("moveTypeEx1") + ":";
+				msgData += xeKeyFrame.GetAttribute("moveTypeEx2") + ":";
+				msgData += xeKeyFrame.GetAttribute("moveTypeEx3") + ":";
+				msgData += xeKeyFrame.GetAttribute("moveTypeEx4") + ":";
+
+				//10
+				msgData += xeKeyFrame.GetAttribute("moveTypeEx5") + ":";
+				msgData += xeKeyFrame.GetAttribute("moveTypeEx6") + ":";
+				msgData += xeKeyFrame.GetAttribute("moveTypeEx7") + ":";
+				msgData += xeKeyFrame.GetAttribute("moveTypeEx8") + ":";
+				msgData += xeKeyFrame.GetAttribute("addPerX") + ":";
+
+				//15
+				msgData += xeKeyFrame.GetAttribute("addPerY") + ":";
+				msgData += "true" + ":";//isKeyFrame
+				msgData += xeKeyFrame.GetAttribute("isKeyHide") + ":";
+			}
+		}
 		static public void changeLightRun(Run runLight)
 		{
 			bool isLocked = false;
@@ -123,11 +412,11 @@ namespace UIEditor.BoloUI
 		}
 		static public string getDefaultNewXmlItem(string xeName)
 		{
-			CtrlDef_T ctrlDef;
+			DataNode dataNode;
 			XmlDocument docTmp = new XmlDocument();
 			XmlElement xeTmp = docTmp.CreateElement(xeName);
 
-			if (CtrlDef_T.tryGetCtrlDef(xeName, out ctrlDef) && xeName != "event")
+			if (DataNodeGroup.tryGetDataNode("BoloUI", "Ctrl", xeName, out dataNode) && xeName != "event")
 			{
 				xeTmp.SetAttribute("w", "50");
 				xeTmp.SetAttribute("h", "50");
@@ -164,18 +453,57 @@ namespace UIEditor.BoloUI
 				newXe.InnerXml = xmlStr;
 				if (newXe.FirstChild.NodeType == XmlNodeType.Element)
 				{
-					BoloUI.Basic treeChild = new BoloUI.Basic((XmlElement)newXe.FirstChild, curItem.m_xmlCtrl);
+					XmlItem treeChild;
 
-					if (treeChild.m_xe.Name == "event")
+					if(curItem is Basic)
 					{
-						curItem.m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
-							XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, curItem.m_xe, 0));
+						treeChild = new BoloUI.Basic((XmlElement)newXe.FirstChild, curItem.m_xmlCtrl);
+					}
+					else if(curItem is ResBasic)
+					{
+						SkinDef_T skinDef;
+
+						if(SkinDef_T.tryGetSkinDef(newXe.FirstChild.Name, out skinDef))
+						{
+							treeChild = new BoloUI.ResBasic((XmlElement)newXe.FirstChild, curItem.m_xmlCtrl, skinDef);
+						}
+						else
+						{
+							return;
+						}
 					}
 					else
 					{
-						curItem.m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
-							XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, curItem.m_xe, curItem.m_xe.ChildNodes.Count));
+						return;
 					}
+
+					if (treeChild != null)
+					{
+						if (treeChild.m_xe.Name == "event")
+						{
+							curItem.m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
+								XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, curItem.m_xe, 0));
+						}
+						else
+						{
+							curItem.m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(new XmlOperation.HistoryNode(
+								XmlOperation.XmlOptType.NODE_INSERT, treeChild.m_xe, curItem.m_xe, curItem.m_xe.ChildNodes.Count));
+						}
+					}
+				}
+			}
+		}
+		static public void shrinkChildren()
+		{
+			XmlItem.getCurItem().IsExpanded = true;
+
+			foreach (object obj in XmlItem.getCurItem().Items)
+			{
+				if (obj is TreeViewItem)
+				{
+					TreeViewItem item = (TreeViewItem)obj;
+
+					item.IsExpanded = false;
 				}
 			}
 		}
@@ -267,6 +595,10 @@ namespace UIEditor.BoloUI
 					break;
 				default:
 					break;
+			}
+			if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+			{
+				shrinkChildren();
 			}
 		}
 

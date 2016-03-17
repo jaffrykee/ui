@@ -36,7 +36,8 @@ namespace UIEditor.XmlOperation.XmlAttr
 					m_parent.m_xe != null && m_parent.m_xmlCtrl.m_openedFile != null &&
 					m_parent.m_xmlCtrl.m_openedFile.m_lstOpt != null && m_parent.m_basic != null)
 				{
-					if (m_name == "moveType" && m_parent.m_basic.m_xe.Name == "particleKeyFrame" && m_isUseEvent)
+					if (m_name == "moveType" && (m_parent.m_basic.m_xe.Name == "particleKeyFrame" ||
+						m_parent.m_basic.m_xe.Name == "controlFrame") && m_isUseEvent)
 					{
 						#region 特效关键帧轨迹特殊处理，附加参数属性值修改部分。
 						List<XmlOperation.HistoryNode> lstOptNode = new List<HistoryNode>();
@@ -155,7 +156,7 @@ namespace UIEditor.XmlOperation.XmlAttr
 					}
 				}
 
-				if (m_name == "moveType" && m_parent.m_basic.m_xe.Name == "particleKeyFrame")
+				if (m_name == "moveType" && (m_parent.m_basic.m_xe.Name == "particleKeyFrame" || m_parent.m_basic.m_xe.Name == "controlFrame"))
 				{
 					#region 特效关键帧轨迹特殊处理，附加参数属性名称修改部分
 					List<XmlOperation.HistoryNode> lstOptNode = new List<HistoryNode>();

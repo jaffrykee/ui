@@ -15,7 +15,7 @@ namespace UIEditor.BoloUI.DefConfig
 			DataNode nodeDef;
 
 			skinDef = null;
-			if (DataNodeGroup.tryGetDataNode("BoloUI", "Ctrl", nodeName, out nodeDef) && nodeDef != null && nodeDef is SkinDef_T)
+			if (DataNodeGroup.tryGetDataNode("BoloUI", "Skin", nodeName, out nodeDef) && nodeDef != null && nodeDef is SkinDef_T)
 			{
 				skinDef = (SkinDef_T)nodeDef;
 
