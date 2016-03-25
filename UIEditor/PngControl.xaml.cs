@@ -39,18 +39,25 @@ namespace UIEditor
 			if(System.IO.File.Exists(path))
 			{
 				m_Bitmap = DevIL.DevIL.LoadBitmap(path);
-				IntPtr ip = m_Bitmap.GetHbitmap();
-				m_imgSource = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
-					ip, IntPtr.Zero, Int32Rect.Empty,
-					System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
-				MainWindow.DeleteObject(ip);
+				try
+				{
+					IntPtr ip = m_Bitmap.GetHbitmap();
+					m_imgSource = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+						ip, IntPtr.Zero, Int32Rect.Empty,
+						System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+					MainWindow.DeleteObject(ip);
 
-				m_imgHeight = m_imgSource.PixelHeight;
-				m_imgWidth = m_imgSource.PixelWidth;
-				m_parent.itemFrame.Height = m_imgHeight;
-				m_parent.itemFrame.Width = m_imgWidth;
-				mx_image.Source = m_imgSource;
-				mx_image.Stretch = Stretch.Uniform;
+					m_imgHeight = m_imgSource.PixelHeight;
+					m_imgWidth = m_imgSource.PixelWidth;
+					m_parent.itemFrame.Height = m_imgHeight;
+					m_parent.itemFrame.Width = m_imgWidth;
+					mx_image.Source = m_imgSource;
+					mx_image.Stretch = Stretch.Uniform;
+				}
+				catch
+				{
+					Public.ResultLink.createResult("这不是一个合法的png文件(虽然后缀名是png)。");
+				}
 			}
 		}
 		public PngControl(string path)

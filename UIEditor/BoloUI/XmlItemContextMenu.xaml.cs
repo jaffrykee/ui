@@ -222,6 +222,21 @@ namespace UIEditor.BoloUI
 					mx_moveToChild.IsEnabled = false;
 				}
 			}
+
+			XmlElement xeClip = null;
+			string clipOutXml = Clipboard.GetText();
+			XmlDocument tmpDoc = new XmlDocument();
+
+			try
+			{
+				tmpDoc.LoadXml(clipOutXml);
+				xeClip = tmpDoc.DocumentElement;
+			}
+			catch
+			{
+				xeClip = null;
+			}
+
 			switch (XmlItem.getCurItem().m_type)
 			{
 				case "CtrlUI":
@@ -229,9 +244,9 @@ namespace UIEditor.BoloUI
 						#region
 						if (XmlItem.getCurItem().m_xe == XmlItem.getCurItem().m_xe.OwnerDocument.DocumentElement)
 						{
-							if (MainWindow.s_pW.m_xePaste != null)
+							if(xeClip != null)
 							{
-								if (CtrlDef_T.isFrame(MainWindow.s_pW.m_xePaste.Name) == true)
+								if (CtrlDef_T.isFrame(xeClip.Name) == true)
 								{
 									mx_paste.IsEnabled = true;
 								}
@@ -247,7 +262,7 @@ namespace UIEditor.BoloUI
 						}
 						else
 						{
-							if (MainWindow.s_pW.m_xePaste != null)
+							if (xeClip != null)
 							{
 								mx_paste.IsEnabled = true;
 							}
@@ -270,7 +285,7 @@ namespace UIEditor.BoloUI
 						#region
 						mx_moveToParent.IsEnabled = false;
 						mx_moveToChild.IsEnabled = false;
-						if (MainWindow.s_pW.m_xePaste != null)
+						if (xeClip != null)
 						{
 							mx_paste.IsEnabled = true;
 						}

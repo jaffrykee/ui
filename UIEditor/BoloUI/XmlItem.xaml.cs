@@ -604,28 +604,41 @@ namespace UIEditor.BoloUI
 
 		public void cutItem()
 		{
-			MainWindow.s_pW.m_xePaste = (XmlElement)m_xe.CloneNode(true);
+			Clipboard.SetDataObject(m_xe.OuterXml, true);
 			m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
 				new XmlOperation.HistoryNode(XmlOperation.XmlOptType.NODE_DELETE, m_xe)
 				);
 		}
 		public void copyItem()
 		{
-			MainWindow.s_pW.m_xePaste = (XmlElement)m_xe.CloneNode(true);
+			Clipboard.SetDataObject(m_xe.OuterXml, true);
 		}
 		public void pasteItem()
 		{
 			XmlItem treeChild = null;
 			XmlElement xeCopy;
 			DataNode dataNodeCopy;
+			XmlElement xeClip = null;
+			string clipOutXml = Clipboard.GetText();
+			XmlDocument tmpDoc = new XmlDocument();
 
-			if (MainWindow.s_pW.m_xePaste != null)
+			try
+			{
+				tmpDoc.LoadXml(clipOutXml);
+				xeClip = tmpDoc.DocumentElement;
+			}
+			catch
+			{
+				xeClip = null;
+			}
+
+			if (xeClip != null)
 			{
 				xeCopy = m_xe.OwnerDocument.CreateElement("tmp");
-				xeCopy.InnerXml = MainWindow.s_pW.m_xePaste.OuterXml;
+				xeCopy.InnerXml = xeClip.OuterXml;
 				xeCopy = (XmlElement)xeCopy.FirstChild;
 
-				if (DataNodeGroup.tryGetDataNode(m_xe.OwnerDocument.DocumentElement.Name, MainWindow.s_pW.m_xePaste.Name, out dataNodeCopy))
+				if (DataNodeGroup.tryGetDataNode(m_xe.OwnerDocument.DocumentElement.Name, xeClip.Name, out dataNodeCopy))
 				{
 					switch (dataNodeCopy.GetType().ToString())
 					{

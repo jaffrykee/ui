@@ -135,7 +135,7 @@ namespace UIEditor.XmlOperation
 				{
 					XmlItem parentNode;
 
-					if (dstItem.Parent is XmlItem || dstItem.Parent.GetType().BaseType.ToString() == "UIEditor.BoloUI.XmlItem")
+					if (dstItem.Parent != null && dstItem.Parent is XmlItem || dstItem.Parent.GetType().BaseType.ToString() == "UIEditor.BoloUI.XmlItem")
 					{
 						parentNode = (XmlItem)(dstItem.Parent);
 					}

@@ -141,8 +141,6 @@ namespace UIEditor
 
 		public string m_curFile;	//todo
 
-		public XmlElement m_xePaste;
-
 		public bool m_isMouseDown;
 		public bool m_isCtrlMoved;
 		public int m_downX;
@@ -223,6 +221,8 @@ namespace UIEditor
 		private int maxLink = 100000;
 		private int currentLinked;
 		private ManualResetEvent tcpClientConnected = new ManualResetEvent(false);
+
+		public static int s_countWin = 1;
 
 		static public void initData()
 		{
@@ -306,7 +306,6 @@ namespace UIEditor
 			m_curFile = "";
 			m_vCtrlName = true;
 			m_vCtrlId = true;
-			m_xePaste = null;
 			m_mapXeSel = new Dictionary<XmlElement, BoloUI.SelButton>();
 			mx_treeFrame.Items.Add(mx_skinEditor);
 

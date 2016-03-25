@@ -655,8 +655,8 @@
 		<GridSplitter Grid.Row="2" Grid.RowSpan="4" Grid.Column="0" Width="5"/>
 		<Grid Grid.Row="2" Grid.RowSpan="3" Grid.Column="2" Margin="5,0,0,0">
 			<Grid.RowDefinitions>
-				<RowDefinition Height="4*"/>
 				<RowDefinition Height="*"/>
+				<RowDefinition Height="5"/>
 			</Grid.RowDefinitions>
 			<GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="5"/>
 			<TabControl Name="mx_toolArea" Grid.Row="0" Width="auto" BorderThickness="0,2,0,0">
