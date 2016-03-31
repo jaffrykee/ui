@@ -267,7 +267,7 @@ namespace UIEditor.Project
 		}
 		private void mx_btnBackground_Click(object sender, RoutedEventArgs e)
 		{
-			openFileBoxAndSetTextBox(mx_tbBackground, "tga文件|*.tga|bmp文件|*.bmp");
+			openFileBoxAndSetTextBox(mx_tbBackground, "所有图片文件|*.bmp;*.ico;*.gif;*.jpeg;*.jpg;*.png;*.tif;*.tiff;*.tga");
 		}
 
 

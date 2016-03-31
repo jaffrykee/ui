@@ -440,6 +440,23 @@
 								  Unchecked="mx_isViewMode_Unchecked">
 								<Image Width="16" Source="pack://application:,,,/data/image/viewMode.png"/>
 							</CheckBox>
+							<CheckBox Name="mx_isScriptMode"
+									  ToolTip="脚本预览"
+									  Padding="7"
+									  Style="{StaticResource ToggleButtonTeml_Tools}"
+									  Checked="mx_isScriptMode_Checked"
+									  Unchecked="mx_isScriptMode_Unchecked">
+								<Image Width="16" Source="pack://application:,,,/data/image/scriptMode.png"/>
+							</CheckBox>
+							<CheckBox Name="mx_isShowCtrlRect"
+									  ToolTip="显示控件范围蓝框"
+									  Padding="7"
+									  Style="{StaticResource ToggleButtonTeml_Tools}"
+									  IsChecked="True"
+									  Checked="mx_isShowCtrlRect_Checked"
+									  Unchecked="mx_isShowCtrlRect_Unchecked">
+								<Image Width="16" Source="pack://application:,,,/data/image/showCtrlRect.png"/>
+							</CheckBox>
 							<CheckBox Name="mx_showBorder"
 								  Width="auto"
 								  Padding="7"
@@ -457,6 +474,15 @@
 								  Checked="mx_showBack_Checked"
 								  Unchecked="mx_showBack_Unchecked">
 								显示背景
+							</CheckBox>
+							<CheckBox Name="mx_showRenderCache"
+									  Width="auto"
+									  Padding="7"
+									  ToolTip="显示渲染堆栈。"
+									  Style="{StaticResource ToggleButtonTeml_Tools}"
+									  Checked="mx_showRenderCache_Checked"
+									  Unchecked="mx_showRenderCache_Unchecked">
+								渲染堆栈
 							</CheckBox>
 						</WrapPanel>
 						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
@@ -656,13 +682,13 @@
 		<Grid Grid.Row="2" Grid.RowSpan="3" Grid.Column="2" Margin="5,0,0,0">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="*"/>
-				<RowDefinition Height="5"/>
+				<RowDefinition Height="auto"/>
 			</Grid.RowDefinitions>
 			<GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="5"/>
 			<TabControl Name="mx_toolArea" Grid.Row="0" Width="auto" BorderThickness="0,2,0,0">
 			</TabControl>
 			<Grid Name="mx_skinFrameTree" Grid.Row="1" Margin="0,5,0,0">
-				<ListView Name="mx_lvRenderCache" Loaded="mx_lvRenderCache_Loaded" Padding="0" SelectionChanged="mx_lvRenderCache_SelectionChanged">
+				<ListView Name="mx_lvRenderCache" MaxHeight="400" Padding="0" Visibility="Collapsed" Loaded="mx_lvRenderCache_Loaded" SelectionChanged="mx_lvRenderCache_SelectionChanged">
 					<ListView.View>
 						<GridView AllowsColumnReorder="true" ColumnHeaderToolTip="Employee Information">
 							<GridViewColumn Header="ID">
@@ -701,15 +727,15 @@
 									</DataTemplate>
 								</GridViewColumn.CellTemplate>
 							</GridViewColumn>
-							<GridViewColumn Header="可见">
-								<GridViewColumn.CellTemplate>
-									<DataTemplate>
-										<Grid MinWidth="20">
-											<CheckBox Background="White" IsChecked="{Binding Path=m_isVisible}" Padding="2"/>
-										</Grid>
-									</DataTemplate>
-								</GridViewColumn.CellTemplate>
-							</GridViewColumn>
+<!-- 							<GridViewColumn Header="可见"> -->
+<!-- 								<GridViewColumn.CellTemplate> -->
+<!-- 									<DataTemplate> -->
+<!-- 										<Grid MinWidth="20"> -->
+<!-- 											<CheckBox Background="White" IsChecked="{Binding Path=m_isVisible}" Padding="2"/> -->
+<!-- 										</Grid> -->
+<!-- 									</DataTemplate> -->
+<!-- 								</GridViewColumn.CellTemplate> -->
+<!-- 							</GridViewColumn> -->
 						</GridView>
 					</ListView.View>
 					<ListView.ItemTemplate>

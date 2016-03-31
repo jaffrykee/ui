@@ -145,6 +145,23 @@ namespace UIEditor.XmlOperation.XmlAttr
 			m_preValue = value;
 			m_type = attrDef.m_type;
 			m_defValue = attrDef.m_defValue;
+
+            if (m_subType != null && m_subType != "")
+            {
+                switch (m_subType)
+                {
+                    case "allBool":
+                        {
+                            mx_root.MinWidth = 300;
+                        }
+                        break;
+                    default:
+                        {
+
+                        }
+                        break;
+                }
+            }
 		}
 
 		private void mx_valueBool_Checked(object sender, RoutedEventArgs e)

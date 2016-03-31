@@ -500,7 +500,14 @@ namespace UIEditor
 				Project.Setting.refreshSettingUIByConfigNode(xnThemeSetting, mx_cbThemeName);
 			}
 
-			m_docConf.Save(conf_pathConf);
+			try
+			{
+				m_docConf.Save(conf_pathConf);
+			}
+			catch
+			{
+				Public.ResultLink.createResult("\r\nconf.xml被占用，保存失败。", ResultType.RT_ERROR, null, true);
+			}
 		}
 		private void mx_root_Loaded(object sender, RoutedEventArgs e)
 		{
@@ -1833,7 +1840,63 @@ namespace UIEditor
 								{
 									if (index % cSendDataSize == 0 && index != 0)
 									{
-										lstBinding.Add(new RenderCacheViewData(index / cSendDataSize, strCache[0], strCache[1], strCache[2], true));
+										string strType;
+
+										switch (strCache[0])
+										{
+											case "0":
+												{
+													strType = "图片";
+												}
+												break;
+											case "1":
+												{
+													strType = "文字";
+												}
+												break;
+											case "2":
+												{
+													strType = "扇图";
+												}
+												break;
+											case "3":
+												{
+													strType = "特效或3DModel";
+												}
+												break;
+											case "4":
+												{
+													strType = "矩形";
+												}
+												break;
+											case "5":
+												{
+													strType = "缩放";
+												}
+												break;
+											case "6":
+												{
+													strType = "旋转";
+												}
+												break;
+											case "7":
+												{
+													strType = "灰度";
+												}
+												break;
+											case "8":
+												{
+													strType = "战魂特效";
+												}
+												break;
+											default:
+												{
+													strType = "未知";
+												}
+												break;
+										}
+
+										lstBinding.Add(new RenderCacheViewData(index / cSendDataSize, strType, strCache[1], strCache[2], true));
 									}
 									strCache[index % cSendDataSize] = curStr;
 									index++;
@@ -2460,6 +2523,22 @@ namespace UIEditor
 		{
 			updateGL("false", W2GTag.W2G_VIEWMODE);
 		}
+		private void mx_isScriptMode_Checked(object sender, RoutedEventArgs e)
+		{
+			updateGL("true", W2GTag.W2G_VIEWMODE_SCRIPT);
+		}
+		private void mx_isScriptMode_Unchecked(object sender, RoutedEventArgs e)
+		{
+			updateGL("false", W2GTag.W2G_VIEWMODE_SCRIPT);
+		}
+		private void mx_isShowCtrlRect_Checked(object sender, RoutedEventArgs e)
+		{
+
+		}
+		private void mx_isShowCtrlRect_Unchecked(object sender, RoutedEventArgs e)
+		{
+			MainWindow.s_pW.updateGL("", W2GTag.W2G_SELECT_UI);
+		}
 		private void mx_showBorder_Checked(object sender, RoutedEventArgs e)
 		{
 			XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
@@ -2482,11 +2561,31 @@ namespace UIEditor
 		}
 		private void mx_showBack_Checked(object sender, RoutedEventArgs e)
 		{
-			MainWindow.s_pW.updateGL(Setting.getBackgroundPath(), W2GTag.W2G_PATH_BACKGROUND);
+			string pathBack = Setting.getBackgroundPath();
+			if(System.IO.File.Exists(pathBack))
+			{
+				FileInfo fi = new FileInfo(pathBack);
+				string dstFolder = System.IO.Path.GetDirectoryName(fi.FullName);
+
+				if(PackImage.createSSImage(fi.FullName, dstFolder) == true)
+				{
+					MainWindow.s_pW.updateGL(dstFolder + "\\bg_ss.tga", W2GTag.W2G_PATH_BACKGROUND);
+				}
+			}
 		}
 		private void mx_showBack_Unchecked(object sender, RoutedEventArgs e)
 		{
 			MainWindow.s_pW.updateGL("", W2GTag.W2G_PATH_BACKGROUND);
+		}
+		private void mx_showRenderCache_Checked(object sender, RoutedEventArgs e)
+		{
+			MainWindow.s_pW.updateGL("true", W2GTag.W2G_RENDERCACHE_SWITCH);
+			mx_lvRenderCache.Visibility = System.Windows.Visibility.Visible;
+		}
+		private void mx_showRenderCache_Unchecked(object sender, RoutedEventArgs e)
+		{
+			MainWindow.s_pW.updateGL("false", W2GTag.W2G_RENDERCACHE_SWITCH);
+			mx_lvRenderCache.Visibility = System.Windows.Visibility.Collapsed;
 		}
 		private void mx_btnNesting_Click(object sender, RoutedEventArgs e)
 		{
@@ -3231,12 +3330,10 @@ namespace UIEditor
 		private void mx_lvRenderCache_Loaded(object sender, RoutedEventArgs e)
 		{
 		}
-
 		private void mx_lviRenderCache_MouseDoubleClick(object sender, MouseButtonEventArgs e)
 		{
 
 		}
-
 		private void mx_lvRenderCache_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if(mx_lvRenderCache.SelectedItem != null && mx_lvRenderCache.SelectedItem is RenderCacheViewData)

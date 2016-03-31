@@ -182,7 +182,8 @@ namespace UIEditor.BoloUI
 		}
 		public bool showBlueRect()
 		{
-			if (m_vId != null &&
+			if (MainWindow.s_pW.mx_isShowCtrlRect.IsChecked == true &&
+				m_vId != null &&
 				m_vId != "" &&
 				m_xmlCtrl != null &&
 				m_xmlCtrl.m_openedFile != null &&

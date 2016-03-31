@@ -546,6 +546,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="data\a.txt" />
+    <Resource Include="data\image\showCtrlRect.png" />
+    <Resource Include="data\image\scriptMode.png" />
     <Resource Include="data\image\linkInfo.png" />
     <Resource Include="data\image\moveRight.png" />
     <Resource Include="data\image\timeScale.png" />

@@ -218,6 +218,13 @@ namespace UIEditor.XmlOperation
 				{
 					index = srcItem.Items.Count;
 				}
+				else
+				{
+					if(index < 0)
+					{
+						index = 0;
+					}
+				}
 
 				if (srcXe.Name != "BoloUI")
 				{

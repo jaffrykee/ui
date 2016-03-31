@@ -164,6 +164,34 @@ namespace UIEditor
 			imgWidth = (int)Math.Pow(2, wPow > hPow ? wPow : hPow);
 			imgHeight = (int)Math.Pow(2, wPow > hPow ? wPow : hPow);
 		}
+		static public bool createSSImage(string srcImagePath, string dstFolderPath)
+		{
+			if (System.IO.File.Exists(srcImagePath) && System.IO.Directory.Exists(dstFolderPath))
+			{
+				try
+				{
+					System.Drawing.Rectangle dstSize = new System.Drawing.Rectangle(0, 0, 2048, 2048);
+					System.Drawing.Bitmap tgaImg = new System.Drawing.Bitmap(dstSize.Width, dstSize.Width);
+					System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(tgaImg);
+					System.Drawing.Bitmap bmp = DevIL.DevIL.LoadBitmap(srcImagePath);
+
+					g.Clear(System.Drawing.Color.FromArgb(0x00, 0x00, 0x00, 0x00));
+					g.DrawImage(bmp, dstSize.X, dstSize.Y, dstSize.Width, dstSize.Height);
+					g.Dispose();
+					DevIL.DevIL.SaveBitmap(dstFolderPath + "\\bg_ss.tga", tgaImg);
+
+					return true;
+				}
+				catch
+				{
+					Public.ResultLink.createResult("\r\n背景图片转换错误。", Public.ResultType.RT_ERROR, null, true);
+
+					return false;
+				}
+			}
+
+			return false;
+		}
 		static private void refreshImagePack(
 			string xmlPath,
 			bool isRePack,

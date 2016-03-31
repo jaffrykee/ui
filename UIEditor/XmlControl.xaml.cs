@@ -626,7 +626,19 @@ namespace UIEditor
 			if (File.Exists(path))
 			{
 				XmlDocument skinDoc = new XmlDocument();
-				skinDoc.Load(path);
+
+				try
+				{
+					skinDoc.Load(path);
+				}
+				catch
+				{
+					Public.ResultLink.createResult("\r\n皮肤文件：\"" + path + "\"格式错误，不是一个合法的xml文件。",
+						Public.ResultType.RT_WARNING);
+
+					return;
+				}
+
 				XmlNode xn = skinDoc.SelectSingleNode("BoloUI");
 
 				if (xn != null)
