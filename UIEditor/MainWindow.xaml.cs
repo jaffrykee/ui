@@ -686,6 +686,8 @@ namespace UIEditor
 			refreshProjTree(Project.Setting.s_projPath, this.mx_treePro, true);
 			mx_root.Title = Project.Setting.s_projPath + "\\" + Project.Setting.s_projName + " - UI编辑器";
 			mx_toolNew.IsEnabled = true;
+			ScriptManager.copySSUEScriptToProject();
+			Setting.s_mapScriptClass = ScriptManager.getSSUEScriptClassMap();
 		}
 		public void refreshImageTree()
 		{
@@ -2539,6 +2541,14 @@ namespace UIEditor
 		{
 			MainWindow.s_pW.updateGL("", W2GTag.W2G_SELECT_UI);
 		}
+		private void mx_isUpdateMode_Checked(object sender, RoutedEventArgs e)
+		{
+
+		}
+		private void mx_isUpdateMode_Unchecked(object sender, RoutedEventArgs e)
+		{
+
+		}
 		private void mx_showBorder_Checked(object sender, RoutedEventArgs e)
 		{
 			XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
@@ -2565,7 +2575,7 @@ namespace UIEditor
 			if(System.IO.File.Exists(pathBack))
 			{
 				FileInfo fi = new FileInfo(pathBack);
-				string dstFolder = System.IO.Path.GetDirectoryName(fi.FullName);
+				string dstFolder = Setting.s_projPath;
 
 				if(PackImage.createSSImage(fi.FullName, dstFolder) == true)
 				{

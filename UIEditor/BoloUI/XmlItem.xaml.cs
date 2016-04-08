@@ -696,30 +696,54 @@ namespace UIEditor.BoloUI
 		}
 		public void moveDownItem()
 		{
-			if (m_xe.ParentNode.LastChild != m_xe)
+			if(this.Parent is XmlItem)
 			{
-				m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
-					new XmlOperation.HistoryNode(
-						XmlOperation.XmlOptType.NODE_MOVE,
-						m_xe,
-						(XmlElement)m_xe.ParentNode,
-						XmlOperation.HistoryNode.getXeIndex(m_xe) + 1
-					)
-				);
+				XmlItem parentItem = (XmlItem)this.Parent;
+
+				if(parentItem.Items.Count > 0 && parentItem.Items[parentItem.Items.Count - 1] != this)
+				{
+					object nextObject = parentItem.Items[parentItem.Items.IndexOf(this) + 1];
+
+					if (nextObject != null && nextObject is XmlItem)
+					{
+						XmlItem nextChild = (XmlItem)nextObject;
+
+						m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
+							new XmlOperation.HistoryNode(
+								XmlOperation.XmlOptType.NODE_MOVE,
+								m_xe,
+								(XmlElement)m_xe.ParentNode,
+								XmlOperation.HistoryNode.getXeIndex(nextChild.m_xe)
+							)
+						);
+					}
+				}
 			}
 		}
 		public void moveUpItem()
 		{
-			if (m_xe.ParentNode.FirstChild != m_xe)
+			if (this.Parent is XmlItem)
 			{
-				m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
-					new XmlOperation.HistoryNode(
-						XmlOperation.XmlOptType.NODE_MOVE,
-						m_xe,
-						(XmlElement)m_xe.ParentNode,
-						XmlOperation.HistoryNode.getXeIndex(m_xe) - 1
-					)
-				);
+				XmlItem parentItem = (XmlItem)this.Parent;
+
+				if (parentItem.Items.Count > 0 && parentItem.Items[0] != this)
+				{
+					object preObject = parentItem.Items[parentItem.Items.IndexOf(this) - 1];
+
+					if (preObject != null && preObject is XmlItem)
+					{
+						XmlItem preChild = (XmlItem)preObject;
+
+						m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
+							new XmlOperation.HistoryNode(
+								XmlOperation.XmlOptType.NODE_MOVE,
+								m_xe,
+								(XmlElement)m_xe.ParentNode,
+								XmlOperation.HistoryNode.getXeIndex(preChild.m_xe)
+							)
+						);
+					}
+				}
 			}
 		}
 		public void moveToParent()
@@ -739,16 +763,31 @@ namespace UIEditor.BoloUI
 		}
 		public void moveToChild()
 		{
-			if (m_xe.NextSibling != null && CtrlDef_T.isFrame(m_xe.NextSibling.Name) == true)
+			if (this.Parent is XmlItem)
 			{
-				m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
-					new XmlOperation.HistoryNode(
-						XmlOperation.XmlOptType.NODE_MOVE,
-						m_xe,
-						(XmlElement)m_xe.NextSibling,
-						m_xe.NextSibling.ChildNodes.Count
-						)
-					);
+				XmlItem parentItem = (XmlItem)this.Parent;
+
+				if (parentItem.Items.Count > 0 && parentItem.Items[parentItem.Items.Count - 1] != this)
+				{
+					object nextObject = parentItem.Items[parentItem.Items.IndexOf(this) + 1];
+
+					if (nextObject != null && nextObject is XmlItem)
+					{
+						XmlItem nextChild = (XmlItem)nextObject;
+
+						if (CtrlDef_T.isFrame(nextChild.m_xe.Name) == true)
+						{
+							m_xmlCtrl.m_openedFile.m_lstOpt.addOperation(
+								new XmlOperation.HistoryNode(
+									XmlOperation.XmlOptType.NODE_MOVE,
+									m_xe,
+									nextChild.m_xe,
+									0
+								)
+							);
+						}
+					}
+				}
 			}
 		}
 	}

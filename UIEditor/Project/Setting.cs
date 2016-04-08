@@ -67,6 +67,7 @@ namespace UIEditor.Project
 		}
 		static public Dictionary<string, List<string>> s_mapSkinIndex;
 		static public DateTime s_uiconfigLastUpdateTime;
+		static public Dictionary<string, Dictionary<string, XmlDocument>> s_mapScriptClass;
 
 		static public void refreshAllProjectSetting()
 		{
@@ -860,6 +861,70 @@ namespace UIEditor.Project
 
 			getEnableThemeMsgData(isEnable, out msgData);
 			MainWindow.s_pW.updateGL(msgData, W2GTag.W2G_THEME_ISENABLE);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="srcPath"></param>
+		/// <param name="dstPath"></param>
+		/// <param name="isOverrideFile">
+		/// true 表示永远覆盖
+		/// false 表示永远保留dstFile
+		/// null 表示使用最新的。
+		/// </param>
+		/// <param name="isCreateFolder"></param>
+		/// <param name="isMergeFolder"></param>
+		static public void copyFolderToFolder(string srcPath, string dstPath, bool? isOverrideFile = null, bool isCreateFolder = true, bool isMergeFolder = true)
+		{
+			if(Directory.Exists(srcPath) && Directory.Exists(dstPath))
+			{
+				DirectoryInfo srcDi = new DirectoryInfo(srcPath);
+				DirectoryInfo dstDi = new DirectoryInfo(dstPath);
+
+				foreach(FileInfo srcFi in srcDi.GetFiles())
+				{
+					string dstFilePath = dstDi.FullName + "\\" + srcFi.Name;
+
+					if(isOverrideFile == null)
+					{
+						if(File.Exists(dstFilePath))
+						{
+							FileInfo dstFileInfo = new FileInfo(dstFilePath);
+
+							if(dstFileInfo.LastWriteTime < srcFi.LastWriteTime)
+							{
+								srcFi.CopyTo(dstFilePath, true);
+							}
+						}
+						else
+						{
+							srcFi.CopyTo(dstFilePath, true);
+						}
+					}
+					else
+					{
+						srcFi.CopyTo(dstFilePath, isOverrideFile == true ? true : false);
+					}
+				}
+				foreach(DirectoryInfo srcChildDi in srcDi.GetDirectories())
+				{
+					string dstNewPath = dstDi.FullName + "\\" + srcChildDi.Name;
+
+					if(Directory.Exists(dstNewPath) == false)
+					{
+						if (isCreateFolder)
+						{
+							Directory.CreateDirectory(dstNewPath);
+						}
+					}
+
+					if (isMergeFolder)
+					{
+						copyFolderToFolder(srcChildDi.FullName, dstNewPath, isOverrideFile, isCreateFolder, isMergeFolder);
+					}
+				}
+			}
 		}
 	}
 }

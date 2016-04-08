@@ -178,6 +178,7 @@ namespace UIEditor
 					g.Clear(System.Drawing.Color.FromArgb(0x00, 0x00, 0x00, 0x00));
 					g.DrawImage(bmp, dstSize.X, dstSize.Y, dstSize.Width, dstSize.Height);
 					g.Dispose();
+					System.IO.File.Delete(dstFolderPath + "\\bg_ss.tga");
 					DevIL.DevIL.SaveBitmap(dstFolderPath + "\\bg_ss.tga", tgaImg);
 
 					return true;

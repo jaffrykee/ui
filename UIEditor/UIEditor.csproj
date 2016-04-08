@@ -132,6 +132,7 @@
     <Compile Include="BoloUI\CtrlTemplate.xaml.cs">
       <DependentUpon>CtrlTemplate.xaml</DependentUpon>
     </Compile>
+    <Compile Include="BoloUI\ScriptManager.cs" />
     <Compile Include="BoloUI\SelImage.xaml.cs">
       <DependentUpon>SelImage.xaml</DependentUpon>
     </Compile>
@@ -546,6 +547,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="data\a.txt" />
+    <Resource Include="data\image\updateMode.png" />
     <Resource Include="data\image\showCtrlRect.png" />
     <Resource Include="data\image\scriptMode.png" />
     <Resource Include="data\image\linkInfo.png" />

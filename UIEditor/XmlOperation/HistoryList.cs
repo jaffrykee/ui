@@ -80,7 +80,7 @@ namespace UIEditor.XmlOperation
 		}
 		static public void updateAttrToGL(XmlControl xmlCtrl, Basic uiCtrl, string attrName, string newValue)
 		{
-			if (uiCtrl.m_xe.Name == "progress" && attrName == "value")
+			if ((uiCtrl.m_xe.Name == "progress" && attrName == "value") || MainWindow.s_pW.mx_isUpdateMode.IsChecked == true)
 			{
 				MainWindow.s_pW.updateGL(System.IO.Path.GetFileName(xmlCtrl.m_openedFile.m_path) + ":" +
 					uiCtrl.m_vId + ":" + attrName + ":" + newValue, W2GTag.W2G_NORMAL_UPDATE);
@@ -217,7 +217,19 @@ namespace UIEditor.XmlOperation
 				}
 				else if (isGroupEnd == true)
 				{
-					m_pW.updateXmlToGL(m_xmlCtrl);
+					foreach (HistoryNode stepNode in m_curNode.Value)
+					{
+						if (stepNode.m_optType == XmlOptType.NODE_UPDATE && dstItem != null && dstItem.m_type == "CtrlUI")
+						{
+							Basic ctrlItem = (Basic)dstItem;
+
+							updateAttrToGL(m_xmlCtrl, ctrlItem, stepNode.m_attrName, stepNode.m_newValue);
+						}
+						else
+						{
+							m_pW.updateXmlToGL(m_xmlCtrl);
+						}
+					}
 				}
 			}
 

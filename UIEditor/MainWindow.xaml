@@ -457,6 +457,15 @@
 									  Unchecked="mx_isShowCtrlRect_Unchecked">
 								<Image Width="16" Source="pack://application:,,,/data/image/showCtrlRect.png"/>
 							</CheckBox>
+							<CheckBox Name="mx_isUpdateMode"
+									  ToolTip="快速模式（不重新刷新）"
+									  Padding="7"
+									  Style="{StaticResource ToggleButtonTeml_Tools}"
+									  IsChecked="False"
+									  Checked="mx_isUpdateMode_Checked"
+									  Unchecked="mx_isUpdateMode_Unchecked">
+								<Image Width="16" Source="pack://application:,,,/data/image/updateMode.png"/>
+							</CheckBox>
 							<CheckBox Name="mx_showBorder"
 								  Width="auto"
 								  Padding="7"
@@ -541,7 +550,7 @@
 						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
 								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
 								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
-						<WrapPanel>
+						<WrapPanel Visibility="Collapsed">
 							<Label>替换路径：</Label>
 							<TextBox Name="mx_tbReplacePath" Width="200" Margin="4"></TextBox>
 							<Button Click="mx_replaceTools_Click">替换</Button>
