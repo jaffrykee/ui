@@ -174,6 +174,35 @@
 					</MenuItem.Icon>
 				</MenuItem>
 			</MenuItem>
+			<MenuItem Header="视图(_V)" Padding="{Binding ElementName=mx_miFile, Path=Padding}">
+				<MenuItem Name="mx_viewLanguegeFrame"
+						  Header="语言选择栏"
+						  ToolTip="显示语言选择栏。"
+						  Click="mx_viewLanguegeFrame_Click">
+					<MenuItem.Icon>
+						<CheckBox Name="mx_viewLanguege"
+								  Style="{StaticResource ToggleButtonTeml_Tools}"
+								  IsChecked="True"
+								  Checked="mx_viewLanguege_Checked"
+								  Unchecked="mx_viewLanguege_Unchecked">
+							×
+						</CheckBox>
+					</MenuItem.Icon>
+				</MenuItem>
+				<MenuItem Name="mx_viewShowRenderCacheFrame"
+						  Header="渲染堆栈"
+						  ToolTip="显示渲染堆栈。"
+						  Click="mx_viewShowRenderCacheFrame_Click">
+					<MenuItem.Icon>
+						<CheckBox Name="mx_viewShowRenderCache"
+						  Style="{StaticResource ToggleButtonTeml_Tools}"
+						  Checked="mx_viewShowRenderCache_Checked"
+						  Unchecked="mx_viewShowRenderCache_Unchecked">
+							×
+						</CheckBox>
+					</MenuItem.Icon>
+				</MenuItem>
+			</MenuItem>
 			<MenuItem Header="项目(_P)" Padding="{Binding ElementName=mx_miFile, Path=Padding}">
 				<MenuItem Name="mx_menuNesting"
 						  Header="图片打包"
@@ -185,9 +214,10 @@
 				</MenuItem>
 				<MenuItem Name="mx_statistics"
 						  Header="统计"
-						  IsEnabled="False">
+						  IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}">
 					<MenuItem Name="mx_statisticsSkin"
-							  Header="统计未被引用的皮肤"/>
+							  Header="统计未被引用的皮肤"
+							  Click="mx_showNotUsingSkin_Click"/>
 				</MenuItem>
 				<MenuItem Name="mx_checkBaseId"
 						  Header="检测全部文件重复的BaseID"
@@ -197,6 +227,11 @@
 						  Header="导出lang"
 						  IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
 						  Click="mx_exportLang_Click"/>
+				<MenuItem Name="mx_refreshShape"
+						  Header="文字置顶"
+						  ToolTip="自动将所有公共皮肤（skin目录下）的textShape置于imageShape之上"
+						  IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
+						  Click="mx_refreshShape_Click"/>
 				<MenuItem Name="mx_templateSetting"
 						  Header="项目控件模板管理..."
 						  IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
@@ -210,15 +245,15 @@
 			<MenuItem Header="工具(_T)" Padding="{Binding ElementName=mx_miFile, Path=Padding}">
 				<MenuItem Name="mx_setting" Header="选项..." IsEnabled="False"/>
 			</MenuItem>
-			<MenuItem Header="视图(_V)" Padding="{Binding ElementName=mx_miFile, Path=Padding}">
-				<MenuItem Name="mx_viewPrevFile" Header="上一文档" InputGestureText="Ctrl+PageUp" Click="mx_viewPrevFile_Click"/>
-				<MenuItem Name="mx_viewNextFile" Header="下一文档" InputGestureText="Ctrl+PageDown" Click="mx_viewNextFile_Click"/>
+			<MenuItem Header="窗口(_W)" Padding="{Binding ElementName=mx_miFile, Path=Padding}">
+				<MenuItem Name="mx_windowPrevFile" Header="上一文档" InputGestureText="Ctrl+PageUp" Click="mx_windowPrevFile_Click"/>
+				<MenuItem Name="mx_windowNextFile" Header="下一文档" InputGestureText="Ctrl+PageDown" Click="mx_windowNextFile_Click"/>
 				<Separator/>
-				<MenuItem Name="mx_viewCloseFile" Header="关闭当前文档" InputGestureText="Ctrl+W" Click="mx_viewCloseFile_Click"/>
-				<MenuItem Name="mx_viewCloseAll" Header="关闭所有文档" InputGestureText="Ctrl+Shift+W" Click="mx_viewCloseAll_Click"/>
-				<MenuItem Name="mx_viewCloseAllExSelf" Header="除此之外全部关闭" InputGestureText="Shift+W" Click="mx_viewCloseAllExSelf_Click"/>
+				<MenuItem Name="mx_windowCloseFile" Header="关闭当前文档" InputGestureText="Ctrl+W" Click="mx_windowCloseFile_Click"/>
+				<MenuItem Name="mx_windowCloseAll" Header="关闭所有文档" InputGestureText="Ctrl+Shift+W" Click="mx_windowCloseAll_Click"/>
+				<MenuItem Name="mx_windowCloseAllExSelf" Header="除此之外全部关闭" InputGestureText="Shift+W" Click="mx_windowCloseAllExSelf_Click"/>
 				<Separator/>
-				<MenuItem Name="mx_viewOpenFolder" Header="打开所在文件夹" Click="mx_viewOpenFolder_Click"/>
+				<MenuItem Name="mx_windowOpenFolder" Header="打开所在文件夹" Click="mx_windowOpenFolder_Click"/>
 			</MenuItem>
 			<MenuItem Header="帮助(_H)" Padding="{Binding ElementName=mx_miFile, Path=Padding}">
 				<MenuItem Name="mx_help" Header="查看帮助" Click="mx_help_Click"/>
@@ -381,23 +416,12 @@
 								Click="mx_btnNesting_Click">
 								<Image Width="16" Source="pack://application:,,,/data/image/nesting.png"/>
 							</Button>
-							<Button Name="mx_refreshShape"
-								ToolTip="自动将所有公共皮肤（skin目录下）的textShape置于imageShape之上"
-								Height="30"
-								Width="60"
-								Margin="0"
-								Foreground="{StaticResource Foreground}"
-								BorderBrush="{StaticResource BackgroundNormal}"
-								IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}"
-								Click="mx_refreshShape_Click">
-								文字置顶
-							</Button>
 						</WrapPanel>
 						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
 								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
 								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
 						<WrapPanel Background="#33000000"
-								   IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}">
+								   IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}" Visibility="Collapsed">
 							<TextBox Name="mx_tbScriptName" Width="200" Margin="4"></TextBox>
 							<Button Name="mx_btnSendScript"
 								ToolTip="只支持只包含BoloUI库、脚本库等公共库和MOBA精灵库中的脚本接口的脚本（bs文件，预设路径:artist/scripts/dev/scripts/）。"
@@ -484,33 +508,6 @@
 								  Unchecked="mx_showBack_Unchecked">
 								显示背景
 							</CheckBox>
-							<CheckBox Name="mx_showRenderCache"
-									  Width="auto"
-									  Padding="7"
-									  ToolTip="显示渲染堆栈。"
-									  Style="{StaticResource ToggleButtonTeml_Tools}"
-									  Checked="mx_showRenderCache_Checked"
-									  Unchecked="mx_showRenderCache_Unchecked">
-								渲染堆栈
-							</CheckBox>
-						</WrapPanel>
-						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
-								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
-								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
-						<WrapPanel IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}">
-							<CheckBox Name="mx_isEnableTheme"
-								  Width="auto"
-								  Padding="7"
-								  Style="{StaticResource ToggleButtonTeml_Tools}"
-								  IsChecked="True"
-								  Checked="mx_isEnableTheme_Checked"
-								  Unchecked="mx_isEnableTheme_Unchecked">
-								新主题
-							</CheckBox>
-							<TextBlock Padding="5,0,0,0" VerticalAlignment="Center">主题：</TextBlock>
-							<ComboBox Name="mx_cbThemeName" Margin="5" SelectedIndex="0" SelectionChanged="mx_cbThemeName_SelectionChanged"/>
-							<TextBlock Padding="5,0,0,0" VerticalAlignment="Center">语言：</TextBlock>
-							<ComboBox Name="mx_cbLangName" Margin="5" SelectedIndex="0" SelectionChanged="mx_cbLangName_SelectionChanged"/>
 						</WrapPanel>
 						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
 								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
@@ -546,6 +543,24 @@
 								<ComboBoxItem>1920 x 1080</ComboBoxItem>
 								<ComboBoxItem>2560 x 1440</ComboBoxItem>
 							</ComboBox>
+						</WrapPanel>
+						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
+								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
+								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
+						<WrapPanel Name="mx_languageToolsFrame" IsEnabled="{Binding ElementName=mx_toolNew, Path=IsEnabled}">
+							<CheckBox Name="mx_isEnableTheme"
+								  Width="auto"
+								  Padding="7"
+								  Style="{StaticResource ToggleButtonTeml_Tools}"
+								  IsChecked="True"
+								  Checked="mx_isEnableTheme_Checked"
+								  Unchecked="mx_isEnableTheme_Unchecked">
+								新主题
+							</CheckBox>
+							<TextBlock Padding="5,0,0,0" VerticalAlignment="Center">主题：</TextBlock>
+							<ComboBox Name="mx_cbThemeName" Margin="5" SelectedIndex="0" SelectionChanged="mx_cbThemeName_SelectionChanged"/>
+							<TextBlock Padding="5,0,0,0" VerticalAlignment="Center">语言：</TextBlock>
+							<ComboBox Name="mx_cbLangName" Margin="5" SelectedIndex="0" SelectionChanged="mx_cbLangName_SelectionChanged"/>
 						</WrapPanel>
 						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
 								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"

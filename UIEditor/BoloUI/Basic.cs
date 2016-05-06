@@ -16,6 +16,7 @@ using System.Xml;
 using UIEditor.BoloUI;
 using UIEditor.BoloUI.DefConfig;
 using UIEditor.XmlOperation.XmlAttr;
+using UIEditor.Project;
 using UIEditor.Project.PlugIn;
 
 namespace UIEditor.BoloUI
@@ -394,11 +395,11 @@ namespace UIEditor.BoloUI
 			if (m_xe != null && m_xe.GetAttribute("skin") != "")
 			{
 				string skinName = m_xe.GetAttribute("skin");
-				List<string> lstIncludeGroupName = m_xmlCtrl.getIncludeSkinGroupList(skinName);
+				List<SkinUsingCount_T> lstIncludeSkinCount = m_xmlCtrl.getIncludeSkinGroupList(skinName);
 
-				if (lstIncludeGroupName != null && lstIncludeGroupName.Count >= 0)
+				if (lstIncludeSkinCount != null && lstIncludeSkinCount.Count >= 0)
 				{
-					string groupName = lstIncludeGroupName[0];
+					string groupName = lstIncludeSkinCount[0].m_groupName;
 					string path = Project.Setting.s_skinPath + "\\" + groupName + ".xml";
 
 					if (System.IO.File.Exists(path))

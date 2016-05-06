@@ -193,6 +193,8 @@ namespace UIEditor
 
 			return false;
 		}
+		static public int s_countFF;
+		static public int s_countNotFF;
 		static private void refreshImagePack(
 			string xmlPath,
 			bool isRePack,
@@ -203,6 +205,8 @@ namespace UIEditor
 		{
 			string pngPath = xmlPath.Remove(xmlPath.LastIndexOf("."));
 			string tgaPath = pngPath + ".tga";
+			string bmpPath = pngPath + ".bmp";
+			string targetPath;
 
 			if (System.IO.File.Exists(xmlPath))
 			{
@@ -231,8 +235,12 @@ namespace UIEditor
 
 				if (isRePack == true)
 				{
+					s_countFF = 0;
+					s_countNotFF = 0;
 					foreach (KeyValuePair<string, System.Drawing.Rectangle> pairImgRect in mapImgRect)
 					{
+						refreshAlphaCount(pngPath + "\\" + pairImgRect.Key + ".png",
+							pairImgRect.Value);
 						addPicToGraphics(
 							pngPath + "\\" + pairImgRect.Key + ".png",
 							pairImgRect.Value,
@@ -243,13 +251,36 @@ namespace UIEditor
 					{
 						System.IO.File.Delete(tgaPath);
 					}
-					DevIL.DevIL.SaveBitmap(tgaPath, tgaImg);
+					if (System.IO.File.Exists(bmpPath))
+					{
+						System.IO.File.Delete(bmpPath);
+					}
+					if (s_countNotFF != 0)
+					{
+						targetPath = tgaPath;
+						DevIL.DevIL.SaveBitmap(targetPath, tgaImg);
+					}
+					else
+					{
+						targetPath = bmpPath;
+						System.Drawing.Bitmap bmpImg = tgaImg.Clone(new System.Drawing.Rectangle(0, 0, tgaImg.Width, tgaImg.Height),
+							System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+
+						bmpImg.Save(targetPath, System.Drawing.Imaging.ImageFormat.Bmp);
+						tgaImg = bmpImg;
+					}
+					double perUse = (double)(s_countFF + s_countNotFF) / (double)(tgaImg.Width * tgaImg.Height) * 100.0f;
+					Public.ResultLink.createResult("\r\n<" + System.IO.Path.GetFileName(targetPath) + ">",
+						Public.ResultType.RT_INFO, xmlPath, true);
+					Public.ResultLink.createResult("\t尺寸:" + tgaImg.Width + " x " + tgaImg.Height +
+						"\t无alpha:" + s_countFF + "\t有alpha:" + s_countNotFF + "\t利用率:" + String.Format("{0:F}", perUse) + "%",
+						Public.ResultType.RT_INFO, null, true);
 
 					IncludeFile tgaFileDef;
 
-					if (!MainWindow.s_pW.m_mapIncludeFiles.TryGetValue(tgaPath, out tgaFileDef))
+					if (!MainWindow.s_pW.m_mapIncludeFiles.TryGetValue(targetPath, out tgaFileDef))
 					{
-						imageRootFolder.Items.Add(new IncludeFile(tgaPath));
+						imageRootFolder.Items.Add(new IncludeFile(targetPath));
 					}
 
 					IncludeFile xmlFileDef;
@@ -261,7 +292,20 @@ namespace UIEditor
 				}
 				else
 				{
-					System.Drawing.Bitmap bmp = DevIL.DevIL.LoadBitmap(tgaPath);
+					if (System.IO.File.Exists(tgaPath))
+					{
+						targetPath = tgaPath;
+					}
+					else if (System.IO.File.Exists(bmpPath))
+					{
+						targetPath = bmpPath;
+					}
+					else
+					{
+						g.Dispose();
+						return;
+					}
+					System.Drawing.Bitmap bmp = DevIL.DevIL.LoadBitmap(targetPath);
 					g.DrawImage(bmp,
 						0,
 						0,
@@ -376,12 +420,35 @@ namespace UIEditor
 			cImg.Stretch = Stretch.Uniform;
 			mx_canvas.Children.Insert(0, cImg);
 		}
+		public static void refreshAlphaCount(string path, System.Drawing.Rectangle rect)
+		{
+			if (System.IO.File.Exists(path))
+			{
+				System.Drawing.Bitmap bmp = DevIL.DevIL.LoadBitmap(path);
+
+				for (int i = 0; i < bmp.Width; i++)
+				{
+					for (int j = 0; j < bmp.Height; j++)
+					{
+						if (bmp.GetPixel(i, j).A == 0xff)
+						{
+							s_countFF++;
+						}
+						else
+						{
+							s_countNotFF++;
+						}
+					}
+				}
+			}
+		}
 		public static bool addPicToGraphics(string path, System.Drawing.Rectangle rect, System.Drawing.Graphics g)
 		{
 			if (System.IO.File.Exists(path))
 			{
 				//拼图和延展1像素
 				System.Drawing.Bitmap bmp = DevIL.DevIL.LoadBitmap(path);
+				
 				g.DrawImage(bmp,
 					rect.X,
 					rect.Y,

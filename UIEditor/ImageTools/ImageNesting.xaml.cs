@@ -149,15 +149,21 @@ namespace UIEditor.ImageTools
 			DirectoryInfo di = new DirectoryInfo(basicPath);
 			FileInfo[] arrFileInfo = di.GetFiles(filter);
 			int retCount = arrFileInfo.Count();
+			//string strPixelWidth = "";
 
 			foreach (FileInfo fi in arrFileInfo)
 			{
 				System.Drawing.Image img = System.Drawing.Image.FromFile(fi.FullName);
+				//int pixelSize = System.Drawing.Image.GetPixelFormatSize(img.PixelFormat);
+
+				//strPixelWidth += pixelSize + "|";
+				//<inc>检查每一个像素是否255。
 				//因为差值什么的，所以要+2。
 				RectNode rn = new RectNode(new System.Drawing.Rectangle(0, 0, img.Width + 2, img.Height + 2), false);
 
 				mapRectNode.Add(fi.Name, rn);
 			}
+			//Public.ResultLink.createResult(strPixelWidth, true);
 
 			return retCount;
 		}
@@ -640,7 +646,6 @@ namespace UIEditor.ImageTools
 				//MainWindow.s_pW.openFileByPath(xmlPath);
 				PackImage.refreshImagePack(xmlPath);
 			}
-			MainWindow.s_pW.updateGL("", W2GTag.W2G_IMAGE_RELOAD);
 		}
 		private void clearChildGrid(int num)
 		{
@@ -853,39 +858,48 @@ namespace UIEditor.ImageTools
 				if (imgName != "")
 				{
 					string dirName = System.IO.Path.GetFileNameWithoutExtension(imgName);
-					string fileName = System.IO.Path.GetExtension(imgName).Remove(0, 1);
+					string fileName = System.IO.Path.GetExtension(imgName);
 
-					if (dirName != "" && fileName != "")
+					if (fileName != "")
 					{
-						if (dirName == null || dirHead == "" || (dirHead != "" && dirName.IndexOf(dirHead) == 0))
+						fileName = fileName.Remove(0, 1);
+
+						if (dirName != "" && fileName != "")
 						{
-							string newDirName = "";
-
-							if (mapNameDir.TryGetValue(fileName, out newDirName))
+							if (dirName == null || dirHead == "" || (dirHead != "" && dirName.IndexOf(dirHead) == 0))
 							{
-								string newName = newDirName + "." + fileName;
-								int dirCount = 0;
+								string newDirName = "";
 
-								if (xeRoot.GetAttribute("image") != "" && xeRoot.GetAttribute("image") != newName)
+								if (mapNameDir.TryGetValue(fileName, out newDirName))
 								{
-									xeRoot.SetAttribute("image", newName);
-									isChanged = true;
-								}
-								if (xeRoot.GetAttribute("ImageName") != "" && xeRoot.GetAttribute("ImageName") != newName)
-								{
-									xeRoot.SetAttribute("ImageName", newName);
-									isChanged = true;
-								}
-								if(mapResDir.TryGetValue(newDirName, out dirCount))
-								{
-									mapResDir[newDirName] = dirCount + 1;
-								}
-								else
-								{
-									mapResDir.Add(newDirName, 1);
+									string newName = newDirName + "." + fileName;
+									int dirCount = 0;
+
+									if (xeRoot.GetAttribute("image") != "" && xeRoot.GetAttribute("image") != newName)
+									{
+										xeRoot.SetAttribute("image", newName);
+										isChanged = true;
+									}
+									if (xeRoot.GetAttribute("ImageName") != "" && xeRoot.GetAttribute("ImageName") != newName)
+									{
+										xeRoot.SetAttribute("ImageName", newName);
+										isChanged = true;
+									}
+									if (mapResDir.TryGetValue(newDirName, out dirCount))
+									{
+										mapResDir[newDirName] = dirCount + 1;
+									}
+									else
+									{
+										mapResDir.Add(newDirName, 1);
+									}
 								}
 							}
 						}
+					}
+					else
+					{
+						Public.ResultLink.createResult("\r\n" + dirName + ":" + fileName, Public.ResultType.RT_ERROR, null, true);
 					}
 				}
 			}
@@ -970,6 +984,7 @@ namespace UIEditor.ImageTools
 				{
 					pngToTgaRectNesting(path + "\\preset", m_filter, m_deep, true);
 					reLinkSkin();
+					MainWindow.s_pW.updateGL("", W2GTag.W2G_IMAGE_RELOAD);
 				}
 				else
 				{
@@ -995,6 +1010,7 @@ namespace UIEditor.ImageTools
 				}
 				docRes.AppendChild(xeResRoot);
 				docRes.Save(Project.Setting.s_projPath + "\\images\\resource.xml");
+				MainWindow.s_pW.updateGL("", W2GTag.W2G_IMAGE_RELOAD);
 			}
 			else if(mx_rRefreshRes.IsChecked == true)
 			{
@@ -1024,6 +1040,23 @@ namespace UIEditor.ImageTools
 					}
 				}
 			}
+// 			else if (mx_rDevToPreset.IsChecked == true)
+// 			{
+// 				MessageBoxResult ret = MessageBox.Show(
+// 					"在不知道此功能的作用和适用范围的情况下进行操作，可能会引发不可预知的问题，即便如此仍然要继续吗？",
+// 					"警告", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+// 				if (ret == MessageBoxResult.OK)
+// 				{
+// 
+// 				}
+// 				else
+// 				{
+// 					mx_start.IsEnabled = true;
+// 
+// 					return;
+// 				}
+// 			}
+			MessageBox.Show("所有图片已经完成打包。", "打包结束", MessageBoxButton.OK, MessageBoxImage.Information);
 
 			mx_start.IsEnabled = true;
 		}

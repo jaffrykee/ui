@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Xml;
+using System.IO;
 
 namespace UIEditor.Project
 {
@@ -48,8 +49,9 @@ namespace UIEditor.Project
 			mx_tbPackScript.Text = Setting.s_scriptPackPath;
 			mx_tbGame.Text = Setting.s_gamePath;
 			mx_tbParticle.Text = Setting.s_particlePath;
-			mx_tbLang.Text = Setting.s_langPath;
 			mx_tbBackground.Text = Setting.s_backgroundPath;
+			mx_tbFont.Text = Setting.s_fontPath;
+			mx_tbLang.Text = Setting.s_langPath;
 		}
 		void refreshResolution()
 		{
@@ -212,6 +214,7 @@ namespace UIEditor.Project
 				xePathSetting.SetAttribute("particlePath", mx_tbParticle.Text);
 				xePathSetting.SetAttribute("langPath", mx_tbLang.Text);
 				xePathSetting.SetAttribute("backgroundPath", mx_tbBackground.Text);
+				xePathSetting.SetAttribute("fontPath", mx_tbFont.Text);
 			}
 		}
 		private void mx_ok_Click(object sender, RoutedEventArgs e)
@@ -229,6 +232,20 @@ namespace UIEditor.Project
 
 		private void openFileBoxAndSetTextBox(TextBox tb, string filter = null, string defPath = null)
 		{
+			if(defPath == null && tb.Text != "")
+			{
+				if(File.Exists(tb.Text))
+				{
+					FileInfo fi = new FileInfo(tb.Text);
+
+					defPath = fi.DirectoryName;
+				}
+				else if(Directory.Exists(tb.Text))
+				{
+					defPath = tb.Text;
+				}
+			}
+
 			string path = Setting.openSelectFileBox(filter, defPath);
 
 			if (path != null)
@@ -238,7 +255,16 @@ namespace UIEditor.Project
 		}
 		private void openFolderBoxAndSetTextBox(TextBox tb)
 		{
-			string path = Setting.openSelectFolderBox();
+			string path;
+
+			if(tb.Text != "" && Directory.Exists(tb.Text))
+			{
+				path = Setting.openSelectFolderBox(tb.Text);
+			}
+			else
+			{
+				path = Setting.openSelectFolderBox();
+			}
 
 			if (path != null)
 			{
@@ -269,7 +295,10 @@ namespace UIEditor.Project
 		{
 			openFileBoxAndSetTextBox(mx_tbBackground, "所有图片文件|*.bmp;*.ico;*.gif;*.jpeg;*.jpg;*.png;*.tif;*.tiff;*.tga");
 		}
-
+		private void mx_btnFont_Click(object sender, RoutedEventArgs e)
+		{
+			openFileBoxAndSetTextBox(mx_tbFont, "字体配置文件|font.prop");
+		}
 
 		void refreshSetting(string settingName, ListBox lbSetting, Dictionary<ListBoxItem, XmlElement> mapLbiRow,
 			string[] arrInitValue, ref XmlElement xeDef)

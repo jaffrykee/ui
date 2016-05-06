@@ -327,7 +327,8 @@ namespace UIEditor.BoloUI
 		{
 			XmlControl curXmlCtrl = XmlControl.getCurXmlControl();
 
-			if (curXmlCtrl.m_curItem != null && curXmlCtrl.m_curItem is ResBasic && ((ResBasic)curXmlCtrl.m_curItem).m_isSkinEditor)
+			if (curXmlCtrl != null && curXmlCtrl.m_curItem != null && curXmlCtrl.m_curItem is ResBasic &&
+				((ResBasic)curXmlCtrl.m_curItem).m_isSkinEditor)
 			{
 				return true;
 			}

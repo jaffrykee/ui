@@ -57,6 +57,11 @@
 							 Padding="20">
 					将皮肤的预设打包资源转换为开发打包资源
 				</RadioButton>
+				<RadioButton Name="mx_rDevToPreset"
+							 Visibility="Collapsed"
+							 Padding="20">
+					将开发打包转为预设打包（慎用）
+				</RadioButton>
 				<Button Name="mx_start"
 						Margin="10"
 						Padding="0,7,0,7"

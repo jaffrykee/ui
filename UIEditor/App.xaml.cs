@@ -15,14 +15,24 @@ namespace UIEditor
     {
 		private void mx_app_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
 		{
-			string strInfo = e.Exception.ToString();
+			var comException = e.Exception as System.Runtime.InteropServices.COMException;
 
-			if(UIEditor.MainWindow.s_pW != null)
+			if (comException != null && comException.ErrorCode == -2147221040)
 			{
-				//strInfo += "\r\n调试记录:\r\n" + UIEditor.MainWindow.s_pW.mx_debug.Text + "\r\n";
+				///OpenClipboard HRESULT:0x800401D0 (CLIPBRD_E_CANT_OPEN))
+				e.Handled = true;
 			}
-			Public.ErrorInfo winError = new Public.ErrorInfo(strInfo);
-			winError.ShowDialog();
+			else
+			{
+				string strInfo = e.Exception.ToString();
+
+				if (UIEditor.MainWindow.s_pW != null)
+				{
+					//strInfo += "\r\n调试记录:\r\n" + UIEditor.MainWindow.s_pW.mx_debug.Text + "\r\n";
+				}
+				Public.ErrorInfo winError = new Public.ErrorInfo(strInfo);
+				winError.ShowDialog();
+			}
 		}
 	}
 }

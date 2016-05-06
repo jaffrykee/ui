@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
+using System.IO;
+using UIEditor.Project;
 
 namespace UIEditor
 {
 	public enum W2GTag
 	{
 		W2G_PATH = 0x0000,
-		W2G_PATH_PARTICLE = 0x0001,
 		W2G_PATH_BACKGROUND = 0x0002,
-		W2G_PATH_LANGUAGE = 0x0003,
 		W2G_SETTING_SLEEPTIME = 0x0010,
 		W2G_SETTING_RELOAD_UICONFIG = 0x0011,
 		W2G_NORMAL_NAME = 0x0100,
@@ -84,6 +84,61 @@ namespace UIEditor
 			if (!isInit)
 			{
 				m_GLHost = new ControlHost(this, width, height);
+			}
+		}
+
+		public void updateGL(string buffer, W2GTag msgTag = W2GTag.W2G_NORMAL_DATA)
+		{
+			int len;
+			byte[] charArr;
+			COPYDATASTRUCT_SENDEX msgData;
+
+			if (msgTag == W2GTag.W2G_PATH)
+			{
+				string artistPath = "";
+				string freePath = "";
+				string fontPath = "";
+				string langPath = Path.GetDirectoryName(Setting.getLangPath());
+				DirectoryInfo di = new DirectoryInfo(Project.Setting.getParticlePath());
+
+				if (di.Parent != null)
+				{
+					artistPath = di.Parent.FullName;
+				}
+				else
+				{
+					artistPath = MainWindow.getArtistPath(buffer);
+				}
+				freePath = buffer;
+				if (Setting.s_fontPath != "" && Setting.s_fontPath != null && File.Exists(Setting.s_fontPath))
+				{
+					FileInfo fi = new FileInfo(Setting.s_fontPath);
+
+					fontPath = fi.Directory.Parent.FullName;
+				}
+				charArr = Encoding.Default.GetBytes(artistPath + "|" + freePath + "|" + fontPath + "|" + langPath);
+			}
+			else
+			{
+				charArr = Encoding.UTF8.GetBytes(buffer);
+			}
+			len = charArr.Length;
+			unsafe
+			{
+				fixed (byte* tmpBuff = charArr)
+				{
+					msgData.dwData = (IntPtr)msgTag;
+					if (len != 0)
+					{
+						msgData.lpData = (IntPtr)tmpBuff;
+					}
+					else
+					{
+						msgData.lpData = (IntPtr)0;
+					}
+					msgData.cbData = len + 1;
+					MainWindow.SendMessage(m_hwndGL, MainWindow.WM_COPYDATA, (int)m_hwndGLParent, ref msgData);
+				}
 			}
 		}
 	}

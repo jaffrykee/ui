@@ -455,7 +455,19 @@ namespace UIEditor.XmlOperation
 			}
 			else if (isGroupEnd == true)
 			{
-				m_pW.updateXmlToGL(m_xmlCtrl);
+				foreach (HistoryNode stepNode in m_curNode.Value)
+				{
+					if (stepNode.m_optType == XmlOptType.NODE_UPDATE && dstItem != null && dstItem.m_type == "CtrlUI")
+					{
+						Basic ctrlItem = (Basic)dstItem;
+
+						updateAttrToGL(m_xmlCtrl, ctrlItem, stepNode.m_attrName, stepNode.m_oldValue);
+					}
+					else
+					{
+						m_pW.updateXmlToGL(m_xmlCtrl);
+					}
+				}
 			}
 
 			if (dstItem != null)

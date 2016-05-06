@@ -8,6 +8,17 @@ using System.IO;
 
 namespace UIEditor.Project
 {
+	public class SkinUsingCount_T
+	{
+		public string m_groupName;
+		public int m_count;
+
+		public SkinUsingCount_T(string groupName, int count = 0)
+		{
+			m_groupName = groupName;
+			m_count = count;
+		}
+	}
 	public class Setting
 	{
 		#region plugin
@@ -22,6 +33,7 @@ namespace UIEditor.Project
 		static public string s_imagePath;
 		static public string s_projPath;
 		static public string s_projName;
+		static public bool s_isCheckNestingAlpha;
 
 		static public string s_uiPackPath;
 		static public string s_scriptPackPath;
@@ -32,10 +44,10 @@ namespace UIEditor.Project
 			get { return st_particlePath; }
 			set
 			{
-				st_particlePath = value;
-				if(value != "" && value != null)
+				if(st_particlePath != value)
 				{
-					MainWindow.s_pW.updateGL(value, W2GTag.W2G_PATH_PARTICLE);
+					st_particlePath = value;
+					MainWindow.s_pW.updateGL(Project.Setting.s_projPath, W2GTag.W2G_PATH);
 				}
 			}
 		}
@@ -45,11 +57,11 @@ namespace UIEditor.Project
 			get { return st_langPath; }
 			set
 			{
-				st_langPath = value;
-
-				string folderPath = Path.GetDirectoryName(getLangPath());
-
-				MainWindow.s_pW.updateGL(folderPath, W2GTag.W2G_PATH_LANGUAGE);
+				if (st_langPath != value)
+				{
+					st_langPath = value;
+					MainWindow.s_pW.updateGL(Project.Setting.s_projPath, W2GTag.W2G_PATH);
+				}
 			}
 		}
 		static private string st_backgroundPath;
@@ -65,7 +77,17 @@ namespace UIEditor.Project
 				}
 			}
 		}
-		static public Dictionary<string, List<string>> s_mapSkinIndex;
+		static private string st_fontPath;
+		static public string s_fontPath
+		{
+			get { return st_fontPath; }
+			set
+			{
+				st_fontPath = value;
+				MainWindow.s_pW.updateGL(Setting.s_projPath, W2GTag.W2G_PATH);
+			}
+		}
+		static public Dictionary<string, List<SkinUsingCount_T>> s_mapSkinUsingCount;
 		static public DateTime s_uiconfigLastUpdateTime;
 		static public Dictionary<string, Dictionary<string, XmlDocument>> s_mapScriptClass;
 
@@ -97,8 +119,9 @@ namespace UIEditor.Project
 			s_scriptPackPath = xePathSetting.GetAttribute("scriptPackPath");
 			s_gamePath = xePathSetting.GetAttribute("gamePath");
 			s_particlePath = xePathSetting.GetAttribute("particlePath");
-			s_langPath = xePathSetting.GetAttribute("langPath");
 			s_backgroundPath = xePathSetting.GetAttribute("backgroundPath");
+			s_fontPath = xePathSetting.GetAttribute("fontPath");
+			s_langPath = xePathSetting.GetAttribute("langPath");
 		}
 		static public XmlElement initPathSetting(XmlNode xnConfig)
 		{
@@ -591,13 +614,13 @@ namespace UIEditor.Project
 		}
 		static public void refreshSkinIndex()
 		{
-			if (s_mapSkinIndex != null)
+			if (s_mapSkinUsingCount != null)
 			{
-				s_mapSkinIndex.Clear();
+				s_mapSkinUsingCount.Clear();
 			}
 			else
 			{
-				s_mapSkinIndex = new Dictionary<string, List<string>>();
+				s_mapSkinUsingCount = new Dictionary<string, List<SkinUsingCount_T>>();
 			}
 
 			if (Directory.Exists(Project.Setting.s_skinPath))
@@ -628,16 +651,17 @@ namespace UIEditor.Project
 
 								if (skinName != "")
 								{
-									List<string> lstGroupName;
+									List<SkinUsingCount_T> lstSkinUsingCount;
+									SkinUsingCount_T skinCountDef = new SkinUsingCount_T(System.IO.Path.GetFileNameWithoutExtension(fi.Name));
 
-									if (s_mapSkinIndex.TryGetValue(skinName, out lstGroupName) && lstGroupName != null)
+									if (s_mapSkinUsingCount.TryGetValue(skinName, out lstSkinUsingCount) && lstSkinUsingCount != null)
 									{
-										lstGroupName.Add(System.IO.Path.GetFileNameWithoutExtension(fi.Name));
+										lstSkinUsingCount.Add(skinCountDef);
 									}
 									else
 									{
-										s_mapSkinIndex[skinName] = new List<string>();
-										s_mapSkinIndex[skinName].Add(System.IO.Path.GetFileNameWithoutExtension(fi.Name));
+										s_mapSkinUsingCount[skinName] = new List<SkinUsingCount_T>();
+										s_mapSkinUsingCount[skinName].Add(skinCountDef);
 									}
 								}
 							}
@@ -787,6 +811,8 @@ namespace UIEditor.Project
 				Dictionary<string, int> mapTextCount = new Dictionary<string, int>();
 
 				findAttrFromFolderAndInsertToDic(Setting.s_projPath, mapTextCount, "text");
+				findAttrFromFolderAndInsertToDic(Setting.s_projPath, mapTextCount, "richTips");
+				findAttrFromFolderAndInsertToDic(Setting.s_projPath, mapTextCount, "tipText");
 
 				foreach(KeyValuePair<string, int> pairTextCount in mapTextCount)
 				{

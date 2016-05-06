@@ -86,6 +86,7 @@ namespace UIEditor
 		public SkinEditor mx_skinEditor;
 		public bool m_vCtrlName;
 		public bool m_vCtrlId;
+		public bool m_isLockMsgPath;
 
 		public MsgManager m_msgMng;
 
@@ -672,9 +673,8 @@ namespace UIEditor
 					xeBup.InsertBefore(xeTop, xeBup.SelectSingleNode("row"));
 				}
 			}
+			m_isLockMsgPath = true;
 			MainWindow.s_pW.m_docConf.Save(MainWindow.conf_pathConf);
-			updateGL(Project.Setting.s_projPath, W2GTag.W2G_PATH);
-
 			Project.Setting.refreshAllProjectSetting();
 			if (Directory.Exists(Project.Setting.s_skinPath))
 			{
@@ -686,7 +686,11 @@ namespace UIEditor
 			refreshProjTree(Project.Setting.s_projPath, this.mx_treePro, true);
 			mx_root.Title = Project.Setting.s_projPath + "\\" + Project.Setting.s_projName + " - UI编辑器";
 			mx_toolNew.IsEnabled = true;
-			ScriptManager.copySSUEScriptToProject();
+
+			m_isLockMsgPath = false;
+			updateGL(Project.Setting.s_projPath, W2GTag.W2G_PATH);
+			//<inc>暂时去掉
+			//ScriptManager.copySSUEScriptToProject();
 			Setting.s_mapScriptClass = ScriptManager.getSSUEScriptClassMap();
 		}
 		public void refreshImageTree()
@@ -1406,7 +1410,7 @@ namespace UIEditor
 		LowLevelKeyboardProcDelegate hookProc; // prevent gc
 		const int WH_KEYBOARD_LL = 13;
 
-		static public string getResPath(string freePath)
+		static public string getArtistPath(string freePath)
 		{
 			string resPath = "";
 
@@ -1426,49 +1430,16 @@ namespace UIEditor
 		}
 		public void updateGL(string buffer, W2GTag msgTag = W2GTag.W2G_NORMAL_DATA)
 		{
+			if (m_isLockMsgPath == true && msgTag == W2GTag.W2G_PATH)
+			{
+				return;
+			}
 			if (mx_hwndDebug.Text != "")
 			{
 				m_msgMng.m_hwndGL = (IntPtr)long.Parse(mx_hwndDebug.Text);
 			}
-			int len;
-			byte[] charArr;
-			COPYDATASTRUCT_SENDEX msgData;
-
-			if (msgTag == W2GTag.W2G_PATH)
-			{
-				string resPath = MainWindow.getResPath(buffer);
-
-				if (resPath != "")
-				{
-					charArr = Encoding.Default.GetBytes(resPath + "|" + buffer);
-				}
-				else
-				{
-					charArr = Encoding.Default.GetBytes(buffer);
-				}
-			}
-			else
-			{
-				charArr = Encoding.UTF8.GetBytes(buffer);
-			}
-			len = charArr.Length;
-			unsafe
-			{
-				fixed (byte* tmpBuff = charArr)
-				{
-					msgData.dwData = (IntPtr)msgTag;
-					if (len != 0)
-					{
-						msgData.lpData = (IntPtr)tmpBuff;
-					}
-					else
-					{
-						msgData.lpData = (IntPtr)0;
-					}
-					msgData.cbData = len + 1;
-					SendMessage(m_msgMng.m_hwndGL, WM_COPYDATA, (int)m_msgMng.m_hwndGLParent, ref msgData);
-				}
-			}
+			
+			m_msgMng.updateGL(buffer, msgTag);
 			if (msgTag != W2GTag.W2G_SELECT_UI && msgTag != W2GTag.W2G_VIEWMODE && msgTag != W2GTag.W2G_DRAWRECT
 				&& msgTag != W2GTag.W2G_NORMAL_UPDATE && msgTag != W2GTag.W2G_RENDERCACHE_IMAGECOLOR)
 			{
@@ -2310,15 +2281,15 @@ namespace UIEditor
 			NewFileWin winNewFile = new NewFileWin(".\\data\\ProjTemplate\\", true);
 			winNewFile.ShowDialog();
 		}
-		private void mx_viewPrevFile_Click(object sender, RoutedEventArgs e)
+		private void mx_windowPrevFile_Click(object sender, RoutedEventArgs e)
 		{
 			viewPrevFile(this);
 		}
-		private void mx_viewNextFile_Click(object sender, RoutedEventArgs e)
+		private void mx_windowNextFile_Click(object sender, RoutedEventArgs e)
 		{
 			viewNextFile(this);
 		}
-		private void mx_viewCloseFile_Click(object sender, RoutedEventArgs e)
+		private void mx_windowCloseFile_Click(object sender, RoutedEventArgs e)
 		{
 			OpenedFile curFileDef = OpenedFile.getCurFileDef();
 
@@ -2327,15 +2298,15 @@ namespace UIEditor
 				curFileDef.m_tabItem.closeFile();
 			}
 		}
-		private void mx_viewCloseAll_Click(object sender, RoutedEventArgs e)
+		private void mx_windowCloseAll_Click(object sender, RoutedEventArgs e)
 		{
 			OpenedFile.closeAllFile();
 		}
-		private void mx_viewCloseAllExSelf_Click(object sender, RoutedEventArgs e)
+		private void mx_windowCloseAllExSelf_Click(object sender, RoutedEventArgs e)
 		{
 			OpenedFile.closeAllFile(OpenedFile.getCurFileDef());
 		}
-		private void mx_viewOpenFolder_Click(object sender, RoutedEventArgs e)
+		private void mx_windowOpenFolder_Click(object sender, RoutedEventArgs e)
 		{
 			OpenedFile curFileDef = OpenedFile.getCurFileDef();
 
@@ -2587,15 +2558,25 @@ namespace UIEditor
 		{
 			MainWindow.s_pW.updateGL("", W2GTag.W2G_PATH_BACKGROUND);
 		}
-		private void mx_showRenderCache_Checked(object sender, RoutedEventArgs e)
+		private void mx_viewShowRenderCacheFrame_Click(object sender, RoutedEventArgs e)
+		{
+			mx_viewShowRenderCache.IsChecked = mx_viewShowRenderCache.IsChecked == true ? false : true;
+		}
+		private void mx_viewShowRenderCache_Checked(object sender, RoutedEventArgs e)
 		{
 			MainWindow.s_pW.updateGL("true", W2GTag.W2G_RENDERCACHE_SWITCH);
-			mx_lvRenderCache.Visibility = System.Windows.Visibility.Visible;
+			if (mx_lvRenderCache != null)
+			{
+				mx_lvRenderCache.Visibility = System.Windows.Visibility.Visible;
+			}
 		}
-		private void mx_showRenderCache_Unchecked(object sender, RoutedEventArgs e)
+		private void mx_viewShowRenderCache_Unchecked(object sender, RoutedEventArgs e)
 		{
 			MainWindow.s_pW.updateGL("false", W2GTag.W2G_RENDERCACHE_SWITCH);
-			mx_lvRenderCache.Visibility = System.Windows.Visibility.Collapsed;
+			if (mx_lvRenderCache != null)
+			{
+				mx_lvRenderCache.Visibility = System.Windows.Visibility.Collapsed;
+			}
 		}
 		private void mx_btnNesting_Click(object sender, RoutedEventArgs e)
 		{
@@ -2609,6 +2590,13 @@ namespace UIEditor
 				winNesting.ShowDialog();
 			}
 		}
+		private void mx_showNotUsingSkin_Click(object sender, RoutedEventArgs e)
+		{
+			ResultLink.createResult("\r\n=======================开始统计未被引用的皮肤=========================", true);
+			XmlControl.showNotUsingSkin();
+			Public.ResultLink.createResult("\r\n显示结果存放于[" + Setting.s_projPath + "\\skinCount.txt" + "]文件中。", Public.ResultType.RT_INFO, null, true);
+			ResultLink.createResult("\r\n=======================统计未被引用的皮肤结束=========================", true);
+		}
 		private void mx_checkBaseId_Click(object sender, RoutedEventArgs e)
 		{
 			ResultLink.createResult("\r\n开始检测重复的baseID", true);
@@ -2618,6 +2606,87 @@ namespace UIEditor
 		private void mx_exportLang_Click(object sender, RoutedEventArgs e)
 		{
 			Setting.exportLanguageSettingLog();
+		}
+		private void mx_refreshShape_Click(object sender, RoutedEventArgs e)
+		{
+			Public.ResultLink.createResult("\r\n开始shape的重排", Public.ResultType.RT_INFO);
+			if (Project.Setting.s_skinPath != null && Project.Setting.s_skinPath != "")
+			{
+				if (Directory.Exists(Project.Setting.s_skinPath))
+				{
+					DirectoryInfo di = new DirectoryInfo(Project.Setting.s_skinPath);
+
+					foreach (FileInfo fi in di.GetFiles())
+					{
+						if (fi.Extension == ".xml")
+						{
+							XmlDocument docSkin = new XmlDocument();
+							bool isChange = false;
+
+							try
+							{
+								docSkin.Load(fi.FullName);
+							}
+							catch
+							{
+								continue;
+							}
+
+							if (docSkin.DocumentElement.Name != "BoloUI")
+							{
+								continue;
+							}
+							foreach (XmlNode xnSkin in docSkin.DocumentElement.ChildNodes)
+							{
+								if (xnSkin is XmlElement && (xnSkin.Name == "skin" || xnSkin.Name == "publicskin"))
+								{
+									foreach (XmlNode xnAppr in xnSkin.ChildNodes)
+									{
+										if (xnAppr is XmlElement && (xnAppr.Name == "apperance"))
+										{
+											//用于多个textShape的情况
+											//List<XmlElement> lstShape = new List<XmlElement>();
+											for (int i = 0; i < xnAppr.ChildNodes.Count; i++)
+											{
+												XmlNode xnShape = xnAppr.ChildNodes[i];
+
+												if (xnShape is XmlElement && xnShape.Name == "textShape")
+												{
+													if (i == xnAppr.ChildNodes.Count - 1)
+													{
+														break;
+													}
+													else
+													{
+														XmlOperation.HistoryNode.deleteXmlNode(
+															this,
+															null,
+															(XmlElement)xnShape);
+														XmlOperation.HistoryNode.insertXmlNode(
+															this,
+															null,
+															(XmlElement)xnShape,
+															(XmlElement)xnAppr,
+															xnAppr.ChildNodes.Count);
+														isChange = true;
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+
+							if (isChange)
+							{
+								docSkin.Save(fi.FullName);
+								Public.ResultLink.createResult("\r\n" + fi.Name, Public.ResultType.RT_INFO);
+							}
+						}
+					}
+				}
+			}
+			Public.ResultLink.createResult("\r\n重排完成", Public.ResultType.RT_INFO);
 		}
 		private void mx_templateSetting_Click(object sender, RoutedEventArgs e)
 		{
@@ -3078,87 +3147,6 @@ namespace UIEditor
 				}
 			}
 		}
-		private void mx_refreshShape_Click(object sender, RoutedEventArgs e)
-		{
-			Public.ResultLink.createResult("\r\n开始shape的重排", Public.ResultType.RT_INFO);
-			if (Project.Setting.s_skinPath != null && Project.Setting.s_skinPath != "")
-			{
-				if (Directory.Exists(Project.Setting.s_skinPath))
-				{
-					DirectoryInfo di = new DirectoryInfo(Project.Setting.s_skinPath);
-
-					foreach (FileInfo fi in di.GetFiles())
-					{
-						if (fi.Extension == ".xml")
-						{
-							XmlDocument docSkin = new XmlDocument();
-							bool isChange = false;
-
-							try
-							{
-								docSkin.Load(fi.FullName);
-							}
-							catch
-							{
-								continue;
-							}
-
-							if (docSkin.DocumentElement.Name != "BoloUI")
-							{
-								continue;
-							}
-							foreach (XmlNode xnSkin in docSkin.DocumentElement.ChildNodes)
-							{
-								if (xnSkin is XmlElement && (xnSkin.Name == "skin" || xnSkin.Name == "publicskin"))
-								{
-									foreach (XmlNode xnAppr in xnSkin.ChildNodes)
-									{
-										if (xnAppr is XmlElement && (xnAppr.Name == "apperance"))
-										{
-											//用于多个textShape的情况
-											//List<XmlElement> lstShape = new List<XmlElement>();
-											for (int i = 0; i < xnAppr.ChildNodes.Count; i++)
-											{
-												XmlNode xnShape = xnAppr.ChildNodes[i];
-
-												if (xnShape is XmlElement && xnShape.Name == "textShape")
-												{
-													if (i == xnAppr.ChildNodes.Count - 1)
-													{
-														break;
-													}
-													else
-													{
-														XmlOperation.HistoryNode.deleteXmlNode(
-															this,
-															null,
-															(XmlElement)xnShape);
-														XmlOperation.HistoryNode.insertXmlNode(
-															this,
-															null,
-															(XmlElement)xnShape,
-															(XmlElement)xnAppr,
-															xnAppr.ChildNodes.Count);
-														isChange = true;
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-
-							if (isChange)
-							{
-								docSkin.Save(fi.FullName);
-								Public.ResultLink.createResult("\r\n" + fi.Name, Public.ResultType.RT_INFO);
-							}
-						}
-					}
-				}
-			}
-			Public.ResultLink.createResult("\r\n重排完成", Public.ResultType.RT_INFO);
-		}
 		private void mx_textFrame_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
 		{
 			if ((bool)e.NewValue)
@@ -3351,6 +3339,25 @@ namespace UIEditor
 				RenderCacheViewData selData = (RenderCacheViewData)mx_lvRenderCache.SelectedItem;
 
 				updateGL(selData.m_id.ToString(), W2GTag.W2G_RENDERCACHE_IMAGECOLOR);
+			}
+		}
+
+		private void mx_viewLanguegeFrame_Click(object sender, RoutedEventArgs e)
+		{
+			mx_viewLanguege.IsChecked = mx_viewLanguege.IsChecked == true ? false : true;
+		}
+		private void mx_viewLanguege_Checked(object sender, RoutedEventArgs e)
+		{
+			if (mx_languageToolsFrame != null)
+			{
+				mx_languageToolsFrame.Visibility = System.Windows.Visibility.Visible;
+			}
+		}
+		private void mx_viewLanguege_Unchecked(object sender, RoutedEventArgs e)
+		{
+			if (mx_languageToolsFrame != null)
+			{
+				mx_languageToolsFrame.Visibility = System.Windows.Visibility.Collapsed;
 			}
 		}
 	}

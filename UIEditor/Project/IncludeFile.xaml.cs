@@ -117,9 +117,12 @@ namespace UIEditor.Project
 
 					return;
 				}
-				if (m_fileType == FileType.Image_Png)
+				if (m_fileType == FileType.Image_Png || m_fileType == FileType.Image_Folder)
 				{
-					deleteSelf();
+					if (m_fileType == FileType.Image_Png)
+					{
+						deleteSelf();
+					}
 					IncludeFile newFolderDef;
 
 					if (MainWindow.s_pW.m_mapIncludeFiles.TryGetValue(System.IO.Path.GetDirectoryName(newPath), out newFolderDef))
@@ -192,6 +195,7 @@ namespace UIEditor.Project
 
 							//重新打包
 							ImageTools.ImageNesting.pngToTgaRectNesting(fi.DirectoryName);
+							MainWindow.s_pW.updateGL("", W2GTag.W2G_IMAGE_RELOAD);
 						}
 					}
 					break;
@@ -212,6 +216,36 @@ namespace UIEditor.Project
 						mx_tbRename.Focus();
 					}
 					break;
+				case "mergeTo":
+					{
+						if (pngItem is MenuItem)
+						{
+							MenuItem clickItem = (MenuItem)pngItem;
+							string newFolder = clickItem.ToolTip.ToString();
+
+							if (System.IO.Directory.Exists(newFolder))
+							{
+								DirectoryInfo curDi = new DirectoryInfo(m_path);
+								DirectoryInfo dstDi = new DirectoryInfo(newFolder);
+
+								foreach(FileInfo curFi in curDi.GetFiles())
+								{
+									if (!System.IO.File.Exists(newFolder + "\\" + curFi.Name))
+									{
+										moveFile(curFi.FullName, newFolder + "\\" + curFi.Name);
+									}
+									else
+									{
+										moveFile(curFi.FullName, curDi.Name + "\\" + curDi.Name + "__" + curFi.Name);
+										moveFile(curDi.Name + "\\" + curDi.Name + "__" + curFi.Name, newFolder + "\\" +
+											curDi.Name + "__" + curFi.Name);
+									}
+								}
+								MainWindow.s_pW.updateGL("", W2GTag.W2G_IMAGE_RELOAD);
+							}
+						}
+					}
+					break;
 				default:
 					{
 						if (pngItem is MenuItem)
@@ -230,6 +264,7 @@ namespace UIEditor.Project
 										case "moveTo":
 											{
 												moveFile(m_path, newPath);
+												MainWindow.s_pW.updateGL("", W2GTag.W2G_IMAGE_RELOAD);
 											}
 											break;
 										case "copyTo":
@@ -258,6 +293,7 @@ namespace UIEditor.Project
 
 													//重新打包
 													ImageTools.ImageNesting.pngToTgaRectNesting(newFolder);
+													MainWindow.s_pW.updateGL("", W2GTag.W2G_IMAGE_RELOAD);
 												}
 											}
 											break;
@@ -302,6 +338,7 @@ namespace UIEditor.Project
 						mx_rename.Visibility = System.Windows.Visibility.Visible;
 						mx_spImg.Visibility = System.Windows.Visibility.Visible;
 						mx_repackImage.Visibility = System.Windows.Visibility.Collapsed;
+						mx_mergeTo.Visibility = System.Windows.Visibility.Collapsed;
 					}
 					break;
 				case FileType.BoloUI_Ctrl:
@@ -312,6 +349,7 @@ namespace UIEditor.Project
 						mx_rename.Visibility = System.Windows.Visibility.Visible;
 						mx_spImg.Visibility = System.Windows.Visibility.Visible;
 						mx_repackImage.Visibility = System.Windows.Visibility.Collapsed;
+						mx_mergeTo.Visibility = System.Windows.Visibility.Collapsed;
 					}
 					break;
 				case FileType.Image_Folder:
@@ -322,6 +360,7 @@ namespace UIEditor.Project
 						mx_rename.Visibility = System.Windows.Visibility.Collapsed;
 						mx_spImg.Visibility = System.Windows.Visibility.Collapsed;
 						mx_repackImage.Visibility = System.Windows.Visibility.Visible;
+						mx_mergeTo.Visibility = System.Windows.Visibility.Visible;
 					}
 					break;
 				default:
@@ -332,6 +371,7 @@ namespace UIEditor.Project
 						mx_rename.Visibility = System.Windows.Visibility.Collapsed;
 						mx_spImg.Visibility = System.Windows.Visibility.Collapsed;
 						mx_repackImage.Visibility = System.Windows.Visibility.Collapsed;
+						mx_mergeTo.Visibility = System.Windows.Visibility.Collapsed;
 					}
 					break;
 			}
@@ -397,6 +437,7 @@ namespace UIEditor.Project
 					if(dri.Parent.Name == "images" &&
 						dri.Parent.Parent.FullName == Project.Setting.s_projPath)
 					{
+						addResFolderToMenu(dri.Parent, mx_mergeTo, mx_mergeToChild_Click);
 						refreshMenuItem(FileType.Image_Folder);
 						return;
 					}
@@ -421,6 +462,10 @@ namespace UIEditor.Project
 		{
 			pngFileDeal(sender, "copyTo");
 		}
+		private void mx_mergeToChild_Click(object sender, RoutedEventArgs e)
+		{
+			pngFileDeal(sender, "mergeTo");
+		}
 		private void mx_delete_Click(object sender, RoutedEventArgs e)
 		{
 			pngFileDeal(sender, "delete");
@@ -437,6 +482,7 @@ namespace UIEditor.Project
 				string newPath = System.IO.Path.GetDirectoryName(m_path) + "\\" + mx_tbRename.Text;
 
 				moveFile(m_path, newPath);
+				MainWindow.s_pW.updateGL("", W2GTag.W2G_IMAGE_RELOAD);
 			}
 			mx_radio.Visibility = System.Windows.Visibility.Visible;
 			mx_tbRename.Visibility = System.Windows.Visibility.Collapsed;
@@ -454,6 +500,7 @@ namespace UIEditor.Project
 		private void mx_repackImage_Click(object sender, RoutedEventArgs e)
 		{
 			ImageTools.ImageNesting.pngToTgaRectNesting(m_path);
+			MainWindow.s_pW.updateGL("", W2GTag.W2G_IMAGE_RELOAD);
 		}
 		private void mx_newImageFolder_Click(object sender, RoutedEventArgs e)
 		{

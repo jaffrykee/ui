@@ -413,10 +413,12 @@ namespace UIEditor.BoloUI
 		static public string getDefaultNewXmlItem(string xeName)
 		{
 			DataNode dataNode;
+			DataAttrGroup dataAttrGroup;
 			XmlDocument docTmp = new XmlDocument();
 			XmlElement xeTmp = docTmp.CreateElement(xeName);
 
-			if (DataNodeGroup.tryGetDataNode("BoloUI", "Ctrl", xeName, out dataNode) && xeName != "event")
+			if (DataNodeGroup.tryGetDataNode("BoloUI", "Ctrl", xeName, out dataNode) && dataNode != null &&
+				dataNode.m_mapDataAttrGroup.TryGetValue("basic", out dataAttrGroup) && dataAttrGroup != null)
 			{
 				xeTmp.SetAttribute("w", "50");
 				xeTmp.SetAttribute("h", "50");

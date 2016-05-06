@@ -98,7 +98,6 @@ namespace UIEditor.BoloUI
 		void mx_itemParticle_Selected(object sender, RoutedEventArgs e)
 		{
 			updateGL(Project.Setting.s_projPath, W2GTag.W2G_PATH);
-			updateGL(Project.Setting.getParticlePath(), W2GTag.W2G_PATH_PARTICLE);
 			updateGL("960:540:False:960:540", W2GTag.W2G_VIEWSIZE);
 			if(sender is TreeViewItem)
 			{
@@ -187,38 +186,7 @@ namespace UIEditor.BoloUI
 		}
 		public void updateGL(string buffer, W2GTag msgTag = W2GTag.W2G_NORMAL_DATA)
 		{
-			int len;
-			byte[] charArr;
-			COPYDATASTRUCT_SENDEX msgData;
-
-			if (msgTag == W2GTag.W2G_PATH)
-			{
-				string resPath = MainWindow.getResPath(buffer);
-
-				if (resPath != "")
-				{
-					charArr = Encoding.Default.GetBytes(resPath + "|" + buffer);
-				}
-				else
-				{
-					charArr = Encoding.Default.GetBytes(buffer);
-				}
-			}
-			else
-			{
-				charArr = Encoding.UTF8.GetBytes(buffer);
-			}
-			len = charArr.Length;
-			unsafe
-			{
-				fixed (byte* tmpBuff = charArr)
-				{
-					msgData.dwData = (IntPtr)msgTag;
-					msgData.lpData = (IntPtr)tmpBuff;
-					msgData.cbData = len + 1;
-					MainWindow.SendMessage(m_msgMng.m_hwndGL, MainWindow.WM_COPYDATA, (int)m_msgMng.m_hwndGLParent, ref msgData);
-				}
-			}
+			m_msgMng.updateGL(buffer, msgTag);
 		}
 		private void mx_root_Unloaded(object sender, RoutedEventArgs e)
 		{

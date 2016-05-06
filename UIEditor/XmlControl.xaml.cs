@@ -197,22 +197,22 @@ namespace UIEditor
 			retSkin = findSkin(skinName, out xmlPath);
 			if (retSkin == null)
 			{
-				List<string> lstSkinGroup;
+				List<SkinUsingCount_T> lstSkinCount;
 
 				//没在本文件的皮肤组中发现该皮肤。
-				findSkinForAll(skinName, out lstSkinGroup);
-				if(lstSkinGroup != null && lstSkinGroup.Count > 0)
+				findSkinForAll(skinName, out lstSkinCount);
+				if(lstSkinCount != null && lstSkinCount.Count > 0)
 				{
-					if(lstSkinGroup.Count == 1)
+					if(lstSkinCount.Count == 1)
 					{
 						Public.ResultLink.createResult("\r\n已自动在本UI添加皮肤[" + skinName + "]的所在皮肤组[", Public.ResultType.RT_INFO);
-						Public.ResultLink.createResult(lstSkinGroup[0], Public.ResultType.RT_INFO, Setting.getSkinGroupPathByName(lstSkinGroup[0]));
+						Public.ResultLink.createResult(lstSkinCount[0].m_groupName, Public.ResultType.RT_INFO, Setting.getSkinGroupPathByName(lstSkinCount[0].m_groupName));
 						Public.ResultLink.createResult("]", Public.ResultType.RT_INFO);
-						addSkinGroup(lstSkinGroup[0]);
+						addSkinGroup(lstSkinCount[0].m_groupName);
 					}
 					else
 					{
-						MultipleSkinGroupSelectWin winMulSkinGroup = new MultipleSkinGroupSelectWin(this, skinName, lstSkinGroup);
+						MultipleSkinGroupSelectWin winMulSkinGroup = new MultipleSkinGroupSelectWin(this, skinName, lstSkinCount);
 
 						winMulSkinGroup.ShowDialog();
 					}
@@ -351,26 +351,26 @@ namespace UIEditor
 			MainWindow.s_pW.mx_treeFrame.SelectedItem = MainWindow.s_pW.mx_skinEditor;
 		}
 
-		public List<string> getIncludeSkinGroupList(string skinName)
+		public List<SkinUsingCount_T> getIncludeSkinGroupList(string skinName)
 		{
-			List<string> lstGroupName;
+			List<SkinUsingCount_T> lstSkinCount;
 
-			if (Project.Setting.s_mapSkinIndex.TryGetValue(skinName, out lstGroupName))
+			if (Project.Setting.s_mapSkinUsingCount.TryGetValue(skinName, out lstSkinCount))
 			{
-				return getIncludeSkinGroupList(lstGroupName);
+				return getIncludeSkinGroupList(lstSkinCount);
 			}
 			else
 			{
 				return null;
 			}
 		}
-		public List<string> getIncludeSkinGroupList(List<string> lstGroupName)
+		public List<SkinUsingCount_T> getIncludeSkinGroupList(List<SkinUsingCount_T> lstSkinCount)
 		{
-			List<string> lstIncludeGroupName = new List<string>();
+			List<SkinUsingCount_T> lstIncludeSkinCount = new List<SkinUsingCount_T>();
 
-			if (lstGroupName == null || lstGroupName.Count == 0)
+			if (lstSkinCount == null || lstSkinCount.Count == 0)
 			{
-				return lstIncludeGroupName;
+				return lstIncludeSkinCount;
 			}
 			foreach (XmlNode xnGroup in m_xmlDoc.DocumentElement.SelectNodes("skingroup"))
 			{
@@ -378,23 +378,23 @@ namespace UIEditor
 				{
 					XmlElement xeGroup = (XmlElement)xnGroup;
 
-					foreach (string groupName in lstGroupName)
+					foreach (SkinUsingCount_T skinCountDef in lstSkinCount)
 					{
-						if (xeGroup.GetAttribute("Name") == groupName)
+						if (xeGroup.GetAttribute("Name") == skinCountDef.m_groupName)
 						{
-							lstIncludeGroupName.Add(groupName);
+							lstIncludeSkinCount.Add(skinCountDef);
 							break;
 						}
 					}
 				}
 			}
 
-			return lstIncludeGroupName;
+			return lstIncludeSkinCount;
 		}
 
-		static public void findSkinForAll(string skinName, out List<string> lstSkinGroup)
+		static public void findSkinForAll(string skinName, out List<SkinUsingCount_T> lstSkinCount)
 		{
-			Project.Setting.s_mapSkinIndex.TryGetValue(skinName, out lstSkinGroup);
+			Project.Setting.s_mapSkinUsingCount.TryGetValue(skinName, out lstSkinCount);
 		}
 		private XmlElement findSkinWithThemeAndLanguage(string skinName, out string xmlPath)
 		{
@@ -408,20 +408,20 @@ namespace UIEditor
 			}
 			else
 			{
-				List<string> lstGroupName = getIncludeSkinGroupList(skinName);
+				List<SkinUsingCount_T> lstSkinCount = getIncludeSkinGroupList(skinName);
 
-				if (lstGroupName != null && lstGroupName.Count > 0)
+				if (lstSkinCount != null && lstSkinCount.Count > 0)
 				{
-					if (lstGroupName.Count > 1)
+					if (lstSkinCount.Count > 1)
 					{
 						Public.ResultLink.createResult("\r\n皮肤 " + skinName + " 存在多个皮肤组归属：", Public.ResultType.RT_WARNING);
-						foreach (string skinGroupName in lstGroupName)
+						foreach (SkinUsingCount_T skinCountDef in lstSkinCount)
 						{
-							Public.ResultLink.createResult(" [" + skinGroupName + "] ", Public.ResultType.RT_WARNING,
-								Setting.getSkinGroupPathByName(skinGroupName));
+							Public.ResultLink.createResult(" [" + skinCountDef + "] ", Public.ResultType.RT_WARNING,
+								Setting.getSkinGroupPathByName(skinCountDef.m_groupName));
 						}
 					}
-					string path = Project.Setting.s_skinPath + "\\" + lstGroupName[0] + ".xml";
+					string path = Project.Setting.s_skinPath + "\\" + lstSkinCount[0].m_groupName + ".xml";
 
 					if (File.Exists(path))
 					{
@@ -529,10 +529,10 @@ namespace UIEditor
 			}
 			else
 			{
-				List<string> lstGroupName = getIncludeSkinGroupList(skinName);
-				if (lstGroupName != null && lstGroupName.Count > 0)
+				List<SkinUsingCount_T> lstSkinCount = getIncludeSkinGroupList(skinName);
+				if (lstSkinCount != null && lstSkinCount.Count > 0)
 				{
-					string path = Project.Setting.s_skinPath + "\\" + lstGroupName[0] + ".xml";
+					string path = Project.Setting.s_skinPath + "\\" + lstSkinCount[0].m_groupName + ".xml";
 
 					changeSelectSkinAndFile(path, skinName, ctrlUI);
 
@@ -680,17 +680,28 @@ namespace UIEditor
 								if (xeSkin.GetAttribute("name") != "")
 								{
 									string imgName = xeSkin.GetAttribute("name");
-									string imgPath = Project.Setting.s_imagePath + "\\" + imgName + ".tga";
+									string tgaPath = Project.Setting.s_imagePath + "\\" + imgName + ".tga";
+									string bmpPath = Project.Setting.s_imagePath + "\\" + imgName + ".bmp";
+									string imgPath = "";
 									long imgSize;
 
+									if (File.Exists(tgaPath))
+									{
+										imgPath = tgaPath;
+									}
+									else if(File.Exists(bmpPath))
+									{
+										imgPath = bmpPath;
+									}
+									else
+									{
+										continue;
+									}
 									if (!m_mapImageSize.TryGetValue(imgPath, out imgSize))
 									{
-										if (File.Exists(imgPath))
-										{
-											FileInfo fiImage = new FileInfo(imgPath);
+										FileInfo fiImage = new FileInfo(imgPath);
 
-											m_mapImageSize.Add(imgPath, fiImage.Length);
-										}
+										m_mapImageSize.Add(imgPath, fiImage.Length);
 									}
 								}
 							}
@@ -1226,6 +1237,80 @@ namespace UIEditor
 					}
 				}
 			}
+		}
+		static private void dealSingleXeSkinUsingCount(XmlElement xeRoot)
+		{
+			foreach (XmlNode xn in xeRoot.ChildNodes)
+			{
+				if (xn is XmlElement)
+				{
+					XmlElement xe = (XmlElement)xn;
+					string skinName = xe.GetAttribute("skin");
+					List<SkinUsingCount_T> lstSkinCount;
+
+					if (skinName != "" && Setting.s_mapSkinUsingCount.TryGetValue(skinName, out lstSkinCount) &&
+						lstSkinCount != null && lstSkinCount.Count > 0)
+					{
+						foreach(SkinUsingCount_T skinCountDef in lstSkinCount)
+						{
+							skinCountDef.m_count++;
+						}
+					}
+					dealSingleXeSkinUsingCount(xe);
+				}
+			}
+		}
+		static public void refreshSkinUsingCount()
+		{
+			if (Directory.Exists(Project.Setting.s_projPath))
+			{
+				DirectoryInfo dri = new DirectoryInfo(Project.Setting.s_projPath);
+
+				foreach (FileInfo fi in dri.GetFiles("*.xml"))
+				{
+					XmlDocument docXml = new XmlDocument();
+
+					try
+					{
+						docXml.Load(fi.FullName);
+					}
+					catch
+					{
+						continue;
+					}
+					dealSingleXeSkinUsingCount(docXml.DocumentElement);
+				}
+			}
+		}
+		static public void showNotUsingSkin()
+		{
+			string countReport = "";
+			int notUsingCount = 0;
+
+			Project.Setting.refreshSkinIndex();
+			refreshSkinUsingCount();
+			Public.ResultLink.createResult("\r\n" + "共" + Setting.s_mapSkinUsingCount.Count + "个皮肤名，其中", Public.ResultType.RT_INFO, null, true);
+			foreach(KeyValuePair<string, List<SkinUsingCount_T>> pairSkinCount in Setting.s_mapSkinUsingCount)
+			{
+				if (pairSkinCount.Value[0].m_count == 0 && pairSkinCount.Key.IndexOf("{") == -1)
+				{
+					notUsingCount++;
+					foreach (SkinUsingCount_T skinCountDef in pairSkinCount.Value)
+					{
+						countReport += "\r\n皮肤文件[" + skinCountDef.m_groupName + ".xml" + "]中的皮肤[" + pairSkinCount.Key + "]没有被引用到。";
+// 						Public.ResultLink.createResult("\r\n皮肤文件[", Public.ResultType.RT_INFO, null, true);
+// 						Public.ResultLink.createResult(skinCountDef.m_groupName + ".xml", Public.ResultType.RT_INFO,
+// 							Setting.s_skinPath + "\\" + skinCountDef.m_groupName + ".xml", true);
+// 						Public.ResultLink.createResult("]中的皮肤[" + pairSkinCount.Key + "]没有被引用到。", Public.ResultType.RT_INFO, null, true);
+					}
+				}
+			}
+			Public.ResultLink.createResult(notUsingCount + "个皮肤没有被引用。", Public.ResultType.RT_INFO, null, true);
+			StreamWriter sw;
+
+			sw = File.CreateText(Setting.s_projPath + "\\skinCount.txt");
+			sw.WriteLine(countReport);
+			sw.Close();
 		}
 
 		public void refreshControl(string skinName = "")

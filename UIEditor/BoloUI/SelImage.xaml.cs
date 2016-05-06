@@ -73,17 +73,18 @@ namespace UIEditor.BoloUI
 		{
 			string resPath = Project.Setting.s_imagePath + "\\" + resName + ".xml";
 			string tgaPath = Project.Setting.s_imagePath + "\\" + resName + ".tga";
+			string bmpPath = Project.Setting.s_imagePath + "\\" + resName + ".bmp";
 			string pngFolderPath = Project.Setting.s_imagePath + "\\" + resName + "\\";
 
 			tgaItem.ToolTip = resPath;
 			tgaItem.Selected += tgaItem_Selected;
-			if(System.IO.File.Exists(resPath) && System.IO.File.Exists(tgaPath))
+			if (System.IO.File.Exists(resPath) && (System.IO.File.Exists(tgaPath) || System.IO.File.Exists(bmpPath)))
 			{
 				ImageIndex imgIndex;
 
-				if(MainWindow.s_pW.m_mapImageIndex.TryGetValue(resPath, out imgIndex))
+				if (MainWindow.s_pW.m_mapImageIndex.TryGetValue(resPath, out imgIndex))
 				{
-					foreach(KeyValuePair<string, XmlElement> pairImg in imgIndex.m_mapImageXe.ToList())
+					foreach (KeyValuePair<string, XmlElement> pairImg in imgIndex.m_mapImageXe.ToList())
 					{
 						TreeViewItem pngItem = new TreeViewItem();
 						string pngPath = pngFolderPath + pairImg.Key + ".png";

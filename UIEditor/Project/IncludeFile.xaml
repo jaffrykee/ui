@@ -31,6 +31,7 @@
 			<MenuItem Name="mx_openFolder" Header="打开所在文件夹" Click="mx_openFolder_Click"/>
 			<Separator Name="mx_spImg" Visibility="Collapsed"/>
 			<MenuItem Name="mx_repackImage" Header="重新打包" Visibility="Collapsed" Click="mx_repackImage_Click"/>
+			<MenuItem Name="mx_mergeTo" Header="合并到" Visibility="Collapsed"/>
 			<MenuItem Name="mx_moveTo" Header="移动到" Visibility="Collapsed"/>
 			<MenuItem Name="mx_copyTo" Header="复制到" Visibility="Collapsed"/>
 			<MenuItem Name="mx_delete" Header="删除" Visibility="Collapsed" Click="mx_delete_Click"/>

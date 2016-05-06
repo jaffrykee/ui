@@ -71,6 +71,7 @@
 								<RowDefinition Height="auto"/>
 								<RowDefinition Height="auto"/>
 								<RowDefinition Height="auto"/>
+								<RowDefinition Height="auto"/>
 							</Grid.RowDefinitions>
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="auto"/>
@@ -135,6 +136,16 @@
 									Width="50"
 									Height="25"
 									Click="mx_btnBackground_Click">
+								浏览
+							</Button>
+							<Label Name="mx_lbFont" Grid.Row="6" Grid.Column="0">字体路径：</Label>
+							<TextBox Name="mx_tbFont" Grid.Row="6" Grid.Column="1" Margin="5"/>
+							<Button Name="mx_btnFont"
+									Grid.Row="6"
+									Grid.Column="2"
+									Width="50"
+									Height="25"
+									Click="mx_btnFont_Click">
 								浏览
 							</Button>
 						</Grid>

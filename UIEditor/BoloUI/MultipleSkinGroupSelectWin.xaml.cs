@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using UIEditor.Project;
 
 namespace UIEditor.BoloUI
 {
@@ -17,16 +18,16 @@ namespace UIEditor.BoloUI
 	{
 		public XmlControl m_xmlCtrl;
 		public string m_skinName;
-		public List<string> m_lstSkinGroup;
+		public List<SkinUsingCount_T> m_lstSkinCount;
 
 		static public MultipleSkinGroupSelectWin s_pW;
 
-		public MultipleSkinGroupSelectWin(XmlControl xmlCtrl, string skinName, List<string> lstSkinGroup)
+		public MultipleSkinGroupSelectWin(XmlControl xmlCtrl, string skinName, List<SkinUsingCount_T> lstSkinCount)
 		{
 			s_pW = this;
 			m_xmlCtrl = xmlCtrl;
 			m_skinName = skinName;
-			m_lstSkinGroup = lstSkinGroup;
+			m_lstSkinCount = lstSkinCount;
 
 			InitializeComponent();
 			refreshSkinGroupComboBox();
@@ -37,13 +38,13 @@ namespace UIEditor.BoloUI
 		{
 			mx_tbSkinName.Text = "发现了多个皮肤组定义了该名称(" + m_skinName + ")的皮肤，请选择想要引用的皮肤组。";
 			mx_cbSkinGroup.Items.Clear();
-			if(m_lstSkinGroup != null && m_lstSkinGroup.Count > 0)
+			if(m_lstSkinCount != null && m_lstSkinCount.Count > 0)
 			{
-				foreach(string skinGroupName in m_lstSkinGroup)
+				foreach (SkinUsingCount_T skinCountDef in m_lstSkinCount)
 				{
 					ComboBoxItem cbiSkinGroup = new ComboBoxItem();
 
-					cbiSkinGroup.Content = skinGroupName;
+					cbiSkinGroup.Content = skinCountDef.m_groupName;
 					mx_cbSkinGroup.Items.Add(cbiSkinGroup);
 				}
 				mx_cbSkinGroup.SelectedIndex = 0;
