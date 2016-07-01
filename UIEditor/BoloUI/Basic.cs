@@ -214,7 +214,10 @@ namespace UIEditor.BoloUI
 				m_selLock.addLock(out stackLock);
 			}
 			MainWindow.s_pW.openFileByDef(m_xmlCtrl.m_openedFile);
-			MainWindow.s_pW.mx_treeFrame.SelectedItem = MainWindow.s_pW.mx_treeFrameUI;
+			if(m_xe.Name != "event")
+			{
+				MainWindow.s_pW.mx_treeFrame.SelectedItem = MainWindow.s_pW.mx_treeFrameUI;
+			}
 
 			showBlueRect();
 
