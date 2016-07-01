@@ -62,7 +62,7 @@ namespace UIEditor.BoloUI
 		}
 		public static Dictionary<string, Dictionary<string, XmlDocument>> getSSUEScriptClassMap()
 		{
-			string dstPath = Setting.s_projPath + @"\..\..\scripts\dev\source\";
+			string dstPath = Setting.getScriptPath() + @"source\";
 			Dictionary<string, Dictionary<string, XmlDocument>> mapScriptClass = new Dictionary<string, Dictionary<string, XmlDocument>>();
 
 			if(Directory.Exists(dstPath))

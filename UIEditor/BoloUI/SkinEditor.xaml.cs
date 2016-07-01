@@ -281,6 +281,10 @@ namespace UIEditor.BoloUI
 				string apprName = cbPreItem.ToolTip.ToString() + cbSufItem.ToolTip.ToString();
 
 				refreshAppr(apprName);
+				if (mx_tbSkinName.Text != "" && mx_tbSkinName.Text != null)
+				{
+					MainWindow.s_pW.updateGL(mx_tbSkinName.Text + ":" + cbSufItem.ToolTip.ToString(), W2GTag.W2G_CURSTATE);
+				}
 			}
 		}
 		private void mx_cbItemPrefix_Selected(object sender, RoutedEventArgs e)

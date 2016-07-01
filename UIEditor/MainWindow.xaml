@@ -570,6 +570,34 @@
 							<TextBox Name="mx_tbReplacePath" Width="200" Margin="4"></TextBox>
 							<Button Click="mx_replaceTools_Click">替换</Button>
 						</WrapPanel>
+						<TextBlock Margin="{Binding ElementName=mx_sqTool, Path=Margin}"
+								   Padding="{Binding ElementName=mx_sqTool, Path=Padding}"
+								   Background="{Binding ElementName=mx_sqTool, Path=Background}"/>
+						<WrapPanel Visibility="Collapsed">
+							<CheckBox Name="mx_cbCameraIs3D"
+									  Width="auto"
+									  Padding="7"
+									  ToolTip="是否开启3D模式"
+									  Style="{StaticResource ToggleButtonTeml_Tools}"
+									  Checked="mx_cbCameraIs3D_Checked"
+									  Unchecked="mx_cbCameraIs3D_Unchecked">
+								3D
+							</CheckBox>
+							<Label>F:</Label>
+							<TextBox Name="mx_tbCameraFov" Width="50" Margin="4" TextChanged="mx_tbCameraFov_TextChanged"/>
+							<Label>A:</Label>
+							<TextBox Name="mx_tbCameraAspect" Width="50" Margin="4" TextChanged="mx_tbCameraAspect_TextChanged"/>
+							<Label>n:</Label>
+							<TextBox Name="mx_tbCameraNear" Width="50" Margin="4" TextChanged="mx_tbCameraNear_TextChanged"/>
+							<Label>f:</Label>
+							<TextBox Name="mx_tbCameraFar" Width="50" Margin="4" TextChanged="mx_tbCameraFar_TextChanged"/>
+							<Label>x:</Label>
+							<TextBox Name="mx_tbCameraX" Width="50" Margin="4" TextChanged="mx_tbCameraX_TextChanged"/>
+							<Label>y:</Label>
+							<TextBox Name="mx_tbCameraY" Width="50" Margin="4" TextChanged="mx_tbCameraY_TextChanged"/>
+							<Label>z:</Label>
+							<TextBox Name="mx_tbCameraZ" Width="50" Margin="4" TextChanged="mx_tbCameraZ_TextChanged"/>
+						</WrapPanel>
 					</WrapPanel>
 				</WrapPanel>
 				<WrapPanel Grid.Row="1" Margin="3">

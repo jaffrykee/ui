@@ -70,7 +70,7 @@ namespace UIEditor.BoloUI
 				IsExpanded = true;
 			}
 			initHeader();
-			if(m_isCtrl)
+			if (m_isCtrl && m_xe.Name != "scriptPanel")
 			{
 				string skinName = m_xe.GetAttribute("skin");
 

@@ -479,6 +479,21 @@ namespace UIEditor.Project
 
 			return pathPack;
 		}
+		static public string getScriptPath()
+		{
+			string scriptPath = "";
+
+			if (Project.Setting.s_particlePath == null || Project.Setting.s_particlePath == "")
+			{
+				scriptPath = Project.Setting.s_projPath + @"\..\..\scripts\dev\";
+			}
+			else
+			{
+				scriptPath = Project.Setting.s_particlePath + @"\..\scripts\dev\";
+			}
+
+			return StringDic.getRealPath(scriptPath);
+		}
 
 		static private void openLinkFile(string pathPack, bool isBlock = false)
 		{

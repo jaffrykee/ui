@@ -621,6 +621,7 @@ namespace UIEditor
 			{
 				return;
 			}
+			OpenedFile.closeAllFile();
 			m_docConf.DocumentElement.SelectSingleNode("ProjHistory").InnerXml = Project.Setting.s_projPath;
 			XmlElement xeBup = null;
 			if (m_docConf.DocumentElement.SelectSingleNode("bupHistory") == null)
@@ -919,6 +920,7 @@ namespace UIEditor
 							if (openFile.m_frame is XmlControl)
 							{
 								//updateGL(fileName, W2GTag.W2G_NORMAL_TURN);
+								updateGL("<null>:-1", W2GTag.W2G_CURSTATE);
 								refreshCurFile();
 								XmlControl xmlCtrl = (XmlControl)openFile.m_frame;
 
@@ -3144,7 +3146,10 @@ namespace UIEditor
 						mx_skinEditor.mx_skinApprSuf.SelectedIndex = 0;
 						//mx_skinEditor.mx_treeAppr.Items.Clear();
 					}
+
+					return;
 				}
+				updateGL("<null>:-1", W2GTag.W2G_CURSTATE);
 			}
 		}
 		private void mx_textFrame_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -3298,6 +3303,62 @@ namespace UIEditor
 				sw.Close();
 			}
 		}
+
+		private void updateCamera(object sender, W2GTag tag)
+		{
+			if (sender is TextBox)
+			{
+				TextBox tb = (TextBox)sender;
+				string data = "";
+
+				if (tb.Text != "")
+				{
+					data = tb.Text;
+				}
+				else
+				{
+					data = "0";
+				}
+				updateGL(data, tag);
+			}
+		}
+		private void mx_cbCameraIs3D_Checked(object sender, RoutedEventArgs e)
+		{
+			updateGL("true", W2GTag.W2G_CAMERA_IS3D);
+		}
+		private void mx_cbCameraIs3D_Unchecked(object sender, RoutedEventArgs e)
+		{
+			updateGL("false", W2GTag.W2G_CAMERA_IS3D);
+		}
+		private void mx_tbCameraFov_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			updateCamera(sender, W2GTag.W2G_CAMERA_FOV);
+		}
+		private void mx_tbCameraAspect_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			updateCamera(sender, W2GTag.W2G_CAMERA_ASPECT);
+		}
+		private void mx_tbCameraNear_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			updateCamera(sender, W2GTag.W2G_CAMERA_NEAR);
+		}
+		private void mx_tbCameraFar_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			updateCamera(sender, W2GTag.W2G_CAMERA_FAR);
+		}
+		private void mx_tbCameraX_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			updateCamera(sender, W2GTag.W2G_CAMERA_X);
+		}
+		private void mx_tbCameraY_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			updateCamera(sender, W2GTag.W2G_CAMERA_Y);
+		}
+		private void mx_tbCameraZ_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			updateCamera(sender, W2GTag.W2G_CAMERA_Z);
+		}
+
 		protected class RenderCacheViewData
 		{
 			public int m_id { get; set; }
