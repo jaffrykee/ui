@@ -160,3 +160,16 @@ $RECYCLE.BIN/
 # Mac desktop service store files
 .DS_Store
 !/DsUiEditor/
+/packages/MahApps.Metro.2.4.9/lib/net452
+/packages/MahApps.Metro.2.4.9/lib/net46
+/packages/MahApps.Metro.2.4.9/lib/net47
+/packages/ControlzEx.4.4.0/lib/net45
+/packages/ControlzEx.4.4.0/lib/net462
+/packages/Microsoft.QualityTools.Testing.Fakes.16.11.230815/lib/net35/*.dll
+*.dll
+/packages/Microsoft.QualityTools.Testing.Fakes.16.11.230815/lib/net35
+/packages/Microsoft.QualityTools.Testing.Fakes.16.11.230815
+/packages/ControlzEx.4.4.0
+/packages/MahApps.Metro.2.4.9
+/packages/Microsoft.Xaml.Behaviors.Wpf.1.1.19
+/packages/System.Windows.Interactivity.WPF.2.0.20525

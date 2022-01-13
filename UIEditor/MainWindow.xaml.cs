@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -512,6 +512,7 @@ namespace UIEditor
 		}
 		private void mx_root_Loaded(object sender, RoutedEventArgs e)
 		{
+			return;
 			HwndSource source = PresentationSource.FromVisual(this) as HwndSource;
 
 			if (source != null)

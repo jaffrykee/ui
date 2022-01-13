@@ -1,4 +1,4 @@
-﻿<Controls:MetroWindow
+<Controls:MetroWindow
 	x:Class="UIEditor.MainWindow"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -11,7 +11,6 @@
 	xmlns:userView="clr-namespace:UIEditor"
 	Name="mx_root"
 	Title="&lt;未加载项目&gt; - UI编辑器"
-	TitleCaps="False"
 	WindowStartupLocation="CenterScreen"
 	Width="1280"
 	Height="800"
@@ -22,7 +21,8 @@
 	Loaded="mx_root_Loaded"
 	Closing="mx_root_Closing"
 	PreviewKeyDown="mx_root_PreviewKeyDown">
-	<Window.Resources>
+    <!--TitleCaps="False"-->
+    <Window.Resources>
 		<RoutedUICommand x:Key="btnClick_mx_toolNew" Text="Button Click" />
 		<RoutedUICommand x:Key="btnClick_mx_toolOpen" Text="Button Click" />
 		<RoutedUICommand x:Key="btnClick_mx_toolSave" Text="Button Click" />
